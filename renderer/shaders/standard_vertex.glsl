@@ -23,12 +23,12 @@ void main() {
     Normal = normalize(NormalMatrix * VertexNormal);
 
     vec2 texcoord = VertexTexcoord;
-#if MAT_TEXTURES > 0
+    #if MAT_TEXTURES > 0
     // Flip texture coordinate Y if requested.
     if (MatTexFlipY(0)) {
         texcoord.y = 1.0 - texcoord.y;
     }
-#endif
+    #endif
     FragTexcoord = texcoord;
     vec3 vPosition = VertexPosition;
     mat4 finalWorld = mat4(1.0);

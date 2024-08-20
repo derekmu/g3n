@@ -846,9 +846,9 @@ func (gs *GLS) UseProgram(prog *Program) {
 //
 // For example:
 //
-// 	var data []uint8
-// 	...
-// 	gl.TexImage2D(gl.TEXTURE_2D, ..., gl.UNSIGNED_BYTE, gl.Ptr(&data[0]))
+//	var data []uint8
+//	...
+//	gl.TexImage2D(gl.TEXTURE_2D, ..., gl.UNSIGNED_BYTE, gl.Ptr(&data[0]))
 func ptr(data interface{}) unsafe.Pointer {
 	if data == nil {
 		return unsafe.Pointer(nil)

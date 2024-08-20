@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/texture"
+	"github.com/derekmu/g3n/material"
+	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/texture"
 )
 
 // GetMaterial returns a pointer to an instance of the material

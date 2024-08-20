@@ -9,9 +9,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
+	"github.com/derekmu/g3n/geometry"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/math32"
 )
 
 // GetGeometry returns a pointer to an instance of the geometry

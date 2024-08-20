@@ -5,9 +5,9 @@
 package animation
 
 import (
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/math32"
+	"github.com/derekmu/g3n/core"
+	"github.com/derekmu/g3n/geometry"
+	"github.com/derekmu/g3n/math32"
 )
 
 // A Channel associates an animation parameter channel to an interpolation sampler

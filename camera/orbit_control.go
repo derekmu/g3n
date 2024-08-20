@@ -7,10 +7,10 @@ package camera
 import (
 	"math"
 
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/gui"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/window"
+	"github.com/derekmu/g3n/core"
+	"github.com/derekmu/g3n/gui"
+	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/window"
 )
 
 // OrbitEnabled specifies which control types are enabled.
@@ -121,7 +121,7 @@ func (oc *OrbitControl) Target() math32.Vector3 {
 	return oc.target
 }
 
-//Set camera orbit target Vector3
+// Set camera orbit target Vector3
 func (oc *OrbitControl) SetTarget(v math32.Vector3) {
 	oc.target = v
 }

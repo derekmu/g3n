@@ -5,7 +5,7 @@ If any shader in this directory or include 'chunk' in the
 "include" subdirectory is modified or a new shader or chunk
 is added or removed it is necessary to execute:
 
->go generate
+> go generate
 
 in this directory to update the "sources.go" file.
 It will invoke the "g3nshaders" command which will read

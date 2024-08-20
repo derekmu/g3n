@@ -10,9 +10,9 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/g3n/engine/gui/assets/icon"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/window"
+	"github.com/derekmu/g3n/gui/assets/icon"
+	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/window"
 )
 
 const (
@@ -56,10 +56,8 @@ const (
 	tableErrInvCol      = "Invalid column id"
 )
 
-//
 // Table implements a panel which can contains child panels
 // organized in rows and columns.
-//
 type Table struct {
 	Panel                       // Embedded panel
 	styles         *TableStyles // pointer to current styles

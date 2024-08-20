@@ -5,11 +5,11 @@
 package helper
 
 import (
-	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/math32"
+	"github.com/derekmu/g3n/geometry"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/graphic"
+	"github.com/derekmu/g3n/material"
+	"github.com/derekmu/g3n/math32"
 )
 
 // Grid is a visual representation of a grid.

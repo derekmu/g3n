@@ -11,9 +11,7 @@ import (
 	"strconv"
 )
 
-//
 // LibraryEffects
-//
 type LibraryEffects struct {
 	Id     string
 	Name   string
@@ -33,9 +31,7 @@ func (le *LibraryEffects) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Effect
-//
 type Effect struct {
 	Id      string
 	Name    string
@@ -57,9 +53,7 @@ func (ef *Effect) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // ProfileCOMMON
-//
 type ProfileCOMMON struct {
 	Id        string
 	Asset     *Asset
@@ -91,9 +85,7 @@ func (pc *ProfileCOMMON) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Newparam
-//
 type Newparam struct {
 	Sid           string
 	Semantic      string
@@ -113,9 +105,7 @@ func (np *Newparam) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Surface
-//
 type Surface struct {
 	Type string
 	Init interface{}
@@ -132,9 +122,7 @@ func (sf *Surface) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Sampler2D
-//
 type Sampler2D struct {
 	Source string
 }
@@ -147,9 +135,7 @@ func (sp *Sampler2D) Dump(out io.Writer, indent int) {
 	fmt.Printf("%sSource:%s\n", sIndent(ind), sp.Source)
 }
 
-//
 // Blinn
-//
 type Blinn struct {
 	Emission          interface{}
 	Ambient           interface{}
@@ -180,9 +166,7 @@ func (bl *Blinn) Dump(out io.Writer, indent int) {
 	DumpFloatOrParam("IndexOfRefraction", bl.IndexOfRefraction, out, ind)
 }
 
-//
 // Constant
-//
 type Constant struct {
 	Emission          interface{}
 	Reflective        interface{}
@@ -192,9 +176,7 @@ type Constant struct {
 	IndexOfRefraction interface{}
 }
 
-//
 // Lambert
-//
 type Lambert struct {
 	Emission          interface{}
 	Ambient           interface{}
@@ -206,9 +188,7 @@ type Lambert struct {
 	IndexOfRefraction interface{}
 }
 
-//
 // Phong
-//
 type Phong struct {
 	Emission          interface{}
 	Ambient           interface{}
@@ -270,9 +250,7 @@ func DumpFloatOrParam(name string, v interface{}, out io.Writer, indent int) {
 	}
 }
 
-//
 // Color
-//
 type Color struct {
 	Sid  string
 	Data [4]float32
@@ -284,9 +262,7 @@ func (c *Color) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sColor sid:%s data:%v\n", sIndent(indent), c.Sid, c.Data)
 }
 
-//
 // Float
-//
 type Float struct {
 	Sid  string
 	Data float32
@@ -298,9 +274,7 @@ func (f *Float) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sFloat sid:%s data:%v\n", sIndent(indent), f.Sid, f.Data)
 }
 
-//
 // Texture
-//
 type Texture struct {
 	Texture  string
 	Texcoord string

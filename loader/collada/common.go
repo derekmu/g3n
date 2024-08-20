@@ -13,9 +13,7 @@ import (
 	"strings"
 )
 
-//
 // Source
-//
 type Source struct {
 	Id              string      // Source id
 	Name            string      // Source name
@@ -40,9 +38,7 @@ func (s *Source) Dump(out io.Writer, indent int) {
 	s.TechniqueCommon.Accessor.Dump(out, ind+3)
 }
 
-//
 // NameArray
-//
 type NameArray struct {
 	Id    string
 	Name  string
@@ -58,9 +54,7 @@ func (na *NameArray) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sData(%d):%s\n", sIndent(ind), len(na.Data), na.Data)
 }
 
-//
 // FloatArray
-//
 type FloatArray struct {
 	Id    string
 	Count int
@@ -75,9 +69,7 @@ func (fa *FloatArray) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sData(%d):%s\n", sIndent(ind), len(fa.Data), f32sToString(fa.Data, 20))
 }
 
-//
 // Accessor
-//
 type Accessor struct {
 	Source string
 	Count  int
@@ -96,9 +88,7 @@ func (ac *Accessor) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Param for <bind_material> and <accessor>
-//
 type Param struct {
 	Name string
 	Type string

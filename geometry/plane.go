@@ -5,8 +5,8 @@
 package geometry
 
 import (
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/math32"
 )
 
 // NewPlane creates a plane geometry with the specified width and height.

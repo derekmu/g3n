@@ -7,9 +7,9 @@
 package material
 
 import (
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/texture"
-	"github.com/g3n/engine/util/logger"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/texture"
+	"github.com/derekmu/g3n/util/logger"
 )
 
 // Package logger

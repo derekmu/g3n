@@ -11,9 +11,7 @@ import (
 	"strconv"
 )
 
-//
 // LibraryGeometries
-//
 type LibraryGeometries struct {
 	Asset    *Asset
 	Geometry []*Geometry
@@ -35,9 +33,7 @@ func (lg *LibraryGeometries) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Geometry
-//
 type Geometry struct {
 	Id               string      // Geometry id (optional)
 	Name             string      // Geometry name (optional)
@@ -57,9 +53,7 @@ func (g *Geometry) Dump(out io.Writer, indent int) {
 
 }
 
-//
-//  Mesh
-//
+// Mesh
 type Mesh struct {
 	Source            []*Source     // One or more sources Sources
 	Vertices          Vertices      // Vertices positions
@@ -85,9 +79,7 @@ func (m *Mesh) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Vertices
-//
 type Vertices struct {
 	Id    string
 	Name  string
@@ -103,9 +95,7 @@ func (v *Vertices) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Input
-//
 type Input struct {
 	Semantic string
 	Source   string // source URL
@@ -117,9 +107,7 @@ func (i *Input) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sInput semantic:%s source:%s\n", sIndent(indent), i.Semantic, i.Source)
 }
 
-//
 // Polylist
-//
 type Polylist struct {
 	Name     string
 	Count    int
@@ -141,9 +129,7 @@ func (pl *Polylist) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sP(%d):%v\n", sIndent(ind), len(pl.P), intsToString(pl.P, 20))
 }
 
-//
 // InputShared
-//
 type InputShared struct {
 	Offset   int
 	Semantic string
@@ -151,9 +137,7 @@ type InputShared struct {
 	Set      int
 }
 
-//
 // Triangles
-//
 type Triangles struct {
 	Name     string
 	Count    int
@@ -162,9 +146,7 @@ type Triangles struct {
 	P        []int
 }
 
-//
 // Lines
-//
 type Lines struct {
 	Name     string
 	Count    int
@@ -184,9 +166,7 @@ func (ln *Lines) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sP(%d):%v\n", sIndent(ind), len(ln.P), intsToString(ln.P, 20))
 }
 
-//
 // LineStrips
-//
 type LineStrips struct {
 	Name     string
 	Count    int
@@ -195,9 +175,7 @@ type LineStrips struct {
 	P        []int
 }
 
-//
 // Trifans
-//
 type Trifans struct {
 	Name     string
 	Count    int
@@ -206,9 +184,7 @@ type Trifans struct {
 	P        []int
 }
 
-//
 // Tristrips
-//
 type Tristrips struct {
 	Name     string
 	Count    int

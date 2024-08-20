@@ -15,10 +15,10 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/g3n/engine/audio/al"
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
+	"github.com/derekmu/g3n/audio/al"
+	"github.com/derekmu/g3n/core"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/math32"
 )
 
 const (
@@ -136,7 +136,7 @@ func (p *Player) Play() error {
 	// Starts playing and starts goroutine to fill buffers
 	al.SourcePlay(p.source)
 	go p.run()
-	
+
 	return nil
 }
 

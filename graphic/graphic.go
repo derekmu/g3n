@@ -6,12 +6,12 @@
 package graphic
 
 import (
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/util/logger"
+	"github.com/derekmu/g3n/core"
+	"github.com/derekmu/g3n/geometry"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/material"
+	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/util/logger"
 )
 
 // Package logger

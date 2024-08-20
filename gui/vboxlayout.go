@@ -9,17 +9,17 @@ package gui
 // The whole group of children can be aligned vertically by SetAlignV() which can
 // accept the following types of alignment:
 //
-// 	AlignTop: Try to align the group of children to the top if the panel height is
-// 	greater the the sum of the children heights + spacing.
+//	AlignTop: Try to align the group of children to the top if the panel height is
+//	greater the the sum of the children heights + spacing.
 //
-// 	AlignBottom: Try to align the group of children to the bottoom if the panel height is
-// 	greater the the sum of the children heights + spacing.
+//	AlignBottom: Try to align the group of children to the bottoom if the panel height is
+//	greater the the sum of the children heights + spacing.
 //
-// 	AlignCenter: Try to align the group of children in the center if the panel height is
-// 	greater the the sum of the children heights + spacing.
+//	AlignCenter: Try to align the group of children in the center if the panel height is
+//	greater the the sum of the children heights + spacing.
 //
-// 	AlignHeight: Try to align the individual children vertically with the same same space between each other.
-// 	Each individual child can be aligned horizontally by SetLayoutParameters()
+//	AlignHeight: Try to align the individual children vertically with the same same space between each other.
+//	Each individual child can be aligned horizontally by SetLayoutParameters()
 //
 // If the layout method SetAutoHeight(true) is called, the panel minimum content height will be the
 // sum of its children's heights plus the spacing.

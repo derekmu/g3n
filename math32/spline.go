@@ -5,7 +5,7 @@
 package math32
 
 import (
-//"math"
+// "math"
 )
 
 type Spline struct {

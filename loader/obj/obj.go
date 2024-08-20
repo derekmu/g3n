@@ -18,13 +18,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/texture"
+	"github.com/derekmu/g3n/core"
+	"github.com/derekmu/g3n/geometry"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/graphic"
+	"github.com/derekmu/g3n/material"
+	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/texture"
 )
 
 // Decoder contains all decoded data from the obj and mtl files
@@ -145,7 +145,7 @@ func DecodeReader(objreader, mtlreader io.Reader) (*Decoder, error) {
 		return nil, err
 	}
 
-	if (mtlreader != nil) {
+	if mtlreader != nil {
 		// Parses mtl lines
 		// 1) try passed in mtlreader,
 		// 2) try file in mtllib line

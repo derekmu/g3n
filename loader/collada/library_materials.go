@@ -10,9 +10,7 @@ import (
 	"io"
 )
 
-//
 // LibraryMaterials
-//
 type LibraryMaterials struct {
 	Id       string
 	Name     string
@@ -32,9 +30,7 @@ func (lm *LibraryMaterials) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Material
-//
 type Material struct {
 	Id             string
 	Name           string
@@ -50,9 +46,7 @@ func (mat *Material) Dump(out io.Writer, indent int) {
 	mat.InstanceEffect.Dump(out, ind)
 }
 
-//
 // InstanceEffect
-//
 type InstanceEffect struct {
 	Sid  string
 	Name string

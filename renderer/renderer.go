@@ -8,15 +8,15 @@ package renderer
 import (
 	"sort"
 
-	"github.com/g3n/engine/camera"
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/gui"
-	"github.com/g3n/engine/light"
-	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/util/logger"
+	"github.com/derekmu/g3n/camera"
+	"github.com/derekmu/g3n/core"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/graphic"
+	"github.com/derekmu/g3n/gui"
+	"github.com/derekmu/g3n/light"
+	"github.com/derekmu/g3n/material"
+	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/util/logger"
 )
 
 // Package logger

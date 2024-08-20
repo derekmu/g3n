@@ -10,9 +10,7 @@ import (
 	"io"
 )
 
-//
 // Library Animations
-//
 type LibraryAnimations struct {
 	Id        string
 	Name      string
@@ -32,9 +30,7 @@ func (la *LibraryAnimations) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Animation
-//
 type Animation struct {
 	Id        string
 	Name      string
@@ -63,9 +59,7 @@ func (an *Animation) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Sampler
-//
 type Sampler struct {
 	Id    string
 	Input []Input // One or more
@@ -82,9 +76,7 @@ func (sp *Sampler) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Channel
-//
 type Channel struct {
 	Source string
 	Target string

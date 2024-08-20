@@ -11,9 +11,7 @@ import (
 	"strconv"
 )
 
-//
 // LibraryLights
-//
 type LibraryLights struct {
 	Id    string
 	Name  string
@@ -33,9 +31,7 @@ func (ll *LibraryLights) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Light
-//
 type Light struct {
 	Id              string
 	Name            string
@@ -63,9 +59,7 @@ func (li *Light) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Ambient
-//
 type Ambient struct {
 	Color LightColor
 }
@@ -78,9 +72,7 @@ func (amb *Ambient) Dump(out io.Writer, indent int) {
 	amb.Color.Dump(out, ind)
 }
 
-//
 // Directional
-//
 type Directional struct {
 	Color LightColor
 }
@@ -93,9 +85,7 @@ func (dir *Directional) Dump(out io.Writer, indent int) {
 	dir.Color.Dump(out, ind)
 }
 
-//
 // Point
-//
 type Point struct {
 	Color                LightColor
 	ConstantAttenuation  *FloatValue
@@ -114,9 +104,7 @@ func (pl *Point) Dump(out io.Writer, indent int) {
 	pl.QuadraticAttenuation.Dump("QuadraticAttenuation", out, indent)
 }
 
-//
 // Spot
-//
 type Spot struct {
 	Color                LightColor
 	ConstantAttenuation  *FloatValue
@@ -139,9 +127,7 @@ func (sl *Spot) Dump(out io.Writer, indent int) {
 	sl.FalloffExponent.Dump("FalloffExponent", out, indent)
 }
 
-//
 // FloatValue
-//
 type FloatValue struct {
 	Sid   string
 	Value float32
@@ -156,9 +142,7 @@ func (fv *FloatValue) Dump(name string, out io.Writer, indent int) {
 	fmt.Fprintf(out, "%s%s sid:%s value:%v\n", sIndent(indent), name, fv.Sid, fv.Value)
 }
 
-//
 // LightColor
-//
 type LightColor struct {
 	Sid  string
 	Data [3]float32

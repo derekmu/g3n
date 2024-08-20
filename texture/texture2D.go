@@ -14,9 +14,9 @@ import (
 	_ "image/png"
 	"os"
 
-	"github.com/g3n/engine/util/logger"
+	"github.com/derekmu/g3n/util/logger"
 
-	"github.com/g3n/engine/gls"
+	"github.com/derekmu/g3n/gls"
 )
 
 // Package logger

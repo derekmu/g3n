@@ -4,9 +4,7 @@
 
 package gui
 
-//
 // BuilderLayoutHBox is builder for HBox layout
-//
 type BuilderLayoutHBox struct{}
 
 // BuildLayout builds and returns an HBoxLayout with the specified attributes
@@ -55,9 +53,7 @@ func (bl *BuilderLayoutHBox) BuildParams(b *Builder, am map[string]interface{}) 
 	return &params, nil
 }
 
-//
 // BuilderLayoutVBox is builder for VBox layout
-//
 type BuilderLayoutVBox struct{}
 
 // BuildLayout builds and returns an VBoxLayout with the specified attributes
@@ -106,9 +102,7 @@ func (bl *BuilderLayoutVBox) BuildParams(b *Builder, am map[string]interface{}) 
 	return &params, nil
 }
 
-//
 // BuilderLayoutGrid is builder for Grid layout
-//
 type BuilderLayoutGrid struct{}
 
 // BuildLayout builds and returns a GridLayout with the specified attributes
@@ -177,9 +171,7 @@ func (bl *BuilderLayoutGrid) BuildParams(b *Builder, am map[string]interface{}) 
 	return &params, nil
 }
 
-//
 // BuilderLayoutDock is builder for Dock layout
-//
 type BuilderLayoutDock struct{}
 
 // BuildLayout builds and returns a DockLayout with the specified attributes

@@ -10,9 +10,7 @@ import (
 	"io"
 )
 
-//
 // LibraryImages
-//
 type LibraryImages struct {
 	Id    string
 	Name  string
@@ -32,9 +30,7 @@ func (li *LibraryImages) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Image
-//
 type Image struct {
 	Id          string
 	Name        string
@@ -56,9 +52,7 @@ func (img *Image) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // InitFrom
-//
 type InitFrom struct {
 	Uri string
 }

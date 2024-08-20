@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
+	"github.com/derekmu/g3n/gls"
+	"github.com/derekmu/g3n/math32"
 )
 
 // MorphGeometry represents a base geometry and its morph targets.

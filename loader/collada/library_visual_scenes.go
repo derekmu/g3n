@@ -11,9 +11,7 @@ import (
 	"strconv"
 )
 
-//
 // LibraryVisualScenes
-//
 type LibraryVisualScenes struct {
 	Asset       *Asset
 	VisualScene []*VisualScene
@@ -35,9 +33,7 @@ func (lv *LibraryVisualScenes) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // VisualScene contains all the nodes of a visual scene
-//
 type VisualScene struct {
 	Id   string
 	Name string
@@ -53,9 +49,7 @@ func (vs *VisualScene) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Node is embedded in each node instance
-//
 type Node struct {
 	Id                     string
 	Name                   string
@@ -96,9 +90,7 @@ func (n *Node) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Matrix
-//
 type Matrix struct {
 	Sid  string
 	Data [16]float32
@@ -110,9 +102,7 @@ func (m *Matrix) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sMatrix sid:%s data:%v\n", sIndent(indent), m.Sid, m.Data)
 }
 
-//
 // Rotate
-//
 type Rotate struct {
 	Sid  string
 	Data [4]float32
@@ -124,9 +114,7 @@ func (r *Rotate) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sRotate sid:%s data:%v\n", sIndent(indent), r.Sid, r.Data)
 }
 
-//
 // Translate
-//
 type Translate struct {
 	Sid  string
 	Data [3]float32
@@ -138,9 +126,7 @@ func (t *Translate) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sTranslate sid:%s data:%v\n", sIndent(indent), t.Sid, t.Data)
 }
 
-//
 // Scale
-//
 type Scale struct {
 	Sid  string
 	Data [3]float32
@@ -152,9 +138,7 @@ func (s *Scale) Dump(out io.Writer, indent int) {
 	fmt.Fprintf(out, "%sScale sid:%s data:%v\n", sIndent(indent), s.Sid, s.Data)
 }
 
-//
 // InstanceGeometry
-//
 type InstanceGeometry struct {
 	Url          string // Geometry URL (required) references the ID of a Geometry
 	Name         string // name of this element (optional)
@@ -170,9 +154,7 @@ func (ig *InstanceGeometry) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // BindMaterial
-//
 type BindMaterial struct {
 	Params          []Param
 	TechniqueCommon struct {
@@ -192,9 +174,7 @@ func (bm *BindMaterial) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // InstanceMaterial
-//
 type InstanceMaterial struct {
 	Sid             string
 	Name            string
@@ -215,17 +195,13 @@ func (im *InstanceMaterial) Dump(out io.Writer, indent int) {
 	}
 }
 
-//
 // Bind
-//
 type Bind struct {
 	Semantic string
 	Target   string
 }
 
-//
 // BindVertexInput
-//
 type BindVertexInput struct {
 	Semantic      string
 	InputSemantic string

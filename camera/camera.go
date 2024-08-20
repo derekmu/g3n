@@ -6,9 +6,9 @@
 package camera
 
 import (
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/util/logger"
+	"github.com/derekmu/g3n/core"
+	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/util/logger"
 )
 
 // Package logger

@@ -82,9 +82,7 @@ func genFile(templText string, td *GLHeader, fout string, gosrc bool) error {
 	return f.Close()
 }
 
-//
 // Template for glapi C file
-//
 const templGLAPIC = `
 // This file was generated automatically by "glapi2go" and contains functions to
 // open the platform's OpenGL dll/shared library and to load all OpenGL function
@@ -318,9 +316,7 @@ static void load_procs() {
 {{end -}}
 `
 
-//
 // Template for glapi.h file
-//
 const templGLAPIH = `
 // This file was generated automatically by "glapi2go" and contains declarations
 // of public functions from "glapli.c".
@@ -339,9 +335,7 @@ void glapiCheckError(int check);
 #endif
 `
 
-//
 // Template for glparam.h file
-//
 const templGLPARAMH = `
 #ifndef _glparam_h_
 #define _glparam_h_
@@ -362,9 +356,7 @@ typedef struct {
 #endif
 `
 
-//
 // Template for consts.go file
-//
 const templCONSTS = `
 // This file was generated automatically by "glapi2go" and contains all
 // OpenGL constants specified by "#define GL_*" directives contained in
