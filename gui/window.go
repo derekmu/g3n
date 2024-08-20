@@ -68,7 +68,6 @@ type WindowStyles struct {
 // NewWindow creates and returns a pointer to a new window with the
 // specified dimensions
 func NewWindow(width, height float32) *Window {
-
 	w := new(Window)
 	w.styles = &StyleDefault().Window
 
@@ -92,19 +91,16 @@ func NewWindow(width, height float32) *Window {
 
 // SetResizable sets whether the window is resizable.
 func (w *Window) SetResizable(state bool) {
-
 	w.resizable = state
 }
 
 // SetCloseButton sets whether the window has a close button on the top right.
 func (w *Window) SetCloseButton(state bool) {
-
 	w.title.setCloseButton(state)
 }
 
 // SetTitle sets the title of the window.
 func (w *Window) SetTitle(text string) {
-
 	if w.title == nil {
 		w.title = newWindowTitle(w, text)
 		w.title.Subscribe(OnCursor, w.onCursor)
@@ -118,7 +114,6 @@ func (w *Window) SetTitle(text string) {
 
 // Add adds a child panel to the client area of this window
 func (w *Window) Add(ichild IPanel) *Window {
-
 	w.client.Add(ichild)
 	return w
 }
@@ -130,13 +125,11 @@ func (w *Window) Remove(ichild IPanel) bool {
 
 // SetLayout sets the layout of the client panel.
 func (w *Window) SetLayout(layout ILayout) {
-
 	w.client.SetLayout(layout)
 }
 
 // onMouse process subscribed mouse events over the window
 func (w *Window) onMouse(evname string, ev interface{}) {
-
 	switch evname {
 	case OnMouseDown:
 		// Move the window above everything contained in its parent
@@ -157,7 +150,6 @@ func (w *Window) onMouse(evname string, ev interface{}) {
 
 // onCursor process subscribed cursor events over the window
 func (w *Window) onCursor(evname string, ev interface{}) {
-
 	// If the window is not resizable we are not interested in cursor movements
 	if !w.resizable {
 		return
@@ -263,7 +255,6 @@ func (w *Window) onCursor(evname string, ev interface{}) {
 
 // update updates the window's visual state.
 func (w *Window) update() {
-
 	if !w.Enabled() {
 		w.applyStyle(&w.styles.Disabled)
 		return
@@ -273,7 +264,6 @@ func (w *Window) update() {
 
 // applyStyle applies a window style to the window.
 func (w *Window) applyStyle(s *WindowStyle) {
-
 	w.SetBordersColor4(&s.BorderColor)
 	w.SetBordersFrom(&s.Border)
 	w.SetPaddingsFrom(&s.Padding)
@@ -287,7 +277,6 @@ func (w *Window) applyStyle(s *WindowStyle) {
 // recalc recalculates the sizes and positions of the internal panels
 // from the outside to the inside.
 func (w *Window) recalc() {
-
 	// Window title
 	height := w.content.Height
 	width := w.content.Width
@@ -328,7 +317,6 @@ type WindowTitleStyle struct {
 
 // newWindowTitle creates and returns a pointer to a window title panel.
 func newWindowTitle(win *Window, text string) *WindowTitle {
-
 	wt := new(WindowTitle)
 	wt.win = win
 
@@ -361,7 +349,6 @@ func newWindowTitle(win *Window, text string) *WindowTitle {
 
 // setCloseButton sets whether the close button is present on the top right corner.
 func (wt *WindowTitle) setCloseButton(state bool) {
-
 	if state {
 		wt.closeButtonVisible = true
 		wt.Panel.Add(wt.closeButton)
@@ -373,7 +360,6 @@ func (wt *WindowTitle) setCloseButton(state bool) {
 
 // onMouse process subscribed mouse button events over the window title.
 func (wt *WindowTitle) onMouse(evname string, ev interface{}) {
-
 	mev := ev.(*window.MouseEvent)
 	switch evname {
 	case OnMouseDown:
@@ -391,7 +377,6 @@ func (wt *WindowTitle) onMouse(evname string, ev interface{}) {
 
 // onCursor process subscribed cursor events over the window title.
 func (wt *WindowTitle) onCursor(evname string, ev interface{}) {
-
 	if evname == OnCursorLeave {
 		window.Get().SetCursor(window.ArrowCursor)
 		wt.pressed = false
@@ -412,14 +397,12 @@ func (wt *WindowTitle) onCursor(evname string, ev interface{}) {
 
 // applyStyle applies the specified WindowTitleStyle.
 func (wt *WindowTitle) applyStyle(s *WindowTitleStyle) {
-
 	wt.Panel.ApplyStyle(&s.PanelStyle)
 	wt.label.SetColor4(&s.FgColor)
 }
 
 // recalc recalculates the height and position of the label in the title bar.
 func (wt *WindowTitle) recalc() {
-
 	xpos := (wt.width - wt.label.width) / 2
 	wt.label.SetPositionX(xpos)
 	wt.SetContentHeight(wt.closeButton.Height())

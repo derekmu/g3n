@@ -37,7 +37,6 @@ type FolderStyles struct {
 // NewFolder creates and returns a pointer to a new folder widget
 // with the specified text and initial width.
 func NewFolder(text string, width float32, contentPanel IPanel) *Folder {
-
 	f := new(Folder)
 	f.Initialize(text, width, contentPanel)
 	return f
@@ -46,7 +45,6 @@ func NewFolder(text string, width float32, contentPanel IPanel) *Folder {
 // Initialize initializes the Folder with the specified text and initial width
 // It is normally used when the folder is embedded in another object.
 func (f *Folder) Initialize(text string, width float32, contentPanel IPanel) {
-
 	f.Panel.Initialize(f, width, 0)
 	f.styles = &StyleDefault().Folder
 
@@ -92,7 +90,6 @@ func (f *Folder) Initialize(text string, width float32, contentPanel IPanel) {
 
 // SetStyles set the folder styles overriding the default style.
 func (f *Folder) SetStyles(fs *FolderStyles) {
-
 	f.styles = fs
 	f.update()
 }
@@ -100,7 +97,6 @@ func (f *Folder) SetStyles(fs *FolderStyles) {
 // SetAlignRight sets the side of the alignment of the content panel
 // in relation to the folder.
 func (f *Folder) SetAlignRight(state bool) {
-
 	f.alignRight = state
 	f.recalc()
 }
@@ -108,7 +104,6 @@ func (f *Folder) SetAlignRight(state bool) {
 // Height returns this folder total height
 // considering the contents panel, if visible.
 func (f *Folder) Height() float32 {
-
 	height := f.Height()
 	if f.contentPanel.GetPanel().Visible() {
 		height += f.contentPanel.GetPanel().Height()
@@ -118,7 +113,6 @@ func (f *Folder) Height() float32 {
 
 // onMouse receives mouse button events over the folder panel.
 func (f *Folder) onMouse(evname string, ev interface{}) {
-
 	switch evname {
 	case OnMouseDown:
 		cont := f.contentPanel.GetPanel()
@@ -136,7 +130,6 @@ func (f *Folder) onMouse(evname string, ev interface{}) {
 
 // onCursor receives cursor events over the folder panel
 func (f *Folder) onCursor(evname string, ev interface{}) {
-
 	switch evname {
 	case OnCursorEnter:
 		f.cursorOver = true
@@ -151,7 +144,6 @@ func (f *Folder) onCursor(evname string, ev interface{}) {
 
 // update updates the folder visual state
 func (f *Folder) update() {
-
 	if f.cursorOver {
 		f.applyStyle(&f.styles.Over)
 		return
@@ -161,7 +153,6 @@ func (f *Folder) update() {
 
 // applyStyle applies the specified style
 func (f *Folder) applyStyle(s *FolderStyle) {
-
 	f.Panel.ApplyStyle(&s.PanelStyle)
 
 	icode := 0
@@ -175,7 +166,6 @@ func (f *Folder) applyStyle(s *FolderStyle) {
 }
 
 func (f *Folder) recalc() {
-
 	// icon position
 	f.icon.SetPosition(0, 0)
 

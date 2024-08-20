@@ -55,7 +55,6 @@ const (
 // NewChart creates and returns a new chart panel with
 // the specified dimensions in pixels.
 func NewChart(width, height float32) *Chart {
-
 	ch := new(Chart)
 	ch.Init(width, height)
 	return ch
@@ -64,7 +63,6 @@ func NewChart(width, height float32) *Chart {
 // Init initializes a new chart with the specified width and height
 // It is normally used to initialize a Chart embedded in a struct
 func (ch *Chart) Init(width float32, height float32) {
-
 	ch.Panel.Initialize(ch, width, height)
 	ch.left = 40
 	ch.bottom = 20
@@ -85,7 +83,6 @@ func (ch *Chart) Init(width float32, height float32) {
 // SetTitle sets the chart title text and font size.
 // To remove the title pass an empty string
 func (ch *Chart) SetTitle(title string, size float64) {
-
 	// Remove title
 	if title == "" {
 		if ch.title != nil {
@@ -110,35 +107,30 @@ func (ch *Chart) SetTitle(title string, size float64) {
 
 // SetMarginY sets the y scale margin
 func (ch *Chart) SetMarginY(left float32) {
-
 	ch.left = left
 	ch.recalc()
 }
 
 // SetMarginX sets the x scale margin
 func (ch *Chart) SetMarginX(bottom float32) {
-
 	ch.bottom = bottom
 	ch.recalc()
 }
 
 // SetFormatX sets the string format of the X scale labels
 func (ch *Chart) SetFormatX(format string) {
-
 	ch.formatX = format
 	ch.updateLabelsX()
 }
 
 // SetFormatY sets the string format of the Y scale labels
 func (ch *Chart) SetFormatY(format string) {
-
 	ch.formatY = format
 	ch.updateLabelsY()
 }
 
 // SetFontSizeX sets the font size for the x scale labels
 func (ch *Chart) SetFontSizeX(size float64) {
-
 	ch.fontSizeX = size
 	for i := 0; i < len(ch.labelsX); i++ {
 		ch.labelsX[i].SetFontSize(ch.fontSizeX)
@@ -147,7 +139,6 @@ func (ch *Chart) SetFontSizeX(size float64) {
 
 // SetFontSizeY sets the font size for the y scale labels
 func (ch *Chart) SetFontSizeY(size float64) {
-
 	ch.fontSizeY = size
 	for i := 0; i < len(ch.labelsY); i++ {
 		ch.labelsY[i].SetFontSize(ch.fontSizeY)
@@ -156,7 +147,6 @@ func (ch *Chart) SetFontSizeY(size float64) {
 
 // SetScaleX sets the X scale number of lines, lines color and label font size
 func (ch *Chart) SetScaleX(lines int, color *math32.Color) {
-
 	if ch.scaleX != nil {
 		ch.ClearScaleX()
 	}
@@ -181,7 +171,6 @@ func (ch *Chart) SetScaleX(lines int, color *math32.Color) {
 
 // ClearScaleX removes the X scale if it was previously set
 func (ch *Chart) ClearScaleX() {
-
 	if ch.scaleX == nil {
 		return
 	}
@@ -202,7 +191,6 @@ func (ch *Chart) ClearScaleX() {
 
 // SetScaleY sets the Y scale number of lines and color
 func (ch *Chart) SetScaleY(lines int, color *math32.Color) {
-
 	if ch.scaleY != nil {
 		ch.ClearScaleY()
 	}
@@ -232,7 +220,6 @@ func (ch *Chart) SetScaleY(lines int, color *math32.Color) {
 
 // ClearScaleY removes the Y scale if it was previously set
 func (ch *Chart) ClearScaleY() {
-
 	if ch.scaleY == nil {
 		return
 	}
@@ -256,7 +243,6 @@ func (ch *Chart) ClearScaleY() {
 // stepX is the step to be added to get the next x scale label
 // countStepX is the number of elements of the data buffer for each line step
 func (ch *Chart) SetRangeX(firstX float32, stepX float32, countStepX float32) {
-
 	ch.firstX = firstX
 	ch.stepX = stepX
 	ch.countStepX = countStepX
@@ -265,7 +251,6 @@ func (ch *Chart) SetRangeX(firstX float32, stepX float32, countStepX float32) {
 
 // SetRangeY sets the minimum and maximum values of the y scale
 func (ch *Chart) SetRangeY(min float32, max float32) {
-
 	if ch.autoY {
 		return
 	}
@@ -276,7 +261,6 @@ func (ch *Chart) SetRangeY(min float32, max float32) {
 
 // SetRangeYauto sets the state of the auto
 func (ch *Chart) SetRangeYauto(auto bool) {
-
 	ch.autoY = auto
 	if !auto {
 		return
@@ -286,13 +270,11 @@ func (ch *Chart) SetRangeYauto(auto bool) {
 
 // RangeY returns the current y range
 func (ch *Chart) RangeY() (minY, maxY float32) {
-
 	return ch.minY, ch.maxY
 }
 
 // AddLineGraph adds a line graph to the chart
 func (ch *Chart) AddLineGraph(color *math32.Color, data []float32) *Graph {
-
 	graph := newGraph(ch, color, data)
 	ch.graphs = append(ch.graphs, graph)
 	ch.Add(graph)
@@ -303,7 +285,6 @@ func (ch *Chart) AddLineGraph(color *math32.Color, data []float32) *Graph {
 
 // RemoveGraph removes and disposes of the specified graph from the chart
 func (ch *Chart) RemoveGraph(g *Graph) {
-
 	ch.Remove(g)
 	g.Dispose()
 	for pos, current := range ch.graphs {
@@ -322,7 +303,6 @@ func (ch *Chart) RemoveGraph(g *Graph) {
 
 // updateLabelsX updates the X scale labels text
 func (ch *Chart) updateLabelsX() {
-
 	if ch.scaleX == nil {
 		return
 	}
@@ -339,7 +319,6 @@ func (ch *Chart) updateLabelsX() {
 
 // updateLabelsY updates the Y scale labels text and positions
 func (ch *Chart) updateLabelsY() {
-
 	if ch.scaleY == nil {
 		return
 	}
@@ -368,7 +347,6 @@ func (ch *Chart) updateLabelsY() {
 
 // calcRangeY calculates the minimum and maximum y values for all graphs
 func (ch *Chart) calcRangeY() {
-
 	if !ch.autoY || len(ch.graphs) == 0 {
 		return
 	}
@@ -393,7 +371,6 @@ func (ch *Chart) calcRangeY() {
 // updateGraphs should be called when the range the scales change or
 // any graph data changes
 func (ch *Chart) updateGraphs() {
-
 	ch.calcRangeY()
 	ch.updateLabelsX()
 	ch.updateLabelsY()
@@ -405,13 +382,11 @@ func (ch *Chart) updateGraphs() {
 
 // onResize process OnResize events for this chart
 func (ch *Chart) onResize(evname string, ev interface{}) {
-
 	ch.recalc()
 }
 
 // recalc recalculates the positions of the inner panels
 func (ch *Chart) recalc() {
-
 	// Center title position
 	if ch.title != nil {
 		xpos := (ch.ContentWidth() - ch.title.width) / 2
@@ -451,7 +426,6 @@ type chartScaleX struct {
 // newChartScaleX creates and returns a pointer to a new chartScaleX for the specified
 // chart, number of lines and color
 func newChartScaleX(chart *Chart, lines int, color *math32.Color) *chartScaleX {
-
 	sx := new(chartScaleX)
 	sx.chart = chart
 	sx.lines = lines
@@ -487,7 +461,6 @@ func newChartScaleX(chart *Chart, lines int, color *math32.Color) *chartScaleX {
 
 // recalc recalculates the position and size of this scale inside its parent
 func (sx *chartScaleX) recalc() {
-
 	py := sx.chart.top
 	if sx.chart.title != nil {
 		py += sx.chart.title.Height()
@@ -500,7 +473,6 @@ func (sx *chartScaleX) recalc() {
 // It overrides the original panel RenderSetup
 // Calculates the model matrix and transfer to OpenGL.
 func (sx *chartScaleX) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-
 	// Sets model matrix
 	var mm math32.Matrix4
 	sx.SetModelMatrix(gs, &mm)
@@ -528,7 +500,6 @@ type chartScaleY struct {
 // newChartScaleY creates and returns a pointer to a new chartScaleY for the specified
 // chart, number of lines and color
 func newChartScaleY(chart *Chart, lines int, color *math32.Color) *chartScaleY {
-
 	if lines < 2 {
 		lines = 2
 	}
@@ -570,7 +541,6 @@ func newChartScaleY(chart *Chart, lines int, color *math32.Color) *chartScaleY {
 
 // recalc recalculates the position and size of this scale inside its parent
 func (sy *chartScaleY) recalc() {
-
 	py := sy.chart.top
 	if sy.chart.title != nil {
 		py += sy.chart.title.Height()
@@ -583,7 +553,6 @@ func (sy *chartScaleY) recalc() {
 // It overrides the original panel RenderSetup
 // Calculates the model matrix and transfer to OpenGL.
 func (sy *chartScaleY) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-
 	// Sets model matrix
 	var mm math32.Matrix4
 	sy.SetModelMatrix(gs, &mm)
@@ -613,7 +582,6 @@ type Graph struct {
 
 // newGraph creates and returns a pointer to a new graph for the specified chart
 func newGraph(chart *Chart, color *math32.Color, data []float32) *Graph {
-
 	lg := new(Graph)
 	lg.uniBounds.Init("Bounds")
 	lg.chart = chart
@@ -638,26 +606,22 @@ func newGraph(chart *Chart, color *math32.Color, data []float32) *Graph {
 
 // SetColor sets the color of the graph
 func (lg *Graph) SetColor(color *math32.Color) {
-
 	lg.color = *color
 }
 
 // SetData sets the graph data
 func (lg *Graph) SetData(data []float32) {
-
 	lg.data = data
 	lg.updateData()
 }
 
 // SetLineWidth sets the graph line width
 func (lg *Graph) SetLineWidth(width float32) {
-
 	lg.mat.SetLineWidth(width)
 }
 
 // updateData regenerates the lines for the current data
 func (lg *Graph) updateData() {
-
 	lines := 1
 	if lg.chart.scaleX != nil {
 		lines = lg.chart.scaleX.lines
@@ -678,7 +642,6 @@ func (lg *Graph) updateData() {
 
 // recalc recalculates the position and width of the this panel
 func (lg *Graph) recalc() {
-
 	py := lg.chart.top
 	if lg.chart.title != nil {
 		py += lg.chart.title.Height()
@@ -694,7 +657,6 @@ func (lg *Graph) recalc() {
 // It overrides the original panel RenderSetup
 // Calculates the model matrix and transfer to OpenGL.
 func (lg *Graph) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-
 	// Sets model matrix
 	var mm math32.Matrix4
 	lg.SetModelMatrix(gs, &mm)
@@ -717,7 +679,6 @@ type chartMaterial struct {
 }
 
 func (cm *chartMaterial) Init(color *math32.Color) {
-
 	cm.Material.Init()
 	cm.SetShader("shaderChart")
 	cm.SetShaderUnique(true)
@@ -726,7 +687,6 @@ func (cm *chartMaterial) Init(color *math32.Color) {
 }
 
 func (cm *chartMaterial) RenderSetup(gs *gls.GLS) {
-
 	cm.Material.RenderSetup(gs)
 	gs.Uniform3f(cm.uniColor.Location(gs), cm.color.R, cm.color.G, cm.color.B)
 }
@@ -744,7 +704,6 @@ uniform vec3 MatColor;
 out vec3 Color;
 
 void main() {
-
     Color = MatColor;
 
     // Set position
@@ -768,7 +727,6 @@ uniform vec4 Bounds;
 out vec4 FragColor;
 
 void main() {
-
     // Discard fragment outside of the received bounds in OpenGL window pixel coordinates
     // Bounds[0] - x
     // Bounds[1] - y

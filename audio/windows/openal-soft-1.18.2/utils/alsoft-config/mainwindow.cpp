@@ -15,7 +15,6 @@
 #include "ui_mainwindow.h"
 
 namespace {
-
 static const struct {
     char backend_name[16];
     char full_string[32];

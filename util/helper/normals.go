@@ -23,7 +23,6 @@ type Normals struct {
 
 // NewNormals creates a normals helper for the specified IGraphic, with the specified size, color, and lineWidth.
 func NewNormals(ig graphic.IGraphic, size float32, color *math32.Color, lineWidth float32) *Normals {
-
 	// Creates new Normals helper
 	nh := new(Normals)
 	nh.size = size
@@ -57,7 +56,6 @@ func NewNormals(ig graphic.IGraphic, size float32, color *math32.Color, lineWidt
 // Update should be called in the render loop to
 // update the normals based on the target object.
 func (nh *Normals) Update() {
-
 	var v1 math32.Vector3
 	var v2 math32.Vector3
 	var normalMatrix math32.Matrix3

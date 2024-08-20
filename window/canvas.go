@@ -345,7 +345,6 @@ type WebGlCanvas struct {
 // If canvasId is provided, the pre-existing WebGlCanvas with that id is used.
 // If canvasId is the empty string then it creates a new WebGL canvas.
 func Init(canvasId string) error {
-
 	// Panic if already created
 	if win != nil {
 		panic(fmt.Errorf("can only call window.Init() once"))
@@ -494,7 +493,6 @@ func Init(canvasId string) error {
 
 // getModifiers extracts a ModifierKey bitmask from a Javascript event object.
 func getModifiers(event js.Value) ModifierKey {
-
 	shiftKey := event.Get("shiftKey").Bool()
 	ctrlKey := event.Get("ctrlKey").Bool()
 	altKey := event.Get("altKey").Bool()
@@ -517,33 +515,28 @@ func getModifiers(event js.Value) ModifierKey {
 
 // Canvas returns the associated WebGL WebGlCanvas.
 func (w *WebGlCanvas) Canvas() js.Value {
-
 	return w.canvas
 }
 
 // Gls returns the associated OpenGL state
 func (w *WebGlCanvas) Gls() *gls.GLS {
-
 	return w.gls
 }
 
 // FullScreen returns whether this canvas is fullscreen
 func (w *WebGlCanvas) FullScreen() bool {
-
 	// TODO
 	return false
 }
 
 // SetFullScreen sets this window full screen state for the primary monitor
 func (w *WebGlCanvas) SetFullScreen(full bool) {
-
 	// TODO
 	// Make it so that the first user interaction (e.g. click) should set the canvas as fullscreen.
 }
 
 // Destroy destroys the WebGL canvas and removes all event listeners.
 func (w *WebGlCanvas) Destroy() {
-
 	// Remove event listeners
 	w.canvas.Set("oncontextmenu", js.Null())
 	js.Global().Call("removeEventListener", "keydown", w.keyDown)
@@ -571,47 +564,40 @@ func (w *WebGlCanvas) Destroy() {
 
 // GetFramebufferSize returns the framebuffer size.
 func (w *WebGlCanvas) GetFramebufferSize() (width int, height int) {
-
 	// TODO device pixel ratio
 	return w.canvas.Get("width").Int(), w.canvas.Get("height").Int()
 }
 
 // GetSize returns this window's size in screen coordinates.
 func (w *WebGlCanvas) GetSize() (width int, height int) {
-
 	return w.canvas.Get("width").Int(), w.canvas.Get("height").Int()
 }
 
 // SetSize sets the size, in screen coordinates, of the canvas.
 func (w *WebGlCanvas) SetSize(width int, height int) {
-
 	w.canvas.Set("width", width)
 	w.canvas.Set("height", height)
 }
 
 // Scale returns this window's DPI scale factor (FramebufferSize / Size)
 func (w *WebGlCanvas) GetScale() (x float64, y float64) {
-
 	// TODO device pixel ratio
 	return 1, 1
 }
 
 // CreateCursor creates a new custom cursor and returns an int handle.
 func (w *WebGlCanvas) CreateCursor(imgFile string, xhot, yhot int) (Cursor, error) {
-
 	// TODO
 	return 0, nil
 }
 
 // SetCursor sets the window's cursor to a standard one
 func (w *WebGlCanvas) SetCursor(cursor Cursor) {
-
 	// TODO
 }
 
 // DisposeAllCursors deletes all existing custom cursors.
 func (w *WebGlCanvas) DisposeAllCustomCursors() {
-
 	// TODO
 }
 

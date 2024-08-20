@@ -117,7 +117,6 @@ var templData templInfo // global template data
 var logger *log.Logger  // global logger
 
 func main() {
-
 	// Parse command line parameters
 	flag.Usage = usage
 	flag.Parse()
@@ -149,7 +148,6 @@ func main() {
 
 // processDir processes recursively all shaders files in the specified directory
 func processDir(dir string, include bool) {
-
 	// Open directory to process
 	f, err := os.Open(dir)
 	if err != nil {
@@ -182,7 +180,6 @@ func processDir(dir string, include bool) {
 // If the include flag is true the file is an include file otherwise it
 // it a shader
 func processFile(file string, include bool) {
-
 	// Ignore file if it has not the shader extension
 	fext := filepath.Ext(file)
 	if fext != SHADEREXT {
@@ -254,7 +251,6 @@ func processFile(file string, include bool) {
 
 // generate generates output go file with shaders sources from TEMPLATE
 func generate(file string) {
-
 	if *oVerbose {
 		logger.Printf("Generating: %s", file)
 	}
@@ -290,7 +286,6 @@ func generate(file string) {
 
 // usage shows the application usage
 func usage() {
-
 	fmt.Fprintf(os.Stderr, "%s v%d.%d\n", PROGNAME, VMAJOR, VMINOR)
 	fmt.Fprintf(os.Stderr, "usage: %s [options]\n", strings.ToLower(PROGNAME))
 	flag.PrintDefaults()

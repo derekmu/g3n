@@ -10,7 +10,6 @@ flat in mat2 Rotation;
 out vec4 FragColor;
 
 void main() {
-
     // Compute final texture color
     vec4 texMixed = vec4(1);
     #if MAT_TEXTURES > 0

@@ -19,7 +19,6 @@ type LibraryVisualScenes struct {
 
 // Dump prints out information about the LibraryVisualScenes
 func (lv *LibraryVisualScenes) Dump(out io.Writer, indent int) {
-
 	if lv == nil {
 		return
 	}
@@ -42,7 +41,6 @@ type VisualScene struct {
 
 // Dump prints out information about the VisualScene
 func (vs *VisualScene) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sVisualScene id:%s name:%s\n", sIndent(indent), vs.Id, vs.Name)
 	for _, n := range vs.Node {
 		n.Dump(out, indent+step)
@@ -63,7 +61,6 @@ type Node struct {
 
 // Dump prints out information about the Node
 func (n *Node) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sNode id:%s name:%s sid:%s type:%s layer:%v\n",
 		sIndent(indent), n.Id, n.Name, n.Sid, n.Type, n.Layer)
 	// Dump transformation elements
@@ -98,7 +95,6 @@ type Matrix struct {
 
 // Dump prints out information about the Matrix
 func (m *Matrix) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sMatrix sid:%s data:%v\n", sIndent(indent), m.Sid, m.Data)
 }
 
@@ -110,7 +106,6 @@ type Rotate struct {
 
 // Dump prints out information about the Rotate
 func (r *Rotate) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sRotate sid:%s data:%v\n", sIndent(indent), r.Sid, r.Data)
 }
 
@@ -122,7 +117,6 @@ type Translate struct {
 
 // Dump prints out information about the Translate
 func (t *Translate) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sTranslate sid:%s data:%v\n", sIndent(indent), t.Sid, t.Data)
 }
 
@@ -134,7 +128,6 @@ type Scale struct {
 
 // Dump prints out information about the Scale
 func (s *Scale) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sScale sid:%s data:%v\n", sIndent(indent), s.Sid, s.Data)
 }
 
@@ -147,7 +140,6 @@ type InstanceGeometry struct {
 
 // Dump prints out information about the InstanceGeometry
 func (ig *InstanceGeometry) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sInstanceGeometry url:%s name:%s\n", sIndent(indent), ig.Url, ig.Name)
 	if ig.BindMaterial != nil {
 		ig.BindMaterial.Dump(out, indent+step)
@@ -164,7 +156,6 @@ type BindMaterial struct {
 
 // Dump prints out information about the BindMaterial
 func (bm *BindMaterial) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sBindMaterial\n", sIndent(indent))
 	ind := indent + step
 	fmt.Fprintf(out, "%sTechniqueCommon\n", sIndent(ind))
@@ -186,7 +177,6 @@ type InstanceMaterial struct {
 
 // Dump prints out information about the InstanceMaterial
 func (im *InstanceMaterial) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sInstanceMaterial sid:%s name:%s target:%s symbol:%s\n",
 		sIndent(indent), im.Sid, im.Name, im.Target, im.Symbol)
 	ind := indent + step
@@ -210,13 +200,11 @@ type BindVertexInput struct {
 
 // Dump prints out information about the BindVertexInput
 func (bvi *BindVertexInput) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sBindVertexInput semantic:%s InputSemantic:%s InputSet:%d\n",
 		sIndent(indent), bvi.Semantic, bvi.InputSemantic, bvi.InputSet)
 }
 
 func (d *Decoder) decLibraryVisualScenes(start xml.StartElement, dom *Collada) error {
-
 	lv := new(LibraryVisualScenes)
 	dom.LibraryVisualScenes = lv
 	for {
@@ -237,7 +225,6 @@ func (d *Decoder) decLibraryVisualScenes(start xml.StartElement, dom *Collada) e
 }
 
 func (d *Decoder) decVisualScene(vsStart xml.StartElement, lv *LibraryVisualScenes) error {
-
 	// Get attributes and appends new visual scene
 	vs := &VisualScene{}
 	vs.Id = findAttrib(vsStart, "id").Value
@@ -263,7 +250,6 @@ func (d *Decoder) decVisualScene(vsStart xml.StartElement, lv *LibraryVisualScen
 }
 
 func (d *Decoder) decNode(nodeStart xml.StartElement, parent *[]*Node) error {
-
 	// Get node attributes and appends the new node to its parent
 	n := &Node{}
 	n.Id = findAttrib(nodeStart, "id").Value
@@ -327,7 +313,6 @@ func (d *Decoder) decNode(nodeStart xml.StartElement, parent *[]*Node) error {
 }
 
 func (d *Decoder) decMatrix(cdata []byte, n *Node) error {
-
 	mat := new(Matrix)
 	n.TransformationElements = append(n.TransformationElements, mat)
 
@@ -339,7 +324,6 @@ func (d *Decoder) decMatrix(cdata []byte, n *Node) error {
 }
 
 func (d *Decoder) decRotate(cdata []byte, n *Node) error {
-
 	rot := new(Rotate)
 	n.TransformationElements = append(n.TransformationElements, rot)
 
@@ -351,7 +335,6 @@ func (d *Decoder) decRotate(cdata []byte, n *Node) error {
 }
 
 func (d *Decoder) decTranslate(cdata []byte, n *Node) error {
-
 	tr := new(Translate)
 	n.TransformationElements = append(n.TransformationElements, tr)
 
@@ -363,7 +346,6 @@ func (d *Decoder) decTranslate(cdata []byte, n *Node) error {
 }
 
 func (d *Decoder) decScale(cdata []byte, n *Node) error {
-
 	s := new(Scale)
 	n.TransformationElements = append(n.TransformationElements, s)
 
@@ -375,7 +357,6 @@ func (d *Decoder) decScale(cdata []byte, n *Node) error {
 }
 
 func (d *Decoder) decInstanceGeometry(start xml.StartElement, n *Node) error {
-
 	// Creates new InstanceGeometry,sets its attributes and associates with node
 	ig := new(InstanceGeometry)
 	ig.Url = findAttrib(start, "url").Value
@@ -401,7 +382,6 @@ func (d *Decoder) decInstanceGeometry(start xml.StartElement, n *Node) error {
 }
 
 func (d *Decoder) decBindMaterial(start xml.StartElement, dest **BindMaterial) error {
-
 	*dest = new(BindMaterial)
 	for {
 		// Get next child element
@@ -420,7 +400,6 @@ func (d *Decoder) decBindMaterial(start xml.StartElement, dest **BindMaterial) e
 }
 
 func (d *Decoder) decBindMaterialTechniqueCommon(start xml.StartElement, bm *BindMaterial) error {
-
 	for {
 		// Get next child element
 		child, _, err := d.decNextChild(start)
@@ -438,7 +417,6 @@ func (d *Decoder) decBindMaterialTechniqueCommon(start xml.StartElement, bm *Bin
 }
 
 func (d *Decoder) decInstanceMaterial(start xml.StartElement, bm *BindMaterial) error {
-
 	im := new(InstanceMaterial)
 	im.Sid = findAttrib(start, "sid").Value
 	im.Name = findAttrib(start, "name").Value

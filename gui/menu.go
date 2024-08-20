@@ -139,7 +139,6 @@ var mapKeyText = map[window.Key]string{
 
 // NewMenuBar creates and returns a pointer to a new empty menu bar
 func NewMenuBar() *Menu {
-
 	m := NewMenu()
 	m.bar = true
 	m.Panel.Subscribe(OnMouseDownOut, m.onMouse)
@@ -148,7 +147,6 @@ func NewMenuBar() *Menu {
 
 // NewMenu creates and returns a pointer to a new empty vertical menu
 func NewMenu() *Menu {
-
 	m := new(Menu)
 	m.Panel.Initialize(m, 0, 0)
 	m.styles = &StyleDefault().Menu
@@ -162,7 +160,6 @@ func NewMenu() *Menu {
 // AddOption creates and adds a new menu item to this menu with the
 // specified text and returns the pointer to the created menu item.
 func (m *Menu) AddOption(text string) *MenuItem {
-
 	mi := newMenuItem(text, m.styles.Item)
 	m.Panel.Add(mi)
 	m.items = append(m.items, mi)
@@ -173,7 +170,6 @@ func (m *Menu) AddOption(text string) *MenuItem {
 
 // AddSeparator creates and adds a new separator to the menu
 func (m *Menu) AddSeparator() *MenuItem {
-
 	mi := newMenuItem("", m.styles.Item)
 	m.Panel.Add(mi)
 	m.items = append(m.items, mi)
@@ -186,7 +182,6 @@ func (m *Menu) AddSeparator() *MenuItem {
 // specified text and sub menu.
 // Returns the pointer to the created menu item.
 func (m *Menu) AddMenu(text string, subm *Menu) *MenuItem {
-
 	mi := newMenuItem(text, m.styles.Item)
 	mi.zLayerDelta = 1
 	m.Panel.Add(mi)
@@ -209,12 +204,10 @@ func (m *Menu) AddMenu(text string, subm *Menu) *MenuItem {
 
 // RemoveItem removes the specified menu item from this menu
 func (m *Menu) RemoveItem(mi *MenuItem) {
-
 }
 
 // onKey process subscribed key events
 func (m *Menu) onKey(evname string, ev interface{}) {
-
 	sel := m.selectedPos()
 	kev := ev.(*window.KeyEvent)
 	switch kev.Key {
@@ -332,7 +325,6 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 
 // onMouse process subscribed mouse events for the menu
 func (m *Menu) onMouse(evname string, ev interface{}) {
-
 	// Clear menu bar after some time, to give time for menu items
 	// to receive onMouse events.
 	Manager().SetTimeout(1*time.Millisecond, nil, func(arg interface{}) {
@@ -343,7 +335,6 @@ func (m *Menu) onMouse(evname string, ev interface{}) {
 
 // onResize process menu onResize events
 func (m *Menu) onResize(evname string, ev interface{}) {
-
 	if m.bar {
 		m.recalcBar(false)
 	}
@@ -352,7 +343,6 @@ func (m *Menu) onResize(evname string, ev interface{}) {
 // checkKey checks if this menu and any of its children contains
 // a menu item with the specified key shortcut
 func (m *Menu) checkKey(kev *window.KeyEvent) *MenuItem {
-
 	for i := 0; i < len(m.items); i++ {
 		mi := m.items[i]
 		if mi.keyCode == kev.Key && mi.keyMods == kev.Mods {
@@ -371,7 +361,6 @@ func (m *Menu) checkKey(kev *window.KeyEvent) *MenuItem {
 // setSelectedPos sets the menu item at the specified position as selected
 // and all others as not selected.
 func (m *Menu) setSelectedPos(pos int) {
-
 	for i := 0; i < len(m.items); i++ {
 		mi := m.items[i]
 		if i == pos {
@@ -390,7 +379,6 @@ func (m *Menu) setSelectedPos(pos int) {
 // setSelectedItem sets the specified menu item as selected
 // and all others as not selected
 func (m *Menu) setSelectedItem(mitem *MenuItem) {
-
 	for i := 0; i < len(m.items); i++ {
 		mi := m.items[i]
 		if mi == mitem {
@@ -409,7 +397,6 @@ func (m *Menu) setSelectedItem(mitem *MenuItem) {
 // selectedPos returns the position of the current selected menu item
 // Returns -1 if no item selected
 func (m *Menu) selectedPos() int {
-
 	for i := 0; i < len(m.items); i++ {
 		mi := m.items[i]
 		if mi.selected {
@@ -422,7 +409,6 @@ func (m *Menu) selectedPos() int {
 // nextItem returns the position of the next enabled option from the
 // specified position
 func (m *Menu) nextItem(pos int) int {
-
 	res := 0
 	for i := pos + 1; i < len(m.items); i++ {
 		mi := m.items[i]
@@ -438,7 +424,6 @@ func (m *Menu) nextItem(pos int) int {
 // prevItem returns the position of previous enabled menu item from
 // the specified position
 func (m *Menu) prevItem(pos int) int {
-
 	res := len(m.items) - 1
 	for i := pos - 1; i >= 0 && i < len(m.items); i-- {
 		mi := m.items[i]
@@ -453,20 +438,17 @@ func (m *Menu) prevItem(pos int) int {
 
 // update updates the menu visual state
 func (m *Menu) update() {
-
 	m.applyStyle(&m.styles.Body.Normal)
 }
 
 // applyStyle applies the specified menu body style
 func (m *Menu) applyStyle(mbs *MenuBodyStyle) {
-
 	m.Panel.ApplyStyle(&mbs.PanelStyle)
 }
 
 // recalc recalculates the positions of this menu internal items
 // and the content width and height of the menu
 func (m *Menu) recalc() {
-
 	if m.bar {
 		m.recalcBar(true)
 		return
@@ -522,7 +504,6 @@ func (m *Menu) recalc() {
 // recalcBar recalculates the positions of this MenuBar internal items
 // If setSize is true it also sets the size of the menu bar
 func (m *Menu) recalcBar(setSize bool) {
-
 	// Calculate the maximum item height
 	height := float32(0)
 	for i := 0; i < len(m.items); i++ {
@@ -558,7 +539,6 @@ func (m *Menu) recalcBar(setSize bool) {
 // newMenuItem creates and returns a pointer to a new menu item
 // with the specified text.
 func newMenuItem(text string, styles *MenuItemStyles) *MenuItem {
-
 	mi := new(MenuItem)
 	mi.Panel.Initialize(mi, 0, 0)
 	mi.styles = styles
@@ -576,7 +556,6 @@ func newMenuItem(text string, styles *MenuItemStyles) *MenuItem {
 // SetIcon sets the left icon of this menu item
 // If an image was previously set it is replaced by this icon
 func (mi *MenuItem) SetIcon(icon string) *MenuItem {
-
 	// Remove and dispose previous icon
 	if mi.licon != nil {
 		mi.Panel.Remove(mi.licon)
@@ -593,12 +572,10 @@ func (mi *MenuItem) SetIcon(icon string) *MenuItem {
 // SetImage sets the left image of this menu item
 // If an icon was previously set it is replaced by this image
 func (mi *MenuItem) SetImage(img *Image) {
-
 }
 
 // SetText sets the text of this menu item
 func (mi *MenuItem) SetText(text string) *MenuItem {
-
 	if mi.label == nil {
 		return mi
 	}
@@ -610,7 +587,6 @@ func (mi *MenuItem) SetText(text string) *MenuItem {
 
 // SetShortcut sets the keyboard shortcut of this menu item
 func (mi *MenuItem) SetShortcut(mods window.ModifierKey, key window.Key) *MenuItem {
-
 	if mapKeyText[key] == "" {
 		panic("Invalid menu shortcut key")
 	}
@@ -654,13 +630,11 @@ func (mi *MenuItem) SetShortcut(mods window.ModifierKey, key window.Key) *MenuIt
 
 // SetSubmenu sets an associated sub menu item for this menu item
 func (mi *MenuItem) SetSubmenu(smi *MenuItem) *MenuItem {
-
 	return mi
 }
 
 // SetEnabled sets the enabled state of this menu item
 func (mi *MenuItem) SetEnabled(enabled bool) {
-
 	mi.disabled = !enabled
 	mi.update()
 }
@@ -668,20 +642,17 @@ func (mi *MenuItem) SetEnabled(enabled bool) {
 // SetId sets this menu item string id which can be used to identify
 // the selected menu option.
 func (mi *MenuItem) SetId(id string) *MenuItem {
-
 	mi.id = id
 	return mi
 }
 
 // Id returns this menu item current id
 func (mi *MenuItem) Id() string {
-
 	return mi.id
 }
 
 // IdPath returns a slice with the path of menu items ids to this menu item
 func (mi *MenuItem) IdPath() []string {
-
 	// Builds lists of menu items ids
 	path := []string{mi.id}
 	menu := mi.menu
@@ -699,7 +670,6 @@ func (mi *MenuItem) IdPath() []string {
 
 // onCursor processes subscribed cursor events over the menu item
 func (mi *MenuItem) onCursor(evname string, ev interface{}) {
-
 	switch evname {
 	case OnCursorEnter:
 		mi.menu.setSelectedItem(mi)
@@ -708,7 +678,6 @@ func (mi *MenuItem) onCursor(evname string, ev interface{}) {
 
 // onMouse processes subscribed mouse events over the menu item
 func (mi *MenuItem) onMouse(evname string, ev interface{}) {
-
 	switch evname {
 	case OnMouseDown:
 		// MenuBar option
@@ -730,7 +699,6 @@ func (mi *MenuItem) onMouse(evname string, ev interface{}) {
 
 // activate activates this menu item dispatching OnClick events
 func (mi *MenuItem) activate() {
-
 	rm := mi.rootMenu()
 	if rm.bar {
 		rm.autoOpen = false
@@ -742,7 +710,6 @@ func (mi *MenuItem) activate() {
 
 // rootMenu returns the root menu for this menu item
 func (mi *MenuItem) rootMenu() *Menu {
-
 	root := mi.menu
 	for root.mitem != nil {
 		root = root.mitem.menu
@@ -753,7 +720,6 @@ func (mi *MenuItem) rootMenu() *Menu {
 // dispatchAll dispatch the specified event for this menu item
 // and all its parents
 func (mi *MenuItem) dispatchAll(evname string, ev interface{}) {
-
 	mi.Dispatch(evname, ev)
 	pmenu := mi.menu
 	for {
@@ -767,7 +733,6 @@ func (mi *MenuItem) dispatchAll(evname string, ev interface{}) {
 
 // update updates the menu item visual state
 func (mi *MenuItem) update() {
-
 	// Separator
 	if mi.label == nil {
 		mi.applyStyle(&mi.styles.Separator)
@@ -802,7 +767,6 @@ func (mi *MenuItem) update() {
 
 // applyStyle applies the specified menu item style
 func (mi *MenuItem) applyStyle(mis *MenuItemStyle) {
-
 	mi.Panel.ApplyStyle(&mis.PanelStyle)
 	if mi.licon != nil {
 		mi.licon.SetPaddingsFrom(&mis.IconPaddings)
@@ -820,7 +784,6 @@ func (mi *MenuItem) applyStyle(mis *MenuItemStyle) {
 
 // recalc recalculates the positions of this menu item internal panels
 func (mi *MenuItem) recalc(iconWidth, labelWidth, shortcutWidth float32) {
-
 	// Separator
 	if mi.label == nil {
 		return
@@ -840,7 +803,6 @@ func (mi *MenuItem) recalc(iconWidth, labelWidth, shortcutWidth float32) {
 
 // minHeight returns the minimum height of this menu item
 func (mi *MenuItem) minHeight() float32 {
-
 	mh := mi.MinHeight()
 	if mi.label == nil {
 		return mh + 1
@@ -851,7 +813,6 @@ func (mi *MenuItem) minHeight() float32 {
 
 // minWidth returns the minimum width of this menu item
 func (mi *MenuItem) minWidth() float32 {
-
 	mw := mi.MinWidth()
 	if mi.label == nil {
 		return mw + 1

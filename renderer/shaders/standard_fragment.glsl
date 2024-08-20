@@ -13,7 +13,6 @@ in vec2 FragTexcoord;// Fragment texture coordinates
 out vec4 FragColor;
 
 void main() {
-
     // Compute final texture color
     vec4 texMixed = vec4(1);
     #if MAT_TEXTURES > 0

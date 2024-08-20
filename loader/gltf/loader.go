@@ -14,6 +14,7 @@ import (
 	"image/draw"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -33,7 +34,6 @@ import (
 // ParseJSON parses the glTF data from the specified JSON file
 // and returns a pointer to the parsed structure.
 func ParseJSON(filename string) (*GLTF, error) {
-
 	// Open file
 	f, err := os.Open(filename)
 	if err != nil {
@@ -48,7 +48,6 @@ func ParseJSON(filename string) (*GLTF, error) {
 // ParseJSONReader parses the glTF JSON data from the specified reader
 // and returns a pointer to the parsed structure
 func ParseJSONReader(r io.Reader, path string) (*GLTF, error) {
-
 	g := new(GLTF)
 	g.path = path
 
@@ -66,7 +65,6 @@ func ParseJSONReader(r io.Reader, path string) (*GLTF, error) {
 // ParseBin parses the glTF data from the specified binary file
 // and returns a pointer to the parsed structure.
 func ParseBin(filename string) (*GLTF, error) {
-
 	// Open file
 	f, err := os.Open(filename)
 	if err != nil {
@@ -81,7 +79,6 @@ func ParseBin(filename string) (*GLTF, error) {
 // ParseBinReader parses the glTF data from the specified binary reader
 // and returns a pointer to the parsed structure
 func ParseBinReader(r io.Reader, path string) (*GLTF, error) {
-
 	// Read header
 	var header GLBHeader
 	err := binary.Read(r, binary.LittleEndian, &header)
@@ -123,7 +120,6 @@ func ParseBinReader(r io.Reader, path string) (*GLTF, error) {
 
 // readChunk reads a GLB chunk with the specified type and returns the data in a byte array.
 func readChunk(r io.Reader, chunkType uint32) ([]byte, error) {
-
 	// Read chunk header
 	var chunk GLBChunk
 	err := binary.Read(r, binary.LittleEndian, &chunk)
@@ -152,12 +148,11 @@ func readChunk(r io.Reader, chunkType uint32) ([]byte, error) {
 // LoadScene creates a parent Node which contains all nodes contained by
 // the specified scene index from the GLTF Scenes array.
 func (g *GLTF) LoadScene(sceneIdx int) (core.INode, error) {
-
 	// Check if provided scene index is valid
 	if sceneIdx < 0 || sceneIdx >= len(g.Scenes) {
 		return nil, fmt.Errorf("invalid scene index")
 	}
-	log.Debug("Loading Scene %d", sceneIdx)
+	log.Printf("Loading Scene %d", sceneIdx)
 	sceneData := g.Scenes[sceneIdx]
 
 	scene := core.NewNode()
@@ -177,7 +172,6 @@ func (g *GLTF) LoadScene(sceneIdx int) (core.INode, error) {
 // LoadNode creates and returns a new Node described by the specified index
 // in the decoded GLTF Nodes array.
 func (g *GLTF) LoadNode(nodeIdx int) (core.INode, error) {
-
 	// Check if provided node index is valid
 	if nodeIdx < 0 || nodeIdx >= len(g.Nodes) {
 		return nil, fmt.Errorf("invalid node index")
@@ -185,10 +179,10 @@ func (g *GLTF) LoadNode(nodeIdx int) (core.INode, error) {
 	nodeData := g.Nodes[nodeIdx]
 	// Return cached if available
 	if nodeData.cache != nil {
-		log.Debug("Fetching Node %d (cached)", nodeIdx)
+		log.Printf("Fetching Node %d (cached)", nodeIdx)
 		return nodeData.cache, nil
 	}
-	log.Debug("Loading Node %d", nodeIdx)
+	log.Printf("Loading Node %d", nodeIdx)
 
 	var in core.INode
 	var err error
@@ -200,7 +194,6 @@ func (g *GLTF) LoadNode(nodeIdx int) (core.INode, error) {
 		}
 
 		if nodeData.Skin != nil {
-
 			mesh, ok := in.(*graphic.Mesh)
 			if !ok {
 				children := in.GetNode().Children()
@@ -228,7 +221,7 @@ func (g *GLTF) LoadNode(nodeIdx int) (core.INode, error) {
 		}
 		// Other cases, return empty node
 	} else {
-		log.Debug("Empty Node")
+		log.Print("Empty Node")
 		in = core.NewNode()
 	}
 
@@ -272,7 +265,6 @@ func (g *GLTF) LoadNode(nodeIdx int) (core.INode, error) {
 
 // LoadSkin loads the skin with specified index.
 func (g *GLTF) LoadSkin(skinIdx int) (*graphic.Skeleton, error) {
-
 	// Check if provided skin index is valid
 	if skinIdx < 0 || skinIdx >= len(g.Skins) {
 		return nil, fmt.Errorf("invalid skin index")
@@ -280,10 +272,10 @@ func (g *GLTF) LoadSkin(skinIdx int) (*graphic.Skeleton, error) {
 	skinData := g.Skins[skinIdx]
 	// Return cached if available
 	if skinData.cache != nil {
-		log.Debug("Fetching Skin %d (cached)", skinIdx)
+		log.Printf("Fetching Skin %d (cached)", skinIdx)
 		return skinData.cache, nil
 	}
-	log.Debug("Loading Skin %d", skinIdx)
+	log.Printf("Loading Skin %d", skinIdx)
 
 	// Create Skeleton and set it on Rigged mesh
 	skeleton := graphic.NewSkeleton()
@@ -314,7 +306,6 @@ func (g *GLTF) LoadSkin(skinIdx int) (*graphic.Skeleton, error) {
 // LoadAnimationByName loads the animations with specified name.
 // If there are multiple animations with the same name it loads the first occurrence.
 func (g *GLTF) LoadAnimationByName(animName string) (*animation.Animation, error) {
-
 	for i := range g.Animations {
 		if g.Animations[i].Name == animName {
 			return g.LoadAnimation(i)
@@ -326,18 +317,16 @@ func (g *GLTF) LoadAnimationByName(animName string) (*animation.Animation, error
 // LoadAnimation creates an Animation for the specified
 // animation index from the GLTF Animations array.
 func (g *GLTF) LoadAnimation(animIdx int) (*animation.Animation, error) {
-
 	// Check if provided animation index is valid
 	if animIdx < 0 || animIdx >= len(g.Animations) {
 		return nil, fmt.Errorf("invalid animation index")
 	}
-	log.Debug("Loading Animation %d", animIdx)
+	log.Printf("Loading Animation %d", animIdx)
 	animData := g.Animations[animIdx]
 
 	anim := animation.NewAnimation()
 	anim.SetName(animData.Name)
 	for i := 0; i < len(animData.Channels); i++ {
-
 		chData := animData.Channels[i]
 		target := chData.Target
 		sampler := animData.Samplers[chData.Sampler]
@@ -393,12 +382,11 @@ func (g *GLTF) LoadAnimation(animIdx int) (*animation.Animation, error) {
 // LoadCamera creates and returns a Camera Node
 // from the specified GLTF.Cameras index.
 func (g *GLTF) LoadCamera(camIdx int) (core.INode, error) {
-
 	// Check if provided camera index is valid
 	if camIdx < 0 || camIdx >= len(g.Cameras) {
 		return nil, fmt.Errorf("invalid camera index")
 	}
-	log.Debug("Loading Camera %d", camIdx)
+	log.Printf("Loading Camera %d", camIdx)
 	camData := g.Cameras[camIdx]
 
 	aspect := float32(2) // TODO how to get the current aspect ratio of the viewport from here ?
@@ -430,7 +418,6 @@ func (g *GLTF) LoadCamera(camIdx int) (core.INode, error) {
 // LoadMesh creates and returns a Graphic Node (graphic.Mesh, graphic.Lines, graphic.Points, etc)
 // from the specified GLTF.Meshes index.
 func (g *GLTF) LoadMesh(meshIdx int) (core.INode, error) {
-
 	// Check if provided mesh index is valid
 	if meshIdx < 0 || meshIdx >= len(g.Meshes) {
 		return nil, fmt.Errorf("invalid mesh index")
@@ -442,7 +429,7 @@ func (g *GLTF) LoadMesh(meshIdx int) (core.INode, error) {
 		//log.Debug("Instancing Mesh %d (from cached)", meshIdx)
 		//return meshData.cache, nil
 	}
-	log.Debug("Loading Mesh %d", meshIdx)
+	log.Printf("Loading Mesh %d", meshIdx)
 
 	var err error
 
@@ -451,7 +438,6 @@ func (g *GLTF) LoadMesh(meshIdx int) (core.INode, error) {
 	meshNode = core.NewNode()
 
 	for i := 0; i < len(meshData.Primitives); i++ {
-
 		// Get primitive information
 		p := meshData.Primitives[i]
 
@@ -544,7 +530,6 @@ func (g *GLTF) LoadMesh(meshIdx int) (core.INode, error) {
 
 // loadAttributes loads the provided list of vertex attributes as VBO(s) into the specified geometry.
 func (g *GLTF) loadAttributes(geom *geometry.Geometry, attributes map[string]int, indices math32.ArrayU32) error {
-
 	// Indices of buffer views
 	interleavedVBOs := make(map[int]*gls.VBO, 0)
 
@@ -614,16 +599,14 @@ func (g *GLTF) loadAttributes(geom *geometry.Geometry, attributes map[string]int
 
 // loadIndices loads the indices stored in the specified accessor.
 func (g *GLTF) loadIndices(ai int) (math32.ArrayU32, error) {
-
 	return g.loadAccessorU32(ai, "indices", []string{SCALAR}, []int{UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT}) // TODO verify that it's ELEMENT_ARRAY_BUFFER
 }
 
 // addAttributeToVBO adds the appropriate attribute to the provided vbo based on the glTF attribute name.
 func (g *GLTF) addAttributeToVBO(vbo *gls.VBO, attribName string, byteOffset uint32) {
-
 	aType, ok := AttributeName[attribName]
 	if !ok {
-		log.Warn(fmt.Sprintf("Attribute %v is not supported!", attribName))
+		log.Printf("Attribute %v is not supported!", attribName)
 		return
 	}
 	vbo.AddAttribOffset(aType, byteOffset)
@@ -631,7 +614,6 @@ func (g *GLTF) addAttributeToVBO(vbo *gls.VBO, attribName string, byteOffset uin
 
 // validateAccessorAttribute validates the specified accessor for the given attribute name.
 func (g *GLTF) validateAccessorAttribute(ac Accessor, attribName string) error {
-
 	parts := strings.Split(attribName, "_")
 	semantic := parts[0]
 
@@ -659,7 +641,6 @@ func (g *GLTF) validateAccessorAttribute(ac Accessor, attribName string) error {
 
 // validateAccessor validates the specified attribute accessor with the specified allowed types and component types.
 func (g *GLTF) validateAccessor(ac Accessor, usage string, validTypes []string, validComponentTypes []int) error {
-
 	// Validate accessor type
 	validType := false
 	for _, vType := range validTypes {
@@ -689,13 +670,11 @@ func (g *GLTF) validateAccessor(ac Accessor, usage string, validTypes []string, 
 
 // newDefaultMaterial creates and returns the default material.
 func (g *GLTF) newDefaultMaterial() material.IMaterial {
-
 	return material.NewStandard(&math32.Color{0.5, 0.5, 0.5})
 }
 
 // LoadMaterial creates and returns a new material based on the material data with the specified index.
 func (g *GLTF) LoadMaterial(matIdx int) (material.IMaterial, error) {
-
 	// Check if provided material index is valid
 	if matIdx < 0 || matIdx >= len(g.Materials) {
 		return nil, fmt.Errorf("invalid material index")
@@ -703,10 +682,10 @@ func (g *GLTF) LoadMaterial(matIdx int) (material.IMaterial, error) {
 	matData := g.Materials[matIdx]
 	// Return cached if available
 	if matData.cache != nil {
-		log.Debug("Fetching Material %d (cached)", matIdx)
+		log.Printf("Fetching Material %d (cached)", matIdx)
 		return matData.cache, nil
 	}
-	log.Debug("Loading Material %d", matIdx)
+	log.Printf("Loading Material %d", matIdx)
 
 	var err error
 	var imat material.IMaterial
@@ -736,14 +715,13 @@ func (g *GLTF) LoadMaterial(matIdx int) (material.IMaterial, error) {
 
 // LoadTexture loads the texture specified by its index.
 func (g *GLTF) LoadTexture(texIdx int) (*texture.Texture2D, error) {
-
 	// Check if provided texture index is valid
 	if texIdx < 0 || texIdx >= len(g.Textures) {
 		return nil, fmt.Errorf("invalid texture index")
 	}
 	texData := g.Textures[texIdx]
 	// NOTE: Textures can't be cached because they have their own uniforms
-	log.Debug("Loading Texture %d", texIdx)
+	log.Printf("Loading Texture %d", texIdx)
 
 	// Load texture image
 	img, err := g.LoadImage(texData.Source)
@@ -765,8 +743,7 @@ func (g *GLTF) LoadTexture(texIdx int) (*texture.Texture2D, error) {
 
 // applySamplers applies the specified Sampler to the provided texture.
 func (g *GLTF) applySampler(samplerIdx int, tex *texture.Texture2D) error {
-
-	log.Debug("Applying Sampler %d", samplerIdx)
+	log.Printf("Applying Sampler %d", samplerIdx)
 	// Check if provided sampler index is valid
 	if samplerIdx < 0 || samplerIdx >= len(g.Samplers) {
 		return fmt.Errorf("invalid sampler index")
@@ -807,7 +784,6 @@ func (g *GLTF) applySampler(samplerIdx int, tex *texture.Texture2D) error {
 // LoadImage loads the image specified by the index of GLTF.Images.
 // Image can be loaded from binary chunk file or data URI or external file..
 func (g *GLTF) LoadImage(imgIdx int) (*image.RGBA, error) {
-
 	// Check if provided image index is valid
 	if imgIdx < 0 || imgIdx >= len(g.Images) {
 		return nil, fmt.Errorf("invalid image index")
@@ -815,10 +791,10 @@ func (g *GLTF) LoadImage(imgIdx int) (*image.RGBA, error) {
 	imgData := g.Images[imgIdx]
 	// Return cached if available
 	if imgData.cache != nil {
-		log.Debug("Fetching Image %d (cached)", imgIdx)
+		log.Printf("Fetching Image %d (cached)", imgIdx)
 		return imgData.cache, nil
 	}
-	log.Debug("Loading Image %d", imgIdx)
+	log.Printf("Loading Image %d", imgIdx)
 
 	var data []byte
 	var err error
@@ -862,7 +838,6 @@ func (g *GLTF) LoadImage(imgIdx int) (*image.RGBA, error) {
 
 // bytesToArrayU32 converts a byte array to ArrayU32.
 func (g *GLTF) bytesToArrayU32(data []byte, componentType, count int) (math32.ArrayU32, error) {
-
 	// If component is UNSIGNED_INT nothing to do
 	if componentType == UNSIGNED_INT {
 		arr := (*[1 << 30]uint32)(unsafe.Pointer(&data[0]))[:count]
@@ -892,7 +867,6 @@ func (g *GLTF) bytesToArrayU32(data []byte, componentType, count int) (math32.Ar
 
 // bytesToArrayF32 converts a byte array to ArrayF32.
 func (g *GLTF) bytesToArrayF32(data []byte, componentType, count int) (math32.ArrayF32, error) {
-
 	// If component is UNSIGNED_INT nothing to do
 	if componentType == UNSIGNED_INT {
 		arr := (*[1 << 30]float32)(unsafe.Pointer(&data[0]))[:count]
@@ -922,7 +896,6 @@ func (g *GLTF) bytesToArrayF32(data []byte, componentType, count int) (math32.Ar
 
 // loadAccessorU32 loads data from the specified accessor and performs validation of the Type and ComponentType.
 func (g *GLTF) loadAccessorU32(ai int, usage string, validTypes []string, validComponentTypes []int) (math32.ArrayU32, error) {
-
 	// Get Accessor for the specified index
 	ac := g.Accessors[ai]
 	if ac.BufferView == nil {
@@ -946,7 +919,6 @@ func (g *GLTF) loadAccessorU32(ai int, usage string, validTypes []string, validC
 
 // loadAccessorF32 loads data from the specified accessor and performs validation of the Type and ComponentType.
 func (g *GLTF) loadAccessorF32(ai int, usage string, validTypes []string, validComponentTypes []int) (math32.ArrayF32, error) {
-
 	// Get Accessor for the specified index
 	ac := g.Accessors[ai]
 	if ac.BufferView == nil {
@@ -970,7 +942,6 @@ func (g *GLTF) loadAccessorF32(ai int, usage string, validTypes []string, validC
 
 // loadAccessorBytes returns the base byte array used by an accessor.
 func (g *GLTF) loadAccessorBytes(ac Accessor) ([]byte, error) {
-
 	// Get the Accessor's BufferView
 	if ac.BufferView == nil {
 		return nil, fmt.Errorf("accessor.BufferView == nil NOT SUPPORTED YET") // TODO
@@ -1010,7 +981,6 @@ func (g *GLTF) loadAccessorBytes(ac Accessor) ([]byte, error) {
 
 // isInterleaves returns whether the BufferView used by the provided accessor is interleaved.
 func (g *GLTF) isInterleaved(accessor Accessor) bool {
-
 	// Get the Accessor's BufferView
 	if accessor.BufferView == nil {
 		return false
@@ -1030,7 +1000,6 @@ func (g *GLTF) isInterleaved(accessor Accessor) bool {
 
 // loadBufferView loads and returns a byte slice with data from the specified BufferView.
 func (g *GLTF) loadBufferView(bvIdx int) ([]byte, error) {
-
 	// Check if provided buffer view index is valid
 	if bvIdx < 0 || bvIdx >= len(g.BufferViews) {
 		return nil, fmt.Errorf("invalid buffer view index")
@@ -1038,10 +1007,10 @@ func (g *GLTF) loadBufferView(bvIdx int) ([]byte, error) {
 	bvData := g.BufferViews[bvIdx]
 	// Return cached if available
 	if bvData.cache != nil {
-		log.Debug("Fetching BufferView %d (cached)", bvIdx)
+		log.Printf("Fetching BufferView %d (cached)", bvIdx)
 		return bvData.cache, nil
 	}
-	log.Debug("Loading BufferView %d", bvIdx)
+	log.Printf("Loading BufferView %d", bvIdx)
 
 	// Load buffer view buffer
 	buf, err := g.loadBuffer(bvData.Buffer)
@@ -1066,7 +1035,6 @@ func (g *GLTF) loadBufferView(bvIdx int) ([]byte, error) {
 
 // loadBuffer loads and returns the data from the specified GLTF Buffer index
 func (g *GLTF) loadBuffer(bufIdx int) ([]byte, error) {
-
 	// Check if provided buffer index is valid
 	if bufIdx < 0 || bufIdx >= len(g.Buffers) {
 		return nil, fmt.Errorf("invalid buffer index")
@@ -1074,10 +1042,10 @@ func (g *GLTF) loadBuffer(bufIdx int) ([]byte, error) {
 	bufData := &g.Buffers[bufIdx]
 	// Return cached if available
 	if bufData.cache != nil {
-		log.Debug("Fetching Buffer %d (cached)", bufIdx)
+		log.Printf("Fetching Buffer %d (cached)", bufIdx)
 		return bufData.cache, nil
 	}
-	log.Debug("Loading Buffer %d", bufIdx)
+	log.Printf("Loading Buffer %d", bufIdx)
 
 	// If buffer URI use the chunk data field
 	if bufData.Uri == "" {
@@ -1103,14 +1071,13 @@ func (g *GLTF) loadBuffer(bufIdx int) ([]byte, error) {
 	}
 	// Cache buffer data
 	g.Buffers[bufIdx].cache = data
-	log.Debug("cache data:%v", len(bufData.cache))
+	log.Printf("cache data:%v", len(bufData.cache))
 	return data, nil
 }
 
 // loadFileBytes loads the file with specified path as a byte array.
 func (g *GLTF) loadFileBytes(uri string) ([]byte, error) {
-
-	log.Debug("Loading File: %v", uri)
+	log.Printf("Loading File: %v", uri)
 
 	fpath := filepath.Join(g.path, uri)
 	f, err := os.Open(fpath)
@@ -1143,7 +1110,6 @@ var validMediaTypes = []string{mimeBIN, mimePNG, mimeJPEG}
 
 // isDataURL checks if the specified string has the prefix of data URL.
 func isDataURL(url string) bool {
-
 	if strings.HasPrefix(url, dataURLprefix) {
 		return true
 	}
@@ -1152,7 +1118,6 @@ func isDataURL(url string) bool {
 
 // loadDataURL decodes the specified data URI string (base64).
 func loadDataURL(url string) ([]byte, error) {
-
 	var du dataURL
 	err := parseDataURL(url, &du)
 	if err != nil {
@@ -1188,7 +1153,6 @@ func loadDataURL(url string) ([]byte, error) {
 // data:[<mediatype>][;base64],<data>
 // and if successfull returns true and updates the specified pointer with the parsed fields.
 func parseDataURL(url string, du *dataURL) error {
-
 	// Check prefix
 	if !isDataURL(url) {
 		return fmt.Errorf("specified string is not a data URL")

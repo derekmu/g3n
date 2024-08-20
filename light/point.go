@@ -27,7 +27,6 @@ type Point struct {
 
 // NewPoint creates and returns a point light with the specified color and intensity
 func NewPoint(color *math32.Color, intensity float32) *Point {
-
 	lp := new(Point)
 	lp.Node.Init(lp)
 	lp.color = *color
@@ -44,7 +43,6 @@ func NewPoint(color *math32.Color, intensity float32) *Point {
 
 // SetColor sets the color of this light
 func (lp *Point) SetColor(color *math32.Color) {
-
 	lp.color = *color
 	lp.udata.color = lp.color
 	lp.udata.color.MultiplyScalar(lp.intensity)
@@ -52,13 +50,11 @@ func (lp *Point) SetColor(color *math32.Color) {
 
 // Color returns the current color of this light
 func (lp *Point) Color() math32.Color {
-
 	return lp.color
 }
 
 // SetIntensity sets the intensity of this  light
 func (lp *Point) SetIntensity(intensity float32) {
-
 	lp.intensity = intensity
 	lp.udata.color = lp.color
 	lp.udata.color.MultiplyScalar(lp.intensity)
@@ -66,37 +62,31 @@ func (lp *Point) SetIntensity(intensity float32) {
 
 // Intensity returns the current intensity of this light
 func (lp *Point) Intensity() float32 {
-
 	return lp.intensity
 }
 
 // SetLinearDecay sets the linear decay factor as a function of the distance
 func (lp *Point) SetLinearDecay(decay float32) {
-
 	lp.udata.linearDecay = decay
 }
 
 // LinearDecay returns the current linear decay factor
 func (lp *Point) LinearDecay() float32 {
-
 	return lp.udata.linearDecay
 }
 
 // SetQuadraticDecay sets the quadratic decay factor as a function of the distance
 func (lp *Point) SetQuadraticDecay(decay float32) {
-
 	lp.udata.quadraticDecay = decay
 }
 
 // QuadraticDecay returns the current quadratic decay factor
 func (lp *Point) QuadraticDecay() float32 {
-
 	return lp.udata.quadraticDecay
 }
 
 // RenderSetup is called by the engine before rendering the scene
 func (lp *Point) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo, idx int) {
-
 	// Calculates light position in camera coordinates and updates uniform
 	var pos math32.Vector3
 	lp.WorldPosition(&pos)

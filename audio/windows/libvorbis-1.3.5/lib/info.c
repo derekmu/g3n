@@ -36,7 +36,6 @@
 
 /* helpers */
 static void _v_writestring(oggpack_buffer *o,const char *s, int bytes){
-
   while(bytes--){
     oggpack_write(o,*s++,8);
   }
@@ -152,7 +151,6 @@ void vorbis_info_clear(vorbis_info *vi){
   int i;
 
   if(ci){
-
     for(i=0;i<ci->modes;i++)
       if(ci->mode_param[i])_ogg_free(ci->mode_param[i]);
 
@@ -551,7 +549,6 @@ err_out:
 
 int vorbis_commentheader_out(vorbis_comment *vc,
                                           ogg_packet *op){
-
   oggpack_buffer opb;
 
   oggpack_writeinit(&opb);

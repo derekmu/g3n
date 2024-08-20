@@ -24,13 +24,11 @@ const (
 
 // NewDockLayout returns a pointer to a new DockLayout.
 func NewDockLayout() *DockLayout {
-
 	return new(DockLayout)
 }
 
 // Recalc (which satisfies the ILayout interface) recalculates the positions and sizes of the children panels.
 func (dl *DockLayout) Recalc(ipan IPanel) {
-
 	pan := ipan.GetPanel()
 	width := pan.Width()
 	topY := float32(0)

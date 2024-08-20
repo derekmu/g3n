@@ -4,6 +4,8 @@
 
 package gui
 
+import "log"
+
 // HBoxLayout implements a panel layout which arranges the panel children horizontally.
 // The children can be separated by a space in pixels set by SetSpacing().
 // The whole group of children can be aligned horizontally by SetAlignH() which can
@@ -42,7 +44,6 @@ type HBoxLayoutParams struct {
 
 // NewHBoxLayout creates and returns a pointer to a new horizontal box layout
 func NewHBoxLayout() *HBoxLayout {
-
 	bl := new(HBoxLayout)
 	bl.spacing = 0
 	bl.alignH = AlignLeft
@@ -52,7 +53,6 @@ func NewHBoxLayout() *HBoxLayout {
 // SetSpacing sets the horizontal spacing between the items in pixels
 // and updates the layout if possible
 func (bl *HBoxLayout) SetSpacing(spacing float32) {
-
 	bl.spacing = spacing
 	bl.Recalc(bl.pan)
 }
@@ -61,7 +61,6 @@ func (bl *HBoxLayout) SetSpacing(spacing float32) {
 // inside the parent panel and updates the layout.
 // This only has any effect if there are no expanded items.
 func (bl *HBoxLayout) SetAlignH(align Align) {
-
 	bl.alignH = align
 	bl.Recalc(bl.pan)
 }
@@ -69,7 +68,6 @@ func (bl *HBoxLayout) SetAlignH(align Align) {
 // SetAutoHeight sets if the panel minimum height should be the height of
 // the largest of its children's height.
 func (bl *HBoxLayout) SetAutoHeight(state bool) {
-
 	bl.autoHeight = state
 	bl.Recalc(bl.pan)
 }
@@ -77,14 +75,12 @@ func (bl *HBoxLayout) SetAutoHeight(state bool) {
 // SetAutoWidth sets if the panel minimum width should be sum of its
 // children's width plus the spacing
 func (bl *HBoxLayout) SetAutoWidth(state bool) {
-
 	bl.minHeight = state
 	bl.Recalc(bl.pan)
 }
 
 // Recalc recalculates and sets the position and sizes of all children
 func (bl *HBoxLayout) Recalc(ipan IPanel) {
-
 	// Saves the received panel
 	bl.pan = ipan
 	if bl.pan == nil {

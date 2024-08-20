@@ -358,7 +358,6 @@ static int _fetch_headers(OggVorbis_File *vf,vorbis_info *vi,vorbis_comment *vc,
   }
 
   while(1){
-
     i=0;
     while(i<2){ /* get a page loop */
 
@@ -491,7 +490,6 @@ static int _bisect_forward_serialno(OggVorbis_File *vf,
 
   /* Is the last page in our list of current serialnumbers? */
   if(_lookup_serialno(endserial,currentno_list,currentnos)){
-
     /* last page is in the starting serialno list, so we've bisected
        down to (or just started with) a single link.  Now we need to
        find the last vorbis page belonging to the first vorbis stream
@@ -519,7 +517,6 @@ static int _bisect_forward_serialno(OggVorbis_File *vf,
     vf->pcmlengths[m*2+1]=(endgran<0?0:endgran);
 
   }else{
-
     /* last page is not in the starting stream's serial number list,
        so we have multiple links.  Find where the stream that begins
        our bisection ends. */
@@ -681,7 +678,6 @@ static int _fetch_and_process_packet(OggVorbis_File *vf,
   /* handle one packet.  Try to fetch it from current stream state */
   /* extract packets from page */
   while(1){
-
     if(vf->ready_state==STREAMSET){
       int ret=_make_decode_ready(vf);
       if(ret<0)return ret;
@@ -784,7 +780,6 @@ static int _fetch_and_process_packet(OggVorbis_File *vf,
 
         if(vf->ready_state==INITSET){
           if(vf->current_serialno!=ogg_page_serialno(&og)){
-
             /* two possibilities:
                1) our decoding just traversed a bitstream boundary
                2) another stream is multiplexed into this logical section */
@@ -1293,14 +1288,12 @@ int ov_raw_seek(OggVorbis_File *vf,ogg_int64_t pos){
         int result=ogg_stream_packetout(&work_os,&op);
 
         if(result>0){
-
           if(vf->vi[vf->current_link].codec_setup){
             thisblock=vorbis_packet_blocksize(vf->vi+vf->current_link,&op);
             if(thisblock<0){
               ogg_stream_packetout(&vf->os,NULL);
               thisblock=0;
             }else{
-
               /* We can't get a guaranteed correct pcm position out of the
                  last page in a stream because it might have a 'short'
                  granpos, which can only be detected in the presence of a
@@ -1347,7 +1340,6 @@ int ov_raw_seek(OggVorbis_File *vf,ogg_int64_t pos){
       /* has our decoding just traversed a bitstream boundary? */
       if(vf->ready_state>=STREAMSET){
         if(vf->current_serialno!=ogg_page_serialno(&og)){
-
           /* two possibilities:
              1) our decoding just traversed a bitstream boundary
              2) another stream is multiplexed into this logical section? */
@@ -1521,7 +1513,6 @@ int ov_pcm_seek_page(OggVorbis_File *vf,ogg_int64_t pos){
 
             bisect=begin; /* *not* begin + 1 as above */
           }else{
-
             /* This is one of our pages, but the granpos is
                post-target; it is not a bisection return
                candidate. (The only way we'd use it is if it's the
@@ -1555,7 +1546,6 @@ int ov_pcm_seek_page(OggVorbis_File *vf,ogg_int64_t pos){
 
     /* Out of bisection: did it 'fail?' */
     if(best == -1){
-
       /* Check the 'looking for data in first page' special case;
          bisection would 'fail' because our search target was before the
          first PCM granule position fencepost. */
@@ -1563,7 +1553,6 @@ int ov_pcm_seek_page(OggVorbis_File *vf,ogg_int64_t pos){
       if(got_page &&
          begin == vf->dataoffsets[link] &&
          ogg_page_serialno(&og)==vf->serialnos[link]){
-
         /* Yes, this is the beginning-of-stream case. We already have
            our page, right at the beginning of PCM data.  Set state
            and return. */
@@ -1589,7 +1578,6 @@ int ov_pcm_seek_page(OggVorbis_File *vf,ogg_int64_t pos){
         goto seek_error;
 
     }else{
-
       /* Bisection found our page. seek to it, update pcm offset. Easier case than
          raw_seek, don't keep packets preceding granulepos. */
 
@@ -1984,7 +1972,6 @@ long ov_read_filter(OggVorbis_File *vf,char *buffer,int length,
   }
 
   if(samples>0){
-
     /* yay! proceed to pack data into the byte buffer */
 
     long channels=ov_info(vf,-1)->channels;
@@ -2018,7 +2005,6 @@ long ov_read_filter(OggVorbis_File *vf,char *buffer,int length,
 
         if(host_endian==bigendianp){
           if(sgned){
-
             vorbis_fpu_setround(&fpu);
             for(i=0;i<channels;i++) { /* It's faster in this order */
               float *src=pcm[i];
@@ -2034,7 +2020,6 @@ long ov_read_filter(OggVorbis_File *vf,char *buffer,int length,
             vorbis_fpu_restore(fpu);
 
           }else{
-
             vorbis_fpu_setround(&fpu);
             for(i=0;i<channels;i++) {
               float *src=pcm[i];
@@ -2051,7 +2036,6 @@ long ov_read_filter(OggVorbis_File *vf,char *buffer,int length,
 
           }
         }else if(bigendianp){
-
           vorbis_fpu_setround(&fpu);
           for(j=0;j<samples;j++)
             for(i=0;i<channels;i++){
@@ -2113,7 +2097,6 @@ long ov_read(OggVorbis_File *vf,char *buffer,int length,
 
 long ov_read_float(OggVorbis_File *vf,float ***pcm_channels,int length,
                    int *bitstream){
-
   if(vf->ready_state<OPENED)return(OV_EINVAL);
 
   while(1){

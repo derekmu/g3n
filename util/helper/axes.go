@@ -19,7 +19,6 @@ type Axes struct {
 
 // NewAxes returns a pointer to a new Axes object.
 func NewAxes(size float32) *Axes {
-
 	axes := new(Axes)
 
 	// Create geometry with three orthogonal lines starting at the origin

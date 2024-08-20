@@ -11,11 +11,7 @@ import (
 
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
-	"github.com/derekmu/g3n/util/logger"
 )
-
-// Package logger
-var log = logger.New("WIN", logger.Default)
 
 // IWindow singleton
 var win IWindow

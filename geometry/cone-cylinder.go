@@ -44,7 +44,6 @@ func NewTruncatedCone(radiusTop, radiusBottom, height float64, radialSegments, h
 // NewTruncatedConeSector creates a truncated cone sector geometry with the specified top and bottom radii, height, number of radial segments,
 // number of height segments, sector start angle in radians, sector size angle in radians, and presence of a top and/or bottom cap.
 func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegments, heightSegments int, thetaStart, thetaLength float64, top, bottom bool) *Geometry {
-
 	c := NewGeometry()
 
 	heightHalf := height / 2
@@ -133,7 +132,6 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 
 	// Top cap
 	if top && radiusTop > 0 {
-
 		// Array of vertex indicesOrig to build used to build the faces.
 		indicesOrig := []uint32{}
 		nextidx := positions.Size() / 3
@@ -196,7 +194,6 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 
 	// Bottom cap
 	if bottom && radiusBottom > 0 {
-
 		// Array of vertex indicesOrig to build used to build the faces.
 		indicesOrig := []uint32{}
 		nextidx := positions.Size() / 3

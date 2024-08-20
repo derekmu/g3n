@@ -27,7 +27,6 @@ type manager struct {
 
 // Manager returns the GUI manager singleton (creating it the first time)
 func Manager() *manager {
-
 	// Return singleton if already created
 	if gm != nil {
 		return gm
@@ -55,13 +54,11 @@ func Manager() *manager {
 // It's usually a scene containing a hierarchy of INodes.
 // The manager only cares about IPanels inside that hierarchy.
 func (gm *manager) Set(scene core.INode) {
-
 	gm.scene = scene
 }
 
 // SetModal sets the specified panel and its descendants to be the exclusive receivers of events.
 func (gm *manager) SetModal(ipan IPanel) {
-
 	gm.modal = ipan
 	gm.SetKeyFocus(nil)
 	gm.SetCursorFocus(nil)
@@ -69,7 +66,6 @@ func (gm *manager) SetModal(ipan IPanel) {
 
 // SetKeyFocus sets the key-focused IDispatcher, which will exclusively receive key and char events.
 func (gm *manager) SetKeyFocus(disp core.IDispatcher) {
-
 	if gm.keyFocus == disp {
 		return
 	}
@@ -84,7 +80,6 @@ func (gm *manager) SetKeyFocus(disp core.IDispatcher) {
 
 // SetCursorFocus sets the cursor-focused IDispatcher, which will exclusively receive OnCursor events.
 func (gm *manager) SetCursorFocus(disp core.IDispatcher) {
-
 	if gm.cursorFocus == disp {
 		return
 	}
@@ -97,7 +92,6 @@ func (gm *manager) SetCursorFocus(disp core.IDispatcher) {
 // onKeyboard is called when char or key events are received.
 // The events are dispatched to the focused IDispatcher or to non-GUI.
 func (gm *manager) onKeyboard(evname string, ev interface{}) {
-
 	if gm.keyFocus != nil {
 		if gm.modal == nil {
 			gm.keyFocus.Dispatch(evname, ev)
@@ -154,7 +148,6 @@ func (gm *manager) onMouse(evname string, ev interface{}) {
 // onScroll is called when scroll events are received.
 // The events are dispatched to the target panel or to non-GUI.
 func (gm *manager) onScroll(evname string, ev interface{}) {
-
 	// Check if gm.scene is nil and if so then there are no IPanels to send events to
 	if gm.scene == nil {
 		gm.Dispatch(evname, ev) // Dispatch event to non-GUI since event was not filtered by any GUI component
@@ -174,7 +167,6 @@ func (gm *manager) onScroll(evname string, ev interface{}) {
 // onCursor is called when (mouse) cursor events are received.
 // Updates the target/click panels and dispatches OnCursor, OnCursorEnter, OnCursorLeave events.
 func (gm *manager) onCursor(evname string, ev interface{}) {
-
 	// If an IDispatcher is capturing cursor events dispatch to it and return
 	if gm.cursorFocus != nil {
 		gm.cursorFocus.Dispatch(evname, ev)
@@ -234,7 +226,6 @@ func (gm *manager) onCursor(evname string, ev interface{}) {
 // If uptoIn (i.e. including) is not nil then the event will be dispatched to that ancestor but not to any higher ancestors.
 // uptoEx and uptoIn can both be defined.
 func sendAncestry(ipan IPanel, all bool, uptoEx IPanel, uptoIn IPanel, evname string, ev interface{}) {
-
 	var ok bool
 	for ipan != nil {
 		if uptoEx != nil && ipan == uptoEx {
@@ -254,7 +245,6 @@ func sendAncestry(ipan IPanel, all bool, uptoEx IPanel, uptoIn IPanel, evname st
 // traverseIPanel traverses the descendants of the provided IPanel,
 // executing the specified function for each IPanel.
 func traverseIPanel(ipan IPanel, f func(ipan IPanel)) {
-
 	// If panel not visible, ignore entire hierarchy below this point
 	if !ipan.Visible() {
 		return
@@ -271,7 +261,6 @@ func traverseIPanel(ipan IPanel, f func(ipan IPanel)) {
 // traverseINode traverses the descendants of the specified INode,
 // executing the specified function for each IPanel.
 func traverseINode(inode core.INode, f func(ipan IPanel)) {
-
 	if ipan, ok := inode.(IPanel); ok {
 		traverseIPanel(ipan, f)
 	} else {
@@ -283,6 +272,5 @@ func traverseINode(inode core.INode, f func(ipan IPanel)) {
 
 // forEachIPanel executes the specified function for each enabled and visible IPanel in gm.scene.
 func (gm *manager) forEachIPanel(f func(ipan IPanel)) {
-
 	traverseINode(gm.scene, f)
 }

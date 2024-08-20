@@ -189,7 +189,6 @@ type tableCell struct {
 // NewTable creates and returns a pointer to a new Table with the
 // specified width, height and columns
 func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
-
 	t := new(Table)
 	t.Panel.Initialize(t, width, height)
 	t.styles = &StyleDefault().Table
@@ -293,7 +292,6 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 
 // SetStyles set this table styles overriding the default
 func (t *Table) SetStyles(ts *TableStyles) {
-
 	t.styles = ts
 	t.recalc()
 }
@@ -301,13 +299,11 @@ func (t *Table) SetStyles(ts *TableStyles) {
 // SetSelectionType sets this table selection type
 // Possible values are: TableSelSingleRow|TableSelMultiRow
 func (t *Table) SetSelectionType(sel TableSelType) {
-
 	t.selType = sel
 }
 
 // ShowHeader shows or hides the table header
 func (t *Table) ShowHeader(show bool) {
-
 	if t.header.Visible() == show {
 		return
 	}
@@ -318,7 +314,6 @@ func (t *Table) ShowHeader(show bool) {
 // ShowColumn sets the visibility of the column with the specified id
 // If the column id does not exit the function panics.
 func (t *Table) ShowColumn(col string, show bool) {
-
 	c := t.header.cmap[col]
 	if c == nil {
 		panic(tableErrInvCol)
@@ -332,7 +327,6 @@ func (t *Table) ShowColumn(col string, show bool) {
 
 // ShowAllColumns shows all the table columns
 func (t *Table) ShowAllColumns() {
-
 	recalc := false
 	for ci := 0; ci < len(t.header.cols); ci++ {
 		c := t.header.cols[ci]
@@ -349,7 +343,6 @@ func (t *Table) ShowAllColumns() {
 
 // RowCount returns the current number of rows in the table
 func (t *Table) RowCount() int {
-
 	return len(t.rows)
 }
 
@@ -359,7 +352,6 @@ func (t *Table) RowCount() int {
 // The map value currently can be a string or any number type
 // If a row column is not found it is ignored
 func (t *Table) SetRows(values []map[string]interface{}) {
-
 	// Add missing rows
 	if len(values) > len(t.rows) {
 		count := len(values) - len(t.rows)
@@ -385,7 +377,6 @@ func (t *Table) SetRows(values []map[string]interface{}) {
 // SetRow sets the value of all the cells of the specified row from
 // the specified map indexed by column id.
 func (t *Table) SetRow(row int, values map[string]interface{}) {
-
 	if row < 0 || row >= len(t.rows) {
 		panic(tableErrInvRow)
 	}
@@ -396,7 +387,6 @@ func (t *Table) SetRow(row int, values map[string]interface{}) {
 // SetCell sets the value of the cell specified by its row and column id
 // The function panics if the passed row or column id is invalid
 func (t *Table) SetCell(row int, colid string, value interface{}) {
-
 	if row < 0 || row >= len(t.rows) {
 		panic(tableErrInvRow)
 	}
@@ -410,7 +400,6 @@ func (t *Table) SetCell(row int, colid string, value interface{}) {
 // SetColFormat sets the formatting string (Printf) for the specified column
 // Update must be called to update the table.
 func (t *Table) SetColFormat(id, format string) {
-
 	c := t.header.cmap[id]
 	if c == nil {
 		panic(tableErrInvCol)
@@ -422,7 +411,6 @@ func (t *Table) SetColFormat(id, format string) {
 // The previous column which has the specified order will have
 // the original column order.
 func (t *Table) SetColOrder(colid string, order int) {
-
 	// Checks column id
 	c := t.header.cmap[colid]
 	if c == nil {
@@ -454,7 +442,6 @@ func (t *Table) SetColOrder(colid string, order int) {
 // EnableColResize enable or disables if the specified column can be resized by the
 // user using the mouse.
 func (t *Table) EnableColResize(colid string, enable bool) {
-
 	// Checks column id
 	c := t.header.cmap[colid]
 	if c == nil {
@@ -466,7 +453,6 @@ func (t *Table) EnableColResize(colid string, enable bool) {
 // SetColWidth sets the specified column width and may
 // change the widths of the columns to the right
 func (t *Table) SetColWidth(colid string, width float32) {
-
 	// Checks column id
 	c := t.header.cmap[colid]
 	if c == nil {
@@ -480,7 +466,6 @@ func (t *Table) SetColWidth(colid string, width float32) {
 // increased proportionally to their expand factor.
 // A column with expand factor = 0 is not increased.
 func (t *Table) SetColExpand(colid string, expand float32) {
-
 	// Checks column id
 	c := t.header.cmap[colid]
 	if c == nil {
@@ -496,13 +481,11 @@ func (t *Table) SetColExpand(colid string, expand float32) {
 
 // AddRow adds a new row at the end of the table with the specified values
 func (t *Table) AddRow(values map[string]interface{}) {
-
 	t.InsertRow(len(t.rows), values)
 }
 
 // InsertRow inserts the specified values in a new row at the specified index
 func (t *Table) InsertRow(row int, values map[string]interface{}) {
-
 	// Checks row index
 	if row < 0 || row > len(t.rows) {
 		panic(tableErrInvRow)
@@ -514,7 +497,6 @@ func (t *Table) InsertRow(row int, values map[string]interface{}) {
 
 // RemoveRow removes from the specified row from the table
 func (t *Table) RemoveRow(row int) {
-
 	// Checks row index
 	if row < 0 || row >= len(t.rows) {
 		panic(tableErrInvRow)
@@ -530,7 +512,6 @@ func (t *Table) RemoveRow(row int) {
 
 // Clear removes all rows from the table
 func (t *Table) Clear() {
-
 	for ri := 0; ri < len(t.rows); ri++ {
 		trow := t.rows[ri]
 		t.Panel.Remove(trow)
@@ -547,7 +528,6 @@ func (t *Table) Clear() {
 // SelectedRows returns a slice with the indexes of the currently selected rows
 // If no row are selected returns an empty slice
 func (t *Table) SelectedRows() []int {
-
 	res := make([]int, 0)
 	if t.rowCursor >= 0 {
 		res = append(res, t.rowCursor)
@@ -562,7 +542,6 @@ func (t *Table) SelectedRows() []int {
 
 // ShowStatus sets the visibility of the status lines at the bottom of the table
 func (t *Table) ShowStatus(show bool) {
-
 	if t.statusPanel.Visible() == show {
 		return
 	}
@@ -574,7 +553,6 @@ func (t *Table) ShowStatus(show bool) {
 // SetStatusText sets the text of status line at the bottom of the table
 // It does not change its current visibility
 func (t *Table) SetStatusText(text string) {
-
 	t.statusLabel.SetText(text)
 }
 
@@ -582,7 +560,6 @@ func (t *Table) SetStatusText(text string) {
 // specified by the rows first and last index.
 // To get all the table rows, use Rows(0, -1)
 func (t *Table) Rows(fi, li int) []map[string]interface{} {
-
 	if fi < 0 || fi >= len(t.header.cols) {
 		panic(tableErrInvRow)
 	}
@@ -609,7 +586,6 @@ func (t *Table) Rows(fi, li int) []map[string]interface{} {
 
 // Row returns a map with the current contents of the specified row index
 func (t *Table) Row(ri int) map[string]interface{} {
-
 	if ri < 0 || ri > len(t.header.cols) {
 		panic(tableErrInvRow)
 	}
@@ -624,7 +600,6 @@ func (t *Table) Row(ri int) map[string]interface{} {
 
 // Cell returns the current content of the specified cell
 func (t *Table) Cell(col string, ri int) interface{} {
-
 	c := t.header.cmap[col]
 	if c == nil {
 		panic(tableErrInvCol)
@@ -640,7 +615,6 @@ func (t *Table) Cell(col string, ri int) interface{} {
 // and sorting in ascending or descending order.
 // This sorting is independent of the sort configuration of column set when the table was created
 func (t *Table) SortColumn(col string, asString bool, asc bool) {
-
 	c := t.header.cmap[col]
 	if c == nil {
 		panic(tableErrInvCol)
@@ -661,7 +635,6 @@ func (t *Table) SortColumn(col string, asString bool, asc bool) {
 // setRow sets the value of all the cells of the specified row from
 // the specified map indexed by column id.
 func (t *Table) setRow(row int, values map[string]interface{}) {
-
 	for ci := 0; ci < len(t.header.cols); ci++ {
 		c := t.header.cols[ci]
 		cv, ok := values[c.id]
@@ -674,7 +647,6 @@ func (t *Table) setRow(row int, values map[string]interface{}) {
 
 // setCell sets the value of the cell specified by its row and column id
 func (t *Table) setCell(row int, colid string, value interface{}) {
-
 	c := t.header.cmap[colid]
 	if c == nil {
 		return
@@ -686,7 +658,6 @@ func (t *Table) setCell(row int, colid string, value interface{}) {
 
 // insertRow is the internal version of InsertRow which does not call recalc()
 func (t *Table) insertRow(row int, values map[string]interface{}) {
-
 	// Creates tableRow panel
 	trow := new(tableRow)
 	trow.Initialize(trow, 0, 0)
@@ -717,7 +688,6 @@ func (t *Table) insertRow(row int, values map[string]interface{}) {
 
 // ScrollDown scrolls the table the specified number of rows down if possible
 func (t *Table) scrollDown(n int) {
-
 	// Calculates number of rows to scroll down
 	maxFirst := t.calcMaxFirst()
 	maxScroll := maxFirst - t.firstRow
@@ -739,7 +709,6 @@ func (t *Table) scrollDown(n int) {
 
 // ScrollUp scrolls the table the specified number of rows up if possible
 func (t *Table) scrollUp(n int) {
-
 	// Calculates number of rows to scroll up
 	if t.firstRow == 0 {
 		return
@@ -758,7 +727,6 @@ func (t *Table) scrollUp(n int) {
 
 // removeRow removes from the table the row specified its index
 func (t *Table) removeRow(row int) {
-
 	// Get row to be removed
 	trow := t.rows[row]
 
@@ -777,7 +745,6 @@ func (t *Table) removeRow(row int) {
 
 // onCursorPos process subscribed cursor position events
 func (t *Table) onCursorPos(evname string, ev interface{}) {
-
 	// Convert mouse window coordinates to table content coordinates
 	cev := ev.(*window.CursorEvent)
 	cx, _ := t.ContentCoords(cev.Xpos, cev.Ypos)
@@ -813,7 +780,6 @@ func (t *Table) onCursorPos(evname string, ev interface{}) {
 
 // onMouseEvent process subscribed mouse events
 func (t *Table) onMouse(evname string, ev interface{}) {
-
 	e := ev.(*window.MouseEvent)
 	Manager().SetKeyFocus(t)
 	switch evname {
@@ -867,7 +833,6 @@ func (t *Table) onMouse(evname string, ev interface{}) {
 
 // onKeyEvent receives subscribed key events for this table
 func (t *Table) onKey(evname string, ev interface{}) {
-
 	kev := ev.(*window.KeyEvent)
 	if kev.Key == window.KeyUp && kev.Mods == 0 {
 		t.selPrev()
@@ -890,14 +855,12 @@ func (t *Table) onKey(evname string, ev interface{}) {
 
 // onResize receives subscribed resize events for this table
 func (t *Table) onResize(evname string, ev interface{}) {
-
 	t.recalc()
 	t.recalcStatus()
 }
 
 // onScroll receives subscribed scroll events for this table
 func (t *Table) onScroll(evname string, ev interface{}) {
-
 	sev := ev.(*window.ScrollEvent)
 	if sev.Yoffset > 0 {
 		t.scrollUp(1)
@@ -908,7 +871,6 @@ func (t *Table) onScroll(evname string, ev interface{}) {
 
 // onRicon receives subscribed events for column header right icon
 func (t *Table) onRicon(evname string, c *tableColHeader) {
-
 	ico := tableSortedNoneIcon
 	var asc bool
 	if c.sorted == tableSortedNone || c.sorted == tableSortedDesc {
@@ -934,7 +896,6 @@ func (t *Table) onRicon(evname string, c *tableColHeader) {
 // findClick finds where in the table the specified mouse click event
 // occurred updating the specified TableClickEvent with the click coordinates.
 func (t *Table) findClick(ev *TableClickEvent) {
-
 	x, y := t.ContentCoords(ev.Xpos, ev.Ypos)
 	ev.X = x
 	ev.Y = y
@@ -983,7 +944,6 @@ func (t *Table) findClick(ev *TableClickEvent) {
 
 // selNext selects the next row if possible
 func (t *Table) selNext() {
-
 	// If selected row is last, nothing to do
 	if t.rowCursor == len(t.rows)-1 {
 		return
@@ -1009,7 +969,6 @@ func (t *Table) selNext() {
 
 // selPrev selects the previous row if possible
 func (t *Table) selPrev() {
-
 	// If selected row is first, nothing to do
 	sel := t.rowCursor
 	if sel == 0 {
@@ -1037,7 +996,6 @@ func (t *Table) selPrev() {
 
 // nextPage shows the next page of rows and selects its first row
 func (t *Table) nextPage() {
-
 	if len(t.rows) == 0 {
 		return
 	}
@@ -1056,7 +1014,6 @@ func (t *Table) nextPage() {
 
 // prevPage shows the previous page of rows and selects its last row
 func (t *Table) prevPage() {
-
 	if t.firstRow == 0 {
 		t.rowCursor = 0
 		t.recalc()
@@ -1072,7 +1029,6 @@ func (t *Table) prevPage() {
 
 // firstPage shows the first page of rows and selects the first row
 func (t *Table) firstPage() {
-
 	if len(t.rows) == 0 {
 		return
 	}
@@ -1084,7 +1040,6 @@ func (t *Table) firstPage() {
 
 // lastPage shows the last page of rows and selects the last row
 func (t *Table) lastPage() {
-
 	if len(t.rows) == 0 {
 		return
 	}
@@ -1098,7 +1053,6 @@ func (t *Table) lastPage() {
 // selectRow selects the specified row.
 // Should be used only when multi row selection is enabled
 func (t *Table) selectRow(ri int) {
-
 	trow := t.rows[ri]
 	trow.selected = true
 	t.Dispatch(OnChange, nil)
@@ -1107,7 +1061,6 @@ func (t *Table) selectRow(ri int) {
 // toggleRowSel toogles the specified row selection state
 // Should be used only when multi row selection is enabled
 func (t *Table) toggleRowSel(ri int) {
-
 	trow := t.rows[ri]
 	trow.selected = !trow.selected
 	t.Dispatch(OnChange, nil)
@@ -1115,7 +1068,6 @@ func (t *Table) toggleRowSel(ri int) {
 
 // setColWidth sets the width of the specified column
 func (t *Table) setColWidth(c *tableColHeader, width float32) {
-
 	// Sets the column width
 	if width < c.minWidth {
 		width = c.minWidth
@@ -1173,7 +1125,6 @@ func (t *Table) setColWidth(c *tableColHeader, width float32) {
 
 // recalcHeader recalculates and sets the position and size of the header panels
 func (t *Table) recalcHeader() {
-
 	// Calculates total width, height, expansion and available width space
 	hwidth := float32(0)
 	height := float32(0)
@@ -1288,7 +1239,6 @@ func (t *Table) recalcHeader() {
 
 // recalcStatus recalculates and sets the position and size of the status panel and its label
 func (t *Table) recalcStatus() {
-
 	if !t.statusPanel.Visible() {
 		return
 	}
@@ -1306,7 +1256,6 @@ func (t *Table) recalcStatus() {
 // - column visibility is changed
 // - horizontal or vertical scroll position changed
 func (t *Table) recalc() {
-
 	// Get available row height for rows
 	starty, theight := t.rowsHeight()
 
@@ -1354,7 +1303,6 @@ func (t *Table) recalc() {
 // recalcRow recalculates the positions and sizes of all cells of the specified row
 // Should be called when the row is created and column visibility or order is changed.
 func (t *Table) recalcRow(ri int) {
-
 	trow := t.rows[ri]
 	// Calculates and sets row height
 	maxheight := float32(0)
@@ -1416,7 +1364,6 @@ func (t *Table) recalcRow(ri int) {
 // rowsHeight returns the available start y coordinate and height in the table for rows,
 // considering the visibility of the header and status panels.
 func (t *Table) rowsHeight() (float32, float32) {
-
 	start := float32(0)
 	height := t.ContentHeight()
 	if t.header.Visible() {
@@ -1434,7 +1381,6 @@ func (t *Table) rowsHeight() (float32, float32) {
 
 // setVScrollBar sets the visibility state of the vertical scrollbar
 func (t *Table) setVScrollBar(state bool) {
-
 	// Visible
 	if state {
 		var scrollWidth float32 = 20
@@ -1470,7 +1416,6 @@ func (t *Table) setVScrollBar(state bool) {
 
 // onVScrollBar is called when a vertical scroll bar event is received
 func (t *Table) onVScrollBar(evname string, ev interface{}) {
-
 	// Calculates the new first visible line
 	pos := t.vscroll.Value()
 	maxFirst := t.calcMaxFirst()
@@ -1502,7 +1447,6 @@ func (t *Table) onVScrollBar(evname string, ev interface{}) {
 // such as the remaining rows fits completely inside the table
 // It is used when scrolling the table vertically
 func (t *Table) calcMaxFirst() int {
-
 	_, total := t.rowsHeight()
 	ri := len(t.rows) - 1
 	if ri < 0 {
@@ -1525,7 +1469,6 @@ func (t *Table) calcMaxFirst() int {
 
 // updateRowStyle applies the correct style for the specified row
 func (t *Table) updateRowStyle(ri int) {
-
 	row := t.rows[ri]
 	var trs TableRowStyle
 	if ri == t.rowCursor {
@@ -1545,7 +1488,6 @@ func (t *Table) updateRowStyle(ri int) {
 // applyHeaderStyle applies style to the specified table header
 // the last header panel does not the right border.
 func (t *Table) applyHeaderStyle(h *Panel, last bool) {
-
 	styleCopy := t.styles.Header.PanelStyle
 	if last {
 		styleCopy.Border.Right = 0
@@ -1555,7 +1497,6 @@ func (t *Table) applyHeaderStyle(h *Panel, last bool) {
 
 // applyRowStyle applies the specified style to all cells for the specified table row
 func (t *Table) applyRowStyle(trow *tableRow, trs *TableRowStyle) {
-
 	for i := 0; i < len(trow.cells); i++ {
 		cell := trow.cells[i]
 		cell.ApplyStyle(&trs.PanelStyle)
@@ -1564,14 +1505,12 @@ func (t *Table) applyRowStyle(trow *tableRow, trs *TableRowStyle) {
 
 // applyStatusStyle applies the status style
 func (t *Table) applyStatusStyle() {
-
 	s := t.styles.Status
 	t.statusPanel.ApplyStyle(&s.PanelStyle)
 }
 
 // applyResizerStyle applies the status style
 func (t *Table) applyResizerStyle() {
-
 	s := t.styles.Resizer
 	t.resizerPanel.SetBordersFrom(&s.Border)
 	t.resizerPanel.SetBordersColor4(&s.BorderColor)
@@ -1590,7 +1529,6 @@ type tableSortString struct {
 func (ts tableSortString) Len() int      { return len(ts.rows) }
 func (ts tableSortString) Swap(i, j int) { ts.rows[i], ts.rows[j] = ts.rows[j], ts.rows[i] }
 func (ts tableSortString) Less(i, j int) bool {
-
 	vi := ts.rows[i].cells[ts.col].value
 	vj := ts.rows[j].cells[ts.col].value
 	si := fmt.Sprintf(ts.format, vi)
@@ -1612,7 +1550,6 @@ type tableSortNumber struct {
 func (ts tableSortNumber) Len() int      { return len(ts.rows) }
 func (ts tableSortNumber) Swap(i, j int) { ts.rows[i], ts.rows[j] = ts.rows[j], ts.rows[i] }
 func (ts tableSortNumber) Less(i, j int) bool {
-
 	vi := ts.rows[i].cells[ts.col].value
 	vj := ts.rows[j].cells[ts.col].value
 	ni := cv2f64(vi)
@@ -1625,7 +1562,6 @@ func (ts tableSortNumber) Less(i, j int) bool {
 
 // Try to convert an interface value to a float64 number
 func cv2f64(v interface{}) float64 {
-
 	if v == nil {
 		return 0
 	}

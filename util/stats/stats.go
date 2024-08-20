@@ -24,7 +24,6 @@ type Stats struct {
 
 // NewStats creates and returns a pointer to a new statistics object
 func NewStats(gs *gls.GLS) *Stats {
-
 	s := new(Stats)
 	s.gs = gs
 	s.last = time.Now()
@@ -34,7 +33,6 @@ func NewStats(gs *gls.GLS) *Stats {
 // Update should be called in the render loop with the desired update interval.
 // Returns true when the interval has elapsed and the statistics has been updated.
 func (s *Stats) Update(d time.Duration) bool {
-
 	// If the specified time duration has not elapsed from previous update,
 	// nothing to do.
 	now := time.Now()

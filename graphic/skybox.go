@@ -30,7 +30,6 @@ type SkyboxData struct {
 
 // NewSkybox creates and returns a pointer to a Skybox with the specified textures.
 func NewSkybox(data SkyboxData) (*Skybox, error) {
-
 	skybox := new(Skybox)
 
 	geom := geometry.NewCube(1)
@@ -70,7 +69,6 @@ func NewSkybox(data SkyboxData) (*Skybox, error) {
 // It is responsible to updating the current shader uniforms with
 // the model matrices.
 func (skybox *Skybox) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-
 	mvm := *skybox.ModelViewMatrix()
 
 	// Clear translation

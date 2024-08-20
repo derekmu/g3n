@@ -20,7 +20,6 @@ type Image struct {
 // from the specified image used as a texture.
 // Initially the size of the panel content area is the exact size of the image.
 func NewImage(imgfile string) (image *Image, err error) {
-
 	tex, err := texture.NewTexture2DFromImage(imgfile)
 	if err != nil {
 		return nil, err
@@ -31,14 +30,12 @@ func NewImage(imgfile string) (image *Image, err error) {
 // NewImageFromRGBA creates and returns an image panel from the
 // specified image
 func NewImageFromRGBA(rgba *image.RGBA) *Image {
-
 	tex := texture.NewTexture2DFromRGBA(rgba)
 	return NewImageFromTex(tex)
 }
 
 // NewImageFromTex creates and returns an image panel from the specified texture2D
 func NewImageFromTex(tex *texture.Texture2D) *Image {
-
 	i := new(Image)
 	i.Panel.Initialize(i, 0, 0)
 	i.tex = tex
@@ -50,7 +47,6 @@ func NewImageFromTex(tex *texture.Texture2D) *Image {
 // SetTexture changes the image texture to the specified texture2D.
 // It returns a pointer to the previous texture.
 func (i *Image) SetTexture(tex *texture.Texture2D) *texture.Texture2D {
-
 	prevtex := i.tex
 	i.Material().RemoveTexture(prevtex)
 	i.tex = tex
@@ -61,7 +57,6 @@ func (i *Image) SetTexture(tex *texture.Texture2D) *texture.Texture2D {
 
 // SetImage sets the image from the specified image file
 func (i *Image) SetImage(imgfile string) error {
-
 	tex, err := texture.NewTexture2DFromImage(imgfile)
 	if err != nil {
 		return err

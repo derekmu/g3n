@@ -8,7 +8,6 @@ out vec2 FragTexcoord;
 
 
 void main() {
-
     // Always flip texture coordinates
     vec2 texcoord = VertexTexcoord;
     texcoord.y = 1.0 - texcoord.y;

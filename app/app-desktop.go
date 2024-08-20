@@ -12,6 +12,7 @@ import (
 	"github.com/derekmu/g3n/audio/vorbis"
 	"github.com/derekmu/g3n/renderer"
 	"github.com/derekmu/g3n/window"
+	"log"
 	"time"
 )
 
@@ -80,7 +81,10 @@ func (a *Application) Run(update func(rend *renderer.Renderer, deltaTime time.Du
 	}
 	// Close default audio device
 	if a.audioDev != nil {
-		al.CloseDevice(a.audioDev)
+		err := al.CloseDevice(a.audioDev)
+		if err != nil {
+			log.Print("failed to close audio device", err)
+		}
 	}
 	// Destroy window
 	a.Destroy()
@@ -132,7 +136,7 @@ func (a *Application) OpenDefaultAudioDevice() error {
 		return fmt.Errorf("setting OpenAL context current: %s", err)
 	}
 	// Logs audio library versions
-	log.Info("%s version: %s", al.GetString(al.Vendor), al.GetString(al.Version))
-	log.Info("%s", vorbis.VersionString())
+	log.Printf("%s version: %s", al.GetString(al.Vendor), al.GetString(al.Version))
+	log.Printf("%s", vorbis.VersionString())
 	return nil
 }

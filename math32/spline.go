@@ -13,7 +13,6 @@ type Spline struct {
 }
 
 func NewSpline(points []Vector3) *Spline {
-
 	this := new(Spline)
 	this.points = make([]Vector3, len(points))
 	copy(this.points, points)
@@ -21,7 +20,6 @@ func NewSpline(points []Vector3) *Spline {
 }
 
 func (this *Spline) InitFromArray(a []float32) {
-
 	// PEND array of what ?
 	//this.points = [];
 	//for ( var i = 0; i < a.length; i ++ ) {

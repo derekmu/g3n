@@ -40,21 +40,18 @@ type SplitterStyles struct {
 // NewHSplitter creates and returns a pointer to a new horizontal splitter
 // widget with the specified initial dimensions
 func NewHSplitter(width, height float32) *Splitter {
-
 	return newSplitter(true, width, height)
 }
 
 // NewVSplitter creates and returns a pointer to a new vertical splitter
 // widget with the specified initial dimensions
 func NewVSplitter(width, height float32) *Splitter {
-
 	return newSplitter(false, width, height)
 }
 
 // newSpliter creates and returns a pointer of a new splitter with
 // the specified orientation and initial dimensions.
 func newSplitter(horiz bool, width, height float32) *Splitter {
-
 	s := new(Splitter)
 	s.horiz = horiz
 	s.styles = &StyleDefault().Splitter
@@ -94,7 +91,6 @@ func newSplitter(horiz bool, width, height float32) *Splitter {
 // SetSplit sets the position of the splitter bar.
 // It accepts a value from 0.0 to 1.0
 func (s *Splitter) SetSplit(pos float32) {
-
 	s.setSplit(pos)
 	s.recalc()
 }
@@ -102,19 +98,16 @@ func (s *Splitter) SetSplit(pos float32) {
 // Split returns the current position of the splitter bar.
 // It returns a value from 0.0 to 1.0
 func (s *Splitter) Split() float32 {
-
 	return s.pos
 }
 
 // onResize receives subscribed resize events for the whole splitter panel
 func (s *Splitter) onResize(evname string, ev interface{}) {
-
 	s.recalc()
 }
 
 // onMouse receives subscribed mouse events over the spacer panel
 func (s *Splitter) onMouse(evname string, ev interface{}) {
-
 	mev := ev.(*window.MouseEvent)
 	if mev.Button != window.MouseButtonLeft {
 		return
@@ -137,7 +130,6 @@ func (s *Splitter) onMouse(evname string, ev interface{}) {
 
 // onCursor receives subscribed cursor events over the spacer panel
 func (s *Splitter) onCursor(evname string, ev interface{}) {
-
 	if evname == OnCursorEnter {
 		if s.horiz {
 			window.Get().SetCursor(window.HResizeCursor)
@@ -173,7 +165,6 @@ func (s *Splitter) onCursor(evname string, ev interface{}) {
 
 // setSplit sets the validated and clamped split position from the received value.
 func (s *Splitter) setSplit(pos float32) {
-
 	if pos < 0 {
 		s.pos = 0
 	} else if pos > 1 {
@@ -185,7 +176,6 @@ func (s *Splitter) setSplit(pos float32) {
 
 // update updates the splitter visual state
 func (s *Splitter) update() {
-
 	if s.pressed {
 		s.applyStyle(&s.styles.Drag)
 		return
@@ -199,7 +189,6 @@ func (s *Splitter) update() {
 
 // applyStyle applies the specified splitter style
 func (s *Splitter) applyStyle(ss *SplitterStyle) {
-
 	s.spacer.SetBordersColor4(&ss.SpacerBorderColor)
 	s.spacer.SetColor4(&ss.SpacerColor)
 	if s.horiz {
@@ -211,7 +200,6 @@ func (s *Splitter) applyStyle(ss *SplitterStyle) {
 
 // recalc relcalculates the position and sizes of the internal panels
 func (s *Splitter) recalc() {
-
 	width := s.ContentWidth()
 	height := s.ContentHeight()
 	if s.horiz {

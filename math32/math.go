@@ -20,19 +20,16 @@ var Infinity = float32(math.Inf(1))
 
 // DegToRad converts a number from degrees to radians
 func DegToRad(degrees float32) float32 {
-
 	return degrees * degreeToRadiansFactor
 }
 
 // RadToDeg converts a number from radians to degrees
 func RadToDeg(radians float32) float32 {
-
 	return radians * radianToDegreesFactor
 }
 
 // Clamp clamps x to the provided closed interval [a, b]
 func Clamp(x, a, b float32) float32 {
-
 	if x < a {
 		return a
 	}
@@ -44,7 +41,6 @@ func Clamp(x, a, b float32) float32 {
 
 // ClampInt clamps x to the provided closed interval [a, b]
 func ClampInt(x, a, b int) int {
-
 	if x < a {
 		return a
 	}

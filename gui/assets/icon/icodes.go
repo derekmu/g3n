@@ -944,13 +944,11 @@ const (
 // Codepoint returns the codepoint for the specified icon name.
 // Returns 0 if the name not found
 func Codepoint(name string) string {
-
 	return name2Codepoint[name]
 }
 
 // Maps icon name to codepoint
 var name2Codepoint = map[string]string{
-
 	"N3dRotation":                           string(0xe84d),
 	"AcUnit":                                string(0xeb3b),
 	"AccessAlarm":                           string(0xe190),

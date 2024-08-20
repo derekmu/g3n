@@ -12,7 +12,6 @@ type FillLayout struct {
 
 // NewFillLayout creates and returns a pointer of a new fill layout
 func NewFillLayout(width, height bool) *FillLayout {
-
 	f := new(FillLayout)
 	f.width = width
 	f.height = height
@@ -21,7 +20,6 @@ func NewFillLayout(width, height bool) *FillLayout {
 
 // Recalc is called by the panel which has this layout
 func (f *FillLayout) Recalc(ipan IPanel) {
-
 	parent := ipan.GetPanel()
 	children := parent.Children()
 	if len(children) == 0 {

@@ -19,7 +19,6 @@ import (
 // and an error. If no previous instance of the geometry was found
 // the geometry is created
 func (d *Decoder) GetGeometry(id string) (geometry.IGeometry, uint32, error) {
-
 	// If geometry already created, returns it
 	ginst, ok := d.geometries[id]
 	if ok {
@@ -39,7 +38,6 @@ func (d *Decoder) GetGeometry(id string) (geometry.IGeometry, uint32, error) {
 // NewGeometry creates and returns a pointer to a new instance of the geometry
 // with the specified id in the Collada document, its primitive type and and error.
 func (d *Decoder) NewGeometry(id string) (geometry.IGeometry, uint32, error) {
-
 	id = strings.TrimPrefix(id, "#")
 	// Look for geometry with specified id in the dom
 	var geo *Geometry
@@ -69,7 +67,6 @@ func (d *Decoder) NewGeometry(id string) (geometry.IGeometry, uint32, error) {
 }
 
 func newMesh(m *Mesh) (*geometry.Geometry, uint32, error) {
-
 	// If no primitive elements present, it is a mesh of points
 	if len(m.PrimitiveElements) == 0 {
 		return newMeshPoints(m)
@@ -110,7 +107,6 @@ func newMesh(m *Mesh) (*geometry.Geometry, uint32, error) {
 // Creates a geometry from a polylist
 // Only triangles are supported
 func newMeshPolylist(m *Mesh, pels []interface{}) (*geometry.Geometry, uint32, error) {
-
 	// Get vertices positions
 	if len(m.Vertices.Input) != 1 {
 		return nil, 0, fmt.Errorf("Mesh.Vertices.Input length not supported")
@@ -308,7 +304,6 @@ func newMeshPolylist(m *Mesh, pels []interface{}) (*geometry.Geometry, uint32, e
 }
 
 func newMeshTriangles(m *Mesh, tr *Triangles) (*geometry.Geometry, uint32, error) {
-
 	// Get vertices positions
 	if len(m.Vertices.Input) != 1 {
 		return nil, 0, fmt.Errorf("Mesh.Vertices.Input length not supported")
@@ -488,7 +483,6 @@ func newMeshTriangles(m *Mesh, tr *Triangles) (*geometry.Geometry, uint32, error
 }
 
 func newMeshLines(m *Mesh, ln *Lines) (*geometry.Geometry, uint32, error) {
-
 	if ln.Input == nil || len(ln.Input) == 0 {
 		return nil, 0, fmt.Errorf("No inputs in lines")
 	}
@@ -567,23 +561,19 @@ func newMeshLines(m *Mesh, ln *Lines) (*geometry.Geometry, uint32, error) {
 }
 
 func newMeshLineStrips(m *Mesh, ls *LineStrips) (*geometry.Geometry, uint32, error) {
-
 	return nil, 0, fmt.Errorf("not implemented yet")
 }
 
 func newMeshTrifans(m *Mesh, ls *Trifans) (*geometry.Geometry, uint32, error) {
-
 	return nil, 0, fmt.Errorf("not implemented yet")
 }
 
 func newMeshTristrips(m *Mesh, ls *Tristrips) (*geometry.Geometry, uint32, error) {
-
 	return nil, 0, fmt.Errorf("not implemented yet")
 }
 
 // Creates and returns pointer to a new geometry for POINTS
 func newMeshPoints(m *Mesh) (*geometry.Geometry, uint32, error) {
-
 	// Get vertices positions
 	if len(m.Vertices.Input) != 1 {
 		return nil, 0, fmt.Errorf("Mesh.Vertices.Input length not supported")
@@ -617,7 +607,6 @@ func newMeshPoints(m *Mesh) (*geometry.Geometry, uint32, error) {
 }
 
 func getMeshSource(m *Mesh, uri string) *Source {
-
 	id := strings.TrimPrefix(uri, "#")
 	for _, s := range m.Source {
 		if s.Id == id {
@@ -628,7 +617,6 @@ func getMeshSource(m *Mesh, uri string) *Source {
 }
 
 func getInputSemantic(inps []InputShared, semantic string) *InputShared {
-
 	for i := 0; i < len(inps); i++ {
 		if inps[i].Semantic == semantic {
 			return &inps[i]

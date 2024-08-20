@@ -89,21 +89,17 @@ byte 8: [             X 1 ] [sparse] flag (1 bit)
 \begin{Verbatim}[commandchars=\\\{\}]
 
   1) if([sparse] is set) \{
-
          2) [flag] = read one bit;
          3) if([flag] is set) \{
-
               4) [length] = read a five bit unsigned integer;
               5) codeword length for this entry is [length]+1;
 
             \} else \{
-
               6) this entry is unused.  mark it as such.
 
             \}
 
      \} else the sparse flag is not set \{
-
         7) [length] = read a five bit unsigned integer;
         8) the codeword length for this entry is [length]+1;
 
@@ -172,11 +168,9 @@ possible scalar values.  Lookup decode proceeds as follows:
   4) [codebook\_sequence\_p] = read 1 bit as a boolean flag
 
   if ( [codebook\_lookup\_type] is 1 ) \{
-
      5) [codebook\_lookup\_values] = \link{vorbis:spec:lookup1:values}{lookup1\_values}(\varname{[codebook\_entries]}, \varname{[codebook\_dimensions]} )
 
   \} else \{
-
      6) [codebook\_lookup\_values] = \varname{[codebook\_entries]} * \varname{[codebook\_dimensions]}
 
   \}
@@ -363,7 +357,6 @@ is the output vector representing the vector of values for entry number
   1) [last] = 0;
   2) [index\_divisor] = 1;
   3) iterate [i] over the range 0 ... [codebook\_dimensions]-1 (once for each scalar value in the value vector) \{
-
        4) [multiplicand\_offset] = ( [lookup\_offset] divided by [index\_divisor] using integer
           division ) integer modulo [codebook\_lookup\_values]
 
@@ -396,7 +389,6 @@ is the output vector representing the vector of values for entry number
   1) [last] = 0;
   2) [multiplicand\_offset] = [lookup\_offset] * [codebook\_dimensions]
   3) iterate [i] over the range 0 ... [codebook\_dimensions]-1 (once for each scalar value in the value vector) \{
-
        4) vector [value\_vector] element [i] =
             ( [codebook\_multiplicands] array element number [multiplicand\_offset] ) *
             [codebook\_delta\_value] + [codebook\_minimum\_value] + [last];

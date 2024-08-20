@@ -321,7 +321,6 @@ void vorbis_dsp_clear(vorbis_dsp_state *v){
     private_state *b=v->backend_state;
 
     if(b){
-
       if(b->ve){
         _ve_envelope_clear(b->ve);
         _ogg_free(b->ve);
@@ -504,7 +503,6 @@ int vorbis_analysis_wrote(vorbis_dsp_state *v, int vals){
       }
     }
   }else{
-
     if(v->pcm_current+vals>v->pcm_storage)
       return(OV_EINVAL);
 
@@ -547,12 +545,10 @@ int vorbis_analysis_blockout(vorbis_dsp_state *v,vorbis_block *vb){
   {
     long bp=_ve_envelope_search(v);
     if(bp==-1){
-
       if(v->eofflag==0)return(0); /* not enough data currently to search for a
                                      full long block */
       v->nW=0;
     }else{
-
       if(ci->blocksizes[0]==ci->blocksizes[1])
         v->nW=0;
       else
@@ -651,7 +647,6 @@ int vorbis_analysis_blockout(vorbis_dsp_state *v,vorbis_block *vb){
     int movementW=centerNext-new_centerNext;
 
     if(movementW>0){
-
       _ve_envelope_shift(b->ve,movementW);
       v->pcm_current-=movementW;
 
@@ -897,7 +892,6 @@ int vorbis_synthesis_blockin(vorbis_dsp_state *v,vorbis_block *vb){
   }else{
     v->granulepos+=ci->blocksizes[v->lW]/4+ci->blocksizes[v->W]/4;
     if(vb->granulepos!=-1 && v->granulepos!=vb->granulepos){
-
       if(v->granulepos>vb->granulepos){
         long extra=v->granulepos-vb->granulepos;
 

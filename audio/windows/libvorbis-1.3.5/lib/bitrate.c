@@ -172,7 +172,6 @@ int vorbis_bitrate_addblock(vorbis_block *vb){
     bm->choice=choice=0;
 
     if(oggpack_bytes(vbi->packetblob[choice])>maxsize){
-
       oggpack_writetrunc(vbi->packetblob[choice],maxsize*8);
       this_bits=oggpack_bytes(vbi->packetblob[choice])*8;
     }
@@ -193,7 +192,6 @@ int vorbis_bitrate_addblock(vorbis_block *vb){
   /* now we have the final packet and the final packet size.  Update statistics */
   /* min and max reservoir */
   if(bm->min_bitsper>0 || bm->max_bitsper>0){
-
     if(max_target_bits>0 && this_bits>max_target_bits){
       bm->minmax_reservoir+=(this_bits-max_target_bits);
     }else if(min_target_bits>0 && this_bits<min_target_bits){

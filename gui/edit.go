@@ -57,7 +57,6 @@ const (
 
 // NewEdit creates and returns a pointer to a new edit widget
 func NewEdit(width int, placeHolder string) *Edit {
-
 	ed := new(Edit)
 	ed.width = width
 	ed.placeHolder = placeHolder
@@ -88,7 +87,6 @@ func NewEdit(width int, placeHolder string) *Edit {
 
 // SetText sets this edit text
 func (ed *Edit) SetText(newText string) *Edit {
-
 	// Remove new lines from text
 	ed.text = strings.Replace(newText, "\n", "", -1)
 	ed.col = text.StrCount(ed.text)
@@ -100,14 +98,12 @@ func (ed *Edit) SetText(newText string) *Edit {
 
 // Text returns the current edited text
 func (ed *Edit) Text() string {
-
 	return ed.text
 }
 
 // SelectedText returns the currently selected text
 // or empty string when nothing is selected
 func (ed *Edit) SelectedText() string {
-
 	if ed.selStart == ed.selEnd {
 		return ""
 	}
@@ -128,7 +124,6 @@ func (ed *Edit) SelectedText() string {
 
 // SetFontSize sets label font size (overrides Label.SetFontSize)
 func (ed *Edit) SetFontSize(size float64) *Edit {
-
 	ed.Label.SetFontSize(size)
 	ed.redraw(ed.focus)
 	return ed
@@ -136,7 +131,6 @@ func (ed *Edit) SetFontSize(size float64) *Edit {
 
 // SetStyles set the button styles overriding the default style
 func (ed *Edit) SetStyles(es *EditStyles) {
-
 	ed.styles = es
 	ed.update()
 }
@@ -144,7 +138,6 @@ func (ed *Edit) SetStyles(es *EditStyles) {
 // LostKeyFocus satisfies the IPanel interface and is called by gui root
 // container when the panel loses the key focus
 func (ed *Edit) OnFocusLost(evname string, ev interface{}) {
-
 	ed.focus = false
 	ed.update()
 	Manager().ClearTimeout(ed.blinkID)
@@ -153,7 +146,6 @@ func (ed *Edit) OnFocusLost(evname string, ev interface{}) {
 // CursorPos sets the position of the cursor at the
 // specified  column if possible
 func (ed *Edit) CursorPos(col int) {
-
 	if col <= text.StrCount(ed.text) {
 		ed.col = col
 		ed.selStart = col
@@ -164,7 +156,6 @@ func (ed *Edit) CursorPos(col int) {
 
 // SetSelection selects the text between start and end
 func (ed *Edit) SetSelection(start, end int) {
-
 	// make sure end is bigger than start
 	if start > end {
 		start, end = end, start
@@ -187,7 +178,6 @@ func (ed *Edit) SetSelection(start, end int) {
 // If text is selected the cursor is moved to the beginning of the selection instead
 // and the selection is removed
 func (ed *Edit) CursorLeft() {
-
 	if ed.selStart == ed.selEnd {
 		// no selection
 		// move cursor to the left if possible
@@ -210,7 +200,6 @@ func (ed *Edit) CursorLeft() {
 // If text is selected the cursor is moved to the end of the selection instead
 // and the selection is removed
 func (ed *Edit) CursorRight() {
-
 	if ed.selStart == ed.selEnd {
 		// no selection
 		// move cursor to the right if possible
@@ -231,7 +220,6 @@ func (ed *Edit) CursorRight() {
 
 // SelectLeft expands/shrinks the selection to the left if possible
 func (ed *Edit) SelectLeft() {
-
 	if ed.col > 0 {
 		if ed.col == ed.selStart {
 			// cursor is at the start of selection
@@ -251,7 +239,6 @@ func (ed *Edit) SelectLeft() {
 
 // SelectRight expands/shrinks the selection to the right if possible
 func (ed *Edit) SelectRight() {
-
 	if ed.col < text.StrCount(ed.text) {
 		if ed.col == ed.selEnd {
 			// cursor is at the end of selection:
@@ -271,7 +258,6 @@ func (ed *Edit) SelectRight() {
 
 // SelectHome expands the selection to the left to the beginning of the text
 func (ed *Edit) SelectHome() {
-
 	if ed.selStart < ed.col {
 		ed.selEnd = ed.selStart
 	}
@@ -282,7 +268,6 @@ func (ed *Edit) SelectHome() {
 
 // SelectEnd expands the selection to the right to the end of the text
 func (ed *Edit) SelectEnd() {
-
 	if ed.selEnd > ed.col {
 		ed.selStart = ed.selEnd
 	}
@@ -293,7 +278,6 @@ func (ed *Edit) SelectEnd() {
 
 // SelectAll selects all text
 func (ed *Edit) SelectAll() {
-
 	ed.selStart = 0
 	ed.selEnd = text.StrCount(ed.text)
 	ed.col = ed.selEnd
@@ -303,7 +287,6 @@ func (ed *Edit) SelectAll() {
 // CursorBack either deletes the character at left of the cursor if possible
 // Or if text is selected the selected text is removed all at once
 func (ed *Edit) CursorBack() {
-
 	if ed.selStart == ed.selEnd {
 		if ed.col > 0 {
 			ed.col--
@@ -320,7 +303,6 @@ func (ed *Edit) CursorBack() {
 
 // CursorHome moves the edit cursor to the beginning of the text
 func (ed *Edit) CursorHome() {
-
 	ed.col = 0
 	ed.selStart = ed.col
 	ed.selEnd = ed.col
@@ -329,7 +311,6 @@ func (ed *Edit) CursorHome() {
 
 // CursorEnd moves the edit cursor to the end of the text
 func (ed *Edit) CursorEnd() {
-
 	ed.col = text.StrCount(ed.text)
 	ed.selStart = ed.col
 	ed.selEnd = ed.col
@@ -339,7 +320,6 @@ func (ed *Edit) CursorEnd() {
 // CursorDelete either deletes the character at the right of the cursor if possible
 // Or if text is selected the selected text is removed all at once
 func (ed *Edit) CursorDelete() {
-
 	if ed.selStart == ed.selEnd {
 		if ed.col < text.StrCount(ed.text) {
 			ed.text = text.StrRemove(ed.text, ed.col)
@@ -353,7 +333,6 @@ func (ed *Edit) CursorDelete() {
 
 // DeleteSelection deletes the selected characters. Does nothing if nothing is selected.
 func (ed *Edit) DeleteSelection() {
-
 	if ed.selStart == ed.selEnd {
 		return
 	}
@@ -376,7 +355,6 @@ func (ed *Edit) DeleteSelection() {
 // CursorInput inserts the specified string at the current cursor position
 // If text is selected the selected text gets overwritten
 func (ed *Edit) CursorInput(s string) {
-
 	if ed.selStart != ed.selEnd {
 		ed.DeleteSelection()
 	}
@@ -410,7 +388,6 @@ func (ed *Edit) CursorInput(s string) {
 // redraw redraws the text showing the caret if specified
 // the selection caret is always shown (when text is selected)
 func (ed *Edit) redraw(caret bool) {
-
 	line := 0
 	scaleX, _ := window.Get().GetScale()
 	ed.Label.setTextCaret(ed.text, editMarginX, int(float64(ed.width)*scaleX), caret, line, ed.col, ed.selStart, ed.selEnd)
@@ -418,7 +395,6 @@ func (ed *Edit) redraw(caret bool) {
 
 // onKey receives subscribed key events
 func (ed *Edit) onKey(evname string, ev interface{}) {
-
 	kev := ev.(*window.KeyEvent)
 	if kev.Mods != window.ModShift && kev.Mods != window.ModControl {
 		switch kev.Key {
@@ -465,14 +441,12 @@ func (ed *Edit) onKey(evname string, ev interface{}) {
 
 // onChar receives subscribed char events
 func (ed *Edit) onChar(evname string, ev interface{}) {
-
 	cev := ev.(*window.CharEvent)
 	ed.CursorInput(string(cev.Char))
 }
 
 // onMouseDown receives subscribed mouse down events
 func (ed *Edit) onMouseDown(evname string, ev interface{}) {
-
 	e := ev.(*window.MouseEvent)
 	if e.Button != window.MouseButtonLeft {
 		return
@@ -494,7 +468,6 @@ func (ed *Edit) onMouseDown(evname string, ev interface{}) {
 // handleMouse is setting the caret when the mouse is clicked
 // or setting the text selection when the mouse is dragged
 func (ed *Edit) handleMouse(mouseX float32, dragged bool) {
-
 	// Find clicked column
 	var nchars int
 	for nchars = 1; nchars <= text.StrCount(ed.text); nchars++ {
@@ -528,13 +501,11 @@ func (ed *Edit) handleMouse(mouseX float32, dragged bool) {
 
 // onMouseEvent receives subscribed mouse up events
 func (ed *Edit) onMouseUp(evname string, ev interface{}) {
-
 	ed.mouseDrag = false
 }
 
 // onCursor receives subscribed cursor events
 func (ed *Edit) onCursor(evname string, ev interface{}) {
-
 	if evname == OnCursorEnter {
 		window.Get().SetCursor(window.IBeamCursor)
 		ed.cursorOver = true
@@ -557,7 +528,6 @@ func (ed *Edit) onCursor(evname string, ev interface{}) {
 
 // blink blinks the caret
 func (ed *Edit) blink(arg interface{}) {
-
 	if !ed.focus {
 		return
 	}
@@ -571,7 +541,6 @@ func (ed *Edit) blink(arg interface{}) {
 
 // update updates the visual state
 func (ed *Edit) update() {
-
 	if !ed.Enabled() {
 		ed.applyStyle(&ed.styles.Disabled)
 		return
@@ -589,7 +558,6 @@ func (ed *Edit) update() {
 
 // applyStyle applies the specified style
 func (ed *Edit) applyStyle(s *EditStyle) {
-
 	ed.SetBordersFrom(&s.Border)
 	ed.SetBordersColor4(&s.BorderColor)
 	ed.SetPaddingsFrom(&s.Paddings)

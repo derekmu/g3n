@@ -217,14 +217,12 @@ STIN void mdct_butterfly_32(DATA_TYPE *x){
 STIN void mdct_butterfly_first(DATA_TYPE *T,
                                         DATA_TYPE *x,
                                         int points){
-
   DATA_TYPE *x1        = x          + points      - 8;
   DATA_TYPE *x2        = x          + (points>>1) - 8;
   REG_TYPE   r0;
   REG_TYPE   r1;
 
   do{
-
                r0      = x1[6]      -  x2[6];
                r1      = x1[7]      -  x2[7];
                x1[6]  += x2[6];
@@ -265,14 +263,12 @@ STIN void mdct_butterfly_generic(DATA_TYPE *T,
                                           DATA_TYPE *x,
                                           int points,
                                           int trigint){
-
   DATA_TYPE *x1        = x          + points      - 8;
   DATA_TYPE *x2        = x          + (points>>1) - 8;
   REG_TYPE   r0;
   REG_TYPE   r1;
 
   do{
-
                r0      = x1[6]      -  x2[6];
                r1      = x1[7]      -  x2[7];
                x1[6]  += x2[6];
@@ -317,7 +313,6 @@ STIN void mdct_butterfly_generic(DATA_TYPE *T,
 STIN void mdct_butterflies(mdct_lookup *init,
                              DATA_TYPE *x,
                              int points){
-
   DATA_TYPE *T=init->trig;
   int stages=init->log2n-5;
   int i,j;

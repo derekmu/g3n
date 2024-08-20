@@ -167,11 +167,9 @@ intervening values along the line.</p>
   4) [err] = [ady] * ([X] - [x0])
   5) [off] = [err] / [adx] using integer division
   6) if ( [dy] is less than zero ) {
-
        7) [Y] = [y0] - [off]
 
      } else {
-
        8) [Y] = [y0] + [off]
   
      }
@@ -197,11 +195,9 @@ rounding division of both positive and negative numbers toward zero.</p>
   7)  [err] = 0
 
   8) if ( [dy] is less than 0 ) {
-
         9) [sy] = [base] - 1
 
      } else {
-
        10) [sy] = [base] + 1
 
      }
@@ -210,15 +206,12 @@ rounding division of both positive and negative numbers toward zero.</p>
  12) vector [v] element [x] = [y]
 
  13) iterate [x] over the range [x0]+1 ... [x1]-1 {
-
        14) [err] = [err] + [ady];
        15) if ( [err] >= [adx] ) {
-
              15) [err] = [err] - [adx]
              16)   [y] = [y] + [sy]
 
            } else {
-
              17) [y] = [y] + [base]
    
            }

@@ -208,7 +208,6 @@ float microfacetDistribution(PBRInfo pbrInputs, PBRLightInfo pbrLight)
 }
 
 vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
-
     vec3 n = getNormal();// normal at surface point
     vec3 v = normalize(CamDir);// Vector from surface point to camera
     vec3 l = normalize(lightDir);// Vector from surface point to light
@@ -244,7 +243,6 @@ vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
 }
 
 void main() {
-
     float perceptualRoughness = uRoughnessFactor;
     float metallic = uMetallicFactor;
 
@@ -335,7 +333,6 @@ void main() {
 
     #if SPOT_LIGHTS>0
     for (int i = 0; i < SPOT_LIGHTS; i++) {
-
         // Calculates the direction and distance from the current vertex to this spot light.
         vec3 lightDirection = SpotLightPosition(i) - vec3(Position);
         float lightDistance = length(lightDirection);

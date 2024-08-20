@@ -13,7 +13,6 @@ import (
 
 // NewDarkStyle creates and returns a pointer to the a new "dark" style
 func NewDarkStyle() *Style {
-
 	// Fonts to use
 	const textFont = "fonts/FreeSans.ttf"
 	const iconFont = "fonts/MaterialIcons-Regular.ttf"

@@ -48,7 +48,6 @@ type ImageButtonStyles struct {
 // NewImageButton creates and returns a pointer to a new ImageButton widget
 // with the specified image.
 func NewImageButton(normalImgPath string) (*ImageButton, error) {
-
 	b := new(ImageButton)
 	b.styles = &StyleDefault().ImageButton
 
@@ -83,7 +82,6 @@ func NewImageButton(normalImgPath string) (*ImageButton, error) {
 
 // SetText sets the text of the label
 func (b *ImageButton) SetText(text string) {
-
 	if b.iconLabel && b.label != nil {
 		b.Panel.Remove(b.label)
 		b.label.Dispose()
@@ -103,7 +101,6 @@ func (b *ImageButton) SetText(text string) {
 
 // SetIcon sets the icon
 func (b *ImageButton) SetIcon(icode string) {
-
 	if b.iconLabel == false && b.label != nil {
 		b.Panel.Remove(b.label)
 		b.label.Dispose()
@@ -123,7 +120,6 @@ func (b *ImageButton) SetIcon(icode string) {
 
 // SetFontSize sets the font size of the label/icon
 func (b *ImageButton) SetFontSize(size float64) {
-
 	if b.label != nil {
 		b.label.SetFontSize(size)
 		b.recalc()
@@ -133,7 +129,6 @@ func (b *ImageButton) SetFontSize(size float64) {
 // SetImage sets the button left image from the specified filename
 // If there is currently a selected icon, it is removed
 func (b *ImageButton) SetImage(state ButtonState, imgfile string) error {
-
 	tex, err := texture.NewTexture2DFromImage(imgfile)
 	if err != nil {
 		return err
@@ -160,14 +155,12 @@ func (b *ImageButton) Dispose() {
 
 // SetStyles set the button styles overriding the default style
 func (b *ImageButton) SetStyles(bs *ImageButtonStyles) {
-
 	b.styles = bs
 	b.update()
 }
 
 // onCursor process subscribed cursor events
 func (b *ImageButton) onCursor(evname string, ev interface{}) {
-
 	switch evname {
 	case OnCursorEnter:
 		b.mouseOver = true
@@ -181,7 +174,6 @@ func (b *ImageButton) onCursor(evname string, ev interface{}) {
 
 // onMouseEvent process subscribed mouse events
 func (b *ImageButton) onMouse(evname string, ev interface{}) {
-
 	switch evname {
 	case OnMouseDown:
 		Manager().SetKeyFocus(b)
@@ -198,7 +190,6 @@ func (b *ImageButton) onMouse(evname string, ev interface{}) {
 
 // onKey processes subscribed key events
 func (b *ImageButton) onKey(evname string, ev interface{}) {
-
 	kev := ev.(*window.KeyEvent)
 	if evname == OnKeyDown && kev.Key == window.KeyEnter {
 		b.pressed = true
@@ -216,7 +207,6 @@ func (b *ImageButton) onKey(evname string, ev interface{}) {
 
 // update updates the button visual state
 func (b *ImageButton) update() {
-
 	if !b.Enabled() {
 		if b.stateImages[ButtonDisabled] != nil {
 			b.image.SetTexture(b.stateImages[ButtonDisabled])
@@ -244,7 +234,6 @@ func (b *ImageButton) update() {
 
 // applyStyle applies the specified button style
 func (b *ImageButton) applyStyle(bs *ImageButtonStyle) {
-
 	b.Panel.ApplyStyle(&bs.PanelStyle)
 	if b.label != nil {
 		b.label.SetColor4(&bs.FgColor)
@@ -253,7 +242,6 @@ func (b *ImageButton) applyStyle(bs *ImageButtonStyle) {
 
 // recalc recalculates all dimensions and position from inside out
 func (b *ImageButton) recalc() {
-
 	// Only need to recal if there's a label preset
 	if b.label != nil {
 		width := b.Panel.ContentWidth()

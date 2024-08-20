@@ -25,7 +25,6 @@ type Directional struct {
 // NewDirectional creates and returns a pointer of a new directional light
 // the specified color and intensity.
 func NewDirectional(color *math32.Color, intensity float32) *Directional {
-
 	ld := new(Directional)
 	ld.Node.Init(ld)
 
@@ -38,7 +37,6 @@ func NewDirectional(color *math32.Color, intensity float32) *Directional {
 
 // SetColor sets the color of this light
 func (ld *Directional) SetColor(color *math32.Color) {
-
 	ld.color = *color
 	ld.udata.color = ld.color
 	ld.udata.color.MultiplyScalar(ld.intensity)
@@ -46,13 +44,11 @@ func (ld *Directional) SetColor(color *math32.Color) {
 
 // Color returns the current color of this light
 func (ld *Directional) Color() math32.Color {
-
 	return ld.color
 }
 
 // SetIntensity sets the intensity of this light
 func (ld *Directional) SetIntensity(intensity float32) {
-
 	ld.intensity = intensity
 	ld.udata.color = ld.color
 	ld.udata.color.MultiplyScalar(ld.intensity)
@@ -60,13 +56,11 @@ func (ld *Directional) SetIntensity(intensity float32) {
 
 // Intensity returns the current intensity of this light
 func (ld *Directional) Intensity() float32 {
-
 	return ld.intensity
 }
 
 // RenderSetup is called by the engine before rendering the scene
 func (ld *Directional) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo, idx int) {
-
 	// Calculates light position in camera coordinates and updates uniform
 	var pos math32.Vector3
 	ld.WorldPosition(&pos)

@@ -11,7 +11,6 @@ type Basic struct {
 
 // NewBasic returns a pointer to a new Basic material
 func NewBasic() *Basic {
-
 	mb := new(Basic)
 	mb.Material.Init()
 	mb.SetShader("basic")

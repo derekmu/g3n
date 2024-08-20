@@ -442,7 +442,6 @@ static int book_dup_or_new(codec_setup_info *ci,const static_codebook *book){
 
 static void vorbis_encode_blocksize_setup(vorbis_info *vi,double s,
                                          const int *shortb,const int *longb){
-
   codec_setup_info *ci=vi->codec_setup;
   int is=s;
 
@@ -456,7 +455,6 @@ static void vorbis_encode_blocksize_setup(vorbis_info *vi,double s,
 static void vorbis_encode_residue_setup(vorbis_info *vi,
                                         int number, int block,
                                         const vorbis_residue_template *res){
-
   codec_setup_info *ci=vi->codec_setup;
   int i;
 
@@ -493,7 +491,6 @@ static void vorbis_encode_residue_setup(vorbis_info *vi,
       }
 
     }else{
-
       for(i=0;i<r->partitions;i++)
         for(k=0;k<4;k++)
           if(res->books_base->books[i][k])
@@ -572,7 +569,6 @@ static void vorbis_encode_residue_setup(vorbis_info *vi,
       if(r->end>blocksize*ch)r->end=blocksize*ch/r->grouping*r->grouping;
 
     }else{
-
       r->end=(int)((freq/nyq*blocksize)/r->grouping+.9)* /* round up only if we're well past */
         r->grouping;
       /* the blocksize and grouping may disagree at the end */
@@ -588,7 +584,6 @@ static void vorbis_encode_residue_setup(vorbis_info *vi,
 /* we assume two maps in this encoder */
 static void vorbis_encode_map_n_res_setup(vorbis_info *vi,double s,
                                           const vorbis_mapping_template *maps){
-
   codec_setup_info *ci=vi->codec_setup;
   int i,j,is=s,modes=2;
   const vorbis_info_mapping0 *map=maps[is].map;
@@ -598,7 +593,6 @@ static void vorbis_encode_map_n_res_setup(vorbis_info *vi,double s,
   if(ci->blocksizes[0]==ci->blocksizes[1])modes=1;
 
   for(i=0;i<modes;i++){
-
     ci->map_param[i]=_ogg_calloc(1,sizeof(*map));
     ci->mode_param[i]=_ogg_calloc(1,sizeof(*mode));
 
@@ -951,7 +945,6 @@ int vorbis_encode_setup_managed(vorbis_info *vi,
                                 long max_bitrate,
                                 long nominal_bitrate,
                                 long min_bitrate){
-
   codec_setup_info *ci;
   highlevel_encode_setup *hi;
   double tnominal;
@@ -1003,7 +996,6 @@ int vorbis_encode_init(vorbis_info *vi,
                        long max_bitrate,
                        long nominal_bitrate,
                        long min_bitrate){
-
   int ret=vorbis_encode_setup_managed(vi,channels,rate,
                                       max_bitrate,
                                       nominal_bitrate,
@@ -1028,11 +1020,9 @@ int vorbis_encode_ctl(vorbis_info *vi,int number,void *arg){
     if(setp && hi->set_in_stone)return(OV_EINVAL);
 
     switch(number){
-
     /* now deprecated *****************/
     case OV_ECTL_RATEMANAGE_GET:
       {
-
         struct ovectl_ratemanage_arg *ai=
           (struct ovectl_ratemanage_arg *)arg;
 

@@ -106,7 +106,6 @@ static void drfti1(int n, float *wa, int *ifac){
 }
 
 static void fdrffti(int n, float *wsave, int *ifac){
-
   if (n == 1) return;
   drfti1(n, wsave+n, ifac);
 }
@@ -270,7 +269,6 @@ static void dradf4(int ido,int l1,float *cc,float *ch,float *wa1,
 
 static void dradfg(int ido,int ip,int l1,int idl1,float *cc,float *c1,
                           float *c2,float *ch,float *ch2,float *wa){
-
   static float tpi=6.283185307179586f;
   int idij,ipph,i,j,k,l,ic,ik,is;
   int t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10;
@@ -322,7 +320,6 @@ static void dradfg(int ido,int ip,int l1,int idl1,float *cc,float *c1,
       }
     }
   }else{
-
     for(j=1;j<ip;j++){
       is+=ido;
       idij=is-1;
@@ -490,7 +487,6 @@ L119:
   t3=0;
   t4=ipp2*t0;
   for(j=1;j<ipph;j++){
-
     t1+=t2;
     t3+=t0;
     t4-=t0;

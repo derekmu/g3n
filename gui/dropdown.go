@@ -34,7 +34,6 @@ type DropDownStyles struct {
 
 // NewDropDown creates and returns a pointer to a new drop down widget with the specified width.
 func NewDropDown(width float32, item *ImageLabel) *DropDown {
-
 	dd := new(DropDown)
 	dd.styles = &StyleDefault().DropDown
 	dd.litem = item
@@ -87,51 +86,43 @@ func NewDropDown(width float32, item *ImageLabel) *DropDown {
 
 // Add adds a list item at the end of the list
 func (dd *DropDown) Add(item *ImageLabel) {
-
 	dd.list.Add(item)
 }
 
 // InsertAt inserts a list item at the specified position
 // Returs true if the item was successfully inserted
 func (dd *DropDown) InsertAt(pos int, item *ImageLabel) {
-
 	dd.list.InsertAt(pos, item)
 }
 
 // RemoveAt removes the list item from the specified position
 // Returs true if the item was successfully removed
 func (dd *DropDown) RemoveAt(pos int) {
-
 	dd.list.RemoveAt(pos)
 }
 
 // ItemAt returns the list item at the specified position
 func (dd *DropDown) ItemAt(pos int) *ImageLabel {
-
 	return dd.list.ItemAt(pos).(*ImageLabel)
 }
 
 // Len returns the number of items in the dropdown's list.
 func (dd *DropDown) Len() int {
-
 	return dd.list.Len()
 }
 
 // Selected returns the currently selected item or nil if no item was selected
 func (dd *DropDown) Selected() *ImageLabel {
-
 	return dd.selItem
 }
 
 // SelectedPos returns the currently selected position or -1 if no item was selected
 func (dd *DropDown) SelectedPos() int {
-
 	return dd.list.selected()
 }
 
 // SetSelected sets the selected item
 func (dd *DropDown) SetSelected(item *ImageLabel) {
-
 	dd.list.SetSelected(dd.selItem, false)
 	dd.list.SetSelected(item, true)
 	dd.copySelected()
@@ -140,7 +131,6 @@ func (dd *DropDown) SetSelected(item *ImageLabel) {
 
 // SelectPos selects the item at the specified position
 func (dd *DropDown) SelectPos(pos int) {
-
 	dd.list.SetSelected(dd.selItem, false)
 	dd.list.SelectPos(pos, true)
 	dd.Dispatch(OnChange, nil)
@@ -148,14 +138,12 @@ func (dd *DropDown) SelectPos(pos int) {
 
 // SetStyles sets the drop down styles overriding the default style
 func (dd *DropDown) SetStyles(dds *DropDownStyles) {
-
 	dd.styles = dds
 	dd.update()
 }
 
 // onMouse receives subscribed mouse events over the dropdown
 func (dd *DropDown) onMouse(evname string, ev interface{}) {
-
 	Manager().SetKeyFocus(dd.list)
 	if evname == OnMouseDown {
 		dd.list.SetVisible(!dd.list.Visible())
@@ -165,7 +153,6 @@ func (dd *DropDown) onMouse(evname string, ev interface{}) {
 
 // onCursor receives subscribed cursor events over the dropdown
 func (dd *DropDown) onCursor(evname string, ev interface{}) {
-
 	if evname == OnCursorEnter {
 		dd.overDropdown = true
 	}
@@ -178,7 +165,6 @@ func (dd *DropDown) onCursor(evname string, ev interface{}) {
 // copySelected copy to the dropdown panel the selected item
 // from the list.
 func (dd *DropDown) copySelected() {
-
 	selected := dd.list.Selected()
 	if len(selected) > 0 {
 		dd.selItem = selected[0].(*ImageLabel)
@@ -193,14 +179,12 @@ func (dd *DropDown) copySelected() {
 
 // onListChangeEvent is called when an item in the list is selected
 func (dd *DropDown) onListChangeEvent(evname string, ev interface{}) {
-
 	dd.copySelected()
 }
 
 // recalc recalculates the dimensions and positions of the dropdown
 // panel, children and list
 func (dd *DropDown) recalc() {
-
 	// Dropdown icon position
 	posx := dd.Panel.ContentWidth() - dd.icon.Width()
 	dd.icon.SetPosition(posx, 0)
@@ -219,7 +203,6 @@ func (dd *DropDown) recalc() {
 
 // update updates the visual state
 func (dd *DropDown) update() {
-
 	if dd.overDropdown || dd.overList {
 		dd.applyStyle(&dd.styles.Over)
 		dd.list.ApplyStyle(StyleOver)
@@ -236,6 +219,5 @@ func (dd *DropDown) update() {
 
 // applyStyle applies the specified style
 func (dd *DropDown) applyStyle(s *DropDownStyle) {
-
 	dd.Panel.ApplyStyle(&s.PanelStyle)
 }

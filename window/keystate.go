@@ -14,7 +14,6 @@ type KeyState struct {
 
 // NewKeyState returns a new KeyState object.
 func NewKeyState(win core.IDispatcher) *KeyState {
-
 	ks := new(KeyState)
 	ks.win = win
 	ks.states = map[Key]bool{
@@ -150,20 +149,17 @@ func NewKeyState(win core.IDispatcher) *KeyState {
 
 // Dispose unsubscribes from the window events.
 func (ks *KeyState) Dispose() {
-
 	ks.win.UnsubscribeID(OnKeyUp, &ks)
 	ks.win.UnsubscribeID(OnKeyDown, &ks)
 }
 
 // Pressed returns whether the specified key is currently pressed.
 func (ks *KeyState) Pressed(k Key) bool {
-
 	return ks.states[k]
 }
 
 // onKey receives key events and updates the internal map of states.
 func (ks *KeyState) onKey(evname string, ev interface{}) {
-
 	kev := ev.(*KeyEvent)
 	switch evname {
 	case OnKeyUp:

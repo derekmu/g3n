@@ -10,6 +10,5 @@ import (
 // The specification of this extension is at:
 // https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_pbrSpecularGlossiness
 func (g *GLTF) loadMaterialPbrSpecularGlossiness(ext interface{}) (material.IMaterial, error) {
-
 	return nil, nil
 }

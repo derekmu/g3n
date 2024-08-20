@@ -25,7 +25,6 @@ type Mesh struct {
 // If the mesh has multi materials, the material specified here must be nil and the
 // individual materials must be add using "AddMaterial" or AddGroupMaterial".
 func NewMesh(igeom geometry.IGeometry, imat material.IMaterial) *Mesh {
-
 	m := new(Mesh)
 	m.Init(igeom, imat)
 	return m
@@ -33,7 +32,6 @@ func NewMesh(igeom geometry.IGeometry, imat material.IMaterial) *Mesh {
 
 // Init initializes the Mesh and its uniforms.
 func (m *Mesh) Init(igeom geometry.IGeometry, imat material.IMaterial) {
-
 	m.Graphic.Init(m, igeom, gls.TRIANGLES)
 
 	// Initialize uniforms
@@ -50,26 +48,22 @@ func (m *Mesh) Init(igeom geometry.IGeometry, imat material.IMaterial) {
 
 // SetMaterial clears all materials and adds the specified material for all vertices.
 func (m *Mesh) SetMaterial(imat material.IMaterial) {
-
 	m.Graphic.ClearMaterials()
 	m.Graphic.AddMaterial(m, imat, 0, 0)
 }
 
 // AddMaterial adds a material for the specified subset of vertices.
 func (m *Mesh) AddMaterial(imat material.IMaterial, start, count int) {
-
 	m.Graphic.AddMaterial(m, imat, start, count)
 }
 
 // AddGroupMaterial adds a material for the specified geometry group.
 func (m *Mesh) AddGroupMaterial(imat material.IMaterial, gindex int) {
-
 	m.Graphic.AddGroupMaterial(m, imat, gindex)
 }
 
 // Clone clones the mesh and satisfies the INode interface.
 func (m *Mesh) Clone() core.INode {
-
 	clone := new(Mesh)
 	clone.Graphic = *m.Graphic.Clone().(*Graphic)
 	clone.SetIGraphic(clone)
@@ -87,7 +81,6 @@ func (m *Mesh) Clone() core.INode {
 // It is responsible to updating the current shader uniforms with
 // the model matrices.
 func (m *Mesh) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-
 	// Transfer uniform for model matrix
 	mm := m.ModelMatrix()
 	location := m.uniMm.Location(gs)

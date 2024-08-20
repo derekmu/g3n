@@ -38,7 +38,6 @@ extern "C" {
 
 namespace
 {
-
 static const std::string AppName("alffplay");
 
 static bool do_direct_out = false;

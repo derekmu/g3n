@@ -14,7 +14,6 @@ type Box2 struct {
 // NewBox2 creates and returns a pointer to a new Box2 defined
 // by its minimum and maximum coordinates.
 func NewBox2(min, max *Vector2) *Box2 {
-
 	b := new(Box2)
 	b.Set(min, max)
 	return b
@@ -23,7 +22,6 @@ func NewBox2(min, max *Vector2) *Box2 {
 // Set sets this bounding box minimum and maximum coordinates.
 // Returns pointer to this updated bounding box.
 func (b *Box2) Set(min, max *Vector2) *Box2 {
-
 	if min != nil {
 		b.min = *min
 	} else {
@@ -40,7 +38,6 @@ func (b *Box2) Set(min, max *Vector2) *Box2 {
 // SetFromPoints set this bounding box from the specified array of points.
 // Returns pointer to this updated bounding box.
 func (b *Box2) SetFromPoints(points []*Vector2) *Box2 {
-
 	b.MakeEmpty()
 	for i := 0; i < len(points); i++ {
 		b.ExpandByPoint(points[i])
@@ -52,7 +49,6 @@ func (b *Box2) SetFromPoints(points []*Vector2) *Box2 {
 // Size is a vector from the minimum point to the maximum point.
 // Returns pointer to this updated bounding box.
 func (b *Box2) SetFromCenterAndSize(center, size *Vector2) *Box2 {
-
 	var v1 Vector2
 	halfSize := v1.Copy(size).MultiplyScalar(0.5)
 	b.min.Copy(center).Sub(halfSize)
@@ -63,7 +59,6 @@ func (b *Box2) SetFromCenterAndSize(center, size *Vector2) *Box2 {
 // Copy copy other to this bounding box.
 // Returns pointer to this updated bounding box.
 func (b *Box2) Copy(box *Box2) *Box2 {
-
 	b.min = box.min
 	b.max = box.max
 	return b
@@ -72,7 +67,6 @@ func (b *Box2) Copy(box *Box2) *Box2 {
 // MakeEmpty set this bounding box to empty.
 // Returns pointer to this updated bounding box.
 func (b *Box2) MakeEmpty() *Box2 {
-
 	b.min.X = Infinity
 	b.min.Y = Infinity
 	b.max.X = -Infinity
@@ -82,14 +76,12 @@ func (b *Box2) MakeEmpty() *Box2 {
 
 // Empty returns if this bounding box is empty.
 func (b *Box2) Empty() bool {
-
 	return (b.max.X < b.min.X) || (b.max.Y < b.min.Y)
 }
 
 // Center calculates the center point of this bounding box and
 // stores its pointer to optionalTarget, if not nil, and also returns it.
 func (b *Box2) Center(optionalTarget *Vector2) *Vector2 {
-
 	var result *Vector2
 	if optionalTarget == nil {
 		result = NewVector2(0, 0)
@@ -104,7 +96,6 @@ func (b *Box2) Center(optionalTarget *Vector2) *Vector2 {
 // Store pointer to the calculated size into optionalTarget, if not nil,
 // and also returns it.
 func (b *Box2) Size(optionalTarget *Vector2) *Vector2 {
-
 	var result *Vector2
 	if optionalTarget == nil {
 		result = NewVector2(0, 0)
@@ -117,7 +108,6 @@ func (b *Box2) Size(optionalTarget *Vector2) *Vector2 {
 // ExpandByPoint may expand this bounding box to include the specified point.
 // Returns pointer to this updated bounding box.
 func (b *Box2) ExpandByPoint(point *Vector2) *Box2 {
-
 	b.min.Min(point)
 	b.max.Max(point)
 	return b
@@ -126,7 +116,6 @@ func (b *Box2) ExpandByPoint(point *Vector2) *Box2 {
 // ExpandByVector expands this bounding box by the specified vector.
 // Returns pointer to this updated bounding box.
 func (b *Box2) ExpandByVector(vector *Vector2) *Box2 {
-
 	b.min.Sub(vector)
 	b.max.Add(vector)
 	return b
@@ -135,7 +124,6 @@ func (b *Box2) ExpandByVector(vector *Vector2) *Box2 {
 // ExpandByScalar expands this bounding box by the specified scalar.
 // Returns pointer to this updated bounding box.
 func (b *Box2) ExpandByScalar(scalar float32) *Box2 {
-
 	b.min.AddScalar(-scalar)
 	b.max.AddScalar(scalar)
 	return b
@@ -143,7 +131,6 @@ func (b *Box2) ExpandByScalar(scalar float32) *Box2 {
 
 // ContainsPoint returns if this bounding box contains the specified point.
 func (b *Box2) ContainsPoint(point *Vector2) bool {
-
 	if point.X < b.min.X || point.X > b.max.X ||
 		point.Y < b.min.Y || point.Y > b.max.Y {
 		return false
@@ -153,7 +140,6 @@ func (b *Box2) ContainsPoint(point *Vector2) bool {
 
 // ContainsBox returns if this bounding box contains other box.
 func (b *Box2) ContainsBox(other *Box2) bool {
-
 	if (b.min.X <= other.min.X) && (other.max.X <= b.max.X) &&
 		(b.min.Y <= other.min.Y) && (other.max.Y <= b.max.Y) {
 		return true
@@ -164,7 +150,6 @@ func (b *Box2) ContainsBox(other *Box2) bool {
 
 // IsIntersectionBox returns if other box intersects this one.
 func (b *Box2) IsIntersectionBox(other *Box2) bool {
-
 	// using 6 splitting planes to rule out intersections.
 	if other.max.X < b.min.X || other.min.X > b.max.X ||
 		other.max.Y < b.min.Y || other.min.Y > b.max.Y {
@@ -176,7 +161,6 @@ func (b *Box2) IsIntersectionBox(other *Box2) bool {
 // ClampPoint calculates a new point which is the specified point clamped inside this box.
 // Stores the pointer to this new point into optionaTarget, if not nil, and also returns it.
 func (b *Box2) ClampPoint(point *Vector2, optionalTarget *Vector2) *Vector2 {
-
 	var result *Vector2
 	if optionalTarget == nil {
 		result = NewVector2(0, 0)
@@ -188,7 +172,6 @@ func (b *Box2) ClampPoint(point *Vector2, optionalTarget *Vector2) *Vector2 {
 
 // DistanceToPoint returns the distance from this box to the specified point.
 func (b *Box2) DistanceToPoint(point *Vector2) float32 {
-
 	v1 := NewVector2(0, 0)
 	clampedPoint := v1.Copy(point).Clamp(&b.min, &b.max)
 	return clampedPoint.Sub(point).Length()
@@ -197,7 +180,6 @@ func (b *Box2) DistanceToPoint(point *Vector2) float32 {
 // Intersect sets this box to the intersection with other box.
 // Returns pointer to this updated bounding box.
 func (b *Box2) Intersect(other *Box2) *Box2 {
-
 	b.min.Max(&other.min)
 	b.max.Min(&other.max)
 	return b
@@ -206,7 +188,6 @@ func (b *Box2) Intersect(other *Box2) *Box2 {
 // Union set this box to the union with other box.
 // Returns pointer to this updated bounding box.
 func (b *Box2) Union(other *Box2) *Box2 {
-
 	b.min.Min(&other.min)
 	b.max.Max(&other.max)
 	return b
@@ -215,7 +196,6 @@ func (b *Box2) Union(other *Box2) *Box2 {
 // Translate translates the position of this box by offset.
 // Returns pointer to this updated box.
 func (b *Box2) Translate(offset *Vector2) *Box2 {
-
 	b.min.Add(offset)
 	b.max.Add(offset)
 	return b
@@ -223,6 +203,5 @@ func (b *Box2) Translate(offset *Vector2) *Box2 {
 
 // Equals returns if this box is equal to other
 func (b *Box2) Equals(other *Box2) bool {
-
 	return other.min.Equals(&b.min) && other.max.Equals(&b.max)
 }

@@ -16,7 +16,6 @@ import (
 // TODO instead of 'arc' have thetaStart and thetaLength for consistency with other generators
 // TODO then rename this to NewTorusSector and add a NewTorus constructor
 func NewTorus(radius, tubeRadius float64, radialSegments, tubularSegments int, arc float64) *Geometry {
-
 	t := NewGeometry()
 
 	// Create buffers

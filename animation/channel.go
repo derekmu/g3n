@@ -23,39 +23,33 @@ type Channel struct {
 
 // SetBuffers sets the keyframe and value buffers.
 func (c *Channel) SetBuffers(keyframes, values math32.ArrayF32) {
-
 	c.keyframes = keyframes
 	c.values = values
 }
 
 // Keyframes returns the keyframe buffer.
 func (c *Channel) Keyframes() math32.ArrayF32 {
-
 	return c.keyframes
 }
 
 // Values returns the value buffer.
 func (c *Channel) Values() math32.ArrayF32 {
-
 	return c.values
 }
 
 // SetInterpolationTangents sets the interpolation tangents.
 func (c *Channel) SetInterpolationTangents(inTangent, outTangent math32.ArrayF32) {
-
 	c.inTangent = inTangent
 	c.outTangent = outTangent
 }
 
 // InterpolationTangents returns the interpolation tangents
 func (c *Channel) InterpolationTangents() (inTangent, outTangent math32.ArrayF32) {
-
 	return c.inTangent, c.outTangent
 }
 
 // SetInterpolationType sets the interpolation type for this channel.
 func (c *Channel) SetInterpolationType(it InterpolationType) {
-
 	// Don't update function if not needed
 	if c.interpType == it {
 		return
@@ -70,14 +64,12 @@ func (c *Channel) SetInterpolationType(it InterpolationType) {
 
 // InterpolationType returns the current interpolation type.
 func (c *Channel) InterpolationType() InterpolationType {
-
 	return c.interpType
 }
 
 // Update finds the keyframe preceding the specified time.
 // Then, calls a stored function to interpolate the relevant values and update the target.
 func (c *Channel) Update(time float32) {
-
 	// Test limits
 	if (len(c.keyframes) < 2) || (time < c.keyframes[0]) || (time > c.keyframes[len(c.keyframes)-1]) {
 		return
@@ -115,7 +107,6 @@ type NodeChannel struct {
 type PositionChannel NodeChannel
 
 func NewPositionChannel(node core.INode) *PositionChannel {
-
 	pc := new(PositionChannel)
 	pc.target = node
 	pc.updateInterpAction = func() {
@@ -155,7 +146,6 @@ func NewPositionChannel(node core.INode) *PositionChannel {
 type RotationChannel NodeChannel
 
 func NewRotationChannel(node core.INode) *RotationChannel {
-
 	rc := new(RotationChannel)
 	rc.target = node
 	rc.updateInterpAction = func() {
@@ -199,7 +189,6 @@ func NewRotationChannel(node core.INode) *RotationChannel {
 type ScaleChannel NodeChannel
 
 func NewScaleChannel(node core.INode) *ScaleChannel {
-
 	sc := new(ScaleChannel)
 	sc.target = node
 	sc.updateInterpAction = func() {
@@ -242,7 +231,6 @@ type MorphChannel struct {
 }
 
 func NewMorphChannel(mg *geometry.MorphGeometry) *MorphChannel {
-
 	mc := new(MorphChannel)
 	mc.target = mg
 	numWeights := len(mg.Weights())

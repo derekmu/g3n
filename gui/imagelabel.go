@@ -35,7 +35,6 @@ type ImageLabelStyle BasicStyle
 // NewImageLabel creates and returns a pointer to a new image label widget
 // with the specified text for the label and no image/icon
 func NewImageLabel(text string) *ImageLabel {
-
 	il := new(ImageLabel)
 
 	// Initializes the panel
@@ -53,20 +52,17 @@ func NewImageLabel(text string) *ImageLabel {
 
 // SetText sets the text of the image label
 func (il *ImageLabel) SetText(text string) {
-
 	il.label.SetText(text)
 }
 
 // Text returns the current label text
 func (il *ImageLabel) Text() string {
-
 	return il.label.Text()
 }
 
 // SetIcon sets the image label icon from the default Icon font.
 // If there is currently a selected image, it is removed
 func (il *ImageLabel) SetIcon(icon string) {
-
 	if il.image != nil {
 		il.Panel.Remove(il.image)
 		il.image = nil
@@ -82,7 +78,6 @@ func (il *ImageLabel) SetIcon(icon string) {
 
 // SetImageVisible sets the image visibility
 func (il *ImageLabel) SetImageVisible(vis bool) {
-
 	if il.image == nil {
 		return
 	}
@@ -91,7 +86,6 @@ func (il *ImageLabel) SetImageVisible(vis bool) {
 
 // ImageVisible returns the image visibility
 func (il *ImageLabel) ImageVisible() bool {
-
 	if il.image == nil {
 		return false
 	}
@@ -100,7 +94,6 @@ func (il *ImageLabel) ImageVisible() bool {
 
 // SetImage sets the image label image
 func (il *ImageLabel) SetImage(img *Image) {
-
 	if il.icon != nil {
 		il.Panel.Remove(il.icon)
 		il.icon = nil
@@ -118,7 +111,6 @@ func (il *ImageLabel) SetImage(img *Image) {
 // SetImageFromFile sets the image label image from the specified filename
 // If there is currently a selected icon, it is removed
 func (il *ImageLabel) SetImageFromFile(imgfile string) error {
-
 	img, err := NewImage(imgfile)
 	if err != nil {
 		return err
@@ -129,7 +121,6 @@ func (il *ImageLabel) SetImageFromFile(imgfile string) error {
 
 // SetColor sets the color of the label and icon text
 func (il *ImageLabel) SetColor(color *math32.Color) {
-
 	il.label.SetColor(color)
 	if il.icon != nil {
 		il.icon.SetColor(color)
@@ -138,7 +129,6 @@ func (il *ImageLabel) SetColor(color *math32.Color) {
 
 // SetColor4 sets the color4 of the label and icon
 func (il *ImageLabel) SetColor4(color *math32.Color4) {
-
 	il.label.SetColor4(color)
 	if il.icon != nil {
 		il.icon.SetColor4(color)
@@ -148,7 +138,6 @@ func (il *ImageLabel) SetColor4(color *math32.Color4) {
 // SetBgColor sets the color of the image label background
 // The color alpha is set to 1.0
 func (il *ImageLabel) SetBgColor(color *math32.Color) {
-
 	il.Panel.SetColor(color)
 	if il.icon != nil {
 		il.icon.SetColor(color)
@@ -158,7 +147,6 @@ func (il *ImageLabel) SetBgColor(color *math32.Color) {
 
 // SetBgColor4 sets the color4 of the image label background
 func (il *ImageLabel) SetBgColor4(color *math32.Color4) {
-
 	il.Panel.SetColor4(color)
 	if il.icon != nil {
 		il.icon.SetColor4(color)
@@ -168,13 +156,11 @@ func (il *ImageLabel) SetBgColor4(color *math32.Color4) {
 
 // SetFontSize sets the size of the image label font size
 func (il *ImageLabel) SetFontSize(size float64) {
-
 	il.label.SetFontSize(size)
 }
 
 // CopyFields copies another image label icon/image and text to this one
 func (il *ImageLabel) CopyFields(other *ImageLabel) {
-
 	il.label.SetText(other.label.Text())
 	if other.icon != nil {
 		il.SetIcon(other.icon.Text())
@@ -187,7 +173,6 @@ func (il *ImageLabel) CopyFields(other *ImageLabel) {
 
 // applyStyle applies the specified image label style
 func (il *ImageLabel) applyStyle(s *ImageLabelStyle) {
-
 	il.Panel.ApplyStyle(&s.PanelStyle)
 	if il.icon != nil {
 		il.icon.SetColor4(&s.FgColor)
@@ -197,7 +182,6 @@ func (il *ImageLabel) applyStyle(s *ImageLabelStyle) {
 
 // recalc recalculates dimensions and positions from inside out
 func (il *ImageLabel) recalc() {
-
 	// Current width and height the content area
 	width := il.Panel.ContentWidth()
 	height := il.Panel.ContentHeight()

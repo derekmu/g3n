@@ -21,7 +21,6 @@ type LibraryLights struct {
 
 // Dump prints out information about the LibraryLights
 func (ll *LibraryLights) Dump(out io.Writer, indent int) {
-
 	if ll == nil {
 		return
 	}
@@ -42,7 +41,6 @@ type Light struct {
 
 // Dump prints out information about the Light
 func (li *Light) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sLights id:%s name:%s\n", sIndent(indent), li.Id, li.Name)
 	ind := indent + step
 	fmt.Fprintf(out, "%sTechniqueCommon\n", sIndent(ind))
@@ -66,7 +64,6 @@ type Ambient struct {
 
 // Dump prints out information about the Ambient
 func (amb *Ambient) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sAmbient\n", sIndent(indent))
 	ind := indent + step
 	amb.Color.Dump(out, ind)
@@ -79,7 +76,6 @@ type Directional struct {
 
 // Dump prints out information about the Directional
 func (dir *Directional) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sDirectional\n", sIndent(indent))
 	ind := indent + step
 	dir.Color.Dump(out, ind)
@@ -95,7 +91,6 @@ type Point struct {
 
 // Dump prints out information about the Point
 func (pl *Point) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sPoint\n", sIndent(indent))
 	indent += step
 	pl.Color.Dump(out, indent)
@@ -116,7 +111,6 @@ type Spot struct {
 
 // Dump prints out information about the Spot
 func (sl *Spot) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sSpot\n", sIndent(indent))
 	indent += step
 	sl.Color.Dump(out, indent)
@@ -135,7 +129,6 @@ type FloatValue struct {
 
 // Dump prints out information about the FloatValue
 func (fv *FloatValue) Dump(name string, out io.Writer, indent int) {
-
 	if fv == nil {
 		return
 	}
@@ -150,12 +143,10 @@ type LightColor struct {
 
 // Dump prints out information about the LightColor
 func (lc *LightColor) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sColor sid:%s data:%v\n", sIndent(indent), lc.Sid, lc.Data)
 }
 
 func (d *Decoder) decLibraryLights(start xml.StartElement, dom *Collada) error {
-
 	ll := new(LibraryLights)
 	dom.LibraryLights = ll
 	ll.Id = findAttrib(start, "id").Value
@@ -177,7 +168,6 @@ func (d *Decoder) decLibraryLights(start xml.StartElement, dom *Collada) error {
 }
 
 func (d *Decoder) decLight(start xml.StartElement, ll *LibraryLights) error {
-
 	light := new(Light)
 	ll.Light = append(ll.Light, light)
 	light.Id = findAttrib(start, "id").Value
@@ -199,7 +189,6 @@ func (d *Decoder) decLight(start xml.StartElement, ll *LibraryLights) error {
 }
 
 func (d *Decoder) decLightTechniqueCommon(start xml.StartElement, li *Light) error {
-
 	child, _, err := d.decNextChild(start)
 	if err != nil || child.Name.Local == "" {
 		return err
@@ -232,7 +221,6 @@ func (d *Decoder) decLightTechniqueCommon(start xml.StartElement, li *Light) err
 }
 
 func (d *Decoder) decAmbient(start xml.StartElement, li *Light) error {
-
 	amb := new(Ambient)
 	li.TechniqueCommon.Type = amb
 
@@ -250,7 +238,6 @@ func (d *Decoder) decAmbient(start xml.StartElement, li *Light) error {
 }
 
 func (d *Decoder) decDirectional(start xml.StartElement, li *Light) error {
-
 	dir := new(Directional)
 	li.TechniqueCommon.Type = dir
 
@@ -268,7 +255,6 @@ func (d *Decoder) decDirectional(start xml.StartElement, li *Light) error {
 }
 
 func (d *Decoder) decPoint(start xml.StartElement, li *Light) error {
-
 	pl := new(Point)
 	li.TechniqueCommon.Type = pl
 
@@ -312,7 +298,6 @@ func (d *Decoder) decPoint(start xml.StartElement, li *Light) error {
 }
 
 func (d *Decoder) decSpot(start xml.StartElement, li *Light) error {
-
 	sl := new(Spot)
 	li.TechniqueCommon.Type = sl
 
@@ -372,7 +357,6 @@ func (d *Decoder) decSpot(start xml.StartElement, li *Light) error {
 }
 
 func (d *Decoder) decFloatValue(start xml.StartElement, cdata []byte) (*FloatValue, error) {
-
 	fv := new(FloatValue)
 	fv.Sid = findAttrib(start, "sid").Value
 	v, err := strconv.ParseFloat(string(cdata), 32)
@@ -384,7 +368,6 @@ func (d *Decoder) decFloatValue(start xml.StartElement, cdata []byte) (*FloatVal
 }
 
 func (d *Decoder) decLightColor(start xml.StartElement, cdata []byte, lc *LightColor) error {
-
 	lc.Sid = findAttrib(start, "sid").Value
 	return decFloat32Sequence(cdata, lc.Data[:])
 }

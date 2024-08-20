@@ -15,7 +15,6 @@ type Quaternion struct {
 // NewQuaternion creates and returns a pointer to a new quaternion
 // from the specified components.
 func NewQuaternion(x, y, z, w float32) *Quaternion {
-
 	return &Quaternion{
 		X: x, Y: y, Z: z, W: w,
 	}
@@ -24,7 +23,6 @@ func NewQuaternion(x, y, z, w float32) *Quaternion {
 // SetX sets this quaternion's X component.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetX(val float32) *Quaternion {
-
 	q.X = val
 	return q
 }
@@ -32,7 +30,6 @@ func (q *Quaternion) SetX(val float32) *Quaternion {
 // SetY sets this quaternion's Y component.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetY(val float32) *Quaternion {
-
 	q.Y = val
 	return q
 }
@@ -40,7 +37,6 @@ func (q *Quaternion) SetY(val float32) *Quaternion {
 // SetZ sets this quaternion's Z component.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetZ(val float32) *Quaternion {
-
 	q.Z = val
 	return q
 }
@@ -48,7 +44,6 @@ func (q *Quaternion) SetZ(val float32) *Quaternion {
 // SetW sets this quaternion's W component.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetW(val float32) *Quaternion {
-
 	q.W = val
 	return q
 }
@@ -56,7 +51,6 @@ func (q *Quaternion) SetW(val float32) *Quaternion {
 // Set sets this quaternion's components.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) Set(x, y, z, w float32) *Quaternion {
-
 	q.X = x
 	q.Y = y
 	q.Z = z
@@ -67,7 +61,6 @@ func (q *Quaternion) Set(x, y, z, w float32) *Quaternion {
 // SetIdentity sets this quanternion to the identity quaternion.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetIdentity() *Quaternion {
-
 	q.X = 0
 	q.Y = 0
 	q.Z = 0
@@ -77,7 +70,6 @@ func (q *Quaternion) SetIdentity() *Quaternion {
 
 // IsIdentity returns it this is an identity quaternion.
 func (q *Quaternion) IsIdentity() bool {
-
 	if q.X == 0 && q.Y == 0 && q.Z == 0 && q.W == 1 {
 		return true
 	}
@@ -87,7 +79,6 @@ func (q *Quaternion) IsIdentity() bool {
 // Copy copies the other quaternion into this one.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) Copy(other *Quaternion) *Quaternion {
-
 	*q = *other
 	return q
 }
@@ -97,7 +88,6 @@ func (q *Quaternion) Copy(other *Quaternion) *Quaternion {
 // are in XYZ order.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetFromEuler(euler *Vector3) *Quaternion {
-
 	c1 := Cos(euler.X / 2)
 	c2 := Cos(euler.Y / 2)
 	c3 := Cos(euler.Z / 2)
@@ -117,7 +107,6 @@ func (q *Quaternion) SetFromEuler(euler *Vector3) *Quaternion {
 // specified by the given axis and angle.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetFromAxisAngle(axis *Vector3, angle float32) *Quaternion {
-
 	halfAngle := angle / 2
 	s := Sin(halfAngle)
 	q.X = axis.X * s
@@ -130,7 +119,6 @@ func (q *Quaternion) SetFromAxisAngle(axis *Vector3, angle float32) *Quaternion 
 // SetFromRotationMatrix sets this quaternion from the specified rotation matrix.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetFromRotationMatrix(m *Matrix4) *Quaternion {
-
 	m11 := m[0]
 	m12 := m[4]
 	m13 := m[8]
@@ -175,13 +163,11 @@ func (q *Quaternion) SetFromRotationMatrix(m *Matrix4) *Quaternion {
 // The vectors must be normalized.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) SetFromUnitVectors(vFrom, vTo *Vector3) *Quaternion {
-
 	var v1 Vector3
 	var EPS float32 = 0.000001
 
 	r := vFrom.Dot(vTo) + 1
 	if r < EPS {
-
 		r = 0
 		if Abs(vFrom.X) > Abs(vFrom.Z) {
 			v1.Set(-vFrom.Y, vFrom.X, 0)
@@ -190,7 +176,6 @@ func (q *Quaternion) SetFromUnitVectors(vFrom, vTo *Vector3) *Quaternion {
 		}
 
 	} else {
-
 		v1.CrossVectors(vFrom, vTo)
 
 	}
@@ -207,7 +192,6 @@ func (q *Quaternion) SetFromUnitVectors(vFrom, vTo *Vector3) *Quaternion {
 // Inverse sets this quaternion to its inverse.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) Inverse() *Quaternion {
-
 	q.Conjugate().Normalize()
 	return q
 }
@@ -215,7 +199,6 @@ func (q *Quaternion) Inverse() *Quaternion {
 // Conjugate sets this quaternion to its conjugate.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) Conjugate() *Quaternion {
-
 	q.X *= -1
 	q.Y *= -1
 	q.Z *= -1
@@ -224,26 +207,22 @@ func (q *Quaternion) Conjugate() *Quaternion {
 
 // Dot returns the dot products of this quaternion with other.
 func (q *Quaternion) Dot(other *Quaternion) float32 {
-
 	return q.X*other.X + q.Y*other.Y + q.Z*other.Z + q.W*other.W
 }
 
 // LengthSq returns this quanternion's length squared
 func (q *Quaternion) lengthSq() float32 {
-
 	return q.X*q.X + q.Y*q.Y + q.Z*q.Z + q.W*q.W
 }
 
 // Length returns the length of this quaternion
 func (q *Quaternion) Length() float32 {
-
 	return Sqrt(q.X*q.X + q.Y*q.Y + q.Z*q.Z + q.W*q.W)
 }
 
 // Normalize normalizes this quaternion.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) Normalize() *Quaternion {
-
 	l := q.Length()
 	if l == 0 {
 		q.X = 0
@@ -264,7 +243,6 @@ func (q *Quaternion) Normalize() *Quaternion {
 // Works best when the quaternion is already almost-normalized.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) NormalizeFast() *Quaternion {
-
 	f := (3.0 - (q.X*q.X + q.Y*q.Y + q.Z*q.Z + q.W*q.W)) / 2.0
 	if f == 0 {
 		q.X = 0
@@ -283,14 +261,12 @@ func (q *Quaternion) NormalizeFast() *Quaternion {
 // Multiply sets this quaternion to the multiplication of itself by other.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) Multiply(other *Quaternion) *Quaternion {
-
 	return q.MultiplyQuaternions(q, other)
 }
 
 // MultiplyQuaternions set this quaternion to the multiplication of a by b.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) MultiplyQuaternions(a, b *Quaternion) *Quaternion {
-
 	// from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
 
 	qax := a.X
@@ -313,7 +289,6 @@ func (q *Quaternion) MultiplyQuaternions(a, b *Quaternion) *Quaternion {
 // from this quaternion to other using t.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) Slerp(other *Quaternion, t float32) *Quaternion {
-
 	if t == 0 {
 		return q
 	}
@@ -371,14 +346,12 @@ func (q *Quaternion) Slerp(other *Quaternion, t float32) *Quaternion {
 
 // Equals returns if this quaternion is equal to other.
 func (q *Quaternion) Equals(other *Quaternion) bool {
-
 	return (other.X == q.X) && (other.Y == q.Y) && (other.Z == q.Z) && (other.W == q.W)
 }
 
 // FromArray sets this quaternion's components from array starting at offset.
 // Returns pointer to this updated quaternion.
 func (q *Quaternion) FromArray(array []float32, offset int) *Quaternion {
-
 	q.X = array[offset]
 	q.Y = array[offset+1]
 	q.Z = array[offset+2]
@@ -389,7 +362,6 @@ func (q *Quaternion) FromArray(array []float32, offset int) *Quaternion {
 // ToArray copies this quaternions's components to array starting at offset.
 // Returns pointer to this updated array.
 func (q *Quaternion) ToArray(array []float32, offset int) []float32 {
-
 	array[offset] = q.X
 	array[offset+1] = q.Y
 	array[offset+2] = q.Z
@@ -400,6 +372,5 @@ func (q *Quaternion) ToArray(array []float32, offset int) []float32 {
 
 // Clone returns a copy of this quaternion
 func (q *Quaternion) Clone() *Quaternion {
-
 	return NewQuaternion(q.X, q.Y, q.Z, q.W)
 }

@@ -26,7 +26,6 @@ const MaxActiveMorphTargets = 8
 
 // NewMorphGeometry creates and returns a pointer to a new MorphGeometry.
 func NewMorphGeometry(baseGeometry *Geometry) *MorphGeometry {
-
 	mg := new(MorphGeometry)
 	mg.baseGeometry = baseGeometry
 
@@ -40,13 +39,11 @@ func NewMorphGeometry(baseGeometry *Geometry) *MorphGeometry {
 
 // GetGeometry satisfies the IGeometry interface.
 func (mg *MorphGeometry) GetGeometry() *Geometry {
-
 	return mg.baseGeometry
 }
 
 // SetWeights sets the morph target weights.
 func (mg *MorphGeometry) SetWeights(weights []float32) {
-
 	if len(weights) != len(mg.weights) {
 		panic("weights have invalid length")
 	}
@@ -55,14 +52,12 @@ func (mg *MorphGeometry) SetWeights(weights []float32) {
 
 // Weights returns the morph target weights.
 func (mg *MorphGeometry) Weights() []float32 {
-
 	return mg.weights
 }
 
 // AddMorphTargets add multiple morph targets to the morph geometry.
 // Morph target deltas are calculated internally and the morph target geometries are altered to hold the deltas instead.
 func (mg *MorphGeometry) AddMorphTargets(morphTargets ...*Geometry) {
-
 	for i := range morphTargets {
 		mg.weights = append(mg.weights, 0)
 		// Calculate deltas for VertexPosition
@@ -103,7 +98,6 @@ func (mg *MorphGeometry) AddMorphTargets(morphTargets ...*Geometry) {
 
 // AddMorphTargetDeltas add multiple morph target deltas to the morph geometry.
 func (mg *MorphGeometry) AddMorphTargetDeltas(morphTargetDeltas ...*Geometry) {
-
 	for range morphTargetDeltas {
 		mg.weights = append(mg.weights, 0)
 	}
@@ -118,7 +112,6 @@ func (mg *MorphGeometry) AddMorphTargetDeltas(morphTargetDeltas ...*Geometry) {
 
 // ActiveMorphTargets sorts the morph targets by weight and returns the top n morph targets with largest weight.
 func (mg *MorphGeometry) ActiveMorphTargets() ([]*Geometry, []float32) {
-
 	numTargets := len(mg.targets)
 	if numTargets == 0 {
 		return nil, nil
@@ -147,7 +140,6 @@ func (mg *MorphGeometry) ActiveMorphTargets() ([]*Geometry, []float32) {
 
 // SetIndices sets the indices array for this geometry.
 func (mg *MorphGeometry) SetIndices(indices math32.ArrayU32) {
-
 	mg.baseGeometry.SetIndices(indices)
 	for i := range mg.targets {
 		mg.targets[i].SetIndices(indices)
@@ -159,7 +151,6 @@ func (mg *MorphGeometry) SetIndices(indices math32.ArrayU32) {
 // This CPU implementation allows users to obtain an instance of a morphed geometry
 // if so desired (loosing morphing ability).
 func (mg *MorphGeometry) ComputeMorphed(weights []float32) *Geometry {
-
 	morphed := NewGeometry()
 	// TODO
 	return morphed
@@ -168,7 +159,6 @@ func (mg *MorphGeometry) ComputeMorphed(weights []float32) *Geometry {
 // Dispose releases, if possible, OpenGL resources, C memory
 // and VBOs associated with the base geometry and morph targets.
 func (mg *MorphGeometry) Dispose() {
-
 	mg.baseGeometry.Dispose()
 	for i := range mg.targets {
 		mg.targets[i].Dispose()
@@ -177,7 +167,6 @@ func (mg *MorphGeometry) Dispose() {
 
 // UpdateTargetAttributes updates the attribute names of the specified morph targets in order.
 func (mg *MorphGeometry) UpdateTargetAttributes(morphTargets []*Geometry) {
-
 	for i, mt := range morphTargets {
 		mt.SetAttributeName(gls.VertexPosition, "MorphPosition"+strconv.Itoa(i))
 		mt.SetAttributeName(gls.VertexNormal, "MorphNormal"+strconv.Itoa(i))
@@ -187,7 +176,6 @@ func (mg *MorphGeometry) UpdateTargetAttributes(morphTargets []*Geometry) {
 
 // RenderSetup is called by the renderer before drawing the geometry.
 func (mg *MorphGeometry) RenderSetup(gs *gls.GLS) {
-
 	mg.baseGeometry.RenderSetup(gs)
 
 	// Sort weights and find top 8 morph targets with largest current weight (8 is the max sent to shader)

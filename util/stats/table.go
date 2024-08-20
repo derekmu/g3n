@@ -18,7 +18,6 @@ type field struct {
 
 // NewStatsTable creates and returns a pointer to a new statistics table panel
 func NewStatsTable(width, height float32, gs *gls.GLS) *StatsTable {
-
 	// Creates table panel
 	st := new(StatsTable)
 	t, err := gui.NewTable(width, height, []gui.TableColumn{
@@ -44,7 +43,6 @@ func NewStatsTable(width, height float32, gs *gls.GLS) *StatsTable {
 
 // Update updates the table values from the specified stats table
 func (st *StatsTable) Update(s *Stats) {
-
 	for i := 0; i < len(st.fields); i++ {
 		f := st.fields[i]
 		switch f.id {
@@ -67,7 +65,6 @@ func (st *StatsTable) Update(s *Stats) {
 }
 
 func (st *StatsTable) addRow(id, label string) {
-
 	f := new(field)
 	f.id = id
 	f.row = st.Table.RowCount()

@@ -45,21 +45,18 @@ type CheckRadioStyles struct {
 // NewCheckBox creates and returns a pointer to a new CheckBox widget
 // with the specified text
 func NewCheckBox(text string) *CheckRadio {
-
 	return newCheckRadio(true, text)
 }
 
 // NewRadioButton creates and returns a pointer to a new RadioButton widget
 // with the specified text
 func NewRadioButton(text string) *CheckRadio {
-
 	return newCheckRadio(false, text)
 }
 
 // newCheckRadio creates and returns a pointer to a new CheckRadio widget
 // with the specified type and text
 func newCheckRadio(check bool, text string) *CheckRadio {
-
 	cb := new(CheckRadio)
 	cb.styles = &StyleDefault().CheckRadio
 
@@ -100,13 +97,11 @@ func newCheckRadio(check bool, text string) *CheckRadio {
 
 // Value returns the current state of the checkbox
 func (cb *CheckRadio) Value() bool {
-
 	return cb.state
 }
 
 // SetValue sets the current state of the checkbox
 func (cb *CheckRadio) SetValue(state bool) *CheckRadio {
-
 	if state == cb.state {
 		return cb
 	}
@@ -118,27 +113,23 @@ func (cb *CheckRadio) SetValue(state bool) *CheckRadio {
 
 // Group returns the name of the radio group
 func (cb *CheckRadio) Group() string {
-
 	return cb.group
 }
 
 // SetGroup sets the name of the radio group
 func (cb *CheckRadio) SetGroup(group string) *CheckRadio {
-
 	cb.group = group
 	return cb
 }
 
 // SetStyles set the button styles overriding the default style
 func (cb *CheckRadio) SetStyles(bs *CheckRadioStyles) {
-
 	cb.styles = bs
 	cb.update()
 }
 
 // toggleState toggles the current state of the checkbox/radiobutton
 func (cb *CheckRadio) toggleState() {
-
 	// Subscribes once to the root panel for OnRadioGroup events
 	// The root panel is used to dispatch events to all checkradios
 	if !cb.subroot {
@@ -169,7 +160,6 @@ func (cb *CheckRadio) toggleState() {
 
 // onMouse process OnMouseDown events
 func (cb *CheckRadio) onMouse(evname string, ev interface{}) {
-
 	// Dispatch OnClick for left mouse button down
 	if evname == OnMouseDown {
 		mev := ev.(*window.MouseEvent)
@@ -183,7 +173,6 @@ func (cb *CheckRadio) onMouse(evname string, ev interface{}) {
 
 // onCursor process OnCursor* events
 func (cb *CheckRadio) onCursor(evname string, ev interface{}) {
-
 	if evname == OnCursorEnter {
 		cb.cursorOver = true
 	} else {
@@ -194,7 +183,6 @@ func (cb *CheckRadio) onCursor(evname string, ev interface{}) {
 
 // onKey receives subscribed key events
 func (cb *CheckRadio) onKey(evname string, ev interface{}) {
-
 	kev := ev.(*window.KeyEvent)
 	if evname == OnKeyDown && kev.Key == window.KeyEnter {
 		cb.toggleState()
@@ -207,7 +195,6 @@ func (cb *CheckRadio) onKey(evname string, ev interface{}) {
 
 // onRadioGroup receives subscribed OnRadioGroup events
 func (cb *CheckRadio) onRadioGroup(other *CheckRadio) {
-
 	// If event is for this button, ignore
 	if cb == other {
 		return
@@ -222,7 +209,6 @@ func (cb *CheckRadio) onRadioGroup(other *CheckRadio) {
 
 // update updates the visual appearance of the checkbox
 func (cb *CheckRadio) update() {
-
 	if cb.state {
 		cb.icon.SetText(cb.codeON)
 	} else {
@@ -242,7 +228,6 @@ func (cb *CheckRadio) update() {
 
 // setStyle sets the specified checkradio style
 func (cb *CheckRadio) applyStyle(s *CheckRadioStyle) {
-
 	cb.Panel.ApplyStyle(&s.PanelStyle)
 	cb.icon.SetColor4(&s.FgColor)
 	cb.Label.SetColor4(&s.FgColor)
@@ -250,7 +235,6 @@ func (cb *CheckRadio) applyStyle(s *CheckRadioStyle) {
 
 // recalc recalculates dimensions and position from inside out
 func (cb *CheckRadio) recalc() {
-
 	// Sets icon position
 	cb.icon.SetFontSize(cb.Label.FontSize() * 1.3)
 	cb.icon.SetPosition(0, 0)

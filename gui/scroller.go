@@ -7,6 +7,7 @@ package gui
 import (
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/window"
+	"log"
 )
 
 // Scroller is the GUI element that allows scrolling of a target IPanel.
@@ -88,7 +89,6 @@ const ScrollModifierKey = window.ModShift
 // NewScroller creates and returns a pointer to a new Scroller with the specified
 // target IPanel and ScrollMode.
 func NewScroller(width, height float32, mode ScrollMode, target IPanel) *Scroller {
-
 	s := new(Scroller)
 	s.initialize(width, height, mode, target)
 	return s
@@ -96,7 +96,6 @@ func NewScroller(width, height float32, mode ScrollMode, target IPanel) *Scrolle
 
 // initialize initializes this scroller and can be called by other types which embed a scroller
 func (s *Scroller) initialize(width, height float32, mode ScrollMode, target IPanel) {
-
 	s.Panel.Initialize(s, width, height)
 	s.style = &StyleDefault().Scroller
 	s.target = target
@@ -111,98 +110,83 @@ func (s *Scroller) initialize(width, height float32, mode ScrollMode, target IPa
 
 // SetScrollMode sets the scroll mode
 func (s *Scroller) SetScrollMode(mode ScrollMode) {
-
 	s.mode = mode
 	s.Update()
 }
 
 // ScrollMode returns the current scroll mode
 func (s *Scroller) ScrollMode() ScrollMode {
-
 	return s.mode
 }
 
 // SetScrollbarInterlocking sets the scrollbar interlocking mode
 func (s *Scroller) SetScrollbarInterlocking(interlocking ScrollbarInterlocking) {
-
 	s.style.ScrollbarInterlocking = interlocking
 	s.Update()
 }
 
 // ScrollbarInterlocking returns the current scrollbar interlocking mode
 func (s *Scroller) ScrollbarInterlocking() ScrollbarInterlocking {
-
 	return s.style.ScrollbarInterlocking
 }
 
 // SetCornerCovered specifies whether the corner covering panel is shown when appropriate
 func (s *Scroller) SetCornerCovered(state bool) {
-
 	s.style.CornerCovered = state
 	s.Update()
 }
 
 // CornerCovered returns whether the corner covering panel is being shown when appropriate
 func (s *Scroller) CornerCovered() bool {
-
 	return s.style.CornerCovered
 }
 
 // SetVerticalScrollbarPosition sets the position of the vertical scrollbar (i.e. left or right)
 func (s *Scroller) SetVerticalScrollbarPosition(pos ScrollbarPosition) {
-
 	s.style.VerticalScrollbar.Position = pos
 	s.recalc()
 }
 
 // VerticalScrollbarPosition returns the current position of the vertical scrollbar (i.e. left or right)
 func (s *Scroller) VerticalScrollbarPosition() ScrollbarPosition {
-
 	return s.style.VerticalScrollbar.Position
 }
 
 // SetHorizontalScrollbarPosition sets the position of the horizontal scrollbar (i.e. top or bottom)
 func (s *Scroller) SetHorizontalScrollbarPosition(pos ScrollbarPosition) {
-
 	s.style.HorizontalScrollbar.Position = pos
 	s.recalc()
 }
 
 // HorizontalScrollbarPosition returns the current position of the horizontal scrollbar (i.e. top or bottom)
 func (s *Scroller) HorizontalScrollbarPosition() ScrollbarPosition {
-
 	return s.style.HorizontalScrollbar.Position
 }
 
 // SetVerticalScrollbarOverlapping specifies whether the vertical scrollbar overlaps the content area
 func (s *Scroller) SetVerticalScrollbarOverlapping(state bool) {
-
 	s.style.VerticalScrollbar.OverlapContent = state
 	s.Update()
 }
 
 // VerticalScrollbarOverlapping returns whether the vertical scrollbar overlaps the content area
 func (s *Scroller) VerticalScrollbarOverlapping() bool {
-
 	return s.style.VerticalScrollbar.OverlapContent
 }
 
 // SetHorizontalScrollbarOverlapping specifies whether the horizontal scrollbar overlaps the content area
 func (s *Scroller) SetHorizontalScrollbarOverlapping(state bool) {
-
 	s.style.HorizontalScrollbar.OverlapContent = state
 	s.Update()
 }
 
 // HorizontalScrollbarOverlapping returns whether the horizontal scrollbar overlaps the content area
 func (s *Scroller) HorizontalScrollbarOverlapping() bool {
-
 	return s.style.HorizontalScrollbar.OverlapContent
 }
 
 // SetVerticalScrollbarAutoSizeButton specifies whether the vertical scrollbar button is sized automatically
 func (s *Scroller) SetVerticalScrollbarAutoSizeButton(state bool) {
-
 	s.style.VerticalScrollbar.AutoSizeButton = state
 	if s.vscroll != nil {
 		if state == false {
@@ -214,13 +198,11 @@ func (s *Scroller) SetVerticalScrollbarAutoSizeButton(state bool) {
 
 // VerticalScrollbarAutoSizeButton returns whether the vertical scrollbar button is sized automatically
 func (s *Scroller) VerticalScrollbarAutoSizeButton() bool {
-
 	return s.style.VerticalScrollbar.AutoSizeButton
 }
 
 // SetHorizontalScrollbarAutoSizeButton specifies whether the horizontal scrollbar button is sized automatically
 func (s *Scroller) SetHorizontalScrollbarAutoSizeButton(state bool) {
-
 	s.style.HorizontalScrollbar.AutoSizeButton = state
 	if s.hscroll != nil {
 		if state == false {
@@ -232,13 +214,11 @@ func (s *Scroller) SetHorizontalScrollbarAutoSizeButton(state bool) {
 
 // HorizontalScrollbarAutoSizeButton returns whether the horizontal scrollbar button is sized automatically
 func (s *Scroller) HorizontalScrollbarAutoSizeButton() bool {
-
 	return s.style.HorizontalScrollbar.AutoSizeButton
 }
 
 // SetVerticalScrollbarBroadness sets the broadness of the vertical scrollbar
 func (s *Scroller) SetVerticalScrollbarBroadness(broadness float32) {
-
 	s.style.VerticalScrollbar.Broadness = broadness
 	if s.vscroll != nil {
 		s.vscroll.SetWidth(broadness)
@@ -248,13 +228,11 @@ func (s *Scroller) SetVerticalScrollbarBroadness(broadness float32) {
 
 // VerticalScrollbarBroadness returns the broadness of the vertical scrollbar
 func (s *Scroller) VerticalScrollbarBroadness() float32 {
-
 	return s.style.VerticalScrollbar.Broadness
 }
 
 // SetHorizontalScrollbarBroadness sets the broadness of the horizontal scrollbar
 func (s *Scroller) SetHorizontalScrollbarBroadness(broadness float32) {
-
 	s.style.HorizontalScrollbar.Broadness = broadness
 	if s.hscroll != nil {
 		s.hscroll.SetHeight(broadness)
@@ -264,7 +242,6 @@ func (s *Scroller) SetHorizontalScrollbarBroadness(broadness float32) {
 
 // HorizontalScrollbarBroadness returns the broadness of the horizontal scrollbar
 func (s *Scroller) HorizontalScrollbarBroadness() float32 {
-
 	return s.style.HorizontalScrollbar.Broadness
 }
 
@@ -275,7 +252,6 @@ func (s *Scroller) ScrollTo(x, y float32) {
 
 // onScroll receives mouse scroll events when this scroller has the scroll focus (set by OnMouseEnter)
 func (s *Scroller) onScroll(evname string, ev interface{}) {
-
 	sev := ev.(*window.ScrollEvent)
 
 	vScrollVisible := (s.vscroll != nil) && s.vscroll.Visible()
@@ -293,7 +269,7 @@ func (s *Scroller) onScroll(evname string, ev interface{}) {
 		offsetY = 0
 	}
 
-	log.Error("X: %v, Y: %v", offsetX, offsetY)
+	log.Printf("X: %v, Y: %v", offsetX, offsetY)
 
 	if vScrollVisible {
 		if hScrollVisible {
@@ -314,7 +290,6 @@ func (s *Scroller) onScroll(evname string, ev interface{}) {
 
 // onResize receives resize events
 func (s *Scroller) onResize(evname string, ev interface{}) {
-
 	s.Update()
 }
 
@@ -344,7 +319,6 @@ func (s *Scroller) setHorizontalScrollbarVisible() {
 // This method should be called when either the target panel changes size or when either the scroll mode or
 // style of the Scroller changes.
 func (s *Scroller) updateScrollbarsVisibility() {
-
 	// Obtain the size of the target panel
 	targetWidth := s.target.Width()
 	targetHeight := s.target.Height()
@@ -371,7 +345,6 @@ func (s *Scroller) updateScrollbarsVisibility() {
 	// in the other, and in the dimension that it is smaller than the content, the difference is less than the width
 	// of the scrollbar. In that case we need to show both scrollbars to allow viewing of the complete target panel.
 	if s.mode == ScrollBoth {
-
 		vScrollVisible := (s.vscroll != nil) && s.vscroll.Visible()
 		hScrollVisible := (s.hscroll != nil) && s.hscroll.Visible()
 
@@ -408,14 +381,12 @@ func (s *Scroller) updateScrollbarsVisibility() {
 
 // onScrollEvent is called when the scrollbar value changes
 func (s *Scroller) onScrollBarEvent(evname string, ev interface{}) {
-
 	s.recalc()
 }
 
 // recalc recalculates the positions and sizes of the scrollbars and corner panel,
 // updates the size of the scrollbar buttons, and repositions the target panel
 func (s *Scroller) recalc() {
-
 	// The multipliers of the scrollbars' [0,1] values.
 	// After applied, they will give the correct target panel position.
 	// They can be thought of as the range of motion of the target panel in each axis
@@ -472,7 +443,6 @@ func (s *Scroller) recalc() {
 
 // recalcV recalculates the size and position of the vertical scrollbar
 func (s *Scroller) recalcV() {
-
 	// Position the vertical scrollbar horizontally according to the style
 	var vscrollPosX float32 // = 0 (ScrollbarLeft)
 	if s.style.VerticalScrollbar.Position == ScrollbarRight {
@@ -511,7 +481,6 @@ func (s *Scroller) recalcV() {
 
 // recalcH recalculates the size and position of the horizontal scrollbar
 func (s *Scroller) recalcH() {
-
 	// Position the horizontal scrollbar vertically according to the style
 	var hscrollPosY float32 // = 0 (ScrollbarTop)
 	if s.style.HorizontalScrollbar.Position == ScrollbarBottom {
@@ -550,14 +519,12 @@ func (s *Scroller) recalcH() {
 
 // Update updates the visibility of the scrollbars, corner panel, and then recalculates
 func (s *Scroller) Update() {
-
 	s.updateScrollbarsVisibility()
 	s.recalc()
 }
 
 // TODO - if the style is changed this needs to be called to update the scrollbars and corner panel
 func (s *Scroller) applyStyle(ss *ScrollerStyle) {
-
 	s.style = ss
 
 	s.vscroll.applyStyle(&s.style.VerticalScrollbar.ScrollBarStyle)

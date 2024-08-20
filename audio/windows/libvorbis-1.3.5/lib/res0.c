@@ -77,7 +77,6 @@ void res0_free_info(vorbis_info_residue *i){
 void res0_free_look(vorbis_look_residue *i){
   int j;
   if(i){
-
     vorbis_look_residue0 *look=(vorbis_look_residue0 *)i;
 
 #ifdef TRAIN_RES
@@ -577,9 +576,7 @@ static int _01forward(oggpack_buffer *opb,
      partition channel words... */
 
   for(s=0;s<look->stages;s++){
-
     for(i=0;i<partvals;){
-
       /* first we encode a partition codeword for each channel */
       if(s==0){
         for(j=0;j<ch;j++){
@@ -648,7 +645,6 @@ static int _01inverse(vorbis_block *vb,vorbis_look_residue *vl,
                       float **in,int ch,
                       long (*decodepart)(codebook *, float *,
                                          oggpack_buffer *,int)){
-
   long i,j,k,l,s;
   vorbis_look_residue0 *look=(vorbis_look_residue0 *)vl;
   vorbis_info_residue0 *info=look->info;
@@ -669,7 +665,6 @@ static int _01inverse(vorbis_block *vb,vorbis_look_residue *vl,
       partword[j]=_vorbis_block_alloc(vb,partwords*sizeof(*partword[j]));
 
     for(s=0;s<look->stages;s++){
-
       /* each loop decodes on partition codeword containing
          partitions_per_word partitions */
       for(i=0,l=0;i<partvals;l++){
@@ -826,7 +821,6 @@ int res2_inverse(vorbis_block *vb,vorbis_look_residue *vl,
 
     for(s=0;s<look->stages;s++){
       for(i=0,l=0;i<partvals;l++){
-
         if(s==0){
           /* fetch the partition word */
           int temp=vorbis_book_decode(look->phrasebook,&vb->opb);

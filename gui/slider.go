@@ -50,21 +50,18 @@ type SliderStyles struct {
 // NewHSlider creates and returns a pointer to a new horizontal slider
 // with the specified initial dimensions.
 func NewHSlider(width, height float32) *Slider {
-
 	return newSlider(true, width, height)
 }
 
 // NewVSlider creates and returns a pointer to a new vertical slider
 // with the specified initial dimensions.
 func NewVSlider(width, height float32) *Slider {
-
 	return newSlider(false, width, height)
 }
 
 // NewSlider creates and returns a pointer to a new slider with the
 // specified initial dimensions.
 func newSlider(horiz bool, width, height float32) *Slider {
-
 	s := new(Slider)
 	s.horiz = horiz
 	s.styles = &StyleDefault().Slider
@@ -94,7 +91,6 @@ func newSlider(horiz bool, width, height float32) *Slider {
 
 // SetStyles set the slider styles overriding the default style
 func (s *Slider) SetStyles(ss *SliderStyles) *Slider {
-
 	s.styles = ss
 	s.update()
 	return s
@@ -102,7 +98,6 @@ func (s *Slider) SetStyles(ss *SliderStyles) *Slider {
 
 // SetText sets the text of the slider optional label
 func (s *Slider) SetText(text string) *Slider {
-
 	if s.label == nil {
 		s.label = NewLabel(text)
 		s.Panel.Add(s.label)
@@ -117,7 +112,6 @@ func (s *Slider) SetText(text string) *Slider {
 // SetValue sets the value of the slider considering the current scale factor
 // and updates its visual appearance.
 func (s *Slider) SetValue(value float32) *Slider {
-
 	pos := value / s.scaleFactor
 	s.setPos(pos)
 	return s
@@ -125,27 +119,23 @@ func (s *Slider) SetValue(value float32) *Slider {
 
 // Value returns the current value of the slider considering the current scale factor
 func (s *Slider) Value() float32 {
-
 	return s.pos * s.scaleFactor
 }
 
 // SetScaleFactor set the slider scale factor (default = 1.0)
 func (s *Slider) SetScaleFactor(factor float32) *Slider {
-
 	s.scaleFactor = factor
 	return s
 }
 
 // ScaleFactor returns  the slider current scale factor (default = 1.0)
 func (s *Slider) ScaleFactor() float32 {
-
 	return s.scaleFactor
 }
 
 // setPos sets the slider position from 0.0 to 1.0
 // and updates its visual appearance.
 func (s *Slider) setPos(pos float32) {
-
 	const eps = 0.01
 	if pos < 0 {
 		pos = 0
@@ -162,7 +152,6 @@ func (s *Slider) setPos(pos float32) {
 
 // onMouse process subscribed mouse events over the outer panel
 func (s *Slider) onMouse(evname string, ev interface{}) {
-
 	if !s.Enabled() {
 		return
 	}
@@ -191,7 +180,6 @@ func (s *Slider) onMouse(evname string, ev interface{}) {
 
 // onCursor process subscribed cursor events
 func (s *Slider) onCursor(evname string, ev interface{}) {
-
 	if !s.Enabled() {
 		return
 	}
@@ -231,7 +219,6 @@ func (s *Slider) onCursor(evname string, ev interface{}) {
 
 // onScroll process subscribed scroll events
 func (s *Slider) onScroll(evname string, ev interface{}) {
-
 	if !s.Enabled() {
 		return
 	}
@@ -244,7 +231,6 @@ func (s *Slider) onScroll(evname string, ev interface{}) {
 
 // onKey process subscribed key events
 func (s *Slider) onKey(evname string, ev interface{}) {
-
 	if !s.Enabled() {
 		return
 	}
@@ -276,13 +262,11 @@ func (s *Slider) onKey(evname string, ev interface{}) {
 
 // onResize process subscribed resize events
 func (s *Slider) onResize(evname string, ev interface{}) {
-
 	s.recalc()
 }
 
 // update updates the slider visual state
 func (s *Slider) update() {
-
 	if !s.Enabled() {
 		s.applyStyle(&s.styles.Disabled)
 		return
@@ -296,14 +280,12 @@ func (s *Slider) update() {
 
 // applyStyle applies the specified slider style
 func (s *Slider) applyStyle(ss *SliderStyle) {
-
 	s.Panel.ApplyStyle(&ss.PanelStyle)
 	s.slider.SetColor4(&ss.FgColor)
 }
 
 // recalc recalculates the dimensions and positions of the internal panels.
 func (s *Slider) recalc() {
-
 	if s.horiz {
 		if s.label != nil {
 			lx := (s.Panel.ContentWidth() - s.label.Width()) / 2

@@ -42,21 +42,18 @@ type ItemScrollerStyles struct {
 // NewVScroller creates and returns a pointer to a new vertical scroller panel
 // with the specified dimensions.
 func NewVScroller(width, height float32) *ItemScroller {
-
 	return newScroller(true, width, height)
 }
 
 // NewHScroller creates and returns a pointer to a new horizontal scroller panel
 // with the specified dimensions.
 func NewHScroller(width, height float32) *ItemScroller {
-
 	return newScroller(false, width, height)
 }
 
 // newScroller creates and returns a pointer to a new ItemScroller panel
 // with the specified layout orientation and initial dimensions
 func newScroller(vert bool, width, height float32) *ItemScroller {
-
 	s := new(ItemScroller)
 	s.initialize(vert, width, height)
 	return s
@@ -64,7 +61,6 @@ func newScroller(vert bool, width, height float32) *ItemScroller {
 
 // Clear removes and disposes of all the scroller children
 func (s *ItemScroller) Clear() {
-
 	s.Panel.DisposeChildren(true)
 	s.first = 0
 	s.hscroll = nil
@@ -76,19 +72,16 @@ func (s *ItemScroller) Clear() {
 
 // Len return the number of items in the scroller
 func (s *ItemScroller) Len() int {
-
 	return len(s.items)
 }
 
 // Add appends the specified item to the end of the scroller
 func (s *ItemScroller) Add(item IPanel) {
-
 	s.InsertAt(len(s.items), item)
 }
 
 // InsertAt inserts an item at the specified position
 func (s *ItemScroller) InsertAt(pos int, item IPanel) {
-
 	// Validates position
 	if pos < 0 || pos > len(s.items) {
 		panic("ItemScroller.InsertAt(): Invalid position")
@@ -117,7 +110,6 @@ func (s *ItemScroller) InsertAt(pos int, item IPanel) {
 
 // RemoveAt removes item from the specified position
 func (s *ItemScroller) RemoveAt(pos int) IPanel {
-
 	// Validates position
 	if pos < 0 || pos >= len(s.items) {
 		panic("ItemScroller.RemoveAt(): Invalid position")
@@ -140,7 +132,6 @@ func (s *ItemScroller) RemoveAt(pos int) IPanel {
 
 // Remove removes the specified item from the ItemScroller
 func (s *ItemScroller) Remove(item IPanel) {
-
 	for p, curr := range s.items {
 		if curr == item {
 			s.RemoveAt(p)
@@ -152,7 +143,6 @@ func (s *ItemScroller) Remove(item IPanel) {
 // ItemAt returns the item at the specified position.
 // Returns nil if the position is invalid.
 func (s *ItemScroller) ItemAt(pos int) IPanel {
-
 	if pos < 0 || pos >= len(s.items) {
 		return nil
 	}
@@ -162,7 +152,6 @@ func (s *ItemScroller) ItemAt(pos int) IPanel {
 // ItemPosition returns the position of the specified item in
 // the scroller of -1 if not found
 func (s *ItemScroller) ItemPosition(item IPanel) int {
-
 	for pos := 0; pos < len(s.items); pos++ {
 		if s.items[pos] == item {
 			return pos
@@ -173,13 +162,11 @@ func (s *ItemScroller) ItemPosition(item IPanel) int {
 
 // First returns the position of the first visible item
 func (s *ItemScroller) First() int {
-
 	return s.first
 }
 
 // SetFirst set the position of first visible if possible
 func (s *ItemScroller) SetFirst(pos int) {
-
 	if pos >= 0 && pos <= s.maxFirst() {
 		s.first = pos
 		s.recalc()
@@ -188,7 +175,6 @@ func (s *ItemScroller) SetFirst(pos int) {
 
 // ScrollDown scrolls the list down one item if possible
 func (s *ItemScroller) ScrollDown() {
-
 	max := s.maxFirst()
 	if s.first >= max {
 		return
@@ -199,7 +185,6 @@ func (s *ItemScroller) ScrollDown() {
 
 // ScrollUp scrolls the list up one item if possible
 func (s *ItemScroller) ScrollUp() {
-
 	if s.first == 0 {
 		return
 	}
@@ -210,7 +195,6 @@ func (s *ItemScroller) ScrollUp() {
 // ItemVisible returns indication if the item at the specified
 // position is completely visible or not
 func (s *ItemScroller) ItemVisible(pos int) bool {
-
 	if pos < s.first {
 		return false
 	}
@@ -248,14 +232,12 @@ func (s *ItemScroller) ItemVisible(pos int) bool {
 
 // SetStyles set the scroller styles overriding the default style
 func (s *ItemScroller) SetStyles(ss *ItemScrollerStyles) {
-
 	s.styles = ss
 	s.update()
 }
 
 // ApplyStyle applies the specified style to the ItemScroller
 func (s *ItemScroller) ApplyStyle(style int) {
-
 	switch style {
 	case StyleOver:
 		s.applyStyle(&s.styles.Over)
@@ -270,25 +252,21 @@ func (s *ItemScroller) ApplyStyle(style int) {
 
 // SetAutoWidth sets the maximum automatic width
 func (s *ItemScroller) SetAutoWidth(maxWidth float32) {
-
 	s.maxAutoWidth = maxWidth
 }
 
 // SetAutoHeight sets the maximum automatic height
 func (s *ItemScroller) SetAutoHeight(maxHeight float32) {
-
 	s.maxAutoHeight = maxHeight
 }
 
 // SetAutoButtonSize specified whether the scrollbutton size should be adjusted relative to the size of the content/view
 func (s *ItemScroller) SetAutoButtonSize(autoButtonSize bool) {
-
 	s.autoButtonSize = autoButtonSize
 }
 
 // initialize initializes this scroller and is normally used by other types which contains a scroller
 func (s *ItemScroller) initialize(vert bool, width, height float32) {
-
 	s.vert = vert
 	s.autoButtonSize = true
 	s.Panel.Initialize(s, width, height)
@@ -305,7 +283,6 @@ func (s *ItemScroller) initialize(vert bool, width, height float32) {
 
 // onCursor receives subscribed cursor events over the panel
 func (s *ItemScroller) onCursor(evname string, ev interface{}) {
-
 	switch evname {
 	case OnCursorEnter:
 		s.cursorOver = true
@@ -318,7 +295,6 @@ func (s *ItemScroller) onCursor(evname string, ev interface{}) {
 
 // onScroll receives mouse scroll events
 func (s *ItemScroller) onScroll(evname string, ev interface{}) {
-
 	sev := ev.(*window.ScrollEvent)
 	if sev.Yoffset > 0 {
 		s.ScrollUp()
@@ -329,13 +305,11 @@ func (s *ItemScroller) onScroll(evname string, ev interface{}) {
 
 // onResize receives resize events
 func (s *ItemScroller) onResize(evname string, ev interface{}) {
-
 	s.recalc()
 }
 
 // autoSize resizes the scroller if necessary
 func (s *ItemScroller) autoSize() {
-
 	if s.maxAutoWidth == 0 && s.maxAutoHeight == 0 {
 		return
 	}
@@ -366,7 +340,6 @@ func (s *ItemScroller) autoSize() {
 
 // recalc recalculates the positions and visibilities of all the items
 func (s *ItemScroller) recalc() {
-
 	if s.vert {
 		s.vRecalc()
 	} else {
@@ -376,7 +349,6 @@ func (s *ItemScroller) recalc() {
 
 // vRecalc recalculates for the vertical scroller
 func (s *ItemScroller) vRecalc() {
-
 	// Checks if scroll bar should be visible or not
 	scroll := false
 	if s.first > 0 {
@@ -441,7 +413,6 @@ func (s *ItemScroller) vRecalc() {
 
 // hRecalc recalculates for the horizontal scroller
 func (s *ItemScroller) hRecalc() {
-
 	// Checks if scroll bar should be visible or not
 	scroll := false
 	if s.first > 0 {
@@ -507,7 +478,6 @@ func (s *ItemScroller) hRecalc() {
 
 // maxFirst returns the maximum position of the first visible item
 func (s *ItemScroller) maxFirst() int {
-
 	// Vertical scroller
 	if s.vert {
 		var height float32
@@ -551,7 +521,6 @@ func (s *ItemScroller) maxFirst() int {
 
 // setVScrollBar sets the visibility state of the vertical scrollbar
 func (s *ItemScroller) setVScrollBar(state bool) {
-
 	// Visible
 	if state {
 		var scrollWidth float32 = 20
@@ -576,7 +545,6 @@ func (s *ItemScroller) setVScrollBar(state bool) {
 
 // setHScrollBar sets the visibility state of the horizontal scrollbar
 func (s *ItemScroller) setHScrollBar(state bool) {
-
 	// Visible
 	if state {
 		var scrollHeight float32 = 20
@@ -601,7 +569,6 @@ func (s *ItemScroller) setHScrollBar(state bool) {
 
 // onScrollEvent is called when the list scrollbar value changes
 func (s *ItemScroller) onScrollBarEvent(evname string, ev interface{}) {
-
 	var pos float64
 	if s.vert {
 		pos = s.vscroll.Value()
@@ -620,7 +587,6 @@ func (s *ItemScroller) onScrollBarEvent(evname string, ev interface{}) {
 
 // update updates the visual state the list and its items
 func (s *ItemScroller) update() {
-
 	if s.cursorOver {
 		s.applyStyle(&s.styles.Over)
 		return
@@ -634,6 +600,5 @@ func (s *ItemScroller) update() {
 
 // applyStyle sets the specified style
 func (s *ItemScroller) applyStyle(st *ItemScrollerStyle) {
-
 	s.Panel.ApplyStyle(&st.PanelStyle)
 }

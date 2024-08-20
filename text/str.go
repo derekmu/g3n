@@ -6,7 +6,6 @@ package text
 
 // StrCount returns the number of runes in the specified string
 func StrCount(s string) int {
-
 	count := 0
 	for range s {
 		count++
@@ -17,7 +16,6 @@ func StrCount(s string) int {
 // StrFind returns the start and length of the rune at the
 // specified position in the string
 func StrFind(s string, pos int) (start, length int) {
-
 	count := 0
 	for index := range s {
 		if count == pos {
@@ -39,14 +37,12 @@ func StrFind(s string, pos int) (start, length int) {
 
 // StrRemove removes the rune from the specified string and position
 func StrRemove(s string, col int) string {
-
 	start, length := StrFind(s, col)
 	return s[:start] + s[start+length:]
 }
 
 // StrInsert inserts a string at the specified character position
 func StrInsert(s, data string, col int) string {
-
 	start, _ := StrFind(s, col)
 	return s[:start] + data + s[start:]
 }
@@ -54,7 +50,6 @@ func StrInsert(s, data string, col int) string {
 // StrPrefix returns the prefix of the specified string up to
 // the specified character position
 func StrPrefix(text string, pos int) string {
-
 	count := 0
 	for index := range text {
 		if count == pos {

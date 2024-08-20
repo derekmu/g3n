@@ -196,7 +196,6 @@ read_vorbis_data_or_die (const char *filename, int srate, float * data, int coun
     i = 0;
     while ( i < 2) {
       while (i < 2) {
-
         int result = ogg_sync_pageout (&oy,&og);
         if(result == 0)
           break;

@@ -25,7 +25,6 @@ import (
 //	  width
 //	(pixels)
 func NewBoard(width, height int, c1, c2, c3, c4 *math32.Color, alpha float32) *Texture2D {
-
 	// Generates texture data
 	data := make([]float32, width*height*4*4)
 	colorData := func(sx, sy int, c *math32.Color) {

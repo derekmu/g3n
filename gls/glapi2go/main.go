@@ -52,7 +52,6 @@ var mapCType2Go = map[string]string{
 }
 
 func main() {
-
 	// Parse command line parameters
 	flag.Usage = usage
 	flag.Parse()
@@ -99,7 +98,6 @@ func main() {
 
 // parser parses the header file and builds the Template structure
 func parser(fheader io.Reader, h *GLHeader) error {
-
 	// Regex to parser #endif line to detect end of definitions for
 	// specific OpenGL version: ex:"#endif /* GL_VERSION_3_3 */"
 	rexEndif := regexp.MustCompile(`#endif\s+/\*\s+(\w+)\s+\*/`)
@@ -179,7 +177,6 @@ func parser(fheader io.Reader, h *GLHeader) error {
 // and parses it into an array of GLParam types with are then saved in the specified
 // GLfunc object.
 func parseParams(gparams string, f *GLFunc) error {
-
 	params := strings.Split(gparams, ",")
 	res := make([]GLParam, 0)
 	args := make([]string, 0)
@@ -222,7 +219,6 @@ func parseParams(gparams string, f *GLFunc) error {
 // getArgName remove qualifiers and array brackets from the argument
 // returning only the argument name. Ex: *const*indices -> indices
 func getArgName(arg string) string {
-
 	if strings.HasPrefix(arg, "*const*") {
 		return strings.TrimPrefix(arg, "*const*")
 	}
@@ -242,7 +238,6 @@ func getArgName(arg string) string {
 
 // glfname2go converts the name of an OpenGL C function to Go
 func glfname2go(glfname string) string {
-
 	if strings.HasPrefix(glfname, "gl") {
 		return strings.TrimPrefix(glfname, "gl")
 	}
@@ -251,13 +246,11 @@ func glfname2go(glfname string) string {
 
 // gldef2go converts a name such as GL_LINE_LOOP to LINE_LOOP
 func gldef2go(gldef string) string {
-
 	return strings.TrimPrefix(gldef, "GL_")
 }
 
 // glval2go converts a C OpenGL value to a Go value
 func glval2go(glval string) string {
-
 	val := glval
 	if strings.HasSuffix(val, "u") {
 		val = strings.TrimSuffix(val, "u")
@@ -274,7 +267,6 @@ func glval2go(glval string) string {
 // void *pixels   -> pixels unsafe.Pointer
 // void **params  -> params *unsafe.Pointer
 func gltypearg2go(gltype, glarg string) (goarg string, gotype string) {
-
 	// Replace parameter names using Go keywords
 	gokeys := []string{"type", "func"}
 	for _, k := range gokeys {
@@ -309,7 +301,6 @@ func gltypearg2go(gltype, glarg string) (goarg string, gotype string) {
 
 // Shows application usage
 func usage() {
-
 	fmt.Fprintf(os.Stderr, "%s v%d.%d\n", PROGNAME, VMAJOR, VMINOR)
 	fmt.Fprintf(os.Stderr, "usage:%s [options] <glheader>\n", strings.ToLower(PROGNAME))
 	flag.PrintDefaults()
@@ -317,7 +308,6 @@ func usage() {
 }
 
 func abort(err error) {
-
 	fmt.Fprintf(os.Stderr, "%s\n", err)
 	os.Exit(1)
 }

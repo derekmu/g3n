@@ -4,6 +4,8 @@
 
 package gui
 
+import "log"
+
 // VBoxLayout implements a panel layout which arranges the panel children vertically.
 // The children can be separated by a space in pixels set by SetSpacing().
 // The whole group of children can be aligned vertically by SetAlignV() which can
@@ -42,7 +44,6 @@ type VBoxLayoutParams struct {
 
 // NewVBoxLayout creates and returns a pointer to a new horizontal box layout
 func NewVBoxLayout() *VBoxLayout {
-
 	bl := new(VBoxLayout)
 	bl.spacing = 0
 	bl.alignV = AlignTop
@@ -52,7 +53,6 @@ func NewVBoxLayout() *VBoxLayout {
 // SetSpacing sets the horizontal spacing between the items in pixels
 // and updates the layout if possible
 func (bl *VBoxLayout) SetSpacing(spacing float32) {
-
 	bl.spacing = spacing
 	bl.Recalc(bl.pan)
 }
@@ -61,7 +61,6 @@ func (bl *VBoxLayout) SetSpacing(spacing float32) {
 // inside the parent panel and updates the layout if possible.
 // This only has any effect if there are no expanded items.
 func (bl *VBoxLayout) SetAlignV(align Align) {
-
 	bl.alignV = align
 	bl.Recalc(bl.pan)
 }
@@ -69,7 +68,6 @@ func (bl *VBoxLayout) SetAlignV(align Align) {
 // SetAutoHeight sets if the panel minimum height should be the height of
 // the largest of its children's height.
 func (bl *VBoxLayout) SetAutoHeight(state bool) {
-
 	bl.autoHeight = state
 	bl.Recalc(bl.pan)
 }
@@ -77,14 +75,12 @@ func (bl *VBoxLayout) SetAutoHeight(state bool) {
 // SetAutoWidth sets if the panel minimum width should be sum of its
 // children's width plus the spacing
 func (bl *VBoxLayout) SetAutoWidth(state bool) {
-
 	bl.autoWidth = state
 	bl.Recalc(bl.pan)
 }
 
 // Recalc recalculates and sets the position and sizes of all children
 func (bl *VBoxLayout) Recalc(ipan IPanel) {
-
 	// Saves the received panel
 	bl.pan = ipan
 	if bl.pan == nil {

@@ -37,7 +37,6 @@ out vec4 FragColor;
 * rect[3] - height [0,1]
 */
 bool checkRect(vec4 rect) {
-
     if (FragTexcoord.x < rect[0]) {
         return false;
     }
@@ -55,7 +54,6 @@ bool checkRect(vec4 rect) {
 
 
 void main() {
-
     // Discard fragment outside of received bounds
     // Bounds[0] - xmin
     // Bounds[1] - ymin
@@ -70,7 +68,6 @@ void main() {
 
     // Check if fragment is inside content area
     if (checkRect(Content)) {
-
         // If no texture, the color will be the material color.
         vec4 color = ContentColor;
 

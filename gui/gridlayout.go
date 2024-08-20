@@ -34,7 +34,6 @@ type colInfo struct {
 
 // NewGridLayout creates and returns a pointer of a new grid layout
 func NewGridLayout(ncols int) *GridLayout {
-
 	if ncols <= 0 {
 		panic("Invalid number of columns")
 	}
@@ -46,7 +45,6 @@ func NewGridLayout(ncols int) *GridLayout {
 // SetAlignV sets the vertical alignment for all the grid cells
 // The alignment of an individual cell can be set by settings its layout parameters.
 func (g *GridLayout) SetAlignV(align Align) {
-
 	g.alignv = align
 	g.Recalc(g.pan)
 }
@@ -54,21 +52,18 @@ func (g *GridLayout) SetAlignV(align Align) {
 // SetAlignH sets the horizontal alignment for all the grid cells
 // The alignment of an individual cell can be set by settings its layout parameters.
 func (g *GridLayout) SetAlignH(align Align) {
-
 	g.alignh = align
 	g.Recalc(g.pan)
 }
 
 // SetExpandH sets it the columns should expand horizontally if possible
 func (g *GridLayout) SetExpandH(expand bool) {
-
 	g.expandh = expand
 	g.Recalc(g.pan)
 }
 
 // SetExpandV sets it the rowss should expand vertically if possible
 func (g *GridLayout) SetExpandV(expand bool) {
-
 	g.expandv = expand
 	g.Recalc(g.pan)
 }
@@ -76,7 +71,6 @@ func (g *GridLayout) SetExpandV(expand bool) {
 // SetColAlignV sets the vertical alignment for all the cells of
 // the specified column. The function panics if the supplied column is invalid
 func (g *GridLayout) SetColAlignV(col int, align Align) {
-
 	if col < 0 || col >= len(g.columns) {
 		panic("Invalid column")
 	}
@@ -90,7 +84,6 @@ func (g *GridLayout) SetColAlignV(col int, align Align) {
 // SetColAlignH sets the horizontal alignment for all the cells of
 // the specified column. The function panics if the supplied column is invalid.
 func (g *GridLayout) SetColAlignH(col int, align Align) {
-
 	if col < 0 || col >= len(g.columns) {
 		panic("Invalid column")
 	}
@@ -105,7 +98,6 @@ func (g *GridLayout) SetColAlignH(col int, align Align) {
 // It is normally called by the parent panel when its size changes or
 // a child is added or removed.
 func (g *GridLayout) Recalc(ipan IPanel) {
-
 	type cell struct {
 		panel     *Panel           // pointer to cell panel
 		params    GridLayoutParams // copy of params or default

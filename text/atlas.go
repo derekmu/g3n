@@ -39,7 +39,6 @@ type Atlas struct {
 
 // NewAtlas returns a pointer to a new Atlas object
 func NewAtlas(font *Font, first, last rune) *Atlas {
-
 	a := new(Atlas)
 	a.Chars = make([]CharInfo, last+1)
 
@@ -117,7 +116,6 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 
 // SavePNG saves the current atlas image as a PNG image file
 func (a *Atlas) SavePNG(filename string) error {
-
 	// Save that RGBA image to disk.
 	outFile, err := os.Create(filename)
 	if err != nil {

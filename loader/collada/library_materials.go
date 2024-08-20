@@ -8,6 +8,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log"
 )
 
 // LibraryMaterials
@@ -20,7 +21,6 @@ type LibraryMaterials struct {
 
 // Dump prints out information about the LibraryMaterials
 func (lm *LibraryMaterials) Dump(out io.Writer, indent int) {
-
 	if lm == nil {
 		return
 	}
@@ -40,7 +40,6 @@ type Material struct {
 
 // Dump prints out information about the Material
 func (mat *Material) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sMaterial id:%s name:%s\n", sIndent(indent), mat.Id, mat.Name)
 	ind := indent + step
 	mat.InstanceEffect.Dump(out, ind)
@@ -55,13 +54,11 @@ type InstanceEffect struct {
 
 // Dump prints out information about the InstanceEffect
 func (ie *InstanceEffect) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sInstanceEffect id:%s name:%s url:%s\n",
 		sIndent(indent), ie.Sid, ie.Name, ie.Url)
 }
 
 func (d *Decoder) decLibraryMaterials(start xml.StartElement, dom *Collada) error {
-
 	lm := new(LibraryMaterials)
 	dom.LibraryMaterials = lm
 	lm.Id = findAttrib(start, "id").Value
@@ -85,7 +82,6 @@ func (d *Decoder) decLibraryMaterials(start xml.StartElement, dom *Collada) erro
 }
 
 func (d *Decoder) decMaterial(start xml.StartElement, lm *LibraryMaterials) error {
-
 	mat := new(Material)
 	mat.Id = findAttrib(start, "id").Value
 	mat.Name = findAttrib(start, "name").Value
@@ -107,7 +103,6 @@ func (d *Decoder) decMaterial(start xml.StartElement, lm *LibraryMaterials) erro
 }
 
 func (d *Decoder) decInstanceEffect(start xml.StartElement, ie *InstanceEffect) error {
-
 	ie.Sid = findAttrib(start, "sid").Value
 	ie.Name = findAttrib(start, "name").Value
 	ie.Url = findAttrib(start, "url").Value
@@ -118,11 +113,11 @@ func (d *Decoder) decInstanceEffect(start xml.StartElement, ie *InstanceEffect) 
 			return err
 		}
 		if child.Name.Local == "technique_hint setparam" {
-			log.Warn("<technique_hint> not implemented")
+			log.Print("<technique_hint> not implemented")
 			continue
 		}
 		if child.Name.Local == "setparam" {
-			log.Warn("<setparam> not implemented")
+			log.Print("<setparam> not implemented")
 			continue
 		}
 	}

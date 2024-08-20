@@ -19,7 +19,6 @@
 /* preecho trigger settings *****************************************/
 
 static const vorbis_info_psy_global _psy_global_44[5]={
-
   {8,   /* lines per eighth octave */
    {20.f,14.f,12.f,12.f,12.f,12.f,12.f},
    {-60.f,-30.f,-40.f,-40.f,-40.f,-40.f,-40.f}, 2,-75.f,
@@ -107,7 +106,6 @@ static const compandblock _psy_compand_44[6]={
 /* tonal masking curve level adjustments *************************/
 
 static const vp_adjblock _vp_tonemask_adj_longblock[12]={
-
    /* 63     125     250     500       1       2       4       8      16 */
 
    {{ -3, -8,-13,-15,-10,-10,-10,-10,-10,-10,-10,  0,  0,  0,  0,  0,  0}}, /* -1 */

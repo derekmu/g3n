@@ -19,7 +19,6 @@ func NewFrustumFromMatrix(m *Matrix4) *Frustum {
 
 // NewFrustum returns a pointer to a new Frustum object
 func NewFrustum(p0, p1, p2, p3, p4, p5 *Plane) *Frustum {
-
 	f := new(Frustum)
 	f.planes = make([]Plane, 6)
 	f.Set(p0, p1, p2, p3, p4, p5)
@@ -28,7 +27,6 @@ func NewFrustum(p0, p1, p2, p3, p4, p5 *Plane) *Frustum {
 
 // Set sets the frustum's planes
 func (f *Frustum) Set(p0, p1, p2, p3, p4, p5 *Plane) *Frustum {
-
 	if p0 != nil {
 		f.planes[0] = *p0
 	}
@@ -52,7 +50,6 @@ func (f *Frustum) Set(p0, p1, p2, p3, p4, p5 *Plane) *Frustum {
 
 // Copy modifies the receiver frustum to match the provided frustum
 func (f *Frustum) Copy(frustum *Frustum) *Frustum {
-
 	for i := 0; i < 6; i++ {
 		f.planes[i] = frustum.planes[i]
 	}
@@ -61,7 +58,6 @@ func (f *Frustum) Copy(frustum *Frustum) *Frustum {
 
 // SetFromMatrix sets the frustum's planes based on the specified Matrix4
 func (f *Frustum) SetFromMatrix(m *Matrix4) *Frustum {
-
 	planes := f.planes
 	me0 := m[0]
 	me1 := m[1]
@@ -93,15 +89,12 @@ func (f *Frustum) SetFromMatrix(m *Matrix4) *Frustum {
 /**
 SHOULD NOT DEPEND on core package (Move to core ?)
 func (this *Frustum) IntersectsObject(geometry *core.Geometry) bool {
-
-
     return false
 }
 */
 
 // IntersectsSphere determines whether the specified sphere is intersecting the frustum
 func (f *Frustum) IntersectsSphere(sphere *Sphere) bool {
-
 	planes := f.planes
 	negRadius := -sphere.Radius
 
@@ -117,7 +110,6 @@ func (f *Frustum) IntersectsSphere(sphere *Sphere) bool {
 
 // IntersectsBox determines whether the specified box is intersecting the frustum
 func (f *Frustum) IntersectsBox(box *Box3) bool {
-
 	var p1 Vector3
 	var p2 Vector3
 
@@ -169,7 +161,6 @@ func (f *Frustum) IntersectsBox(box *Box3) bool {
 
 // ContainsPoint determines whether the frustum contains the specified point
 func (f *Frustum) ContainsPoint(point *Vector3) bool {
-
 	for i := 0; i < 6; i++ {
 		if f.planes[i].DistanceToPoint(point) < 0 {
 			return false
@@ -180,6 +171,5 @@ func (f *Frustum) ContainsPoint(point *Vector3) bool {
 
 // Clone returns a pointer to a new Frustum object with the same planes as the original
 func (f *Frustum) Clone() *Frustum {
-
 	return NewFrustum(nil, nil, nil, nil, nil, nil).Copy(f)
 }

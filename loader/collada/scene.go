@@ -17,7 +17,6 @@ import (
 
 // NewScene returns a new collada empty scene
 func (d *Decoder) NewScene() (core.INode, error) {
-
 	sc := d.dom.Scene
 	if sc == nil {
 		return nil, fmt.Errorf("No Scene element found")
@@ -52,7 +51,6 @@ func (d *Decoder) NewScene() (core.INode, error) {
 }
 
 func (d *Decoder) newNode(cnode *Node) (core.INode, error) {
-
 	var node core.INode
 	switch nt := cnode.Instance.(type) {
 	// Empty Node
@@ -159,7 +157,6 @@ func (d *Decoder) newNode(cnode *Node) (core.INode, error) {
 }
 
 func findVisualScene(dom *Collada, uri string) *VisualScene {
-
 	id := strings.TrimPrefix(uri, "#")
 	for _, vs := range dom.LibraryVisualScenes.VisualScene {
 		if vs.Id == id {

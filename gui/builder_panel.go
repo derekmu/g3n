@@ -13,7 +13,6 @@ import (
 
 // buildPanel builds an object of type Panel
 func buildPanel(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	pan := NewPanel(0, 0)
 	err := b.SetAttribs(am, pan)
 	if err != nil {
@@ -37,7 +36,6 @@ func buildPanel(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildImagePanel builds a gui object of type ImagePanel
 func buildImagePanel(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Checks imagefile attribute
 	if am[AttribImageFile] == nil {
 		return nil, b.err(am, AttribImageFile, "Must be supplied")
@@ -86,7 +84,6 @@ func buildImagePanel(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildLabel builds a gui object of type Label
 func buildLabel(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	var label *Label
 	if am[AttribIcon] != nil {
 		label = NewIcon(am[AttribIcon].(string))
@@ -132,7 +129,6 @@ func buildLabel(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildImageLabel builds a gui object of type: ImageLabel
 func buildImageLabel(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds image label and set common attributes
 	var text string
 	if am[AttribText] != nil {
@@ -167,7 +163,6 @@ func buildImageLabel(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildButton builds a gui object of type: Button
 func buildButton(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds button and set commont attributes
 	var text string
 	if am[AttribText] != nil {
@@ -202,7 +197,6 @@ func buildButton(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildEdit builds a gui object of type: "Edit"
 func buildEdit(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds button and set attributes
 	var width float32
 	var placeholder string
@@ -222,7 +216,6 @@ func buildEdit(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildCheckBox builds a gui object of type: CheckBox
 func buildCheckBox(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds check box and set commont attributes
 	var text string
 	if am[AttribText] != nil {
@@ -243,7 +236,6 @@ func buildCheckBox(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildRadioButton builds a gui object of type: RadioButton
 func buildRadioButton(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds check box and set commont attributes
 	var text string
 	if am[AttribText] != nil {
@@ -269,7 +261,6 @@ func buildRadioButton(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildVList builds a gui object of type: VList
 func buildVList(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds list and set commont attributes
 	list := NewVList(0, 0)
 	err := b.SetAttribs(am, list)
@@ -294,7 +285,6 @@ func buildVList(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildHList builds a gui object of type: VList
 func buildHList(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds list and set commont attributes
 	list := NewHList(0, 0)
 	err := b.SetAttribs(am, list)
@@ -319,7 +309,6 @@ func buildHList(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildDropDown builds a gui object of type: DropDown
 func buildDropDown(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// If image label attribute defined use it, otherwise
 	// uses default value.
 	var imglabel *ImageLabel
@@ -360,7 +349,6 @@ func buildDropDown(b *Builder, am map[string]interface{}) (IPanel, error) {
 // buildMenu builds a gui object of type: Menu or MenuBar from the
 // specified panel descriptor.
 func buildMenu(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds menu bar or menu
 	var menu *Menu
 	if am[AttribType].(string) == TypeMenuBar {
@@ -430,7 +418,6 @@ func buildMenu(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildSlider builds a gui object of type: HSlider or VSlider
 func buildSlider(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds horizontal or vertical slider
 	var slider *Slider
 	if am[AttribType].(string) == TypeHSlider {
@@ -462,7 +449,6 @@ func buildSlider(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildSplitter builds a gui object of type: HSplitterr or VSplitter
 func buildSplitter(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds horizontal or vertical splitter
 	var splitter *Splitter
 	if am[AttribType].(string) == TypeHSplitter {
@@ -484,7 +470,6 @@ func buildSplitter(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 	// Internal function to set each of the splitter's panel attributes and items
 	setpan := func(attrib string, pan *Panel) error {
-
 		// Get internal panel attributes
 		ipattribs := am[attrib]
 		if ipattribs == nil {
@@ -526,7 +511,6 @@ func buildSplitter(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildTree builds a gui object of type: Tree
 func buildTree(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds tree and sets its common attributes
 	tree := NewTree(0, 0)
 	err := b.SetAttribs(am, tree)
@@ -537,7 +521,6 @@ func buildTree(b *Builder, am map[string]interface{}) (IPanel, error) {
 	// Internal function to build tree nodes recursively
 	var buildItems func(am map[string]interface{}, pnode *TreeNode) error
 	buildItems = func(am map[string]interface{}, pnode *TreeNode) error {
-
 		v := am[AttribItems]
 		if v == nil {
 			return nil
@@ -594,7 +577,6 @@ func buildTree(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildWindow builds a gui object of type: Window
 func buildWindow(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds window and sets its common attributes
 	win := NewWindow(0, 0)
 	err := b.SetAttribs(am, win)
@@ -629,7 +611,6 @@ func buildWindow(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildChart builds a gui object of type: Chart
 func buildChart(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Builds window and sets its common attributes
 	chart := NewChart(0, 0)
 	err := b.SetAttribs(am, chart)
@@ -736,7 +717,6 @@ func buildChart(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildTable builds a gui object of type: Table
 func buildTable(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Internal function to build a TableColumn from its attribute map
 	buildTableCol := func(b *Builder, am map[string]interface{}) (*TableColumn, error) {
 		tc := &TableColumn{}
@@ -803,7 +783,6 @@ func buildTable(b *Builder, am map[string]interface{}) (IPanel, error) {
 
 // buildTabBar builds a gui object of type: TabBare
 func buildTabBar(b *Builder, am map[string]interface{}) (IPanel, error) {
-
 	// Creates TabBar and set common attributes
 	tabbar := NewTabBar(0, 0)
 	err := b.SetAttribs(am, tabbar)

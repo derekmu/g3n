@@ -30,7 +30,6 @@ type ControlFolderGroup struct {
 // NewControlFolder creates and returns a pointer to a new control folder widget
 // with the specified text and initial width
 func NewControlFolder(text string, width float32) *ControlFolder {
-
 	f := new(ControlFolder)
 	f.Initialize(text, width)
 	return f
@@ -39,7 +38,6 @@ func NewControlFolder(text string, width float32) *ControlFolder {
 // Initialize initializes the control folder with the specified text and initial width
 // It is normally used when the control folder is embedded in another object
 func (f *ControlFolder) Initialize(text string, width float32) {
-
 	f.styles = &StyleDefault().ControlFolder
 	f.tree.Initialize(width, width)
 	f.tree.SetStyles(f.styles.Tree)
@@ -53,25 +51,21 @@ func (f *ControlFolder) Initialize(text string, width float32) {
 
 // Clear clears the control folder's tree
 func (f *ControlFolder) Clear() {
-
 	f.tree.Clear()
 }
 
 // RemoveAt removes the IPanel at the specified position from the control folder's tree
 func (f *ControlFolder) RemoveAt(pos int) IPanel {
-
 	return f.tree.RemoveAt(pos)
 }
 
 // AddPanel adds an IPanel to the control folder's tree
 func (f *ControlFolder) AddPanel(pan IPanel) {
-
 	f.tree.Add(pan)
 }
 
 // AddCheckBox adds a checkbox to the control folder's tree
 func (f *ControlFolder) AddCheckBox(text string) *CheckRadio {
-
 	cb := NewCheckBox(text)
 	f.tree.Add(cb)
 	return cb
@@ -79,7 +73,6 @@ func (f *ControlFolder) AddCheckBox(text string) *CheckRadio {
 
 // AddSlider adds a slider to the control folder's tree
 func (f *ControlFolder) AddSlider(text string, sf, v float32) *Slider {
-
 	cont, slider := f.newSlider(text, sf, v)
 	f.tree.Add(cont)
 	return slider
@@ -87,7 +80,6 @@ func (f *ControlFolder) AddSlider(text string, sf, v float32) *Slider {
 
 // AddGroup adds a group to the control folder
 func (f *ControlFolder) AddGroup(text string) *ControlFolderGroup {
-
 	g := new(ControlFolderGroup)
 	g.control = f
 	g.node = f.tree.AddNode(text)
@@ -96,7 +88,6 @@ func (f *ControlFolder) AddGroup(text string) *ControlFolderGroup {
 
 // SetStyles set the folder styles overriding the default style
 func (f *ControlFolder) SetStyles(fs *ControlFolderStyles) {
-
 	f.styles = fs
 
 	f.Folder.styles = fs.Folder
@@ -109,7 +100,6 @@ func (f *ControlFolder) SetStyles(fs *ControlFolderStyles) {
 
 // AddCheckBox adds a checkbox to the control folder group
 func (g *ControlFolderGroup) AddCheckBox(text string) *CheckRadio {
-
 	cb := NewCheckBox(text)
 	g.node.Add(cb)
 	return cb
@@ -117,7 +107,6 @@ func (g *ControlFolderGroup) AddCheckBox(text string) *CheckRadio {
 
 // AddSlider adds a slider to the control folder group
 func (g *ControlFolderGroup) AddSlider(text string, sf, v float32) *Slider {
-
 	cont, slider := g.control.newSlider(text, sf, v)
 	g.node.Add(cont)
 	return slider
@@ -125,12 +114,10 @@ func (g *ControlFolderGroup) AddSlider(text string, sf, v float32) *Slider {
 
 // AddPanel adds a panel to the control folder group
 func (g *ControlFolderGroup) AddPanel(pan IPanel) {
-
 	g.node.Add(pan)
 }
 
 func (f *ControlFolder) newSlider(text string, sf, value float32) (IPanel, *Slider) {
-
 	// Creates container panel for the label and slider
 	cont := NewPanel(200, 32)
 	hbox := NewHBoxLayout()

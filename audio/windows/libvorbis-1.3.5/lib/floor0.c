@@ -58,9 +58,7 @@ static void floor0_free_info(vorbis_info_floor *i){
 static void floor0_free_look(vorbis_look_floor *i){
   vorbis_look_floor0 *look=(vorbis_look_floor0 *)i;
   if(look){
-
     if(look->linearmap){
-
       if(look->linearmap[0])_ogg_free(look->linearmap[0]);
       if(look->linearmap[1])_ogg_free(look->linearmap[1]);
 

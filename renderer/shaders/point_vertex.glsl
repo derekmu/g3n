@@ -12,7 +12,6 @@ out vec3 Color;
 flat out mat2 Rotation;
 
 void main() {
-
     // Rotation matrix for fragment shader
     float rotSin = sin(MatPointRotationZ);
     float rotCos = cos(MatPointRotationZ);

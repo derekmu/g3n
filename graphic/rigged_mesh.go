@@ -5,6 +5,7 @@
 package graphic
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/derekmu/g3n/core"
@@ -24,7 +25,6 @@ type RiggedMesh struct {
 
 // NewRiggedMesh returns a new rigged mesh.
 func NewRiggedMesh(mesh *Mesh) *RiggedMesh {
-
 	rm := new(RiggedMesh)
 	rm.Mesh = mesh
 	rm.SetIGraphic(rm)
@@ -37,20 +37,17 @@ func NewRiggedMesh(mesh *Mesh) *RiggedMesh {
 
 // SetSkeleton sets the skeleton used by the rigged mesh.
 func (rm *RiggedMesh) SetSkeleton(sk *Skeleton) {
-
 	rm.skeleton = sk
 	rm.ShaderDefines.Set("TOTAL_BONES", strconv.Itoa(len(rm.skeleton.Bones())))
 }
 
 // SetSkeleton returns the skeleton used by the rigged mesh.
 func (rm *RiggedMesh) Skeleton() *Skeleton {
-
 	return rm.skeleton
 }
 
 // RenderSetup is called by the renderer before drawing the geometry.
 func (rm *RiggedMesh) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-
 	// Call base mesh's RenderSetup
 	rm.Mesh.RenderSetup(gs, rinfo)
 
@@ -60,7 +57,7 @@ func (rm *RiggedMesh) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 	nMW := node.MatrixWorld()
 	err := invMat.GetInverse(&nMW)
 	if err != nil {
-		log.Error("Skeleton.BoneMatrices: inverting matrix failed!")
+		log.Print("Skeleton.BoneMatrices: inverting matrix failed!")
 	}
 
 	// Transfer bone matrices

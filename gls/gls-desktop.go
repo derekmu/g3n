@@ -12,6 +12,7 @@ package gls
 import "C"
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"unsafe"
 )
@@ -736,7 +737,7 @@ func (gs *GLS) UseProgram(prog *Program) {
 	// Inserts program in cache if not already there.
 	if !gs.programs[prog] {
 		gs.programs[prog] = true
-		log.Debug("New Program activated. Total: %d", len(gs.programs))
+		log.Printf("New Program activated. Total: %d", len(gs.programs))
 	}
 }
 

@@ -115,7 +115,6 @@ int main(){
 #endif
 
   if(ov_seekable(&ov)){
-
     /* to simplify our own lives, we want to assume the whole file is
        stereo.  Verify this to avoid potentially mystifying users
        (pissing them off is OK, just don't confuse them) */

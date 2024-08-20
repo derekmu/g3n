@@ -108,10 +108,8 @@ int main(int argc,char *argv[]){
 
   /* now we simply count already collated by-entry data */
   if(!strrcmp_i(argv[0],"res0tune") || !strrcmp_i(argv[0],"res1tune")){
-
     line=setup_line(in);
     while(line){
-
       /* code:hits\n */
       /* likely to have multiple listing for each code entry; must
          accumulate */

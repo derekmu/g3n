@@ -19,7 +19,6 @@ func NewSphere(radius float64, widthSegments, heightSegments int) *Geometry {
 // NewSphereSector creates a sphere sector geometry with the specified radius, number of radial segments in each dimension, elevation
 // start angle in radians, elevation size angle in radians, sector start angle in radians, and sector size angle in radians.
 func NewSphereSector(radius float64, widthSegments, heightSegments int, phiStart, phiLength, thetaStart, thetaLength float64) *Geometry {
-
 	s := NewGeometry()
 
 	thetaEnd := thetaStart + thetaLength

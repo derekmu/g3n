@@ -28,7 +28,6 @@ type timeout struct {
 
 // NewTimerManager creates and returns a new timer manager
 func NewTimerManager() *TimerManager {
-
 	tm := new(TimerManager)
 	tm.Initialize()
 	return tm
@@ -37,7 +36,6 @@ func NewTimerManager() *TimerManager {
 // Initialize initializes the timer manager.
 // It is normally used when the TimerManager is embedded in another type.
 func (tm *TimerManager) Initialize() {
-
 	tm.nextID = 1
 	tm.timers = make([]timeout, 0)
 }
@@ -45,21 +43,18 @@ func (tm *TimerManager) Initialize() {
 // SetTimeout sets a timeout with the specified duration and callback
 // The function returns the timeout id which can be used to cancel the timeout
 func (tm *TimerManager) SetTimeout(td time.Duration, arg interface{}, cb TimerCallback) int {
-
 	return tm.setTimer(td, false, arg, cb)
 }
 
 // SetInterval sets a periodic timeout with the specified duration and callback
 // The function returns the timeout id which can be used to cancel the timeout
 func (tm *TimerManager) SetInterval(td time.Duration, arg interface{}, cb TimerCallback) int {
-
 	return tm.setTimer(td, true, arg, cb)
 }
 
 // ClearTimeout clears the timeout specified by the id.
 // Returns true if the timeout is found.
 func (tm *TimerManager) ClearTimeout(id int) bool {
-
 	for pos, t := range tm.timers {
 		if t.id == id {
 			copy(tm.timers[pos:], tm.timers[pos+1:])
@@ -73,7 +68,6 @@ func (tm *TimerManager) ClearTimeout(id int) bool {
 
 // ProcessTimers should be called periodically to process the timers
 func (tm *TimerManager) ProcessTimers() {
-
 	now := time.Now()
 	for pos, t := range tm.timers {
 		// If empty entry, ignore
@@ -94,7 +88,6 @@ func (tm *TimerManager) ProcessTimers() {
 
 // setTimer sets a new timer with the specified duration
 func (tm *TimerManager) setTimer(td time.Duration, periodic bool, arg interface{}, cb TimerCallback) int {
-
 	// Creates timeout entry
 	t := timeout{
 		id:     tm.nextID,

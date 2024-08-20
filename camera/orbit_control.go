@@ -67,7 +67,6 @@ type OrbitControl struct {
 
 // NewOrbitControl creates and returns a pointer to a new orbit control for the specified camera.
 func NewOrbitControl(cam *Camera) *OrbitControl {
-
 	oc := new(OrbitControl)
 	oc.Dispatcher.Initialize()
 	oc.cam = cam
@@ -100,7 +99,6 @@ func NewOrbitControl(cam *Camera) *OrbitControl {
 
 // Dispose unsubscribes from all events.
 func (oc *OrbitControl) Dispose() {
-
 	gui.Manager().UnsubscribeID(window.OnMouseUp, &oc)
 	gui.Manager().UnsubscribeID(window.OnMouseDown, &oc)
 	gui.Manager().UnsubscribeID(window.OnScroll, &oc)
@@ -111,13 +109,11 @@ func (oc *OrbitControl) Dispose() {
 
 // Reset resets the orbit control.
 func (oc *OrbitControl) Reset() {
-
 	oc.target = *math32.NewVec3()
 }
 
 // Target returns the current orbit target.
 func (oc *OrbitControl) Target() math32.Vector3 {
-
 	return oc.target
 }
 
@@ -128,19 +124,16 @@ func (oc *OrbitControl) SetTarget(v math32.Vector3) {
 
 // Enabled returns the current OrbitEnabled bitmask.
 func (oc *OrbitControl) Enabled() OrbitEnabled {
-
 	return oc.enabled
 }
 
 // SetEnabled sets the current OrbitEnabled bitmask.
 func (oc *OrbitControl) SetEnabled(bitmask OrbitEnabled) {
-
 	oc.enabled = bitmask
 }
 
 // Rotate rotates the camera around the target by the specified angles.
 func (oc *OrbitControl) Rotate(thetaDelta, phiDelta float32) {
-
 	const EPS = 0.0001
 
 	// Compute direction vector from target to camera
@@ -170,7 +163,6 @@ func (oc *OrbitControl) Rotate(thetaDelta, phiDelta float32) {
 // Zoom moves the camera closer or farther from the target the specified amount
 // and also updates the camera's orthographic size to match.
 func (oc *OrbitControl) Zoom(delta float32) {
-
 	// Compute direction vector from target to camera
 	tcam := oc.cam.Position()
 	tcam.Sub(&oc.target)
@@ -187,7 +179,6 @@ func (oc *OrbitControl) Zoom(delta float32) {
 
 // Pan pans the camera and target the specified amount on the plane perpendicular to the viewing direction.
 func (oc *OrbitControl) Pan(deltaX, deltaY float32) {
-
 	// Compute direction vector from camera to target
 	position := oc.cam.Position()
 	vdir := oc.target.Clone().Sub(&position)
@@ -210,7 +201,6 @@ func (oc *OrbitControl) Pan(deltaX, deltaY float32) {
 
 // onMouse is called when an OnMouseDown/OnMouseUp event is received.
 func (oc *OrbitControl) onMouse(evname string, ev interface{}) {
-
 	// If nothing enabled ignore event
 	if oc.enabled == OrbitNone {
 		return
@@ -245,7 +235,6 @@ func (oc *OrbitControl) onMouse(evname string, ev interface{}) {
 
 // onCursor is called when an OnCursor event is received.
 func (oc *OrbitControl) onCursor(evname string, ev interface{}) {
-
 	// If nothing enabled ignore event
 	if oc.enabled == OrbitNone || oc.state == stateNone {
 		return
@@ -270,7 +259,6 @@ func (oc *OrbitControl) onCursor(evname string, ev interface{}) {
 
 // onScroll is called when an OnScroll event is received.
 func (oc *OrbitControl) onScroll(evname string, ev interface{}) {
-
 	if oc.enabled&OrbitZoom != 0 {
 		sev := ev.(*window.ScrollEvent)
 		oc.Zoom(-sev.Yoffset)
@@ -279,7 +267,6 @@ func (oc *OrbitControl) onScroll(evname string, ev interface{}) {
 
 // onKey is called when an OnKeyDown/OnKeyRepeat event is received.
 func (oc *OrbitControl) onKey(evname string, ev interface{}) {
-
 	// If keyboard control is disabled ignore event
 	if oc.enabled&OrbitKeys == 0 {
 		return
@@ -322,7 +309,6 @@ func (oc *OrbitControl) onKey(evname string, ev interface{}) {
 
 // winSize returns the window height or width based on the camera reference axis.
 func (oc *OrbitControl) winSize() float32 {
-
 	width, size := window.Get().GetSize()
 	if oc.cam.Axis() == Horizontal {
 		size = width

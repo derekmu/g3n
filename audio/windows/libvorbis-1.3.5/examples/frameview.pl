@@ -270,7 +270,6 @@ $toplevel->bind('MainWindow','<Configure>',[sub{$toplevel->update();
 Tk::MainLoop();
 
 sub load_graph{
-
     scan_directory()if(!defined($panel_count));
 
     @data=undef;
@@ -343,7 +342,6 @@ sub graphhelper{
 	# look for appropriate axis scales
 
 	if($rescale){
-
 	    $w->delete('ylabel');
 	    $w->delete('xlabel');
 	    $w->delete('axes');
@@ -476,7 +474,6 @@ sub graphhelper{
 }    
 
 sub draw_graph{
-
     if($onecrop){
 	$onestate{"minx"}=undef;
 	$onestate{"miny"}=undef;

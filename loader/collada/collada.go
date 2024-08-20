@@ -34,7 +34,6 @@ type geomInstance struct {
 
 // Decode decodes the specified collada file returning a decoder object and an error.
 func Decode(filepath string) (*Decoder, error) {
-
 	// Opens file
 	f, err := os.Open(filepath)
 	if err != nil {
@@ -47,7 +46,6 @@ func Decode(filepath string) (*Decoder, error) {
 
 // DecodeReader decodes the specified collada reader returning a decoder object and an error.
 func DecodeReader(f io.Reader) (*Decoder, error) {
-
 	d := new(Decoder)
 	d.xmldec = xml.NewDecoder(f)
 	d.geometries = make(map[string]geomInstance)
@@ -62,7 +60,6 @@ func DecodeReader(f io.Reader) (*Decoder, error) {
 }
 
 func (d *Decoder) SetDirImages(path string) {
-
 	d.dirImages = path
 }
 
@@ -83,7 +80,6 @@ type Collada struct {
 // Dump writes to the specified writer a text dump of the decoded Collada DOM
 // to aid debugging.
 func (d *Decoder) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sCollada version:%s\n", sIndent(indent), d.dom.Version)
 	d.dom.Asset.Dump(out, indent+step)
 	d.dom.LibraryAnimations.Dump(out, indent+step)
@@ -109,7 +105,6 @@ type Contributor struct {
 
 // Dump prints out information about the Contributor
 func (c *Contributor) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sContributor:\n", sIndent(indent))
 	ind := indent + step
 	if len(c.Author) > 0 {
@@ -145,7 +140,6 @@ type Asset struct {
 
 // Dump prints out information about the Asset
 func (a *Asset) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sAsset:\n", sIndent(indent))
 	ind := indent + step
 	a.Contributor.Dump(out, ind)
@@ -161,7 +155,6 @@ type Scene struct {
 
 // Dump prints out information about the Scene
 func (s *Scene) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sScene:\n", sIndent(indent))
 	ind := indent + step
 	s.InstanceVisualScene.Dump(out, ind)
@@ -176,7 +169,6 @@ type InstanceVisualScene struct {
 
 // Dump prints out information about the InstanceVisualScene
 func (ivs *InstanceVisualScene) Dump(out io.Writer, indent int) {
-
 	if ivs == nil {
 		return
 	}
@@ -185,7 +177,6 @@ func (ivs *InstanceVisualScene) Dump(out io.Writer, indent int) {
 }
 
 func (d *Decoder) decCollada(dom *Collada) error {
-
 	// Loop to read all first level elements
 	var tok interface{}
 	var err error
@@ -280,7 +271,6 @@ func (d *Decoder) decCollada(dom *Collada) error {
 }
 
 func (d *Decoder) decContributor(start xml.StartElement, c *Contributor) error {
-
 	for {
 		child, data, err := d.decNextChild(start)
 		if err != nil || child.Name.Local == "" {
@@ -318,7 +308,6 @@ func (d *Decoder) decContributor(start xml.StartElement, c *Contributor) error {
 }
 
 func (d *Decoder) decAsset(assetStart xml.StartElement, a *Asset) error {
-
 	for {
 		child, data, err := d.decNextChild(assetStart)
 		if err != nil || child.Name.Local == "" {
@@ -347,7 +336,6 @@ func (d *Decoder) decAsset(assetStart xml.StartElement, a *Asset) error {
 }
 
 func (d *Decoder) decScene(start xml.StartElement, dom *Collada) error {
-
 	dom.Scene = new(Scene)
 	for {
 		child, _, err := d.decNextChild(start)
@@ -365,7 +353,6 @@ func (d *Decoder) decScene(start xml.StartElement, dom *Collada) error {
 }
 
 func (d *Decoder) decInstanceVisualScene(start xml.StartElement, s *Scene) error {
-
 	vs := new(InstanceVisualScene)
 	s.InstanceVisualScene = vs
 	vs.Sid = findAttrib(start, "sid").Value

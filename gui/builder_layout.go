@@ -9,7 +9,6 @@ type BuilderLayoutHBox struct{}
 
 // BuildLayout builds and returns an HBoxLayout with the specified attributes
 func (bl *BuilderLayoutHBox) BuildLayout(b *Builder, am map[string]interface{}) (ILayout, error) {
-
 	// Creates layout and sets optional spacing
 	l := NewHBoxLayout()
 	var spacing float32
@@ -37,7 +36,6 @@ func (bl *BuilderLayoutHBox) BuildLayout(b *Builder, am map[string]interface{}) 
 
 // BuildParams builds and returns a pointer to HBoxLayoutParams with the specified attributes
 func (bl *BuilderLayoutHBox) BuildParams(b *Builder, am map[string]interface{}) (interface{}, error) {
-
 	// Creates layout parameters with default values
 	params := HBoxLayoutParams{Expand: 0, AlignV: AlignNone}
 
@@ -58,7 +56,6 @@ type BuilderLayoutVBox struct{}
 
 // BuildLayout builds and returns an VBoxLayout with the specified attributes
 func (bl *BuilderLayoutVBox) BuildLayout(b *Builder, am map[string]interface{}) (ILayout, error) {
-
 	// Creates layout and sets optional spacing
 	l := NewVBoxLayout()
 	var spacing float32
@@ -86,7 +83,6 @@ func (bl *BuilderLayoutVBox) BuildLayout(b *Builder, am map[string]interface{}) 
 
 // BuildParams builds and returns a pointer to VBoxLayoutParams with the specified attributes
 func (bl *BuilderLayoutVBox) BuildParams(b *Builder, am map[string]interface{}) (interface{}, error) {
-
 	// Creates layout parameters with default values
 	params := VBoxLayoutParams{Expand: 0, AlignH: AlignNone}
 
@@ -107,7 +103,6 @@ type BuilderLayoutGrid struct{}
 
 // BuildLayout builds and returns a GridLayout with the specified attributes
 func (bl *BuilderLayoutGrid) BuildLayout(b *Builder, am map[string]interface{}) (ILayout, error) {
-
 	// Get number of columns
 	v := am[AttribCols]
 	if v == nil {
@@ -146,7 +141,6 @@ func (bl *BuilderLayoutGrid) BuildLayout(b *Builder, am map[string]interface{}) 
 
 // BuildParams builds and returns a pointer to GridLayoutParams with the specified attributes
 func (bl *BuilderLayoutGrid) BuildParams(b *Builder, am map[string]interface{}) (interface{}, error) {
-
 	// Creates layout parameters with default values
 	params := GridLayoutParams{
 		ColSpan: 0,
@@ -176,13 +170,11 @@ type BuilderLayoutDock struct{}
 
 // BuildLayout builds and returns a DockLayout with the specified attributes
 func (bl *BuilderLayoutDock) BuildLayout(b *Builder, am map[string]interface{}) (ILayout, error) {
-
 	return NewDockLayout(), nil
 }
 
 // BuildParams builds and returns a pointer to DockLayoutParams with the specified attributes
 func (bl *BuilderLayoutDock) BuildParams(b *Builder, am map[string]interface{}) (interface{}, error) {
-
 	edge := am[AttribEdge]
 	if edge == nil {
 		return nil, b.err(am, AttribEdge, "Edge name not found")

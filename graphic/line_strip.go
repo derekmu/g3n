@@ -20,7 +20,6 @@ type LineStrip struct {
 // NewLineStrip creates and returns a pointer to a new LineStrip graphic
 // with the specified geometry and material.
 func NewLineStrip(igeom geometry.IGeometry, imat material.IMaterial) *LineStrip {
-
 	l := new(LineStrip)
 	l.Graphic.Init(l, igeom, gls.LINE_STRIP)
 	l.AddMaterial(l, imat, 0, 0)
@@ -30,7 +29,6 @@ func NewLineStrip(igeom geometry.IGeometry, imat material.IMaterial) *LineStrip 
 
 // RenderSetup is called by the engine before drawing this geometry.
 func (l *LineStrip) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-
 	// Transfer model view projection matrix uniform
 	mvpm := l.ModelViewProjectionMatrix()
 	location := l.uniMVPm.Location(gs)

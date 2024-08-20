@@ -94,7 +94,6 @@ const (
 // to mtlpath will cause the decoder to check the 'mtllib' file in the OBJ if
 // present, and fall back to a default material as a last resort.
 func Decode(objpath string, mtlpath string) (*Decoder, error) {
-
 	// Opens obj file
 	fobj, err := os.Open(objpath)
 	if err != nil {
@@ -129,7 +128,6 @@ func Decode(objpath string, mtlpath string) (*Decoder, error) {
 // material as a last resort. No error will be returned for problems
 // with materials--a gray default material will be used if nothing else works.
 func DecodeReader(objreader, mtlreader io.Reader) (*Decoder, error) {
-
 	dec := new(Decoder)
 	dec.Objects = make([]Object, 0)
 	dec.Warnings = make([]string, 0)
@@ -156,7 +154,6 @@ func DecodeReader(objreader, mtlreader io.Reader) (*Decoder, error) {
 		// first try: use the material file passed in as an io.Reader
 		err = dec.parse(mtlreader, dec.parseMtlLine)
 		if err != nil {
-
 			// 2) if mtlreader produces an error (eg. it's nil), try the file listed
 			// in the OBJ's matlib line, if it exists.
 			if dec.Matlib != "" {
@@ -220,7 +217,6 @@ func DecodeReader(objreader, mtlreader io.Reader) (*Decoder, error) {
 // with all the decoded objects.
 // A group is returned even if there is only one object decoded.
 func (dec *Decoder) NewGroup() (*core.Node, error) {
-
 	group := core.NewNode()
 	for i := 0; i < len(dec.Objects); i++ {
 		mesh, err := dec.NewMesh(&dec.Objects[i])
@@ -234,7 +230,6 @@ func (dec *Decoder) NewGroup() (*core.Node, error) {
 
 // NewMesh creates and returns a mesh from an specified decoded object.
 func (dec *Decoder) NewMesh(obj *Object) (*graphic.Mesh, error) {
-
 	// Creates object geometry
 	geom, err := dec.NewGeometry(obj)
 	if err != nil {
@@ -312,7 +307,6 @@ func (dec *Decoder) NewMesh(obj *Object) (*graphic.Mesh, error) {
 
 // NewGeometry generates and returns a geometry from the specified object
 func (dec *Decoder) NewGeometry(obj *Object) (*geometry.Geometry, error) {
-
 	geom := geometry.NewGeometry()
 
 	// Create buffers
@@ -373,7 +367,6 @@ func (dec *Decoder) NewGeometry(obj *Object) (*geometry.Geometry, error) {
 // loadTex loads textures described in the material descriptor into the
 // specified material
 func (dec *Decoder) loadTex(mat *material.Material, desc *Material) error {
-
 	// Checks if material descriptor specified texture
 	if desc.MapKd == "" {
 		return nil
@@ -426,7 +419,6 @@ func (dec *Decoder) parse(reader io.Reader, parseLine func(string) error) error 
 
 // Parses obj file line, dispatching to specific parsers
 func (dec *Decoder) parseObjLine(line string) error {
-
 	// Ignore empty lines
 	fields := strings.Fields(line)
 	if len(fields) == 0 {
@@ -475,7 +467,6 @@ func (dec *Decoder) parseObjLine(line string) error {
 // Parses a mtllib line:
 // mtllib <name>
 func (dec *Decoder) parseMatlib(fields []string) error {
-
 	if len(fields) < 1 {
 		return errors.New("Material library (mtllib) with no fields")
 	}
@@ -486,7 +477,6 @@ func (dec *Decoder) parseMatlib(fields []string) error {
 // Parses an object line:
 // o <name>
 func (dec *Decoder) parseObject(fields []string) error {
-
 	if len(fields) < 1 {
 		return errors.New("Object line (o) with no fields")
 	}
@@ -508,7 +498,6 @@ func makeObject(name string) Object {
 // Parses a vertex position line
 // v <x> <y> <z> [w]
 func (dec *Decoder) parseVertex(fields []string) error {
-
 	if len(fields) < 3 {
 		return errors.New("Less than 3 vertices in 'v' line")
 	}
@@ -525,7 +514,6 @@ func (dec *Decoder) parseVertex(fields []string) error {
 // Parses a vertex normal line
 // vn <x> <y> <z>
 func (dec *Decoder) parseNormal(fields []string) error {
-
 	if len(fields) < 3 {
 		return errors.New("Less than 3 normals in 'vn' line")
 	}
@@ -542,7 +530,6 @@ func (dec *Decoder) parseNormal(fields []string) error {
 // Parses a vertex texture coordinate line:
 // vt <u> <v> <w>
 func (dec *Decoder) parseTex(fields []string) error {
-
 	if len(fields) < 2 {
 		return errors.New("Less than 2 texture coords. in 'vt' line")
 	}
@@ -559,7 +546,6 @@ func (dec *Decoder) parseTex(fields []string) error {
 // parseFace parses a face decription line:
 // f v1[/vt1][/vn1] v2[/vt2][/vn2] v3[/vt3][/vn3] ...
 func (dec *Decoder) parseFace(fields []string) error {
-
 	// NOTE(quillaja): this wasn't really part of the original issue-29
 	if dec.objCurrent == nil {
 		// if a face line is encountered before a group (g) or object (o),
@@ -591,7 +577,6 @@ func (dec *Decoder) parseFace(fields []string) error {
 	face.Smooth = dec.smoothCurrent
 
 	for pos, f := range fields {
-
 		// Separate the current field in its components: v vt vn
 		vfields := strings.Split(f, "/")
 		if len(vfields) < 1 {
@@ -668,7 +653,6 @@ func (dec *Decoder) parseFace(fields []string) error {
 // parseUsemtl parses a "usemtl" decription line:
 // usemtl <name>
 func (dec *Decoder) parseUsemtl(fields []string) error {
-
 	if len(fields) < 1 {
 		return dec.formatError("Usemtl with no fields")
 	}
@@ -696,7 +680,6 @@ func (dec *Decoder) parseUsemtl(fields []string) error {
 // parseSmooth parses a "s" decription line:
 // s <0|1>
 func (dec *Decoder) parseSmooth(fields []string) error {
-
 	if len(fields) < 1 {
 		return dec.formatError("'s' with no fields")
 	}
@@ -715,7 +698,6 @@ mtl parse functions
 
 // Parses material file line, dispatching to specific parsers
 func (dec *Decoder) parseMtlLine(line string) error {
-
 	// Ignore empty lines
 	fields := strings.Fields(line)
 	if len(fields) == 0 {
@@ -756,7 +738,6 @@ func (dec *Decoder) parseMtlLine(line string) error {
 // Parses new material definition
 // newmtl <mat_name>
 func (dec *Decoder) parseNewmtl(fields []string) error {
-
 	if len(fields) < 1 {
 		return dec.formatError("newmtl with no fields")
 	}
@@ -776,7 +757,6 @@ func (dec *Decoder) parseNewmtl(fields []string) error {
 // Parses the dissolve factor (opacity)
 // d <factor>
 func (dec *Decoder) parseDissolve(fields []string) error {
-
 	if len(fields) < 1 {
 		return dec.formatError("'d' with no fields")
 	}
@@ -791,7 +771,6 @@ func (dec *Decoder) parseDissolve(fields []string) error {
 // Parses ambient reflectivity:
 // Ka r g b
 func (dec *Decoder) parseKa(fields []string) error {
-
 	if len(fields) < 3 {
 		return dec.formatError("'Ka' with less than 3 fields")
 	}
@@ -810,7 +789,6 @@ func (dec *Decoder) parseKa(fields []string) error {
 // Parses diffuse reflectivity:
 // Kd r g b
 func (dec *Decoder) parseKd(fields []string) error {
-
 	if len(fields) < 3 {
 		return dec.formatError("'Kd' with less than 3 fields")
 	}
@@ -829,7 +807,6 @@ func (dec *Decoder) parseKd(fields []string) error {
 // Parses emissive color:
 // Ke r g b
 func (dec *Decoder) parseKe(fields []string) error {
-
 	if len(fields) < 3 {
 		return dec.formatError("'Ke' with less than 3 fields")
 	}
@@ -848,7 +825,6 @@ func (dec *Decoder) parseKe(fields []string) error {
 // Parses specular reflectivity:
 // Ks r g b
 func (dec *Decoder) parseKs(fields []string) error {
-
 	if len(fields) < 3 {
 		return dec.formatError("'Ks' with less than 3 fields")
 	}
@@ -867,7 +843,6 @@ func (dec *Decoder) parseKs(fields []string) error {
 // Parses optical density, also known as index of refraction
 // Ni <optical_density>
 func (dec *Decoder) parseNi(fields []string) error {
-
 	if len(fields) < 1 {
 		return dec.formatError("'Ni' with no fields")
 	}
@@ -882,7 +857,6 @@ func (dec *Decoder) parseNi(fields []string) error {
 // Parses specular exponent
 // Ns <specular_exponent>
 func (dec *Decoder) parseNs(fields []string) error {
-
 	if len(fields) < 1 {
 		return dec.formatError("'Ns' with no fields")
 	}
@@ -897,7 +871,6 @@ func (dec *Decoder) parseNs(fields []string) error {
 // Parses illumination model (0 to 10)
 // illum <ilum_#>
 func (dec *Decoder) parseIllum(fields []string) error {
-
 	if len(fields) < 1 {
 		return dec.formatError("'illum' with no fields")
 	}
@@ -912,7 +885,6 @@ func (dec *Decoder) parseIllum(fields []string) error {
 // Parses color texture linked to the diffuse reflectivity of the material
 // map_Kd [-options] <filename>
 func (dec *Decoder) parseMapKd(fields []string) error {
-
 	if len(fields) < 1 {
 		return dec.formatError("No fields")
 	}
@@ -921,12 +893,10 @@ func (dec *Decoder) parseMapKd(fields []string) error {
 }
 
 func (dec *Decoder) formatError(msg string) error {
-
 	return fmt.Errorf("%s in line:%d", msg, dec.line)
 }
 
 func (dec *Decoder) appendWarn(ftype string, msg string) {
-
 	wline := fmt.Sprintf("%s(%d): %s", ftype, dec.line, msg)
 	dec.Warnings = append(dec.Warnings, wline)
 }

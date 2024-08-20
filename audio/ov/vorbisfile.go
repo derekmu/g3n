@@ -71,7 +71,6 @@ var errCodes = map[C.int]string{
 // Fopen opens an ogg vorbis file for decoding
 // Returns an opaque pointer to the internal decode structure and an error
 func Fopen(path string) (*File, error) {
-
 	// Allocates pointer to vorbisfile structure using C memory
 	var f File
 	f.vf = (*C.OggVorbis_File)(C.malloc(C.size_t(unsafe.Sizeof(C.OggVorbis_File{}))))
@@ -87,7 +86,6 @@ func Fopen(path string) (*File, error) {
 
 // Clear clears the decoded buffers and closes the file
 func Clear(f *File) error {
-
 	cerr := C.ov_clear(f.vf)
 	if cerr == 0 {
 		C.free(unsafe.Pointer(f.vf))
@@ -100,7 +98,6 @@ func Clear(f *File) error {
 // Read decodes next data from the file updating the specified buffer contents and
 // returns the number of bytes read, the number of current logical bitstream and an error
 func Read(f *File, buffer unsafe.Pointer, length int, bigendianp bool, word int, sgned bool) (int, int, error) {
-
 	var cbigendianp C.int = 0
 	var csgned C.int = 0
 	var bitstream C.int
@@ -121,7 +118,6 @@ func Read(f *File, buffer unsafe.Pointer, length int, bigendianp bool, word int,
 // Info updates the specified VorbisInfo structure with contains basic
 // information about the audio in a vorbis stream
 func Info(f *File, link int, info *VorbisInfo) error {
-
 	vi := C.ov_info(f.vf, C.int(link))
 	if vi == nil {
 		return fmt.Errorf("Error returned from 'ov_info'")
@@ -138,7 +134,6 @@ func Info(f *File, link int, info *VorbisInfo) error {
 
 // Seekable returns indication whether or not the bitstream is seekable
 func Seekable(f *File) bool {
-
 	cres := C.ov_seekable(f.vf)
 	return cres != 0
 }
@@ -148,7 +143,6 @@ func Seekable(f *File) bool {
 // Updates everything needed within the decoder, so you can immediately call Read()
 // and get data from the newly seeked to position.
 func PcmSeek(f *File, pos int64) error {
-
 	cres := C.ov_pcm_seek(f.vf, C.ogg_int64_t(pos))
 	if cres == 0 {
 		return nil
@@ -159,7 +153,6 @@ func PcmSeek(f *File, pos int64) error {
 // PcmTotal returns the total number of pcm samples of the physical bitstream or a specified logical bit stream.
 // To retrieve the total pcm samples for the entire physical bitstream, the 'link' parameter should be set to -1
 func PcmTotal(f *File, i int) (int64, error) {
-
 	cres := C.ov_pcm_total(f.vf, C.int(i))
 	if cres < 0 {
 		return 0, fmt.Errorf("Error:%s from 'ov_pcm_total()'", errCodes[C.int(cres)])
@@ -170,7 +163,6 @@ func PcmTotal(f *File, i int) (int64, error) {
 // TimeTotal returns the total time in seconds of the physical bitstream or a specified logical bitstream
 // To retrieve the time total for the entire physical bitstream, 'i' should be set to -1.
 func TimeTotal(f *File, i int) (float64, error) {
-
 	cres := C.ov_time_total(f.vf, C.int(i))
 	if cres < 0 {
 		return 0, fmt.Errorf("Error:%s from 'ov_time_total()'", errCodes[C.int(cres)])
@@ -180,7 +172,6 @@ func TimeTotal(f *File, i int) (float64, error) {
 
 // TimeTell returns the current decoding offset in seconds.
 func TimeTell(f *File) (float64, error) {
-
 	cres := C.ov_time_tell(f.vf)
 	if cres < 0 {
 		return 0, fmt.Errorf("Error:%s from 'ov_time_total()'", errCodes[C.int(cres)])

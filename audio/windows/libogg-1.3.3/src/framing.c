@@ -316,7 +316,6 @@ void ogg_page_checksum_set(ogg_page *og){
 /* submit data to the internal buffer of the framing engine */
 int ogg_stream_iovecin(ogg_stream_state *os, ogg_iovec_t *iov, int count,
                        long e_o_s, ogg_int64_t granulepos){
-
   long bytes = 0, lacing_vals;
   int i;
 
@@ -412,7 +411,6 @@ static int ogg_stream_flush_i(ogg_stream_state *os,ogg_page *og, int force, int 
       }
     }
   }else{
-
     /* The extra packets_done, packet_just_done logic here attempts to do two things:
        1) Don't unneccessarily span pages.
        2) Unless necessary, don't flush pages if there are less than four packets on
@@ -773,7 +771,6 @@ long ogg_sync_pageseek(ogg_sync_state *oy,ogg_page *og){
    _stream, _clear, _init, or _buffer */
 
 int ogg_sync_pageout(ogg_sync_state *oy, ogg_page *og){
-
   if(ogg_sync_check(oy))return 0;
 
   /* all we need to do is verify a page at the head of the stream
@@ -975,7 +972,6 @@ int ogg_stream_reset_serialno(ogg_stream_state *os,int serialno){
 }
 
 static int _packetout(ogg_stream_state *os,ogg_packet *op,int adv){
-
   /* The last part of decode. We have the stream broken into packet
      segments.  Now we need to group them into packets (or return the
      out of sync markers) */
@@ -1701,7 +1697,6 @@ void test_pack(const int *pl, const int **headers, int byteskip,
 }
 
 int main(void){
-
   ogg_stream_init(&os_en,0x04030201);
   ogg_stream_init(&os_de,0x04030201);
   ogg_sync_init(&oy);
@@ -1766,7 +1761,6 @@ int main(void){
 
   /* page with the 255 segment limit */
   {
-
     const int packets[]={0,10,10,10,10,10,10,10,10,
                    10,10,10,10,10,10,10,10,
                    10,10,10,10,10,10,10,10,

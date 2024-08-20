@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -41,7 +42,6 @@ var shaderNames = map[uint32]string{
 // NewProgram creates and returns a new empty shader program object.
 // Use this type methods to add shaders and build the final program.
 func (gs *GLS) NewProgram() *Program {
-
 	prog := new(Program)
 	prog.gs = gs
 
@@ -53,14 +53,12 @@ func (gs *GLS) NewProgram() *Program {
 
 // Handle returns the OpenGL handle of this program.
 func (prog *Program) Handle() uint32 {
-
 	return prog.handle
 }
 
 // AddShader adds a shader to this program.
 // This must be done before the program is built.
 func (prog *Program) AddShader(stype uint32, source string) {
-
 	// Check if program already built
 	if prog.handle != 0 {
 		log.Fatal("Program already built")
@@ -70,7 +68,6 @@ func (prog *Program) AddShader(stype uint32, source string) {
 
 // DeleteShaders deletes all of this program's shaders from OpenGL.
 func (prog *Program) DeleteShaders() {
-
 	for _, shaderInfo := range prog.shaders {
 		if shaderInfo.handle != 0 {
 			prog.gs.DeleteShader(shaderInfo.handle)
@@ -81,7 +78,6 @@ func (prog *Program) DeleteShaders() {
 
 // Build builds the program, compiling and linking the previously supplied shaders.
 func (prog *Program) Build() error {
-
 	// Check if program already built
 	if prog.handle != 0 {
 		return fmt.Errorf("program already built")
@@ -133,14 +129,12 @@ func (prog *Program) Build() error {
 // GetAttribLocation returns the location of the specified attribute
 // in this program. This location is internally cached.
 func (prog *Program) GetAttribLocation(name string) int32 {
-
 	return prog.gs.GetAttribLocation(prog.handle, name)
 }
 
 // GetUniformLocation returns the location of the specified uniform in this program.
 // This location is internally cached.
 func (prog *Program) GetUniformLocation(name string) int32 {
-
 	// Try to get from the cache
 	loc, ok := prog.uniforms[name]
 	if ok {
@@ -155,7 +149,7 @@ func (prog *Program) GetUniformLocation(name string) int32 {
 	// Cache result
 	prog.uniforms[name] = loc
 	if loc < 0 {
-		log.Warn("Program.GetUniformLocation(%s): NOT FOUND", name)
+		log.Printf("Program.GetUniformLocation(%s): NOT FOUND", name)
 	}
 
 	return loc
@@ -164,7 +158,6 @@ func (prog *Program) GetUniformLocation(name string) int32 {
 // CompileShader creates and compiles an OpenGL shader of the specified type, with
 // the specified source code, and returns a non-zero value by which it can be referenced.
 func (prog *Program) CompileShader(stype uint32, source string) (uint32, error) {
-
 	// Create shader object
 	shader := prog.gs.CreateShader(stype)
 	if shader == 0 {
@@ -188,7 +181,7 @@ func (prog *Program) CompileShader(stype uint32, source string) (uint32, error) 
 	// If the shader compiled OK but the log has data,
 	// log this data instead of returning error
 	if len(slog) > 2 {
-		log.Warn("%s", slog)
+		log.Printf("%s", slog)
 	}
 
 	return shader, nil
@@ -197,7 +190,6 @@ func (prog *Program) CompileShader(stype uint32, source string) (uint32, error) 
 // FormatSource returns the supplied program source code with
 // line numbers prepended.
 func FormatSource(source string) string {
-
 	// Reads all lines from the source string
 	lines := make([]string, 0)
 	buf := bytes.NewBuffer([]byte(source))

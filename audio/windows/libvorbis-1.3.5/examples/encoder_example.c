@@ -210,13 +210,11 @@ int main(){
        more involved (potentially parallel) processing.  Get a single
        block for encoding now */
     while(vorbis_analysis_blockout(&vd,&vb)==1){
-
       /* analysis, assume we want to use bitrate management */
       vorbis_analysis(&vb,NULL);
       vorbis_bitrate_addblock(&vb);
 
       while(vorbis_bitrate_flushpacket(&vd,&op)){
-
         /* weld the packet into the bitstream */
         ogg_stream_packetin(&os,&op);
 

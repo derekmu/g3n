@@ -96,7 +96,6 @@ ogg_uint32_t *_make_words(char *l,long n,long sparsecount){
          above. if so, update it and repeat.  */
       {
         for(j=length;j>0;j--){
-
           if(marker[j]&1){
             /* have to jump branches */
             if(j==1)
@@ -278,7 +277,6 @@ void vorbis_book_clear(codebook *b){
 }
 
 int vorbis_book_init_encode(codebook *c,const static_codebook *s){
-
   memset(c,0,sizeof(*c));
   c->c=s;
   c->entries=s->entries;

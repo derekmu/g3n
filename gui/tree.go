@@ -48,7 +48,6 @@ type TreeNode struct {
 
 // NewTree creates and returns a pointer to a new tree widget.
 func NewTree(width, height float32) *Tree {
-
 	t := new(Tree)
 	t.Initialize(width, height)
 	return t
@@ -57,7 +56,6 @@ func NewTree(width, height float32) *Tree {
 // Initialize initializes the tree with the specified initial width and height
 // It is normally used when the folder is embedded in another object.
 func (t *Tree) Initialize(width, height float32) {
-
 	t.List.initialize(true, width, height)
 	t.SetStyles(&StyleDefault().Tree)
 	t.List.Subscribe(OnKeyDown, t.onKey)
@@ -66,7 +64,6 @@ func (t *Tree) Initialize(width, height float32) {
 
 // SetStyles sets the tree styles overriding the default style.
 func (t *Tree) SetStyles(s *TreeStyles) {
-
 	t.styles = s
 	t.List.SetStyles(t.styles.List)
 	t.update()
@@ -74,13 +71,11 @@ func (t *Tree) SetStyles(s *TreeStyles) {
 
 // InsertAt inserts a child panel at the specified position in the tree.
 func (t *Tree) InsertAt(pos int, child IPanel) {
-
 	t.List.InsertAt(pos, child)
 }
 
 // Add child panel to the end tree.
 func (t *Tree) Add(ichild IPanel) {
-
 	t.List.Add(ichild)
 }
 
@@ -88,7 +83,6 @@ func (t *Tree) Add(ichild IPanel) {
 // with the specified text at the end of this tree
 // and returns pointer to the new node.
 func (t *Tree) InsertNodeAt(pos int, text string) *TreeNode {
-
 	n := newTreeNode(text, t, nil)
 	n.update()
 	n.recalc()
@@ -99,7 +93,6 @@ func (t *Tree) InsertNodeAt(pos int, text string) *TreeNode {
 // AddNode adds a new tree node with the specified text
 // at the end of this tree and returns a pointer to the new node.
 func (t *Tree) AddNode(text string) *TreeNode {
-
 	n := newTreeNode(text, t, nil)
 	n.update()
 	n.recalc()
@@ -110,7 +103,6 @@ func (t *Tree) AddNode(text string) *TreeNode {
 // Remove removes the specified child from the tree or any
 // of its children nodes.
 func (t *Tree) Remove(child IPanel) {
-
 	for idx := 0; idx < t.List.Len(); idx++ {
 		curr := t.List.ItemAt(idx)
 		if curr == child {
@@ -131,7 +123,6 @@ func (t *Tree) Remove(child IPanel) {
 
 // Selected returns the currently selected element or nil
 func (t *Tree) Selected() IPanel {
-
 	sel := t.List.Selected()
 	if len(sel) == 0 {
 		return nil
@@ -145,7 +136,6 @@ func (t *Tree) Selected() IPanel {
 // If the parent is the tree returns nil as the parent
 // If not found returns nil and -1
 func (t *Tree) FindChild(child IPanel) (*TreeNode, int) {
-
 	for idx := 0; idx < t.List.Len(); idx++ {
 		curr := t.List.ItemAt(idx)
 		if curr == child {
@@ -164,7 +154,6 @@ func (t *Tree) FindChild(child IPanel) (*TreeNode, int) {
 
 // onKey receives key down events for the embedded list
 func (t *Tree) onKey(evname string, ev interface{}) {
-
 	// Get selected item
 	item := t.Selected()
 	if item == nil {
@@ -194,7 +183,6 @@ func (t *Tree) onKey(evname string, ev interface{}) {
 // newTreeNode creates and returns a pointer to a new TreeNode with
 // the specified text, tree and parent node
 func newTreeNode(text string, tree *Tree, parNode *TreeNode) *TreeNode {
-
 	n := new(TreeNode)
 	n.Panel.Initialize(n, 0, 0)
 
@@ -222,13 +210,11 @@ func newTreeNode(text string, tree *Tree, parNode *TreeNode) *TreeNode {
 
 // Len returns the number of immediate children of this node
 func (n *TreeNode) Len() int {
-
 	return len(n.items)
 }
 
 // SetExpanded sets the expanded state of this node
 func (n *TreeNode) SetExpanded(state bool) {
-
 	n.expanded = state
 	n.update()
 	n.updateItems()
@@ -239,7 +225,6 @@ func (n *TreeNode) SetExpanded(state bool) {
 // its position relative to the parent.
 // If not found returns nil and -1
 func (n *TreeNode) FindChild(child IPanel) (*TreeNode, int) {
-
 	for pos, curr := range n.items {
 		if curr == child {
 			return n, pos
@@ -258,7 +243,6 @@ func (n *TreeNode) FindChild(child IPanel) (*TreeNode, int) {
 // InsertAt inserts a child panel at the specified position in this node
 // If the position is invalid, the function panics
 func (n *TreeNode) InsertAt(pos int, child IPanel) {
-
 	if pos < 0 || pos > len(n.items) {
 		panic("TreeNode.InsertAt(): Invalid position")
 	}
@@ -273,14 +257,12 @@ func (n *TreeNode) InsertAt(pos int, child IPanel) {
 
 // Add adds a child panel to this node
 func (n *TreeNode) Add(child IPanel) {
-
 	n.InsertAt(n.Len(), child)
 }
 
 // InsertNodeAt inserts a new node at the specified position in this node
 // If the position is invalid, the function panics
 func (n *TreeNode) InsertNodeAt(pos int, text string) *TreeNode {
-
 	if pos < 0 || pos > len(n.items) {
 		panic("TreeNode.InsertNodeAt(): Invalid position")
 	}
@@ -297,14 +279,12 @@ func (n *TreeNode) InsertNodeAt(pos int, text string) *TreeNode {
 
 // AddNode adds a new node to this one and return its pointer
 func (n *TreeNode) AddNode(text string) *TreeNode {
-
 	return n.InsertNodeAt(n.Len(), text)
 }
 
 // Remove removes the specified child from this node or any
 // of its children nodes
 func (n *TreeNode) Remove(child IPanel) {
-
 	for pos, curr := range n.items {
 		if curr == child {
 			copy(n.items[pos:], n.items[pos+1:])
@@ -328,7 +308,6 @@ func (n *TreeNode) Remove(child IPanel) {
 
 // onMouse receives mouse button events over the tree node panel
 func (n *TreeNode) onMouse(evname string, ev interface{}) {
-
 	switch evname {
 	case OnMouseDown:
 		n.expanded = !n.expanded
@@ -342,7 +321,6 @@ func (n *TreeNode) onMouse(evname string, ev interface{}) {
 
 // level returns the level of this node from the start of the tree
 func (n *TreeNode) level() int {
-
 	level := 0
 	parNode := n.parNode
 	for parNode != nil {
@@ -354,7 +332,6 @@ func (n *TreeNode) level() int {
 
 // applyStyles applies the specified style to this tree node
 func (n *TreeNode) applyStyle(s *TreeNodeStyle) {
-
 	n.Panel.ApplyStyle(&s.PanelStyle)
 	icode := 0
 	if n.expanded {
@@ -367,13 +344,11 @@ func (n *TreeNode) applyStyle(s *TreeNodeStyle) {
 
 // update updates this tree node style
 func (n *TreeNode) update() {
-
 	n.applyStyle(&n.tree.styles.Node.Normal)
 }
 
 // recalc recalculates the positions of the internal node panels
 func (n *TreeNode) recalc() {
-
 	// icon position
 	n.icon.SetPosition(0, 0)
 
@@ -385,14 +360,12 @@ func (n *TreeNode) recalc() {
 
 // remove removes this node and all children from the tree list
 func (n *TreeNode) remove() {
-
 	n.tree.List.Remove(n)
 	n.removeItems()
 }
 
 // removeItems removes this node children from the tree list
 func (n *TreeNode) removeItems() {
-
 	for _, ipanel := range n.items {
 		// Remove item from scroller
 		n.tree.List.Remove(ipanel)
@@ -408,7 +381,6 @@ func (n *TreeNode) removeItems() {
 // insert inserts this node and its expanded children in the tree list
 // at the specified position
 func (n *TreeNode) insert(pos int) int {
-
 	n.update()
 	n.tree.List.InsertAt(pos, n)
 	var padLeft float32 = n.tree.styles.Padlevel * float32(n.level())
@@ -420,7 +392,6 @@ func (n *TreeNode) insert(pos int) int {
 // insertItems inserts this node items in the tree list
 // at the specified position
 func (n *TreeNode) insertItems(pos int) int {
-
 	if !n.expanded {
 		return pos
 	}
@@ -447,7 +418,6 @@ func (n *TreeNode) insertItems(pos int) int {
 
 // updateItems updates this node items, removing or inserting them into the tree scroller
 func (n *TreeNode) updateItems() {
-
 	pos := n.tree.ItemPosition(n)
 	if pos < 0 {
 		return

@@ -20,7 +20,6 @@
     MatShininess
 *****/
 void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 matDiffuse, out vec3 ambdiff, out vec3 spec) {
-
     vec3 ambientTotal  = vec3(0.0);
     vec3 diffuseTotal  = vec3(0.0);
     vec3 specularTotal = vec3(0.0);

@@ -15,7 +15,6 @@ out vec3 Normal;
 out vec2 FragTexcoord;
 
 void main() {
-
     // Transform vertex position to camera coordinates
     Position = ModelViewMatrix * vec4(VertexPosition, 1.0);
 

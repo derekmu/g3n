@@ -5,7 +5,6 @@
 	};
 	objectVersion = 42;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		730F23A3091827B100AB638C /* codec.h in Headers */ = {isa = PBXBuildFile; fileRef = F58520B90191D12B01A802FE /* codec.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		730F23A4091827B100AB638C /* vorbisenc.h in Headers */ = {isa = PBXBuildFile; fileRef = F58520BA0191D12B01A802FE /* vorbisenc.h */; settings = {ATTRIBUTES = (Public, ); }; };

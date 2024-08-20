@@ -20,7 +20,6 @@ type Listener struct {
 
 // NewListener creates a Listener object.
 func NewListener() *Listener {
-
 	l := new(Listener)
 	l.Node.Init(l)
 	return l
@@ -28,45 +27,38 @@ func NewListener() *Listener {
 
 // SetVelocity sets the velocity of the listener with x, y, z components.
 func (l *Listener) SetVelocity(vx, vy, vz float32) {
-
 	al.Listener3f(al.Velocity, vx, vy, vz)
 }
 
 // SetVelocityVec sets the velocity of the listener with a vector.
 func (l *Listener) SetVelocityVec(v *math32.Vector3) {
-
 	al.Listener3f(al.Velocity, v.X, v.Y, v.Z)
 }
 
 // Velocity returns the velocity of the listener as x, y, z components.
 func (l *Listener) Velocity() (float32, float32, float32) {
-
 	return al.GetListener3f(al.Velocity)
 }
 
 // VelocityVec returns the velocity of the listener as a vector.
 func (l *Listener) VelocityVec() math32.Vector3 {
-
 	vx, vy, vz := al.GetListener3f(al.Velocity)
 	return math32.Vector3{vx, vy, vz}
 }
 
 // SetGain sets the gain of the listener.
 func (l *Listener) SetGain(gain float32) {
-
 	al.Listenerf(al.Gain, gain)
 }
 
 // Gain returns the gain of the listener.
 func (l *Listener) Gain() float32 {
-
 	return al.GetListenerf(al.Gain)
 }
 
 // Render is called by the renderer at each frame.
 // Updates the position and orientation of the listener.
 func (l *Listener) Render(gl *gls.GLS) {
-
 	// Sets the listener source world position
 	var wpos math32.Vector3
 	l.WorldPosition(&wpos)

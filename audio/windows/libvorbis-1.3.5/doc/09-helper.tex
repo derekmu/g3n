@@ -20,7 +20,6 @@ The "ilog(x)" function returns the position number (1 through n) of the highest 
 \begin{programlisting}
   1) [return\_value] = 0;
   2) if ( [x] is greater than zero ) {
-
        3) increment [return\_value];
        4) logical shift [x] one bit to the right, padding the MSb with zero
        5) repeat at step 2)
@@ -108,11 +107,9 @@ intervening values along the line.
   4) [err] = [ady] * ([X] - [x0])
   5) [off] = [err] / [adx] using integer division
   6) if ( [dy] is less than zero ) {
-
        7) [Y] = [y0] - [off]
 
      } else {
-
        8) [Y] = [y0] + [off]
 
      }
@@ -141,11 +138,9 @@ rounding division of both positive and negative numbers toward zero.
   7)  [err] = 0
 
   8) if ( [dy] is less than 0 ) {
-
         9) [sy] = [base] - 1
 
      } else {
-
        10) [sy] = [base] + 1
 
      }
@@ -154,15 +149,12 @@ rounding division of both positive and negative numbers toward zero.
  12) vector [v] element [x] = [y]
 
  13) iterate [x] over the range [x0]+1 ... [x1]-1 {
-
        14) [err] = [err] + [ady];
        15) if ( [err] >= [adx] ) {
-
              16) [err] = [err] - [adx]
              17)   [y] = [y] + [sy]
 
            } else {
-
              18) [y] = [y] + [base]
 
            }

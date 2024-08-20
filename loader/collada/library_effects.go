@@ -8,6 +8,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log"
 	"strconv"
 )
 
@@ -21,7 +22,6 @@ type LibraryEffects struct {
 
 // Dump prints out information about the LibraryEffects
 func (le *LibraryEffects) Dump(out io.Writer, indent int) {
-
 	if le == nil {
 		return
 	}
@@ -41,7 +41,6 @@ type Effect struct {
 
 // Dump prints out information about the Effect
 func (ef *Effect) Dump(out io.Writer, indent int) {
-
 	fmt.Printf("%sEffect id:%s name:%s\n", sIndent(indent), ef.Id, ef.Name)
 	ind := indent + step
 	for _, p := range ef.Profile {
@@ -68,7 +67,6 @@ type ProfileCOMMON struct {
 
 // Dump prints out information about the ProfileCOMMON
 func (pc *ProfileCOMMON) Dump(out io.Writer, indent int) {
-
 	fmt.Printf("%sProfileCOMMON id:%s\n", sIndent(indent), pc.Id)
 	ind := indent + step
 
@@ -94,7 +92,6 @@ type Newparam struct {
 
 // Dump prints out information about the Newparam
 func (np *Newparam) Dump(out io.Writer, indent int) {
-
 	fmt.Printf("%sNewparam sid:%s\n", sIndent(indent), np.Sid)
 	ind := indent + step
 	switch pt := np.ParameterType.(type) {
@@ -113,7 +110,6 @@ type Surface struct {
 
 // Dump prints out information about the Surface
 func (sf *Surface) Dump(out io.Writer, indent int) {
-
 	fmt.Printf("%sSurface type:%s\n", sIndent(indent), sf.Type)
 	ind := indent + step
 	switch it := sf.Init.(type) {
@@ -129,7 +125,6 @@ type Sampler2D struct {
 
 // Dump prints out information about the Sampler2D
 func (sp *Sampler2D) Dump(out io.Writer, indent int) {
-
 	fmt.Printf("%sSampler2D\n", sIndent(indent))
 	ind := indent + step
 	fmt.Printf("%sSource:%s\n", sIndent(ind), sp.Source)
@@ -151,7 +146,6 @@ type Blinn struct {
 
 // Dump prints out information about the Blinn
 func (bl *Blinn) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sBlinn\n", sIndent(indent))
 	ind := indent + step
 	DumpColorOrTexture("Emssion", bl.Emission, out, ind)
@@ -204,7 +198,6 @@ type Phong struct {
 
 // Dump prints out information about the Phong
 func (ph *Phong) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sPhong\n", sIndent(indent))
 	ind := indent + step
 	DumpColorOrTexture("Emission", ph.Emission, out, ind)
@@ -221,7 +214,6 @@ func (ph *Phong) Dump(out io.Writer, indent int) {
 
 // DumpColorOrTexture prints out information about the Color or Texture
 func DumpColorOrTexture(name string, v interface{}, out io.Writer, indent int) {
-
 	if v == nil {
 		return
 	}
@@ -237,7 +229,6 @@ func DumpColorOrTexture(name string, v interface{}, out io.Writer, indent int) {
 
 // DumpFloatOrParam prints out information about the Float or Param
 func DumpFloatOrParam(name string, v interface{}, out io.Writer, indent int) {
-
 	if v == nil {
 		return
 	}
@@ -258,7 +249,6 @@ type Color struct {
 
 // Dump prints out information about the Color
 func (c *Color) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sColor sid:%s data:%v\n", sIndent(indent), c.Sid, c.Data)
 }
 
@@ -270,7 +260,6 @@ type Float struct {
 
 // Dump prints out information about the Float
 func (f *Float) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sFloat sid:%s data:%v\n", sIndent(indent), f.Sid, f.Data)
 }
 
@@ -282,12 +271,10 @@ type Texture struct {
 
 // Dump prints out information about the Texture
 func (t *Texture) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sTexture texture:%s texcoord:%v\n", sIndent(indent), t.Texture, t.Texcoord)
 }
 
 func (d *Decoder) decLibraryEffects(start xml.StartElement, dom *Collada) error {
-
 	le := new(LibraryEffects)
 	dom.LibraryEffects = le
 	le.Id = findAttrib(start, "id").Value
@@ -311,7 +298,6 @@ func (d *Decoder) decLibraryEffects(start xml.StartElement, dom *Collada) error 
 }
 
 func (d *Decoder) decEffect(start xml.StartElement, le *LibraryEffects) error {
-
 	e := new(Effect)
 	e.Id = findAttrib(start, "id").Value
 	e.Name = findAttrib(start, "name").Value
@@ -334,7 +320,6 @@ func (d *Decoder) decEffect(start xml.StartElement, le *LibraryEffects) error {
 }
 
 func (d *Decoder) decEffectProfileCommon(start xml.StartElement, e *Effect) error {
-
 	pc := new(ProfileCOMMON)
 	pc.Id = findAttrib(start, "id").Value
 	e.Profile = append(e.Profile, pc)
@@ -363,7 +348,6 @@ func (d *Decoder) decEffectProfileCommon(start xml.StartElement, e *Effect) erro
 }
 
 func (d *Decoder) decProfileCommonNewparam(start xml.StartElement, pc *ProfileCOMMON) error {
-
 	np := new(Newparam)
 	np.Sid = findAttrib(start, "sid").Value
 	pc.Newparam = append(pc.Newparam, np)
@@ -391,7 +375,6 @@ func (d *Decoder) decProfileCommonNewparam(start xml.StartElement, pc *ProfileCO
 }
 
 func (d *Decoder) decSurface(start xml.StartElement, np *Newparam) error {
-
 	sf := new(Surface)
 	sf.Type = findAttrib(start, "type").Value
 	np.ParameterType = sf
@@ -409,7 +392,6 @@ func (d *Decoder) decSurface(start xml.StartElement, np *Newparam) error {
 }
 
 func (d *Decoder) decSampler2D(start xml.StartElement, np *Newparam) error {
-
 	sp := new(Sampler2D)
 	np.ParameterType = sp
 
@@ -426,7 +408,6 @@ func (d *Decoder) decSampler2D(start xml.StartElement, np *Newparam) error {
 }
 
 func (d *Decoder) decProfileCommonTechnique(start xml.StartElement, pc *ProfileCOMMON) error {
-
 	pc.Technique.Id = findAttrib(start, "id").Value
 	pc.Technique.Sid = findAttrib(start, "sid").Value
 
@@ -443,11 +424,11 @@ func (d *Decoder) decProfileCommonTechnique(start xml.StartElement, pc *ProfileC
 			continue
 		}
 		if child.Name.Local == "constant" {
-			log.Warn("CONSTANT not implemented yet")
+			log.Print("CONSTANT not implemented yet")
 			continue
 		}
 		if child.Name.Local == "lambert" {
-			log.Warn("LAMBERT not implemented yet")
+			log.Print("LAMBERT not implemented yet")
 			continue
 		}
 		if child.Name.Local == "phong" {
@@ -461,7 +442,6 @@ func (d *Decoder) decProfileCommonTechnique(start xml.StartElement, pc *ProfileC
 }
 
 func (d *Decoder) decBlinn(start xml.StartElement, pc *ProfileCOMMON) error {
-
 	bl := new(Blinn)
 	pc.Technique.ShaderElement = bl
 
@@ -541,7 +521,6 @@ func (d *Decoder) decBlinn(start xml.StartElement, pc *ProfileCOMMON) error {
 }
 
 func (d *Decoder) decPhong(start xml.StartElement, pc *ProfileCOMMON) error {
-
 	ph := new(Phong)
 	pc.Technique.ShaderElement = ph
 
@@ -621,7 +600,6 @@ func (d *Decoder) decPhong(start xml.StartElement, pc *ProfileCOMMON) error {
 }
 
 func (d *Decoder) decColorOrTexture(start xml.StartElement, dest *interface{}) error {
-
 	child, cdata, err := d.decNextChild(start)
 	if err != nil || child.Name.Local == "" {
 		return err
@@ -661,7 +639,6 @@ func (d *Decoder) decColorOrTexture(start xml.StartElement, dest *interface{}) e
 }
 
 func (d *Decoder) decFloatOrParam(start xml.StartElement, dest *interface{}) error {
-
 	child, cdata, err := d.decNextChild(start)
 	if err != nil || child.Name.Local == "" {
 		return err

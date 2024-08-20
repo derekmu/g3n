@@ -5,7 +5,10 @@
 // Package renderer implements the scene renderer.
 package renderer
 
-import "github.com/derekmu/g3n/gls"
+import (
+	"github.com/derekmu/g3n/gls"
+	"log"
+)
 
 type Postprocessor struct {
 	Width    int32
@@ -92,7 +95,7 @@ func (r *Renderer) CreatePostprocessor(width, height int32, vertexShaderSource, 
 	pp.Prg.AddShader(gls.FRAGMENT_SHADER, fragmentShaderSource)
 	err := pp.Prg.Build()
 	if err != nil {
-		log.Fatal("can't create shader: %e", err)
+		log.Fatalf("can't create shader: %e", err)
 	}
 
 	return pp

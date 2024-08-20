@@ -15,7 +15,6 @@ type Point struct {
 
 // NewPoint creates and returns a pointer to a new point material
 func NewPoint(color *math32.Color) *Point {
-
 	pm := new(Point)
 	pm.Standard.Init("point", color)
 
@@ -29,18 +28,15 @@ func NewPoint(color *math32.Color) *Point {
 // SetEmissiveColor sets the material emissive color
 // The default is {0,0,0}
 func (pm *Point) SetEmissiveColor(color *math32.Color) {
-
 	pm.udata.emissive = *color
 }
 
 // SetSize sets the point size
 func (pm *Point) SetSize(size float32) {
-
 	pm.udata.psize = size
 }
 
 // SetRotationZ sets the point rotation around the Z axis.
 func (pm *Point) SetRotationZ(rot float32) {
-
 	pm.udata.protationZ = rot
 }

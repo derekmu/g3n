@@ -22,7 +22,6 @@ type FrameRater struct {
 // NewFrameRater returns a frame rate controller object for the specified
 // number of target frames per second
 func NewFrameRater(targetFPS uint) *FrameRater {
-
 	f := new(FrameRater)
 	f.targetDuration = time.Second / time.Duration(targetFPS)
 	f.frameTimes = 0
@@ -35,14 +34,12 @@ func NewFrameRater(targetFPS uint) *FrameRater {
 
 // Start should be called at the start of the frame
 func (f *FrameRater) Start() {
-
 	f.frameStart = time.Now()
 }
 
 // Wait should be called at the end of the frame
 // If necessary it will sleep to achieve the desired frame rate
 func (f *FrameRater) Wait() {
-
 	// Calculates the time duration of this frame
 	elapsed := time.Now().Sub(f.frameStart)
 	// Accumulates this frame time for potential FPS calculation
@@ -61,7 +58,6 @@ func (f *FrameRater) Wait() {
 // potential FPS after the specified time interval has elapsed.
 // It returns an indication if the results are valid
 func (f *FrameRater) FPS(t time.Duration) (float64, float64, bool) {
-
 	// If the time from the last update has not passed, nothing to do
 	elapsed := time.Now().Sub(f.lastUpdate)
 	if elapsed < t {

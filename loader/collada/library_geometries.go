@@ -19,7 +19,6 @@ type LibraryGeometries struct {
 
 // Dump prints out information about the LibraryGeometries
 func (lg *LibraryGeometries) Dump(out io.Writer, indent int) {
-
 	if lg == nil {
 		return
 	}
@@ -42,7 +41,6 @@ type Geometry struct {
 
 // Dump prints out information about the Geometry
 func (g *Geometry) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sGeometry id:%s name:%s\n", sIndent(indent), g.Id, g.Name)
 	ind := indent + step
 	switch gt := g.GeometricElement.(type) {
@@ -62,7 +60,6 @@ type Mesh struct {
 
 // Dump prints out information about the Mesh
 func (m *Mesh) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sMesh:\n", sIndent(indent))
 	ind := indent + step
 	for _, s := range m.Source {
@@ -88,7 +85,6 @@ type Vertices struct {
 
 // Dump prints out information about the Vertices
 func (v *Vertices) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sVertices id:%s name:%s\n", sIndent(indent), v.Id, v.Name)
 	for _, inp := range v.Input {
 		inp.Dump(out, indent+step)
@@ -103,7 +99,6 @@ type Input struct {
 
 // Dump prints out information about the Input
 func (i *Input) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sInput semantic:%s source:%s\n", sIndent(indent), i.Semantic, i.Source)
 }
 
@@ -119,7 +114,6 @@ type Polylist struct {
 
 // Dump prints out information about the Polylist
 func (pl *Polylist) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sPolylist name:%s count:%d material:%s\n", sIndent(indent), pl.Name, pl.Count, pl.Material)
 	ind := indent + step
 	for _, is := range pl.Input {
@@ -157,7 +151,6 @@ type Lines struct {
 
 // Dump prints out information about the Lines
 func (ln *Lines) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sLines name:%s count:%d material:%s\n", sIndent(indent), ln.Name, ln.Count, ln.Material)
 	ind := indent + step
 	for _, is := range ln.Input {
@@ -195,14 +188,12 @@ type Tristrips struct {
 
 // Dump prints out information about the Tristrips
 func (is *InputShared) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sInputShared offset:%d semantic:%s source:%s set:%d\n",
 		sIndent(indent), is.Offset, is.Semantic, is.Source, is.Set)
 }
 
 // Decodes "library_geometry" children
 func (d *Decoder) decLibraryGeometries(start xml.StartElement, dom *Collada) error {
-
 	lg := new(LibraryGeometries)
 	dom.LibraryGeometries = lg
 
@@ -237,7 +228,6 @@ func (d *Decoder) decLibraryGeometries(start xml.StartElement, dom *Collada) err
 // decodes all its children and appends the decoded geometry
 // to the specified slice.
 func (d *Decoder) decGeometry(start xml.StartElement, lg *LibraryGeometries) error {
-
 	// Get geometry id and name attributes
 	geom := &Geometry{}
 	geom.Id = findAttrib(start, "id").Value
@@ -264,7 +254,6 @@ func (d *Decoder) decGeometry(start xml.StartElement, lg *LibraryGeometries) err
 
 // decMesh decodes the mesh from the specified geometry
 func (d *Decoder) decMesh(start xml.StartElement, geom *Geometry) error {
-
 	// Associates this mesh to the parent geometry
 	mesh := &Mesh{}
 	geom.GeometricElement = mesh
@@ -322,7 +311,6 @@ func (d *Decoder) decMesh(start xml.StartElement, geom *Geometry) error {
 }
 
 func (d *Decoder) decVertices(start xml.StartElement, mesh *Mesh) error {
-
 	mesh.Vertices.Id = findAttrib(start, "id").Value
 	mesh.Vertices.Name = findAttrib(start, "name").Value
 
@@ -344,7 +332,6 @@ func (d *Decoder) decVertices(start xml.StartElement, mesh *Mesh) error {
 }
 
 func (d *Decoder) decInput(start xml.StartElement) (Input, error) {
-
 	var inp Input
 	inp.Semantic = findAttrib(start, "semantic").Value
 	inp.Source = findAttrib(start, "source").Value
@@ -352,7 +339,6 @@ func (d *Decoder) decInput(start xml.StartElement) (Input, error) {
 }
 
 func (d *Decoder) decLines(start xml.StartElement, mesh *Mesh) error {
-
 	ln := &Lines{}
 	ln.Name = findAttrib(start, "name").Value
 	ln.Count, _ = strconv.Atoi(findAttrib(start, "count").Value)
@@ -386,7 +372,6 @@ func (d *Decoder) decLines(start xml.StartElement, mesh *Mesh) error {
 }
 
 func (d *Decoder) decPolylist(start xml.StartElement, mesh *Mesh) error {
-
 	pl := &Polylist{}
 	pl.Name = findAttrib(start, "name").Value
 	pl.Count, _ = strconv.Atoi(findAttrib(start, "count").Value)
@@ -472,7 +457,6 @@ func (d *Decoder) decTriangles(start xml.StartElement, mesh *Mesh) error {
 }
 
 func (d *Decoder) decInputShared(start xml.StartElement) (InputShared, error) {
-
 	var inp InputShared
 	inp.Offset, _ = strconv.Atoi(findAttrib(start, "offset").Value)
 	inp.Semantic = findAttrib(start, "semantic").Value
@@ -482,7 +466,6 @@ func (d *Decoder) decInputShared(start xml.StartElement) (InputShared, error) {
 }
 
 func (d *Decoder) decVcount(start xml.StartElement, data []byte, size int) ([]int, error) {
-
 	vcount := make([]int, size)
 	var br bytesReader
 	br.Init(data)
@@ -503,7 +486,6 @@ func (d *Decoder) decVcount(start xml.StartElement, data []byte, size int) ([]in
 }
 
 func (d *Decoder) decPrimitive(start xml.StartElement, data []byte) ([]int, error) {
-
 	p := make([]int, 0)
 	var br bytesReader
 	br.Init(data)

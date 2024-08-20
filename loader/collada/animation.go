@@ -46,20 +46,17 @@ type ActionFunc func(at *AnimationTarget, v float32)
 
 // Reset resets the animation from the beginning
 func (at *AnimationTarget) Reset() {
-
 	at.last = at.start
 	at.target.GetNode().SetMatrix(&at.matrix)
 }
 
 // SetLoop sets the state of the animation loop flag
 func (at *AnimationTarget) SetLoop(loop bool) {
-
 	at.loop = loop
 }
 
 // SetStart sets the initial offset value
 func (at *AnimationTarget) SetStart(v float32) {
-
 	at.start = v
 }
 
@@ -67,7 +64,6 @@ func (at *AnimationTarget) SetStart(v float32) {
 // and executes its corresponding action function. Returns true if the input value
 // is inside the key frames ranges or false otherwise.
 func (at *AnimationTarget) Update(delta float32) bool {
-
 	// Checks if input is less than minimum
 	at.last = at.last + delta
 	if at.last < at.minInput {
@@ -102,7 +98,6 @@ func (at *AnimationTarget) Update(delta float32) bool {
 // contained in the decoded Collada document and for the previously decoded scene.
 // The map is indexed by the node loaderID.
 func (d *Decoder) NewAnimationTargets(scene core.INode) (map[string]*AnimationTarget, error) {
-
 	if d.dom.LibraryAnimations == nil {
 		return nil, fmt.Errorf("No animations found")
 	}
@@ -112,10 +107,8 @@ func (d *Decoder) NewAnimationTargets(scene core.INode) (map[string]*AnimationTa
 
 	// For each Collada animation element
 	for _, ca := range d.dom.LibraryAnimations.Animation {
-
 		// For each Collada channel for this animation
 		for _, cc := range ca.Channel {
-
 			// Separates the channel target in target id and target action
 			parts := strings.Split(cc.Target, "/")
 			if len(parts) < 2 {
@@ -198,54 +191,44 @@ func (d *Decoder) NewAnimationTargets(scene core.INode) (map[string]*AnimationTa
 }
 
 func actionPositionX(at *AnimationTarget, v float32) {
-
 	at.target.GetNode().SetPositionX(v)
 }
 
 func actionPositionY(at *AnimationTarget, v float32) {
-
 	at.target.GetNode().SetPositionY(v)
 }
 
 func actionPositionZ(at *AnimationTarget, v float32) {
-
 	at.target.GetNode().SetPositionZ(v)
 }
 
 func actionRotationX(at *AnimationTarget, v float32) {
-
 	at.rot.X = math32.DegToRad(v)
 }
 
 func actionRotationY(at *AnimationTarget, v float32) {
-
 	at.rot.Y = math32.DegToRad(v)
 }
 
 func actionRotationZ(at *AnimationTarget, v float32) {
-
 	at.rot.Z = math32.DegToRad(v)
 }
 
 func actionScaleX(at *AnimationTarget, v float32) {
-
 	at.target.GetNode().SetScaleX(v)
 }
 
 func actionScaleY(at *AnimationTarget, v float32) {
-
 	at.target.GetNode().SetScaleY(v)
 }
 
 func actionScaleZ(at *AnimationTarget, v float32) {
-
 	at.target.GetNode().SetScaleZ(v)
 }
 
 // NewSamplerInstance creates and returns a pointer to a new SamplerInstance built
 // with data from the specified Collada animation and URI
 func NewSamplerInstance(ca *Animation, uri string) (*SamplerInstance, error) {
-
 	id := strings.TrimPrefix(uri, "#")
 	var cs *Sampler
 	for _, current := range ca.Sampler {
@@ -308,7 +291,6 @@ func NewSamplerInstance(ca *Animation, uri string) (*SamplerInstance, error) {
 // Interpolate returns the interpolated output and its validity
 // for this sampler for the specified input.
 func (si *SamplerInstance) Interpolate(inp float32) (float32, bool) {
-
 	// Test limits
 	if len(si.Input) < 2 {
 		return 0, false
@@ -351,7 +333,6 @@ func (si *SamplerInstance) Interpolate(inp float32) (float32, bool) {
 }
 
 func (si *SamplerInstance) linearInterp(inp float32, idx int) float32 {
-
 	k1 := si.Input[idx]
 	k2 := si.Input[idx+1]
 	v1 := si.Output[idx]
@@ -360,7 +341,6 @@ func (si *SamplerInstance) linearInterp(inp float32, idx int) float32 {
 }
 
 func (si *SamplerInstance) bezierInterp(inp float32, idx int) float32 {
-
 	p0 := si.Output[idx]
 	p1 := si.Output[idx+1]
 	c0 := si.OutTangent[2*idx+1]
@@ -373,7 +353,6 @@ func (si *SamplerInstance) bezierInterp(inp float32, idx int) float32 {
 }
 
 func findSourceNameArray(ca *Animation, uri string) ([]string, error) {
-
 	src := findSource(ca, uri)
 	if src == nil {
 		return nil, fmt.Errorf("Source:%s not found", uri)
@@ -386,7 +365,6 @@ func findSourceNameArray(ca *Animation, uri string) ([]string, error) {
 }
 
 func findSourceFloatArray(ca *Animation, uri string) ([]float32, error) {
-
 	src := findSource(ca, uri)
 	if src == nil {
 		return nil, fmt.Errorf("Source:%s not found", uri)
@@ -399,7 +377,6 @@ func findSourceFloatArray(ca *Animation, uri string) ([]float32, error) {
 }
 
 func findSource(ca *Animation, uri string) *Source {
-
 	id := strings.TrimPrefix(uri, "#")
 	for _, src := range ca.Source {
 		if src.Id == id {

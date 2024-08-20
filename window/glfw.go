@@ -216,7 +216,6 @@ type GlfwWindow struct {
 
 // Init initializes the GlfwWindow singleton with the specified width, height, and title.
 func Init(width, height int, title string) error {
-
 	// Panic if already created
 	if win != nil {
 		panic(fmt.Errorf("can only call window.Init() once"))
@@ -374,20 +373,17 @@ func Init(width, height int, title string) error {
 
 // Gls returns the associated OpenGL state.
 func (w *GlfwWindow) Gls() *gls.GLS {
-
 	return w.gls
 }
 
 // FullScreen returns whether this windows is currently fullscreen.
 func (w *GlfwWindow) FullScreen() bool {
-
 	return w.fullscreen
 }
 
 // SetFullScreen sets this window as fullscreen on the primary monitor
 // TODO allow for fullscreen with resolutions different than the monitor's
 func (w *GlfwWindow) SetFullScreen(full bool) {
-
 	// If already in the desired state, nothing to do
 	if w.fullscreen == full {
 		return
@@ -414,7 +410,6 @@ func (w *GlfwWindow) SetFullScreen(full bool) {
 
 // Destroy destroys this window and its context
 func (w *GlfwWindow) Destroy() {
-
 	w.Window.Destroy()
 	glfw.Terminate()
 	runtime.UnlockOSThread() // Important when using the execution tracer
@@ -422,13 +417,11 @@ func (w *GlfwWindow) Destroy() {
 
 // Scale returns this window's DPI scale factor (FramebufferSize / Size)
 func (w *GlfwWindow) GetScale() (x float64, y float64) {
-
 	return w.scaleX, w.scaleY
 }
 
 // ScreenResolution returns the screen resolution
 func (w *GlfwWindow) ScreenResolution(p interface{}) (width, height int) {
-
 	mon := glfw.GetPrimaryMonitor()
 	vmode := mon.GetVideoMode()
 	return vmode.Width, vmode.Height
@@ -436,20 +429,17 @@ func (w *GlfwWindow) ScreenResolution(p interface{}) (width, height int) {
 
 // PollEvents process events in the event queue
 func (w *GlfwWindow) PollEvents() {
-
 	glfw.PollEvents()
 }
 
 // SetSwapInterval sets the number of screen updates to wait from the time SwapBuffer()
 // is called before swapping the buffers and returning.
 func (w *GlfwWindow) SetSwapInterval(interval int) {
-
 	glfw.SwapInterval(interval)
 }
 
 // SetCursor sets the window's cursor.
 func (w *GlfwWindow) SetCursor(cursor Cursor) {
-
 	cur, ok := w.cursors[cursor]
 	if !ok {
 		panic("Invalid cursor")
@@ -459,7 +449,6 @@ func (w *GlfwWindow) SetCursor(cursor Cursor) {
 
 // CreateCursor creates a new custom cursor and returns an int handle.
 func (w *GlfwWindow) CreateCursor(imgFile string, xhot, yhot int) (Cursor, error) {
-
 	// Open image file
 	file, err := os.Open(imgFile)
 	if err != nil {
@@ -480,7 +469,6 @@ func (w *GlfwWindow) CreateCursor(imgFile string, xhot, yhot int) (Cursor, error
 
 // DisposeCursor deletes the existing custom cursor with the provided int handle.
 func (w *GlfwWindow) DisposeCursor(cursor Cursor) {
-
 	if cursor <= CursorLast {
 		panic("Can't dispose standard cursor")
 	}
@@ -490,7 +478,6 @@ func (w *GlfwWindow) DisposeCursor(cursor Cursor) {
 
 // DisposeAllCursors deletes all existing custom cursors.
 func (w *GlfwWindow) DisposeAllCustomCursors() {
-
 	// Destroy and delete all custom cursors
 	for key := range w.cursors {
 		if key > CursorLast {

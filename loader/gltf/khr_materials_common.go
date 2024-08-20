@@ -11,7 +11,6 @@ import (
 // The specification of this extension is at:
 // https://github.com/KhronosGroup/glTF/tree/master/extensions/1.0/Khronos/KHR_materials_common
 func (g *GLTF) loadMaterialCommon(ext interface{}) (material.IMaterial, error) {
-
 	// The extension must be an object
 	m := ext.(map[string]interface{})
 
@@ -41,7 +40,6 @@ func (g *GLTF) loadMaterialCommon(ext interface{}) (material.IMaterial, error) {
 	// Converts a slice of interface values which should be float64
 	// to a slice of float32
 	convIF32 := func(v interface{}) []float32 {
-
 		si := v.([]interface{})
 		res := make([]float32, 0)
 		for i := 0; i < len(si); i++ {
@@ -53,7 +51,6 @@ func (g *GLTF) loadMaterialCommon(ext interface{}) (material.IMaterial, error) {
 	// Values
 	values, ok := m["values"].(map[string]interface{})
 	if ok {
-
 		// Ambient light
 		val, ok = values["ambient"]
 		if ok {

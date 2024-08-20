@@ -282,12 +282,10 @@ var stats Stats
 
 // GetStats returns copy of the statistics structure
 func GetStats() Stats {
-
 	return stats
 }
 
 func checkCtxError(dev *Device) {
-
 	err := CtxGetError(dev)
 	if err != nil {
 		panic(err)
@@ -295,7 +293,6 @@ func checkCtxError(dev *Device) {
 }
 
 func CreateContext(dev *Device, attrlist []int) (*Context, error) {
-
 	var plist unsafe.Pointer
 	if len(attrlist) != 0 {
 		plist = (unsafe.Pointer)(&attrlist[0])
@@ -308,7 +305,6 @@ func CreateContext(dev *Device, attrlist []int) (*Context, error) {
 }
 
 func MakeContextCurrent(ctx *Context) error {
-
 	cres := C.alcMakeContextCurrent(ctx.cctx)
 	if cres == C.ALC_TRUE {
 		return nil
@@ -317,22 +313,18 @@ func MakeContextCurrent(ctx *Context) error {
 }
 
 func ProcessContext(ctx *Context) {
-
 	C.alcProcessContext(ctx.cctx)
 }
 
 func SuspendContext(ctx *Context) {
-
 	C.alcSuspendContext(ctx.cctx)
 }
 
 func DestroyContext(ctx *Context) {
-
 	C.alcDestroyContext(ctx.cctx)
 }
 
 func GetContextsDevice(ctx *Context) *Device {
-
 	cdev := C.alcGetContextsDevice(ctx.cctx)
 	if cdev == nil {
 		return nil
@@ -341,7 +333,6 @@ func GetContextsDevice(ctx *Context) *Device {
 }
 
 func OpenDevice(name string) (*Device, error) {
-
 	cstr := (*C.ALCchar)(C.CString(name))
 	defer C.free(unsafe.Pointer(cstr))
 	cdev := C.alcOpenDevice(cstr)
@@ -354,7 +345,6 @@ func OpenDevice(name string) (*Device, error) {
 }
 
 func CloseDevice(dev *Device) error {
-
 	cres := C.alcCloseDevice(dev.cdev)
 	if cres == C.ALC_TRUE {
 		delete(mapDevice, dev.cdev)
@@ -364,7 +354,6 @@ func CloseDevice(dev *Device) error {
 }
 
 func CtxGetError(dev *Device) error {
-
 	cerr := C.alcGetError(dev.cdev)
 	if cerr == C.AL_NONE {
 		return nil
@@ -373,7 +362,6 @@ func CtxGetError(dev *Device) error {
 }
 
 func CtxIsExtensionPresent(dev *Device, extname string) bool {
-
 	cname := (*C.ALCchar)(C.CString(extname))
 	defer C.free(unsafe.Pointer(cname))
 	cres := C.alcIsExtensionPresent(dev.cdev, cname)
@@ -381,7 +369,6 @@ func CtxIsExtensionPresent(dev *Device, extname string) bool {
 }
 
 func CtxGetEnumValue(dev *Device, enumName string) uint32 {
-
 	cname := (*C.ALCchar)(C.CString(enumName))
 	defer C.free(unsafe.Pointer(cname))
 	cres := C.alcGetEnumValue(dev.cdev, cname)
@@ -389,7 +376,6 @@ func CtxGetEnumValue(dev *Device, enumName string) uint32 {
 }
 
 func CtxGetString(dev *Device, param uint) string {
-
 	var cdev *C.ALCdevice = nil
 	if dev != nil {
 		cdev = dev.cdev
@@ -399,12 +385,10 @@ func CtxGetString(dev *Device, param uint) string {
 }
 
 func CtxGetIntegerv(dev *Device, param uint32, values []int32) {
-
 	C.alcGetIntegerv(dev.cdev, C.ALCenum(param), C.ALCsizei(len(values)), (*C.ALCint)(unsafe.Pointer(&values[0])))
 }
 
 func CaptureOpenDevice(devname string, frequency uint32, format uint32, buffersize uint32) (*Device, error) {
-
 	cstr := (*C.ALCchar)(C.CString(devname))
 	defer C.free(unsafe.Pointer(cstr))
 	cdev := C.alcCaptureOpenDevice(cstr, C.ALCuint(frequency), C.ALCenum(format), C.ALCsizei(buffersize))
@@ -417,7 +401,6 @@ func CaptureOpenDevice(devname string, frequency uint32, format uint32, buffersi
 }
 
 func CaptureCloseDevice(dev *Device) error {
-
 	cres := C.alcCaptureCloseDevice(dev.cdev)
 	if cres == C.AL_TRUE {
 		return nil
@@ -426,47 +409,39 @@ func CaptureCloseDevice(dev *Device) error {
 }
 
 func CaptureStart(dev *Device) {
-
 	C.alcCaptureStart(dev.cdev)
 	checkCtxError(dev)
 }
 
 func CaptureStop(dev *Device) {
-
 	C.alcCaptureStop(dev.cdev)
 	checkCtxError(dev)
 }
 
 func CaptureSamples(dev *Device, buffer []byte, nsamples uint) {
-
 	C.alcCaptureSamples(dev.cdev, unsafe.Pointer(&buffer[0]), C.ALCsizei(nsamples))
 	checkCtxError(dev)
 }
 
 func Enable(capability uint) {
-
 	C.alEnable(C.ALenum(capability))
 }
 
 func Disable(capability uint) {
-
 	C.alDisable(C.ALenum(capability))
 }
 
 func IsEnabled(capability uint) bool {
-
 	cres := C.alIsEnabled(C.ALenum(capability))
 	return cres == C.AL_TRUE
 }
 
 func GetString(param uint32) string {
-
 	cstr := C.alGetString(C.ALenum(param))
 	return C.GoString((*C.char)(cstr))
 }
 
 func GetBooleanv(param uint32, values []bool) {
-
 	cvals := make([]C.ALboolean, len(values))
 	C.alGetBooleanv(C.ALenum(param), &cvals[0])
 	for i := 0; i < len(cvals); i++ {
@@ -479,46 +454,38 @@ func GetBooleanv(param uint32, values []bool) {
 }
 
 func GetIntegerv(param uint32, values []int32) {
-
 	C.alGetIntegerv(C.ALenum(param), (*C.ALint)(unsafe.Pointer(&values[0])))
 }
 
 func GetFloatv(param uint32, values []float32) {
-
 	C.alGetFloatv(C.ALenum(param), (*C.ALfloat)(unsafe.Pointer(&values[0])))
 }
 
 func GetDoublev(param uint32, values []float64) {
-
 	C.alGetDoublev(C.ALenum(param), (*C.ALdouble)(unsafe.Pointer(&values[0])))
 }
 
 func GetBoolean(param uint32) bool {
-
 	cres := C.alGetBoolean(C.ALenum(param))
 	return cres == C.AL_TRUE
 }
 
 func GetInteger(param uint32) int32 {
-
 	cres := C.alGetInteger(C.ALenum(param))
 	return int32(cres)
 }
 
 func GetFloat(param uint32) float32 {
-
 	cres := C.alGetFloat(C.ALenum(param))
 	return float32(cres)
 }
 
 func GetDouble(param uint32) float64 {
-
 	cres := C.alGetDouble(C.ALenum(param))
 	return float64(cres)
 }
 
 func GetError() error {
-
 	cerr := C.alGetError()
 	if cerr == C.AL_NONE {
 		return nil
@@ -527,7 +494,6 @@ func GetError() error {
 }
 
 func IsExtensionPresent(extName string) bool {
-
 	cstr := (*C.ALchar)(C.CString(extName))
 	defer C.free(unsafe.Pointer(cstr))
 	cres := C.alIsExtensionPresent(cstr)
@@ -535,7 +501,6 @@ func IsExtensionPresent(extName string) bool {
 }
 
 func GetEnumValue(enam string) uint32 {
-
 	cenam := (*C.ALchar)(C.CString(enam))
 	defer C.free(unsafe.Pointer(cenam))
 	cres := C.alGetEnumValue(cenam)
@@ -543,44 +508,36 @@ func GetEnumValue(enam string) uint32 {
 }
 
 func Listenerf(param uint32, value float32) {
-
 	C.alListenerf(C.ALenum(param), C.ALfloat(value))
 }
 
 func Listener3f(param uint32, value1, value2, value3 float32) {
-
 	C.alListener3f(C.ALenum(param), C.ALfloat(value1), C.ALfloat(value2), C.ALfloat(value3))
 }
 
 func Listenerfv(param uint32, values []float32) {
-
 	C.alListenerfv(C.ALenum(param), (*C.ALfloat)(unsafe.Pointer(&values[0])))
 }
 
 func Listeneri(param uint32, value int32) {
-
 	C.alListeneri(C.ALenum(param), C.ALint(value))
 }
 
 func Listener3i(param uint32, value1, value2, value3 int32) {
-
 	C.alListener3i(C.ALenum(param), C.ALint(value1), C.ALint(value2), C.ALint(value3))
 }
 
 func Listeneriv(param uint32, values []int32) {
-
 	C.alListeneriv(C.ALenum(param), (*C.ALint)(unsafe.Pointer(&values[0])))
 }
 
 func GetListenerf(param uint32) float32 {
-
 	var cval C.ALfloat
 	C.alGetListenerf(C.ALenum(param), &cval)
 	return float32(cval)
 }
 
 func GetListener3f(param uint32) (float32, float32, float32) {
-
 	var cval1 C.ALfloat
 	var cval2 C.ALfloat
 	var cval3 C.ALfloat
@@ -589,19 +546,16 @@ func GetListener3f(param uint32) (float32, float32, float32) {
 }
 
 func GetListenerfv(param uint32, values []float32) {
-
 	C.alGetListenerfv(C.ALenum(param), (*C.ALfloat)(unsafe.Pointer(&values[0])))
 }
 
 func GetListeneri(param uint32) int32 {
-
 	var cval C.ALint
 	C.alGetListeneri(C.ALenum(param), &cval)
 	return int32(cval)
 }
 
 func GetListener3i(param uint32) (int32, int32, int32) {
-
 	var cval1 C.ALint
 	var cval2 C.ALint
 	var cval3 C.ALint
@@ -610,7 +564,6 @@ func GetListener3i(param uint32) (int32, int32, int32) {
 }
 
 func GetListeneriv(param uint32, values []int32) {
-
 	if len(values) < 3 {
 		panic("Slice length less than minimum")
 	}
@@ -618,7 +571,6 @@ func GetListeneriv(param uint32, values []int32) {
 }
 
 func GenSource() uint32 {
-
 	var csource C.ALuint
 	C.alGenSources(1, &csource)
 	stats.Sources++
@@ -626,41 +578,34 @@ func GenSource() uint32 {
 }
 
 func GenSources(sources []uint32) {
-
 	C.alGenSources(C.ALsizei(len(sources)), (*C.ALuint)(unsafe.Pointer(&sources[0])))
 	stats.Sources += len(sources)
 }
 
 func DeleteSource(source uint32) {
-
 	C.alDeleteSources(1, (*C.ALuint)(unsafe.Pointer(&source)))
 	stats.Sources--
 }
 
 func DeleteSources(sources []uint32) {
-
 	C.alDeleteSources(C.ALsizei(len(sources)), (*C.ALuint)(unsafe.Pointer(&sources[0])))
 	stats.Sources -= len(sources)
 }
 
 func IsSource(source uint32) bool {
-
 	cres := C.alIsSource(C.ALuint(source))
 	return cres == C.AL_TRUE
 }
 
 func Sourcef(source uint32, param uint32, value float32) {
-
 	C.alSourcef(C.ALuint(source), C.ALenum(param), C.ALfloat(value))
 }
 
 func Source3f(source uint32, param uint32, value1, value2, value3 float32) {
-
 	C.alSource3f(C.ALuint(source), C.ALenum(param), C.ALfloat(value1), C.ALfloat(value2), C.ALfloat(value3))
 }
 
 func Sourcefv(source uint32, param uint32, values []float32) {
-
 	if len(values) < 3 {
 		panic("Slice length less than minimum")
 	}
@@ -668,17 +613,14 @@ func Sourcefv(source uint32, param uint32, values []float32) {
 }
 
 func Sourcei(source uint32, param uint32, value int32) {
-
 	C.alSourcei(C.ALuint(source), C.ALenum(param), C.ALint(value))
 }
 
 func Source3i(source uint32, param uint32, value1, value2, value3 int32) {
-
 	C.alSource3i(C.ALuint(source), C.ALenum(param), C.ALint(value1), C.ALint(value2), C.ALint(value3))
 }
 
 func Sourceiv(source uint32, param uint32, values []int32) {
-
 	if len(values) < 3 {
 		panic("Slice length less than minimum")
 	}
@@ -686,14 +628,12 @@ func Sourceiv(source uint32, param uint32, values []int32) {
 }
 
 func GetSourcef(source uint32, param uint32) float32 {
-
 	var value C.ALfloat
 	C.alGetSourcef(C.ALuint(source), C.ALenum(param), &value)
 	return float32(value)
 }
 
 func GetSource3f(source uint32, param uint32) (float32, float32, float32) {
-
 	var cval1 C.ALfloat
 	var cval2 C.ALfloat
 	var cval3 C.ALfloat
@@ -702,7 +642,6 @@ func GetSource3f(source uint32, param uint32) (float32, float32, float32) {
 }
 
 func GetSourcefv(source uint32, param uint32, values []float32) {
-
 	if len(values) < 3 {
 		panic("Slice length less than minimum")
 	}
@@ -710,14 +649,12 @@ func GetSourcefv(source uint32, param uint32, values []float32) {
 }
 
 func GetSourcei(source uint32, param uint32) int32 {
-
 	var value C.ALint
 	C.alGetSourcei(C.ALuint(source), C.ALenum(param), &value)
 	return int32(value)
 }
 
 func GetSource3i(source uint32, param uint32) (int32, int32, int32) {
-
 	var cval1 C.ALint
 	var cval2 C.ALint
 	var cval3 C.ALint
@@ -726,7 +663,6 @@ func GetSource3i(source uint32, param uint32) (int32, int32, int32) {
 }
 
 func GetSourceiv(source uint32, param uint32, values []int32) {
-
 	if len(values) < 3 {
 		panic("Slice length less than minimum")
 	}
@@ -734,143 +670,117 @@ func GetSourceiv(source uint32, param uint32, values []int32) {
 }
 
 func SourcePlayv(sources []uint32) {
-
 	C.alSourcePlayv(C.ALsizei(len(sources)), (*C.ALuint)(unsafe.Pointer(&sources[0])))
 }
 
 func SourceStopv(sources []uint32) {
-
 	C.alSourceStopv(C.ALsizei(len(sources)), (*C.ALuint)(unsafe.Pointer(&sources[0])))
 }
 
 func SourceRewindv(sources []uint32) {
-
 	C.alSourceRewindv(C.ALsizei(len(sources)), (*C.ALuint)(unsafe.Pointer(&sources[0])))
 }
 
 func SourcePausev(sources []uint32) {
-
 	C.alSourcePausev(C.ALsizei(len(sources)), (*C.ALuint)(unsafe.Pointer(&sources[0])))
 }
 
 func SourcePlay(source uint32) {
-
 	C.alSourcePlay(C.ALuint(source))
 }
 
 func SourceStop(source uint32) {
-
 	C.alSourceStop(C.ALuint(source))
 }
 
 func SourceRewind(source uint32) {
-
 	C.alSourceRewind(C.ALuint(source))
 }
 
 func SourcePause(source uint32) {
-
 	C.alSourcePause(C.ALuint(source))
 }
 
 func SourceQueueBuffers(source uint32, buffers ...uint32) {
-
 	C.alSourceQueueBuffers(C.ALuint(source), C.ALsizei(len(buffers)), (*C.ALuint)(unsafe.Pointer(&buffers[0])))
 }
 
 func SourceUnqueueBuffers(source uint32, n uint32, buffers []uint32) {
-
 	removed := make([]C.ALuint, n)
 	C.alSourceUnqueueBuffers(C.ALuint(source), C.ALsizei(n), &removed[0])
 }
 
 func GenBuffers(n uint32) []uint32 {
-
 	buffers := make([]uint32, n)
 	C.alGenBuffers(C.ALsizei(len(buffers)), (*C.ALuint)(unsafe.Pointer(&buffers[0])))
 	return buffers
 }
 
 func DeleteBuffers(buffers []uint32) {
-
 	C.alDeleteBuffers(C.ALsizei(len(buffers)), (*C.ALuint)(unsafe.Pointer(&buffers[0])))
 }
 
 func IsBuffer(buffer uint32) bool {
-
 	cres := C.alIsBuffer(C.ALuint(buffer))
 	return cres == C.AL_TRUE
 }
 
 func BufferData(buffer uint32, format uint32, data unsafe.Pointer, size uint32, freq uint32) {
-
 	C.alBufferData(C.ALuint(buffer), C.ALenum(format), data, C.ALsizei(size), C.ALsizei(freq))
 }
 
 func Bufferf(buffer uint32, param uint32, value float32) {
-
 	C.alBufferf(C.ALuint(buffer), C.ALenum(param), C.ALfloat(value))
 }
 
 func Buffer3f(buffer uint32, param uint32, value1, value2, value3 float32) {
-
 	C.alBuffer3f(C.ALuint(buffer), C.ALenum(param), C.ALfloat(value1), C.ALfloat(value2), C.ALfloat(value3))
 }
 
 func Bufferfv(buffer uint32, param uint32, values []float32) {
-
 	C.alBufferfv(C.ALuint(buffer), C.ALenum(param), (*C.ALfloat)(unsafe.Pointer(&values[0])))
 }
 
 func Bufferi(buffer uint32, param uint32, value int32) {
-
 	C.alBufferi(C.ALuint(buffer), C.ALenum(param), C.ALint(value))
 }
 
 func Buffer3i(buffer uint32, param uint32, value1, value2, value3 int32) {
-
 	C.alBuffer3i(C.ALuint(buffer), C.ALenum(param), C.ALint(value1), C.ALint(value2), C.ALint(value3))
 }
 
 func Bufferiv(buffer uint32, param uint32, values []int32) {
-
 	C.alBufferiv(C.ALuint(buffer), C.ALenum(param), (*C.ALint)(unsafe.Pointer(&values[0])))
 }
 
 func GetBufferf(buffer uint32, param uint32) float32 {
-
 	var value C.ALfloat
 	C.alGetBufferf(C.ALuint(buffer), C.ALenum(param), &value)
 	return float32(value)
 }
 
 func GetBuffer3f(buffer uint32, param uint32) (v1 float32, v2 float32, v3 float32) {
-
 	var value1, value2, value3 C.ALfloat
 	C.alGetBuffer3f(C.ALuint(buffer), C.ALenum(param), &value1, &value2, &value3)
 	return float32(value1), float32(value2), float32(value3)
 }
 
 func GetBufferfv(buffer uint32, param uint32, values []float32) {
-
 	C.alGetBufferfv(C.ALuint(buffer), C.ALenum(param), (*C.ALfloat)(unsafe.Pointer(&values[0])))
 }
 
 func GetBufferi(buffer uint32, param uint32) int32 {
-
 	var value C.ALint
 	C.alGetBufferi(C.ALuint(buffer), C.ALenum(param), &value)
 	return int32(value)
 }
 
 func GetBuffer3i(buffer uint32, param uint32) (int32, int32, int32) {
-
 	var value1, value2, value3 C.ALint
 	C.alGetBuffer3i(C.ALuint(buffer), C.ALenum(param), &value1, &value2, &value3)
 	return int32(value1), int32(value2), int32(value3)
 }
 
 func GetBufferiv(buffer uint32, param uint32, values []int32) {
-
 	C.alGetBufferiv(C.ALuint(buffer), C.ALenum(param), (*C.ALint)(unsafe.Pointer(&values[0])))
 }

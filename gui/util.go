@@ -15,7 +15,6 @@ type RectBounds struct {
 
 // Set sets the values of the RectBounds.
 func (bs *RectBounds) Set(top, right, bottom, left float32) {
-
 	if top >= 0 {
 		bs.Top = top
 	}
@@ -40,7 +39,6 @@ type Rect struct {
 
 // Contains determines whether a 2D point is inside the Rect.
 func (r *Rect) Contains(x, y float32) bool {
-
 	if x < r.X || x > r.X+r.Width {
 		return false
 	}

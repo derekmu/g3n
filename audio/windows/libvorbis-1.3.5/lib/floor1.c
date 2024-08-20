@@ -180,7 +180,6 @@ static vorbis_info_floor *floor1_unpack (vorbis_info *vi,oggpack_buffer *opb){
 
 static vorbis_look_floor *floor1_look(vorbis_dsp_state *vd,
                                       vorbis_info_floor *in){
-
   int *sortpointer[VIF_POSIT+2];
   vorbis_info_floor1 *info=(vorbis_info_floor1 *)in;
   vorbis_look_floor1 *look=_ogg_calloc(1,sizeof(*look));
@@ -732,7 +731,6 @@ int *floor1_fit(vorbis_block *vb,vorbis_look_floor1 *look,
 int *floor1_interpolate_fit(vorbis_block *vb,vorbis_look_floor1 *look,
                           int *A,int *B,
                           int del){
-
   long i;
   long posts=look->posts;
   int *output=NULL;
@@ -754,7 +752,6 @@ int *floor1_interpolate_fit(vorbis_block *vb,vorbis_look_floor1 *look,
 int floor1_encode(oggpack_buffer *opb,vorbis_block *vb,
                   vorbis_look_floor1 *look,
                   int *post,int *ilogmask){
-
   long i,j;
   vorbis_info_floor1 *info=look->vi;
   long posts=look->posts;
@@ -933,7 +930,6 @@ int floor1_encode(oggpack_buffer *opb,vorbis_block *vb,
         int current=look->forward_index[j];
         int hy=post[current]&0x7fff;
         if(hy==post[current]){
-
           hy*=info->mult;
           hx=info->postlist[current];
 
@@ -1061,7 +1057,6 @@ static int floor1_inverse2(vorbis_block *vb,vorbis_look_floor *in,void *memo,
       int current=look->forward_index[j];
       int hy=fit_value[current]&0x7fff;
       if(hy==fit_value[current]){
-
         hx=info->postlist[current];
         hy*=info->mult;
         /* guard lookup against out-of-range values */

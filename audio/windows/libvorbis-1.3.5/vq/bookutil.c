@@ -23,7 +23,6 @@
 #include "bookutil.h"
 
 int _best(codebook *book, float *a, int step){
-
   int dim=book->dim;
   int i,j,o;
   int minval=book->minval;
@@ -183,7 +182,6 @@ int get_vector(codebook *b,FILE *in,int start, int n,float *a){
   const static_codebook *c=b->c;
 
   while(1){
-
     if(v_sofar==n || get_line_value(in,a)){
       reset_next_value();
       if(get_next_value(in,a))
@@ -405,7 +403,6 @@ void build_tree_from_lengths(int vals, long *hist, long *lengths){
 
 /* wrap build_tree_from_lengths to allow zero entries in the histogram */
 void build_tree_from_lengths0(int vals, long *hist, long *lengths){
-
   /* pack the 'sparse' hit list into a dense list, then unpack
      the lengths after the build */
 

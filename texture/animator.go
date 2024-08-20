@@ -25,7 +25,6 @@ type Animator struct {
 
 // NewAnimator creates and returns a texture sheet animator for the specified texture.
 func NewAnimator(tex *Texture2D, htiles, vtiles int) *Animator {
-
 	a := new(Animator)
 	a.tex = tex
 	a.columns = htiles
@@ -46,26 +45,22 @@ func NewAnimator(tex *Texture2D, htiles, vtiles int) *Animator {
 // SetDispTime sets the display time of each tile in milliseconds.
 // The default value is: 1.0/30.0 = 16.6.ms
 func (a *Animator) SetDispTime(dtime time.Duration) {
-
 	a.dispTime = dtime
 }
 
 // SetMaxCycles sets the number of complete cycles to display.
 // The default value is: 0 (display continuously)
 func (a *Animator) SetMaxCycles(maxCycles int) {
-
 	a.maxCycles = maxCycles
 }
 
 // Cycles returns the number of complete cycles displayed
 func (a *Animator) Cycles() int {
-
 	return a.cycles
 }
 
 // Restart restart the animator
 func (a *Animator) Restart() {
-
 	// Time of the currently displayed image
 	a.tileTime = time.Now()
 	// Position of current tile to display
@@ -78,7 +73,6 @@ func (a *Animator) Restart() {
 // Update prepares the next tile to be rendered.
 // Must be called with the current time
 func (a *Animator) Update(now time.Time) {
-
 	// Checks maximum number of cycles
 	if a.maxCycles > 0 && a.cycles >= a.maxCycles {
 		return

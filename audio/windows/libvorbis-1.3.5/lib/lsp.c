@@ -139,7 +139,6 @@ static const int MLOOP_3[8]={0,1,2,2,3,3,3,3};
 /* side effect: changes *lsp to cosines of lsp */
 void vorbis_lsp_to_curve(float *curve,int *map,int n,int ln,float *lsp,int m,
                             float amp,float ampoffset){
-
   /* 0 <= m < 256 */
 
   /* set up for using all int later */
@@ -376,7 +375,6 @@ static int Newton_Raphson(float *a,int ord,float *r){
       double rooti=root[i];
       double p=a[ord];
       for(k=ord-1; k>= 0; k--) {
-
         pp= pp* rooti + p;
         p = p * rooti + a[k];
       }

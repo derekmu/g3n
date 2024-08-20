@@ -18,7 +18,6 @@ import (
 // with the specified id in the Collada document and an error.
 // If no previous instance of the material was found it is created.
 func (d *Decoder) GetMaterial(id string) (material.IMaterial, error) {
-
 	// If material already created, returns it
 	mat := d.materials[id]
 	if mat != nil {
@@ -37,7 +36,6 @@ func (d *Decoder) GetMaterial(id string) (material.IMaterial, error) {
 // NewMaterial creates and returns a pointer to a new material
 // from the specified material id/url in the dom
 func (d *Decoder) NewMaterial(id string) (material.IMaterial, error) {
-
 	id = strings.TrimPrefix(id, "#")
 	// Looks for material with specified id
 	mat := findMaterial(&d.dom, id)
@@ -75,7 +73,6 @@ func (d *Decoder) NewMaterial(id string) (material.IMaterial, error) {
 // with the specified id in the Collada document and an error.
 // If no previous instance of the texture was found it is created.
 func (d *Decoder) GetTexture2D(id string) (*texture.Texture2D, error) {
-
 	// If texture already created, returns it
 	tex := d.tex2D[id]
 	if tex != nil {
@@ -94,7 +91,6 @@ func (d *Decoder) GetTexture2D(id string) (*texture.Texture2D, error) {
 // NewTexture2D creates and returns a pointer to a new Texture2D
 // from the specified sampler2D id/url in the dom
 func (d *Decoder) NewTexture2D(id string) (*texture.Texture2D, error) {
-
 	// Find newparam in all effects profiles with the specified id
 	np := findNewparam(&d.dom, id)
 	if np == nil {
@@ -147,22 +143,18 @@ func (d *Decoder) NewTexture2D(id string) (*texture.Texture2D, error) {
 }
 
 func (d *Decoder) newBlinnMaterial(se *Blinn) (material.IMaterial, error) {
-
 	return nil, fmt.Errorf("Not implemented")
 }
 
 func (d *Decoder) newConstantMaterial(se *Constant) (material.IMaterial, error) {
-
 	return nil, fmt.Errorf("Not implemented")
 }
 
 func (d *Decoder) newLambertMaterial(se *Lambert) (material.IMaterial, error) {
-
 	return nil, fmt.Errorf("Not implemented")
 }
 
 func (d *Decoder) newPhongMaterial(se *Phong) (material.IMaterial, error) {
-
 	// Creates material with default color
 	m := material.NewStandard(&math32.Color{0.5, 0.5, 0.5})
 
@@ -206,7 +198,6 @@ func (d *Decoder) newPhongMaterial(se *Phong) (material.IMaterial, error) {
 }
 
 func getColor(ci interface{}) math32.Color {
-
 	switch c := ci.(type) {
 	case *Color:
 		return math32.Color{c.Data[0], c.Data[1], c.Data[2]}
@@ -215,7 +206,6 @@ func getColor(ci interface{}) math32.Color {
 }
 
 func getColor4(ci interface{}) math32.Color4 {
-
 	switch c := ci.(type) {
 	case Color:
 		return math32.Color4{c.Data[0], c.Data[1], c.Data[2], c.Data[3]}
@@ -224,7 +214,6 @@ func getColor4(ci interface{}) math32.Color4 {
 }
 
 func getFloatOrParam(vi interface{}) float32 {
-
 	switch v := vi.(type) {
 	case *Float:
 		return v.Data
@@ -233,7 +222,6 @@ func getFloatOrParam(vi interface{}) float32 {
 }
 
 func findMaterial(dom *Collada, id string) *Material {
-
 	for _, m := range dom.LibraryMaterials.Material {
 		if m.Id == id {
 			return m
@@ -243,7 +231,6 @@ func findMaterial(dom *Collada, id string) *Material {
 }
 
 func findEffect(dom *Collada, uri string) *Effect {
-
 	id := strings.TrimPrefix(uri, "#")
 	for _, effect := range dom.LibraryEffects.Effect {
 		if effect.Id == id {
@@ -254,7 +241,6 @@ func findEffect(dom *Collada, uri string) *Effect {
 }
 
 func findProfileCOMMON(ef *Effect) *ProfileCOMMON {
-
 	for _, pi := range ef.Profile {
 		pc, ok := pi.(*ProfileCOMMON)
 		if ok {
@@ -265,7 +251,6 @@ func findProfileCOMMON(ef *Effect) *ProfileCOMMON {
 }
 
 func findNewparam(dom *Collada, uri string) *Newparam {
-
 	id := strings.TrimPrefix(uri, "#")
 	for _, effect := range dom.LibraryEffects.Effect {
 		for _, prof := range effect.Profile {
@@ -284,7 +269,6 @@ func findNewparam(dom *Collada, uri string) *Newparam {
 }
 
 func findImage(dom *Collada, uri string) *Image {
-
 	id := strings.TrimPrefix(uri, "#")
 	for _, img := range dom.LibraryImages.Image {
 		if img.Id == id {

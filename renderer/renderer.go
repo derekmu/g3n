@@ -16,11 +16,7 @@ import (
 	"github.com/derekmu/g3n/light"
 	"github.com/derekmu/g3n/material"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/util/logger"
 )
-
-// Package logger
-var log = logger.New("RENDERER", logger.Default)
 
 // Renderer renders a scene containing 3D objects and/or 2D GUI elements.
 type Renderer struct {
@@ -55,7 +51,6 @@ type Stats struct {
 
 // NewRenderer creates and returns a pointer to a new Renderer.
 func NewRenderer(gs *gls.GLS) *Renderer {
-
 	r := new(Renderer)
 	r.gs = gs
 	r.Shaman.Init(gs)
@@ -79,25 +74,21 @@ func NewRenderer(gs *gls.GLS) *Renderer {
 // Stats returns a copy of the statistics for the last frame.
 // Should be called after the frame was rendered.
 func (r *Renderer) Stats() Stats {
-
 	return r.stats
 }
 
 // SetObjectSorting sets whether objects will be sorted before rendering.
 func (r *Renderer) SetObjectSorting(sort bool) {
-
 	r.sortObjects = sort
 }
 
 // ObjectSorting returns whether objects will be sorted before rendering.
 func (r *Renderer) ObjectSorting() bool {
-
 	return r.sortObjects
 }
 
 // Render renders the specified scene using the specified camera. Returns an an error.
 func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
-
 	// Updates world matrices of all scene nodes
 	scene.UpdateMatrixWorld()
 
@@ -210,7 +201,6 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 // classifyAndCull classifies the provided INode and all of its descendents.
 // It ignores (culls) renderable IGraphics which are fully outside of the specified frustum.
 func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zLayer int) {
-
 	// Ignore invisible nodes and their descendants
 	if !inode.Visible() {
 		return
@@ -277,7 +267,6 @@ func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zL
 // zSort sorts a list of graphic materials based on the user-specified render order
 // then based on their Z position relative to the camera, back to front.
 func zSort(grmats []*graphic.GraphicMaterial) {
-
 	sort.Slice(grmats, func(i, j int) bool {
 		gr1 := grmats[i].IGraphic().GetGraphic()
 		gr2 := grmats[j].IGraphic().GetGraphic()
@@ -299,7 +288,6 @@ func zSort(grmats []*graphic.GraphicMaterial) {
 
 // renderGraphicMaterial renders the specified graphic material.
 func (r *Renderer) renderGraphicMaterial(grmat *graphic.GraphicMaterial) error {
-
 	mat := grmat.IMaterial().GetMaterial()
 	geom := grmat.IGraphic().GetGeometry()
 	gr := grmat.IGraphic().GetGraphic()

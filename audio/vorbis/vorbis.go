@@ -21,7 +21,6 @@ import "C"
 
 // VersionString returns a string giving version information for libvorbis
 func VersionString() string {
-
 	cstr := C.vorbis_version_string()
 	return C.GoString(cstr)
 }

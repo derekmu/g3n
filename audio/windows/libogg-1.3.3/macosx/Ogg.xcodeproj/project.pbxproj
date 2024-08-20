@@ -5,7 +5,6 @@
 	};
 	objectVersion = 42;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		730F236309181A8D00AB638C /* bitwise.c in Sources */ = {isa = PBXBuildFile; fileRef = 730F236109181A8D00AB638C /* bitwise.c */; };
 		730F236409181A8D00AB638C /* framing.c in Sources */ = {isa = PBXBuildFile; fileRef = 730F236209181A8D00AB638C /* framing.c */; };

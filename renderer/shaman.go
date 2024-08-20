@@ -6,6 +6,7 @@ package renderer
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -22,7 +23,6 @@ var rexInclude *regexp.Regexp
 const indexParameter = "{i}"
 
 func init() {
-
 	rexInclude = regexp.MustCompile(`#include\s+<(.*)>\s*(?:\[(.*)]|)`)
 }
 
@@ -58,7 +58,6 @@ type Shaman struct {
 
 // NewShaman creates and returns a pointer to a new shader manager
 func NewShaman(gs *gls.GLS) *Shaman {
-
 	sm := new(Shaman)
 	sm.Init(gs)
 	return sm
@@ -66,7 +65,6 @@ func NewShaman(gs *gls.GLS) *Shaman {
 
 // Init initializes the shader manager
 func (sm *Shaman) Init(gs *gls.GLS) {
-
 	sm.gs = gs
 	sm.includes = make(map[string]string)
 	sm.shadersm = make(map[string]string)
@@ -76,7 +74,6 @@ func (sm *Shaman) Init(gs *gls.GLS) {
 // AddDefaultShaders adds to this shader manager all default
 // include chunks, shaders and programs statically registered.
 func (sm *Shaman) AddDefaultShaders() error {
-
 	for _, name := range shaders.Includes() {
 		sm.AddChunk(name, shaders.IncludeSource(name))
 	}
@@ -93,20 +90,17 @@ func (sm *Shaman) AddDefaultShaders() error {
 
 // AddChunk adds a shader chunk with the specified name and source code
 func (sm *Shaman) AddChunk(name, source string) {
-
 	sm.includes[name] = source
 }
 
 // AddShader adds a shader program with the specified name and source code
 func (sm *Shaman) AddShader(name, source string) {
-
 	sm.shadersm[name] = source
 }
 
 // AddProgram adds a program with the specified name and associated vertex
 // and fragment shaders names (previously registered)
 func (sm *Shaman) AddProgram(name, vertexName, fragName string, others ...string) {
-
 	geomName := ""
 	if len(others) > 0 {
 		geomName = others[0]
@@ -124,7 +118,6 @@ func (sm *Shaman) AddProgram(name, vertexName, fragName string, others ...string
 // Receives a copy of the specs because it changes the fields which specify the
 // number of lights depending on the UseLights flags.
 func (sm *Shaman) SetProgram(s *ShaderSpecs) (bool, error) {
-
 	// Checks material use lights bit mask
 	var specs ShaderSpecs
 	specs.copy(s)
@@ -160,7 +153,7 @@ func (sm *Shaman) SetProgram(s *ShaderSpecs) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	log.Debug("Created new shader:%v", specs.Name)
+	log.Printf("Created new shader:%v", specs.Name)
 
 	// Save specs as current specs, adds new program to the list and activates the program
 	sm.specs = specs
@@ -171,7 +164,6 @@ func (sm *Shaman) SetProgram(s *ShaderSpecs) (bool, error) {
 
 // GenProgram generates shader program from the specified specs
 func (sm *Shaman) GenProgram(specs *ShaderSpecs) (*gls.Program, error) {
-
 	// Get info for the specified shader program
 	progInfo, ok := sm.proginfo[specs.Name]
 	if !ok {
@@ -246,7 +238,6 @@ func (sm *Shaman) GenProgram(specs *ShaderSpecs) (*gls.Program, error) {
 }
 
 func (sm *Shaman) preprocess(source string, defines map[string]string) (string, error) {
-
 	// If defines map supplied, generate prefix with glsl version directive first,
 	// followed by "#define" directives
 	var prefix = ""
@@ -265,7 +256,6 @@ func (sm *Shaman) preprocess(source string, defines map[string]string) (string, 
 // by the respective source code of include chunk of the specified name.
 // The included "files" are also processed recursively.
 func (sm *Shaman) processIncludes(source string, defines map[string]string) (string, error) {
-
 	// Find all string submatches for the "#include <name>" directive
 	matches := rexInclude.FindAllStringSubmatch(source, 100)
 	if len(matches) == 0 {
@@ -324,7 +314,6 @@ func (sm *Shaman) processIncludes(source string, defines map[string]string) (str
 
 // copy copies other spec into this
 func (ss *ShaderSpecs) copy(other *ShaderSpecs) {
-
 	*ss = *other
 	if other.Defines != nil {
 		ss.Defines = *gls.NewShaderDefines()
@@ -334,7 +323,6 @@ func (ss *ShaderSpecs) copy(other *ShaderSpecs) {
 
 // equals compares two ShaderSpecs and returns true if they are effectively equal.
 func (ss *ShaderSpecs) equals(other *ShaderSpecs) bool {
-
 	if ss.Name != other.Name {
 		return false
 	}

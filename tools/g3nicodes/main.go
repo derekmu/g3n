@@ -37,7 +37,6 @@ type templateData struct {
 }
 
 func main() {
-
 	// Parse command line parameters
 	flag.Usage = usage
 	flag.Parse()
@@ -101,7 +100,6 @@ func main() {
 }
 
 func parse(fin io.Reader, td *templateData) error {
-
 	// Read words from input reader and builds words map
 	scanner := bufio.NewScanner(fin)
 	for scanner.Scan() {
@@ -139,7 +137,6 @@ func parse(fin io.Reader, td *templateData) error {
 
 // Shows application usage
 func usage() {
-
 	fmt.Fprintf(os.Stderr, "%s v%d.%d\n", PROGNAME, VMAJOR, VMINOR)
 	fmt.Fprintf(os.Stderr, "usage: %s [options] <input file> <output file>\n", strings.ToLower(PROGNAME))
 	flag.PrintDefaults()
@@ -163,7 +160,6 @@ const (
 // Codepoint returns the codepoint for the specified icon name.
 // Returns 0 if the name not found
 func Codepoint(name string) string {
-
 	return name2Codepoint[name]
 }
 

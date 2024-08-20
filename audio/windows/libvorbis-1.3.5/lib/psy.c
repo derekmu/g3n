@@ -546,7 +546,6 @@ static void bark_noise_hybridmp(int n,const long *b,
                                 float *noise,
                                 const float offset,
                                 const int fixed){
-
   float *N=alloca(n*sizeof(*N));
   float *X=alloca(n*sizeof(*N));
   float *XX=alloca(n*sizeof(*N));
@@ -581,7 +580,6 @@ static void bark_noise_hybridmp(int n,const long *b,
   XY[0] = tXY;
 
   for (i = 1, x = 1.f; i < n; i++, x += 1.f) {
-
     y = f[i] + offset;
     if (y < 1.f) y = 1.f;
 
@@ -601,7 +599,6 @@ static void bark_noise_hybridmp(int n,const long *b,
   }
 
   for (i = 0, x = 0.f;; i++, x += 1.f) {
-
     lo = b[i] >> 16;
     if( lo>=0 ) break;
     hi = b[i] & 0xffff;
@@ -623,7 +620,6 @@ static void bark_noise_hybridmp(int n,const long *b,
   }
 
   for ( ;; i++, x += 1.f) {
-
     lo = b[i] >> 16;
     hi = b[i] & 0xffff;
     if(hi>=n)break;
@@ -643,7 +639,6 @@ static void bark_noise_hybridmp(int n,const long *b,
     noise[i] = R - offset;
   }
   for ( ; i < n; i++, x += 1.f) {
-
     R = (A + x * B) / D;
     if (R < 0.f) R = 0.f;
 
@@ -672,7 +667,6 @@ static void bark_noise_hybridmp(int n,const long *b,
     if (R - offset < noise[i]) noise[i] = R - offset;
   }
   for ( ;; i++, x += 1.f) {
-
     hi = i + fixed / 2;
     lo = hi - fixed;
     if(hi>=n)break;
@@ -699,7 +693,6 @@ static void bark_noise_hybridmp(int n,const long *b,
 void _vp_noisemask(vorbis_look_psy *p,
                    float *logmdct,
                    float *logmask){
-
   int i,n=p->n;
   float *work=alloca(n*sizeof(*work));
 
@@ -749,7 +742,6 @@ void _vp_tonemask(vorbis_look_psy *p,
                   float *logmask,
                   float global_specmax,
                   float local_specmax){
-
   int i,n=p->n;
 
   float *seed=alloca(sizeof(*seed)*p->total_octave_lines);
@@ -932,7 +924,6 @@ static void flag_lossless(int limit, float prepoint, float postpoint, float *mdc
    values of the *r vector (for elements with flag unset).  On output,
    *q holds the quantized energy for all elements */
 static float noise_normalize(vorbis_look_psy *p, int limit, float *r, float *q, float *f, int *flags, float acc, int i, int n, int *out){
-
   vorbis_info_psy *vi=p->vi;
   float **sort = alloca(n*sizeof(*sort));
   int j,count=0;
@@ -1013,7 +1004,6 @@ void _vp_couple_quantize_normalize(int blobno,
                                    int    *nonzero,
                                    int     sliding_lowpass,
                                    int     ch){
-
   int i;
   int n = p->n;
   int partition=(p->vi->normal_p ? p->vi->normal_partition : 16);
@@ -1074,7 +1064,6 @@ void _vp_couple_quantize_normalize(int blobno,
     for(k=0;k<ch;k++){
       int *iout = &iwork[k][i];
       if(nz[k]){
-
         for(j=0;j<jn;j++)
           floor[k][j] = FLOOR1_fromdB_LOOKUP[iout[j]];
 
@@ -1120,7 +1109,6 @@ void _vp_couple_quantize_normalize(int blobno,
         nz[Mi] = nz[Ai] = 1;
 
         for(j=0;j<jn;j++){
-
           if(j<sliding_lowpass-i){
             if(fM[j] || fA[j]){
               /* lossless coupling */

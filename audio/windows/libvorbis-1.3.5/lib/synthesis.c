@@ -58,7 +58,6 @@ int vorbis_synthesis(vorbis_block *vb,ogg_packet *op){
 
   vb->W=ci->mode_param[mode]->blockflag;
   if(vb->W){
-
     /* this doesn;t get mapped through mode selection as it's used
        only for window selection */
     vb->lW=oggpack_read(opb,1);

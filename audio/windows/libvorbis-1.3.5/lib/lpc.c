@@ -132,7 +132,6 @@ float vorbis_lpc_from_data(float *data,float *lpci,int n,int m){
 
 void vorbis_lpc_predict(float *coeff,float *prime,int m,
                      float *data,long n){
-
   /* in: coeff[0...m-1] LPC coefficients
          prime[0...m-1] initial values (allocated size of n+m-1)
     out: data[0...n-1] data samples */

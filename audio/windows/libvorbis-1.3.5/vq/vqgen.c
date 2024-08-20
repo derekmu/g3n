@@ -163,7 +163,6 @@ void vqgen_cellmetric(vqgen *v){
    additional encode-side trickery. */
 
 void vqgen_quantize(vqgen *v,quant_meta *q){
-
   float maxdel;
   float mindel;
 

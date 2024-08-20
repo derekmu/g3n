@@ -45,7 +45,6 @@ func NewIcon(icon string) *Label {
 // NewLabelWithFont creates and returns a label panel with
 // the specified text drawn using the specified font.
 func NewLabelWithFont(msg string, font *text.Font) *Label {
-
 	l := new(Label)
 	l.initialize(msg, font)
 	return l
@@ -54,7 +53,6 @@ func NewLabelWithFont(msg string, font *text.Font) *Label {
 // initialize initializes this label and is normally used by other
 // components which contain a label.
 func (l *Label) initialize(msg string, font *text.Font) {
-
 	l.font = font
 	l.Panel.Initialize(l, 0, 0)
 	l.Panel.mat.SetTransparent(true)
@@ -73,7 +71,6 @@ func (l *Label) initialize(msg string, font *text.Font) {
 
 // SetText sets and draws the label text using the font.
 func (l *Label) SetText(text string) {
-
 	// Need at least a character to get dimensions
 	l.text = text
 	if text == "" {
@@ -110,14 +107,12 @@ func (l *Label) SetText(text string) {
 
 // Text returns the label text.
 func (l *Label) Text() string {
-
 	return l.text
 }
 
 // SetColor sets the text color.
 // Alpha is set to 1 (opaque).
 func (l *Label) SetColor(color *math32.Color) *Label {
-
 	l.style.FgColor.FromColor(color, 1.0)
 	l.SetText(l.text)
 	return l
@@ -125,7 +120,6 @@ func (l *Label) SetColor(color *math32.Color) *Label {
 
 // SetColor4 sets the text color.
 func (l *Label) SetColor4(color4 *math32.Color4) *Label {
-
 	l.style.FgColor = *color4
 	l.SetText(l.text)
 	return l
@@ -133,14 +127,12 @@ func (l *Label) SetColor4(color4 *math32.Color4) *Label {
 
 // Color returns the text color.
 func (l *Label) Color() math32.Color4 {
-
 	return l.style.FgColor
 }
 
 // SetBgColor sets the background color.
 // The color alpha is set to 1.0
 func (l *Label) SetBgColor(color *math32.Color) *Label {
-
 	l.style.BgColor.FromColor(color, 1.0)
 	l.Panel.SetColor4(&l.style.BgColor)
 	l.SetText(l.text)
@@ -149,7 +141,6 @@ func (l *Label) SetBgColor(color *math32.Color) *Label {
 
 // SetBgColor4 sets the background color.
 func (l *Label) SetBgColor4(color *math32.Color4) *Label {
-
 	l.style.BgColor = *color
 	l.Panel.SetColor4(&l.style.BgColor)
 	l.SetText(l.text)
@@ -158,26 +149,22 @@ func (l *Label) SetBgColor4(color *math32.Color4) *Label {
 
 // BgColor returns returns the background color.
 func (l *Label) BgColor() math32.Color4 {
-
 	return l.style.BgColor
 }
 
 // SetFont sets the font.
 func (l *Label) SetFont(f *text.Font) {
-
 	l.font = f
 	l.SetText(l.text)
 }
 
 // Font returns the font.
 func (l *Label) Font() *text.Font {
-
 	return l.font
 }
 
 // SetFontSize sets the point size of the font.
 func (l *Label) SetFontSize(size float64) *Label {
-
 	l.style.PointSize = size
 	l.SetText(l.text)
 	return l
@@ -185,13 +172,11 @@ func (l *Label) SetFontSize(size float64) *Label {
 
 // FontSize returns the point size of the font.
 func (l *Label) FontSize() float64 {
-
 	return l.style.PointSize
 }
 
 // SetFontDPI sets the resolution of the font in dots per inch (DPI).
 func (l *Label) SetFontDPI(dpi float64) *Label {
-
 	l.style.DPI = dpi
 	l.SetText(l.text)
 	return l
@@ -199,13 +184,11 @@ func (l *Label) SetFontDPI(dpi float64) *Label {
 
 // FontDPI returns the resolution of the font in dots per inch (DPI).
 func (l *Label) FontDPI() float64 {
-
 	return l.style.DPI
 }
 
 // SetLineSpacing sets the spacing between lines.
 func (l *Label) SetLineSpacing(spacing float64) *Label {
-
 	l.style.LineSpacing = spacing
 	l.SetText(l.text)
 	return l
@@ -213,7 +196,6 @@ func (l *Label) SetLineSpacing(spacing float64) *Label {
 
 // LineSpacing returns the spacing between lines.
 func (l *Label) LineSpacing() float64 {
-
 	return l.style.LineSpacing
 }
 
@@ -221,7 +203,6 @@ func (l *Label) LineSpacing() float64 {
 // specified line and column.
 // It is normally used by the Edit widget.
 func (l *Label) setTextCaret(msg string, mx, width int, drawCaret bool, line, col, selStart, selEnd int) {
-
 	// Set font properties
 	l.font.SetAttributes(&l.style.FontAttributes)
 	l.font.SetColor(&l.style.FgColor)

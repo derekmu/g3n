@@ -43,7 +43,6 @@ type GLParam struct {
 
 // genFile generates file from the specified template.
 func genFile(templText string, td *GLHeader, fout string, gosrc bool) error {
-
 	// Parses the template
 	tmpl := template.New("tmpl")
 	tmpl, err := tmpl.Parse(templText)
@@ -110,7 +109,6 @@ static HMODULE libgl;
 
 // open_libgl opens the OpenGL dll for Windows
 static int open_libgl(void) {
-
 	libgl = LoadLibraryA("opengl32.dll");
 	if (libgl == NULL) {
 		return -1;
@@ -120,13 +118,11 @@ static int open_libgl(void) {
 
 // close_libgl closes the OpenGL dll object for Windows
 static void close_libgl(void) {
-
 	FreeLibrary(libgl);
 }
 
 // get_proc gets the pointer for an OpenGL function for Windows
 static void* get_proc(const char *proc) {
-
 	void* res;
 	res = (void*)wglGetProcAddress(proc);
 	if (!res) {
@@ -144,7 +140,6 @@ static void* get_proc(const char *proc) {
 static void *libgl;
 
 static int open_libgl(void) {
-
 	libgl = dlopen("/System/Library/Frameworks/OpenGL.framework/OpenGL", RTLD_LAZY | RTLD_GLOBAL);
 	if (!libgl) {
 		return -1;
@@ -153,12 +148,10 @@ static int open_libgl(void) {
 }
 
 static void close_libgl(void) {
-
 	dlclose(libgl);
 }
 
 static void* get_proc(const char *proc) {
-
 	void* res;
 	*(void **)(&res) = dlsym(libgl, proc);
 	return res;
@@ -176,7 +169,6 @@ static PFNGLXGETPROCADDRESSPROC glx_get_proc_address;
 
 // open_libgl opens the OpenGL shared object for Linux/Freebsd
 static int open_libgl(void) {
-
 	libgl = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
 	if (libgl == NULL) {
 		return -1;
@@ -190,13 +182,11 @@ static int open_libgl(void) {
 
 // close_libgl closes the OpenGL shared object for Linux/Freebsd
 static void close_libgl(void) {
-
 	dlclose(libgl);
 }
 
 // get_proc gets the pointer for an OpenGL function for Linux/Freebsd
 static void* get_proc(const char *proc) {
-
 	void* res;
 	res = glx_get_proc_address((const GLubyte *)proc);
 	if (!res) {
@@ -216,7 +206,6 @@ static void load_procs();
 // glapiLoad() tries to load functions addresses from the OpenGL library
 //
 int glapiLoad(void) {
-
 	int res = open_libgl();
 	if (res != 0) {
 		return res;
@@ -231,13 +220,11 @@ int glapiLoad(void) {
 // if error checking must be done for OpenGL calls
 //
 void glapiCheckError(int check) {
-
 	checkError = check;
 }
 
 // Internal function to abort process when error
 static void panic(GLenum err, const char* fname) {
-
 		const char *msg;
 		switch(err) {
     	case GL_NO_ERROR:
@@ -284,7 +271,6 @@ static {{.Ptype}} {{.Spacer}} {{.Pname}};
 // load_procs loads all gl functions addresses into the pointers
 //
 static void load_procs() {
-
 	{{range .Funcs}}
 	{{- .Pname}} = ({{.Ptype}})get_proc("{{.Fname}}"); 
 	{{end}}
@@ -297,7 +283,6 @@ static void load_procs() {
 //
 {{range .Funcs}}
 {{.Rtype}} {{.Fname -}} ({{.CParams}}) {
-
 	{{if ne .Rtype "void"}}
 		{{- .Rtype}} res = {{.Pname}}({{.Args}});
 	{{else}}

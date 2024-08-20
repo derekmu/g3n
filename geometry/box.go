@@ -26,7 +26,6 @@ func NewBox(width, height, length float32) *Geometry {
 
 // NewSegmentedBox creates a segmented box geometry with the specified width, height, length, and number of segments in each dimension.
 func NewSegmentedBox(width, height, length float32, widthSegments, heightSegments, lengthSegments int) *Geometry {
-
 	box := NewGeometry()
 
 	// Validate arguments
@@ -42,7 +41,6 @@ func NewSegmentedBox(width, height, length float32, widthSegments, heightSegment
 
 	// Internal function to build each of the six box planes
 	buildPlane := func(u, v string, udir, vdir int, width, height, length float32, materialIndex uint) {
-
 		offset := positions.Len() / 3
 		gridX := widthSegments
 		gridY := heightSegments

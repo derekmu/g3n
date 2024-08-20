@@ -25,7 +25,6 @@ type Source struct {
 
 // Dump prints out information about the Source
 func (s *Source) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sSource id:%s name:%s\n", sIndent(indent), s.Id, s.Name)
 	ind := indent + step
 	switch at := s.ArrayElement.(type) {
@@ -48,7 +47,6 @@ type NameArray struct {
 
 // Dump prints out information about the NameArray
 func (na *NameArray) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sNameArray id:%s count:%d\n", sIndent(indent), na.Id, na.Count)
 	ind := indent + step
 	fmt.Fprintf(out, "%sData(%d):%s\n", sIndent(ind), len(na.Data), na.Data)
@@ -63,7 +61,6 @@ type FloatArray struct {
 
 // Dump prints out information about the FloatArray
 func (fa *FloatArray) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sFloatArray id:%s count:%d\n", sIndent(indent), fa.Id, fa.Count)
 	ind := indent + step
 	fmt.Fprintf(out, "%sData(%d):%s\n", sIndent(ind), len(fa.Data), f32sToString(fa.Data, 20))
@@ -79,7 +76,6 @@ type Accessor struct {
 
 // Dump prints out information about the Accessor
 func (ac *Accessor) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sAccessor source:%s count:%d stride:%d\n",
 		sIndent(indent), ac.Source, ac.Count, ac.Stride)
 	ind := indent + step
@@ -96,13 +92,11 @@ type Param struct {
 
 // Dump prints out information about the Param
 func (p *Param) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sParam name:%s type:%s\n", sIndent(indent), p.Name, p.Type)
 }
 
 // decSource decodes the source from the specified mesh
 func (d *Decoder) decSource(start xml.StartElement) (*Source, error) {
-
 	// Create source and adds it to the mesh
 	source := new(Source)
 	source.Id = findAttrib(start, "id").Value
@@ -142,7 +136,6 @@ func (d *Decoder) decSource(start xml.StartElement) (*Source, error) {
 
 // decSource decodes the float array from the specified source
 func (d *Decoder) decFloatArray(start xml.StartElement, data []byte, source *Source) error {
-
 	// Create float array and associates it to the parent source
 	farray := &FloatArray{}
 	farray.Id = findAttrib(start, "id").Value
@@ -161,7 +154,6 @@ func (d *Decoder) decFloatArray(start xml.StartElement, data []byte, source *Sou
 }
 
 func (d *Decoder) decNameArray(start xml.StartElement, data []byte, source *Source) error {
-
 	narray := new(NameArray)
 	narray.Id = findAttrib(start, "id").Value
 	narray.Count, _ = strconv.Atoi(findAttrib(start, "count").Value)
@@ -179,7 +171,6 @@ func (d *Decoder) decNameArray(start xml.StartElement, data []byte, source *Sour
 }
 
 func (d *Decoder) decSourceTechniqueCommon(start xml.StartElement, source *Source) error {
-
 	// Decodes source technique common children
 	for {
 		// Get next child
@@ -200,7 +191,6 @@ func (d *Decoder) decSourceTechniqueCommon(start xml.StartElement, source *Sourc
 
 // decAcessore decodes the acessor from the specified source
 func (d *Decoder) decAcessor(start xml.StartElement, source *Source) error {
-
 	// Sets accessor fields
 	source.TechniqueCommon.Accessor.Source = findAttrib(start, "source").Value
 	source.TechniqueCommon.Accessor.Count, _ = strconv.Atoi(findAttrib(start, "count").Value)
@@ -224,7 +214,6 @@ func (d *Decoder) decAcessor(start xml.StartElement, source *Source) error {
 }
 
 func (d *Decoder) decParam(start xml.StartElement, accessor *Accessor) error {
-
 	p := Param{}
 	p.Name = findAttrib(start, "name").Value
 	p.Type = findAttrib(start, "type").Value
@@ -233,7 +222,6 @@ func (d *Decoder) decParam(start xml.StartElement, accessor *Accessor) error {
 }
 
 func (d *Decoder) decNextChild(parent xml.StartElement) (xml.StartElement, []byte, error) {
-
 	for {
 		var tok interface{}
 		var err error
@@ -278,7 +266,6 @@ func (d *Decoder) decNextChild(parent xml.StartElement) (xml.StartElement, []byt
 }
 
 func findAttrib(s xml.StartElement, name string) xml.Attr {
-
 	for _, attr := range s.Attr {
 		if attr.Name.Local == name {
 			return attr
@@ -295,13 +282,11 @@ type bytesReader struct {
 }
 
 func (br *bytesReader) Init(source []byte) {
-
 	br.pos = 0
 	br.source = source
 }
 
 func (br *bytesReader) TokenNext() []byte {
-
 	// Skip leading separators
 	for br.pos < len(br.source) {
 		if bytes.IndexByte([]byte(tokenSep), br.source[br.pos]) < 0 {
@@ -331,7 +316,6 @@ func (br *bytesReader) TokenNext() []byte {
 const step = 3
 
 func sIndent(indent int) string {
-
 	return strings.Repeat(" ", indent)
 }
 
@@ -340,7 +324,6 @@ func sIndent(indent int) string {
 // It reads numbers from the source byte slice, converts them to float32 and
 // stores in the destination array.
 func decFloat32Sequence(cdata []byte, dest []float32) error {
-
 	var br bytesReader
 	br.Init(cdata)
 	idx := 0
@@ -370,7 +353,6 @@ func decFloat32Sequence(cdata []byte, dest []float32) error {
 // It reads strings from the source byte slice and
 // stores in the destination array.
 func decStringSequence(cdata []byte, dest []string) error {
-
 	var br bytesReader
 	br.Init(cdata)
 	idx := 0
@@ -392,7 +374,6 @@ func decStringSequence(cdata []byte, dest []string) error {
 }
 
 func f32sToString(a []float32, max int) string {
-
 	parts := []string{"["}
 	if len(a) > max {
 		for i := 0; i < max/2; i++ {
@@ -412,7 +393,6 @@ func f32sToString(a []float32, max int) string {
 }
 
 func intsToString(a []int, max int) string {
-
 	parts := []string{"["}
 	if len(a) > max {
 		for i := 0; i < max/2; i++ {

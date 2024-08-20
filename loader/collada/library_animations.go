@@ -20,7 +20,6 @@ type LibraryAnimations struct {
 
 // Dump prints out information about the LibraryAnimations
 func (la *LibraryAnimations) Dump(out io.Writer, indent int) {
-
 	if la == nil {
 		return
 	}
@@ -42,7 +41,6 @@ type Animation struct {
 
 // Dump prints out information about the Animation
 func (an *Animation) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sAnimation id:%s name:%s\n", sIndent(indent), an.Id, an.Name)
 	ind := indent + step
 	for _, source := range an.Source {
@@ -68,7 +66,6 @@ type Sampler struct {
 
 // Dump prints out information about the Sampler
 func (sp *Sampler) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sSampler id:%s\n", sIndent(indent), sp.Id)
 	ind := indent + step
 	for _, inp := range sp.Input {
@@ -84,12 +81,10 @@ type Channel struct {
 
 // Dump prints out information about the Channel
 func (ch *Channel) Dump(out io.Writer, indent int) {
-
 	fmt.Fprintf(out, "%sChannel source:%s target:%s\n", sIndent(indent), ch.Source, ch.Target)
 }
 
 func (d *Decoder) decLibraryAnimations(start xml.StartElement, dom *Collada) error {
-
 	la := new(LibraryAnimations)
 	dom.LibraryAnimations = la
 	la.Id = findAttrib(start, "id").Value
@@ -111,7 +106,6 @@ func (d *Decoder) decLibraryAnimations(start xml.StartElement, dom *Collada) err
 }
 
 func (d *Decoder) decAnimation(start xml.StartElement, la *LibraryAnimations) error {
-
 	anim := new(Animation)
 	la.Animation = append(la.Animation, anim)
 	anim.Id = findAttrib(start, "id").Value
@@ -148,7 +142,6 @@ func (d *Decoder) decAnimation(start xml.StartElement, la *LibraryAnimations) er
 }
 
 func (d *Decoder) decSampler(start xml.StartElement, anim *Animation) error {
-
 	sp := new(Sampler)
 	anim.Sampler = append(anim.Sampler, sp)
 	sp.Id = findAttrib(start, "id").Value
@@ -170,7 +163,6 @@ func (d *Decoder) decSampler(start xml.StartElement, anim *Animation) error {
 }
 
 func (d *Decoder) decChannel(start xml.StartElement, anim *Animation) error {
-
 	ch := new(Channel)
 	ch.Source = findAttrib(start, "source").Value
 	ch.Target = findAttrib(start, "target").Value

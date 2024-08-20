@@ -18,7 +18,6 @@ func NewPlane(width, height float32) *Geometry {
 // NewSegmentedPlane creates a segmented plane geometry with the specified width, height, and number of
 // segments in each dimension (minimum 1 in each). The plane is generated centered in the XY plane with Z=0.
 func NewSegmentedPlane(width, height float32, widthSegments, heightSegments int) *Geometry {
-
 	plane := NewGeometry()
 
 	widthHalf := width / 2

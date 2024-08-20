@@ -32,7 +32,6 @@ const standardVec3Count = 6
 
 // NewStandard creates and returns a pointer to a new standard material
 func NewStandard(color *math32.Color) *Standard {
-
 	ms := new(Standard)
 	ms.Init("standard", color)
 	return ms
@@ -41,7 +40,6 @@ func NewStandard(color *math32.Color) *Standard {
 // NewBlinnPhong creates and returns a pointer to a new Standard material using Blinn-Phong model
 // It is very close to Standard (Phong) model so we need only pass a parameter
 func NewBlinnPhong(color *math32.Color) *Standard {
-
 	ms := new(Standard)
 	ms.Init("standard", color)
 	ms.ShaderDefines.Set("BLINN", "true")
@@ -51,7 +49,6 @@ func NewBlinnPhong(color *math32.Color) *Standard {
 // Init initializes the material setting the specified shader and color
 // It is used mainly when the material is embedded in another type
 func (ms *Standard) Init(shader string, color *math32.Color) {
-
 	ms.Material.Init()
 	ms.SetShader(shader)
 
@@ -66,21 +63,18 @@ func (ms *Standard) Init(shader string, color *math32.Color) {
 
 // AmbientColor returns the material ambient color reflectivity.
 func (ms *Standard) AmbientColor() math32.Color {
-
 	return ms.udata.ambient
 }
 
 // SetAmbientColor sets the material ambient color reflectivity.
 // The default is the same as the diffuse color
 func (ms *Standard) SetAmbientColor(color *math32.Color) {
-
 	ms.udata.ambient = *color
 }
 
 // SetColor sets the material diffuse color and also the
 // material ambient color reflectivity
 func (ms *Standard) SetColor(color *math32.Color) {
-
 	ms.udata.diffuse = *color
 	ms.udata.ambient = *color
 }
@@ -88,39 +82,33 @@ func (ms *Standard) SetColor(color *math32.Color) {
 // SetEmissiveColor sets the material emissive color
 // The default is {0,0,0}
 func (ms *Standard) SetEmissiveColor(color *math32.Color) {
-
 	ms.udata.emissive = *color
 }
 
 // EmissiveColor returns the material current emissive color
 func (ms *Standard) EmissiveColor() math32.Color {
-
 	return ms.udata.emissive
 }
 
 // SetSpecularColor sets the material specular color reflectivity.
 // The default is {0.5, 0.5, 0.5}
 func (ms *Standard) SetSpecularColor(color *math32.Color) {
-
 	ms.udata.specular = *color
 }
 
 // SetShininess sets the specular highlight factor. Default is 30.
 func (ms *Standard) SetShininess(shininess float32) {
-
 	ms.udata.shininess = shininess
 }
 
 // SetOpacity sets the material opacity (alpha). Default is 1.0.
 func (ms *Standard) SetOpacity(opacity float32) {
-
 	ms.udata.opacity = opacity
 }
 
 // RenderSetup is called by the engine before drawing the object
 // which uses this material
 func (ms *Standard) RenderSetup(gs *gls.GLS) {
-
 	ms.Material.RenderSetup(gs)
 	location := ms.uni.Location(gs)
 	gs.Uniform3fv(location, standardVec3Count, &ms.udata.ambient.R)

@@ -82,7 +82,6 @@ const include_phong_model_source = `/***
     MatShininess
 *****/
 void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 matDiffuse, out vec3 ambdiff, out vec3 spec) {
-
     vec3 ambientTotal  = vec3(0.0);
     vec3 diffuseTotal  = vec3(0.0);
     vec3 specularTotal = vec3(0.0);
@@ -293,7 +292,6 @@ flat in mat2 Rotation;
 out vec4 FragColor;
 
 void main() {
-
     // Compute final texture color
     vec4 texMixed = vec4(1);
     #if MAT_TEXTURES > 0
@@ -358,7 +356,6 @@ out vec3 CamDir;
 out vec2 FragTexcoord;
 
 void main() {
-
     // Transform this vertex position to camera coordinates.
     Position = vec3(ModelViewMatrix * vec4(VertexPosition, 1.0));
 
@@ -592,7 +589,6 @@ float microfacetDistribution(PBRInfo pbrInputs, PBRLightInfo pbrLight)
 }
 
 vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
-
     vec3 n = getNormal();                             // normal at surface point
     vec3 v = normalize(CamDir);                       // Vector from surface point to camera
     vec3 l = normalize(lightDir);                     // Vector from surface point to light
@@ -628,7 +624,6 @@ vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
 }
 
 void main() {
-
     float perceptualRoughness = uRoughnessFactor;
     float metallic = uMetallicFactor;
 
@@ -719,7 +714,6 @@ void main() {
 
 #if SPOT_LIGHTS>0
     for (int i = 0; i < SPOT_LIGHTS; i++) {
-
         // Calculates the direction and distance from the current vertex to this spot light.
         vec3 lightDirection = SpotLightPosition(i) - vec3(Position);
         float lightDistance = length(lightDirection);
@@ -811,7 +805,6 @@ out vec3 Color;
 flat out mat2 Rotation;
 
 void main() {
-
     // Rotation matrix for fragment shader
     float rotSin = sin(MatPointRotationZ);
     float rotCos = cos(MatPointRotationZ);
@@ -848,7 +841,6 @@ out vec3 Normal;
 out vec2 FragTexcoord;
 
 void main() {
-
     // Transform vertex position to camera coordinates
     Position = ModelViewMatrix * vec4(VertexPosition, 1.0);
 
@@ -882,7 +874,6 @@ uniform mat4 MVP;
 out vec3 Color;
 
 void main() {
-
     Color = VertexColor;
     gl_Position = MVP * vec4(VertexPosition, 1.0);
 }
@@ -903,7 +894,6 @@ in vec2 FragTexcoord; // Fragment texture coordinates
 out vec4 FragColor;
 
 void main() {
-
     // Compute final texture color
     vec4 texMixed = vec4(1);
     #if MAT_TEXTURES > 0
@@ -978,7 +968,6 @@ out vec2 FragTexcoord;
 
 
 void main() {
-
     // Always flip texture coordinates
     vec2 texcoord = VertexTexcoord;
     texcoord.y = 1.0 - texcoord.y;
@@ -996,7 +985,6 @@ in vec3 Color;
 out vec4 FragColor;
 
 void main() {
-
     FragColor = vec4(Color, 1.0);
 }
 `
@@ -1040,7 +1028,6 @@ out vec4 FragColor;
 * rect[3] - height [0,1]
 */
 bool checkRect(vec4 rect) {
-
     if (FragTexcoord.x < rect[0]) {
         return false;
     }
@@ -1058,7 +1045,6 @@ bool checkRect(vec4 rect) {
 
 
 void main() {
-
     // Discard fragment outside of received bounds
     // Bounds[0] - xmin
     // Bounds[1] - ymin
@@ -1073,7 +1059,6 @@ void main() {
 
     // Check if fragment is inside content area
     if (checkRect(Content)) {
-
         // If no texture, the color will be the material color.
         vec4 color = ContentColor;
 
@@ -1128,7 +1113,6 @@ void main() {
 
 // Maps include name with its source code
 var includeMap = map[string]string{
-
 	"morphtarget_vertex2":             include_morphtarget_vertex2_source,
 	"morphtarget_vertex_declaration2": include_morphtarget_vertex_declaration2_source,
 	"morphtarget_vertex":              include_morphtarget_vertex_source,
@@ -1143,7 +1127,6 @@ var includeMap = map[string]string{
 
 // Maps shader name with its source code
 var shaderMap = map[string]string{
-
 	"point_fragment":    point_fragment_source,
 	"physical_vertex":   physical_vertex_source,
 	"physical_fragment": physical_fragment_source,
@@ -1158,7 +1141,6 @@ var shaderMap = map[string]string{
 
 // Maps program name with Proginfo struct with shaders names
 var programMap = map[string]ProgramInfo{
-
 	"basic":    {"basic_vertex", "basic_fragment", ""},
 	"panel":    {"panel_vertex", "panel_fragment", ""},
 	"physical": {"physical_vertex", "physical_fragment", ""},

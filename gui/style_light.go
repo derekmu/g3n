@@ -13,7 +13,6 @@ import (
 
 // NewLightStyle creates and returns a pointer to the a new "light" style
 func NewLightStyle() *Style {
-
 	// Fonts to use
 	const fontName = "fonts/FreeSans.ttf"
 	const iconName = "fonts/MaterialIcons-Regular.ttf"

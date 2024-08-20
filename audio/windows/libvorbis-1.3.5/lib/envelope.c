@@ -276,7 +276,6 @@ long _ve_envelope_search(vorbis_dsp_state *v){
 
       if(ve->mark[j/ve->searchstep]){
         if(j>centerW){
-
 #if 0
           if(j>ve->curmark){
             float *marker=alloca(v->pcm_current*sizeof(*marker));

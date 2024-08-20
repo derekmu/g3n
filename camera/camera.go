@@ -8,11 +8,7 @@ package camera
 import (
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/util/logger"
 )
-
-// Package logger
-var log = logger.New("CAMERA", logger.Default)
 
 // Axis represents a camera axis.
 type Axis int
@@ -59,7 +55,6 @@ func New(aspect float32) *Camera {
 
 // NewPerspective creates and returns a new perspective camera with the specified parameters.
 func NewPerspective(aspect, near, far, fov float32, axis Axis) *Camera {
-
 	c := new(Camera)
 	c.Node.Init(c)
 	c.SetDirection(0, 0, -1)
@@ -76,7 +71,6 @@ func NewPerspective(aspect, near, far, fov float32, axis Axis) *Camera {
 
 // NewOrthographic creates and returns a new orthographic camera with the specified parameters.
 func NewOrthographic(aspect, near, far, size float32, axis Axis) *Camera {
-
 	c := new(Camera)
 	c.Node.Init(c)
 	c.SetDirection(0, 0, -1)
@@ -93,13 +87,11 @@ func NewOrthographic(aspect, near, far, size float32, axis Axis) *Camera {
 
 // Aspect returns the camera aspect ratio.
 func (c *Camera) Aspect() float32 {
-
 	return c.aspect
 }
 
 // SetAspect sets the camera aspect ratio.
 func (c *Camera) SetAspect(aspect float32) {
-
 	if aspect == c.aspect {
 		return
 	}
@@ -109,13 +101,11 @@ func (c *Camera) SetAspect(aspect float32) {
 
 // Near returns the camera near plane Z coordinate.
 func (c *Camera) Near() float32 {
-
 	return c.near
 }
 
 // SetNear sets the camera near plane Z coordinate.
 func (c *Camera) SetNear(near float32) {
-
 	if near == c.near {
 		return
 	}
@@ -125,13 +115,11 @@ func (c *Camera) SetNear(near float32) {
 
 // Far returns the camera far plane Z coordinate.
 func (c *Camera) Far() float32 {
-
 	return c.far
 }
 
 // SetFar sets the camera far plane Z coordinate.
 func (c *Camera) SetFar(far float32) {
-
 	if far == c.far {
 		return
 	}
@@ -141,13 +129,11 @@ func (c *Camera) SetFar(far float32) {
 
 // Axis returns the reference axis associated with the camera size/fov.
 func (c *Camera) Axis() Axis {
-
 	return c.axis
 }
 
 // SetAxis sets the reference axis associated with the camera size/fov.
 func (c *Camera) SetAxis(axis Axis) {
-
 	if axis == c.axis {
 		return
 	}
@@ -157,13 +143,11 @@ func (c *Camera) SetAxis(axis Axis) {
 
 // Projection returns the projection method used by the camera.
 func (c *Camera) Projection() Projection {
-
 	return c.proj
 }
 
 // SetProjection sets the projection method used by the camera.
 func (c *Camera) SetProjection(proj Projection) {
-
 	if proj == c.proj {
 		return
 	}
@@ -173,13 +157,11 @@ func (c *Camera) SetProjection(proj Projection) {
 
 // Fov returns the perspective field-of-view in degrees along the reference axis.
 func (c *Camera) Fov() float32 {
-
 	return c.fov
 }
 
 // SetFov sets the perspective field-of-view in degrees along the reference axis.
 func (c *Camera) SetFov(fov float32) {
-
 	if fov == c.fov {
 		return
 	}
@@ -192,7 +174,6 @@ func (c *Camera) SetFov(fov float32) {
 // UpdateFov updates the field-of-view such that the frustum matches
 // the orthographic size at the depth specified by targetDist.
 func (c *Camera) UpdateFov(targetDist float32) {
-
 	c.fov = 2 * math32.Atan(c.size/(2*targetDist)) * 180 / math32.Pi
 	if c.proj == Perspective {
 		c.projChanged = true
@@ -201,13 +182,11 @@ func (c *Camera) UpdateFov(targetDist float32) {
 
 // Size returns the orthographic view size along the camera's reference axis.
 func (c *Camera) Size() float32 {
-
 	return c.size
 }
 
 // SetSize sets the orthographic view size along the camera's reference axis.
 func (c *Camera) SetSize(size float32) {
-
 	if size == c.size {
 		return
 	}
@@ -220,7 +199,6 @@ func (c *Camera) SetSize(size float32) {
 // UpdateSize updates the orthographic size to match the current
 // field-of-view frustum at the depth specified by targetDist.
 func (c *Camera) UpdateSize(targetDist float32) {
-
 	c.size = 2 * targetDist * math32.Tan(math32.Pi/180*c.fov/2)
 	if c.proj == Orthographic {
 		c.projChanged = true
@@ -229,7 +207,6 @@ func (c *Camera) UpdateSize(targetDist float32) {
 
 // ViewMatrix returns the view matrix of the camera.
 func (c *Camera) ViewMatrix(m *math32.Matrix4) {
-
 	c.UpdateMatrixWorld()
 	matrixWorld := c.MatrixWorld()
 	err := m.GetInverse(&matrixWorld)
@@ -240,7 +217,6 @@ func (c *Camera) ViewMatrix(m *math32.Matrix4) {
 
 // ProjMatrix returns the projection matrix of the camera.
 func (c *Camera) ProjMatrix(m *math32.Matrix4) {
-
 	if c.projChanged {
 		switch c.proj {
 		case Perspective:
@@ -278,7 +254,6 @@ func (c *Camera) ProjMatrix(m *math32.Matrix4) {
 
 // Project transforms the specified position from world coordinates to this camera projected coordinates.
 func (c *Camera) Project(v *math32.Vector3) *math32.Vector3 {
-
 	// Get camera view matrix
 	var viewMat, projMat math32.Matrix4
 	c.ViewMatrix(&viewMat)
@@ -291,7 +266,6 @@ func (c *Camera) Project(v *math32.Vector3) *math32.Vector3 {
 
 // Unproject transforms the specified position from camera projected coordinates to world coordinates.
 func (c *Camera) Unproject(v *math32.Vector3) *math32.Vector3 {
-
 	// Get inverted camera view matrix
 	invViewMat := c.MatrixWorld()
 

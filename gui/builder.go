@@ -186,7 +186,6 @@ var mapTableSortType = map[string]TableSortType{
 
 // NewBuilder creates and returns a pointer to a new gui Builder object
 func NewBuilder() *Builder {
-
 	b := new(Builder)
 	// Sets map of object type to builder function
 	b.builders = map[string]BuilderFunc{
@@ -300,7 +299,6 @@ func NewBuilder() *Builder {
 // ParseString parses a string with gui objects descriptions in YAML format
 // It there was a previously parsed description, it is cleared.
 func (b *Builder) ParseString(desc string) error {
-
 	// Parses descriptor string in YAML format saving result in
 	// a map of interface{} to interface{} as YAML allows numeric keys.
 	var mii map[interface{}]interface{}
@@ -328,7 +326,6 @@ func (b *Builder) ParseString(desc string) error {
 	// the use of Go's Printf to print the result map.
 	var visitor func(v, par interface{}) (interface{}, error)
 	visitor = func(v, par interface{}) (interface{}, error) {
-
 		switch vt := v.(type) {
 		case []interface{}:
 			ls := []interface{}{}
@@ -399,7 +396,6 @@ func (b *Builder) ParseString(desc string) error {
 // ParseFile parses a file with gui objects descriptions in YAML format
 // It there was a previously parsed description, it is cleared.
 func (b *Builder) ParseFile(filepath string) error {
-
 	// Reads all file data
 	f, err := os.Open(filepath)
 	if err != nil {
@@ -423,7 +419,6 @@ func (b *Builder) ParseFile(filepath string) error {
 // If there is only a single object with no name, its name is returned
 // as an empty string
 func (b *Builder) Names() []string {
-
 	var objs []string
 	// Single object
 	if b.am[AttribType] != nil {
@@ -444,7 +439,6 @@ func (b *Builder) Names() []string {
 // If the descriptions contains a single object with no name,
 // It should be specified the empty string to build this object.
 func (b *Builder) Build(name string) (IPanel, error) {
-
 	// Only one object
 	if name == "" {
 		return b.build(b.am, nil)
@@ -459,28 +453,24 @@ func (b *Builder) Build(name string) (IPanel, error) {
 
 // SetImagepath Sets the path for image panels relative image files
 func (b *Builder) SetImagepath(path string) {
-
 	b.imgpath = path
 }
 
 // AddBuilderPanel adds a panel builder function for the specified type name.
 // If the type name already exists it is replaced.
 func (b *Builder) AddBuilderPanel(typename string, bf BuilderFunc) {
-
 	b.builders[typename] = bf
 }
 
 // AddBuilderLayout adds a layout builder object for the specified type name.
 // If the type name already exists it is replaced.
 func (b *Builder) AddBuilderLayout(typename string, bl IBuilderLayout) {
-
 	b.layouts[typename] = bl
 }
 
 // AddAttrib adds an attribute type and its checker/converte
 // If the attribute type name already exists it is replaced.
 func (b *Builder) AddAttrib(typename string, acf AttribCheckFunc) {
-
 	b.attribs[typename] = acf
 }
 
@@ -488,7 +478,6 @@ func (b *Builder) AddAttrib(typename string, acf AttribCheckFunc) {
 // All its children are also built recursively
 // Returns the built object or an error
 func (b *Builder) build(am map[string]interface{}, iparent IPanel) (IPanel, error) {
-
 	// Get panel type
 	itype := am[AttribType]
 	if itype == nil {
@@ -516,7 +505,6 @@ func (b *Builder) build(am map[string]interface{}, iparent IPanel) (IPanel, erro
 
 // SetAttribs sets common attributes from the description to the specified panel
 func (b *Builder) SetAttribs(am map[string]interface{}, ipan IPanel) error {
-
 	panel := ipan.GetPanel()
 	// Set optional position
 	if am[AttribPosition] != nil {
@@ -596,7 +584,6 @@ func (b *Builder) SetAttribs(am map[string]interface{}, ipan IPanel) error {
 
 // setLayout sets the optional layout of the specified panel
 func (b *Builder) setLayout(am map[string]interface{}, ipan IPanel) error {
-
 	// Get layout type
 	lai := am[AttribLayout]
 	if lai == nil {
@@ -625,7 +612,6 @@ func (b *Builder) setLayout(am map[string]interface{}, ipan IPanel) error {
 
 // setLayoutParams sets the optional layout params of the specified panel and its attributes
 func (b *Builder) setLayoutParams(am map[string]interface{}, ipan IPanel) error {
-
 	// Get layout params attributes
 	lpi := am[AttribLayoutParams]
 	if lpi == nil {
@@ -665,7 +651,6 @@ func (b *Builder) setLayoutParams(am map[string]interface{}, ipan IPanel) error 
 
 // AttribCheckTableSortType checks and converts attribute table column sort type
 func AttribCheckTableSortType(b *Builder, am map[string]interface{}, fname string) error {
-
 	// If attribute not found, ignore
 	v := am[fname]
 	if v == nil {
@@ -685,7 +670,6 @@ func AttribCheckTableSortType(b *Builder, am map[string]interface{}, fname strin
 
 // AttribCheckResizeBorders checks and converts attribute with list of window resizable borders
 func AttribCheckResizeBorders(b *Builder, am map[string]interface{}, fname string) error {
-
 	// If attribute not found, ignore
 	v := am[fname]
 	if v == nil {
@@ -704,7 +688,6 @@ func AttribCheckResizeBorders(b *Builder, am map[string]interface{}, fname strin
 
 // AttribCheckEdge checks and converts attribute with name of layout edge
 func AttribCheckEdge(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -723,7 +706,6 @@ func AttribCheckEdge(b *Builder, am map[string]interface{}, fname string) error 
 
 // AttribCheckLayout checks and converts layout attribute
 func AttribCheckLayout(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -745,7 +727,6 @@ func AttribCheckLayout(b *Builder, am map[string]interface{}, fname string) erro
 
 // AttribCheckAlign checks and converts layout align* attribute
 func AttribCheckAlign(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -769,7 +750,6 @@ func AttribCheckAlign(b *Builder, am map[string]interface{}, fname string) error
 
 // AttribCheckMenuShortcut checks and converts attribute describing menu shortcut key
 func AttribCheckMenuShortcut(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -816,7 +796,6 @@ func AttribCheckMenuShortcut(b *Builder, am map[string]interface{}, fname string
 
 // AttribCheckListMap checks and converts attribute to []map[string]interface{}
 func AttribCheckListMap(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -840,7 +819,6 @@ func AttribCheckListMap(b *Builder, am map[string]interface{}, fname string) err
 
 // AttribCheckMap checks and converts attribute to map[string]interface{}
 func AttribCheckMap(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -855,7 +833,6 @@ func AttribCheckMap(b *Builder, am map[string]interface{}, fname string) error {
 
 // AttribCheckIcons checks and converts attribute with a list of icon names or codepoints
 func AttribCheckIcons(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -887,7 +864,6 @@ func AttribCheckIcons(b *Builder, am map[string]interface{}, fname string) error
 
 // AttribCheckColor checks and converts attribute with color name or color component values
 func AttribCheckColor(b *Builder, am map[string]interface{}, fname string) error {
-
 	// Checks if field is nil
 	v := am[fname]
 	if v == nil {
@@ -941,7 +917,6 @@ func AttribCheckColor(b *Builder, am map[string]interface{}, fname string) error
 
 // AttribCheckBorderSizes checks and convert attribute with border sizes
 func AttribCheckBorderSizes(b *Builder, am map[string]interface{}, fname string) error {
-
 	va, err := b.parseFloats(am, fname, 1, 4)
 	if err != nil {
 		return err
@@ -959,7 +934,6 @@ func AttribCheckBorderSizes(b *Builder, am map[string]interface{}, fname string)
 
 // AttribCheckPosition checks and convert attribute with x and y position
 func AttribCheckPosition(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -974,7 +948,6 @@ func AttribCheckPosition(b *Builder, am map[string]interface{}, fname string) er
 
 // AttribCheckStringLower checks and convert string attribute to lower case
 func AttribCheckStringLower(b *Builder, am map[string]interface{}, fname string) error {
-
 	err := AttribCheckString(b, am, fname)
 	if err != nil {
 		return err
@@ -987,7 +960,6 @@ func AttribCheckStringLower(b *Builder, am map[string]interface{}, fname string)
 
 // AttribCheckFloat checks and convert attribute to float32
 func AttribCheckFloat(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -1005,7 +977,6 @@ func AttribCheckFloat(b *Builder, am map[string]interface{}, fname string) error
 
 // AttribCheckInt checks and convert attribute to int
 func AttribCheckInt(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -1020,7 +991,6 @@ func AttribCheckInt(b *Builder, am map[string]interface{}, fname string) error {
 
 // AttribCheckString checks and convert attribute to string
 func AttribCheckString(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -1035,7 +1005,6 @@ func AttribCheckString(b *Builder, am map[string]interface{}, fname string) erro
 
 // AttribCheckBool checks and convert attribute to bool
 func AttribCheckBool(b *Builder, am map[string]interface{}, fname string) error {
-
 	v := am[fname]
 	if v == nil {
 		return nil
@@ -1050,7 +1019,6 @@ func AttribCheckBool(b *Builder, am map[string]interface{}, fname string) error 
 
 // AttribCheckInterface accepts any attribute value
 func AttribCheckInterface(b *Builder, am map[string]interface{}, fname string) error {
-
 	return nil
 }
 
@@ -1058,7 +1026,6 @@ func AttribCheckInterface(b *Builder, am map[string]interface{}, fname string) e
 // and returns a slice. The specified size is 0 any number of floats is allowed.
 // The individual values can be separated by spaces or commas
 func (b *Builder) parseFloats(am map[string]interface{}, fname string, min, max int) ([]float32, error) {
-
 	// Checks if field is empty
 	v := am[fname]
 	if v == nil {
@@ -1110,7 +1077,6 @@ func (b *Builder) parseFloats(am map[string]interface{}, fname string, min, max 
 
 // err creates and returns an error for the current object, field name and with the specified message
 func (b *Builder) err(am map[string]interface{}, fname, msg string) error {
-
 	// Get path of objects till the error
 	names := []string{}
 	var name string
@@ -1139,7 +1105,6 @@ func (b *Builder) err(am map[string]interface{}, fname, msg string) error {
 // This map cannot be printed by fmt.Printf() because it has cycles.
 // A map contains a key: _parent, which pointer to is parent map, if any.
 func (b *Builder) debugPrint(v interface{}, level int) {
-
 	switch vt := v.(type) {
 	case map[string]interface{}:
 		level += 3

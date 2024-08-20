@@ -19,7 +19,6 @@ die "Could not open $ARGV[0]: $!" unless open (F,$ARGV[0]);
 
 $goflag=0;
 while($line=<F>){
-
     print "#### $line";
     if($line=~m/^GO/){
 	$goflag=1;

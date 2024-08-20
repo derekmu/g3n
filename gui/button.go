@@ -47,7 +47,6 @@ type ButtonStyles struct {
 // NewButton creates and returns a pointer to a new button widget
 // with the specified text for the button label.
 func NewButton(text string) *Button {
-
 	b := new(Button)
 	b.styles = &StyleDefault().Button
 
@@ -79,7 +78,6 @@ func NewButton(text string) *Button {
 // SetIcon sets the button icon from the default Icon font.
 // If there is currently a selected image, it is removed
 func (b *Button) SetIcon(icode string) {
-
 	ico := NewIcon(icode)
 	if b.image != nil {
 		b.Panel.Remove(b.image)
@@ -99,7 +97,6 @@ func (b *Button) SetIcon(icode string) {
 // SetImage sets the button left image from the specified filename
 // If there is currently a selected icon, it is removed
 func (b *Button) SetImage(imgfile string) error {
-
 	img, err := NewImage(imgfile)
 	if err != nil {
 		return err
@@ -115,14 +112,12 @@ func (b *Button) SetImage(imgfile string) error {
 
 // SetStyles set the button styles overriding the default style
 func (b *Button) SetStyles(bs *ButtonStyles) {
-
 	b.styles = bs
 	b.update()
 }
 
 // onCursor process subscribed cursor events
 func (b *Button) onCursor(evname string, ev interface{}) {
-
 	switch evname {
 	case OnCursorEnter:
 		b.mouseOver = true
@@ -135,7 +130,6 @@ func (b *Button) onCursor(evname string, ev interface{}) {
 
 // onMouseEvent process subscribed mouse events
 func (b *Button) onMouse(evname string, ev interface{}) {
-
 	if !b.Enabled() {
 		return
 	}
@@ -160,7 +154,6 @@ func (b *Button) onMouse(evname string, ev interface{}) {
 
 // onKey processes subscribed key events
 func (b *Button) onKey(evname string, ev interface{}) {
-
 	kev := ev.(*window.KeyEvent)
 	if kev.Key != window.KeyEnter {
 		return
@@ -178,7 +171,6 @@ func (b *Button) onKey(evname string, ev interface{}) {
 
 // update updates the button visual state
 func (b *Button) update() {
-
 	if !b.Enabled() {
 		b.applyStyle(&b.styles.Disabled)
 		return
@@ -196,7 +188,6 @@ func (b *Button) update() {
 
 // applyStyle applies the specified button style
 func (b *Button) applyStyle(bs *ButtonStyle) {
-
 	b.Panel.ApplyStyle(&bs.PanelStyle)
 	if b.icon != nil {
 		b.icon.SetColor4(&bs.FgColor)
@@ -206,7 +197,6 @@ func (b *Button) applyStyle(bs *ButtonStyle) {
 
 // recalc recalculates all dimensions and position from inside out
 func (b *Button) recalc() {
-
 	// Current width and height of button content area
 	width := b.Panel.ContentWidth()
 	height := b.Panel.ContentHeight()

@@ -21,7 +21,6 @@ type Points struct {
 // NewPoints creates and returns a graphic points object with the specified
 // geometry and material.
 func NewPoints(igeom geometry.IGeometry, imat material.IMaterial) *Points {
-
 	p := new(Points)
 	p.Graphic.Init(p, igeom, gls.POINTS)
 	if imat != nil {
@@ -34,7 +33,6 @@ func NewPoints(igeom geometry.IGeometry, imat material.IMaterial) *Points {
 
 // RenderSetup is called by the engine before rendering this graphic.
 func (p *Points) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-
 	// Transfer model view projection matrix uniform
 	mvpm := p.ModelViewProjectionMatrix()
 	location := p.uniMVPm.Location(gs)

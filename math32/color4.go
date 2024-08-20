@@ -21,7 +21,6 @@ type Color4 struct {
 // and an optional alpha channel value.
 // Returns nil if the specified color name not found
 func NewColor4(name string, alpha ...float32) *Color4 {
-
 	c, ok := mapColorNames[strings.ToLower(name)]
 	if !ok {
 		return nil
@@ -36,7 +35,6 @@ func NewColor4(name string, alpha ...float32) *Color4 {
 // Color4Name returns a Color4 with the specified standard web color name
 // and an optional alpha channel value.
 func Color4Name(name string, alpha ...float32) Color4 {
-
 	c := mapColorNames[strings.ToLower(name)]
 	a := float32(1)
 	if len(alpha) > 0 {
@@ -48,7 +46,6 @@ func Color4Name(name string, alpha ...float32) Color4 {
 // Set sets this color individual R,G,B,A components
 // Returns pointer to this updated color
 func (c *Color4) Set(r, g, b, a float32) *Color4 {
-
 	c.R = r
 	c.G = g
 	c.B = b
@@ -61,7 +58,6 @@ func (c *Color4) Set(r, g, b, a float32) *Color4 {
 // Alpha component is not modified
 // Returns pointer to this updated color
 func (c *Color4) SetHex(value uint) *Color4 {
-
 	c.R = float32((value >> 16 & 255)) / 255
 	c.G = float32((value >> 8 & 255)) / 255
 	c.B = float32((value & 255)) / 255
@@ -72,7 +68,6 @@ func (c *Color4) SetHex(value uint) *Color4 {
 // specified standard web color name
 // Returns pointer to this updated color
 func (c *Color4) SetName(name string) *Color4 {
-
 	*c = Color4Name(name, 1)
 	return c
 }
@@ -80,7 +75,6 @@ func (c *Color4) SetName(name string) *Color4 {
 // Add adds to each RGBA component of this color the correspondent component of other color
 // Returns pointer to this updated color
 func (c *Color4) Add(other *Color4) *Color4 {
-
 	c.R += other.R
 	c.G += other.G
 	c.B += other.B
@@ -91,7 +85,6 @@ func (c *Color4) Add(other *Color4) *Color4 {
 // MultiplyScalar multiplies each RGBA component of this color by the specified scalar.
 // Returns pointer to this updated color
 func (c *Color4) MultiplyScalar(v float32) *Color4 {
-
 	c.R *= v
 	c.G *= v
 	c.B *= v
@@ -101,7 +94,6 @@ func (c *Color4) MultiplyScalar(v float32) *Color4 {
 
 // FromColor sets this Color4 fields from Color and an alpha
 func (c *Color4) FromColor(other *Color, alpha float32) {
-
 	c.R = other.R
 	c.G = other.G
 	c.B = other.B
@@ -110,6 +102,5 @@ func (c *Color4) FromColor(other *Color, alpha float32) {
 
 // ToColor returns a Color with this Color4 RGB components
 func (c *Color4) ToColor() Color {
-
 	return Color{c.R, c.G, c.B}
 }

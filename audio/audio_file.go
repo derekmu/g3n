@@ -43,7 +43,6 @@ type AudioFile struct {
 
 // NewAudioFile creates and returns a pointer to a new audio file object and an error
 func NewAudioFile(filename string) (*AudioFile, error) {
-
 	// Checks if file exists
 	_, err := os.Stat(filename)
 	if err != nil {
@@ -67,7 +66,6 @@ func NewAudioFile(filename string) (*AudioFile, error) {
 
 // Close closes the audiofile
 func (af *AudioFile) Close() error {
-
 	if af.wavef != nil {
 		return af.wavef.Close()
 	}
@@ -76,7 +74,6 @@ func (af *AudioFile) Close() error {
 
 // Read reads decoded data from the audio file
 func (af *AudioFile) Read(pdata unsafe.Pointer, nbytes int) (int, error) {
-
 	// Slice to access buffer
 	bs := (*[1 << 30]byte)(pdata)[0:nbytes:nbytes]
 
@@ -134,7 +131,6 @@ func (af *AudioFile) Read(pdata unsafe.Pointer, nbytes int) (int, error) {
 
 // Seek sets the file reading position relative to the origin
 func (af *AudioFile) Seek(pos uint) error {
-
 	if af.wavef != nil {
 		_, err := af.wavef.Seek(int64(waveHeaderSize+pos), 0)
 		return err
@@ -144,13 +140,11 @@ func (af *AudioFile) Seek(pos uint) error {
 
 // Info returns the audio info structure for this audio file
 func (af *AudioFile) Info() AudioInfo {
-
 	return af.info
 }
 
 // CurrentTime returns the current time in seconds for the current file read position
 func (af *AudioFile) CurrentTime() float64 {
-
 	if af.vorbisf != nil {
 		pos, _ := ov.TimeTell(af.vorbisf)
 		return pos
@@ -164,20 +158,17 @@ func (af *AudioFile) CurrentTime() float64 {
 
 // Looping returns the current looping state of this audio file
 func (af *AudioFile) Looping() bool {
-
 	return af.looping
 }
 
 // SetLooping sets the looping state of this audio file
 func (af *AudioFile) SetLooping(looping bool) {
-
 	af.looping = looping
 }
 
 // openWave tries to open the specified file as a wave file
 // and if succesfull, sets the file pointer positioned after the header.
 func (af *AudioFile) openWave(filename string) error {
-
 	// Open file
 	osf, err := os.Open(filename)
 	if err != nil {
@@ -255,7 +246,6 @@ func (af *AudioFile) openWave(filename string) error {
 // openVorbis tries to open the specified file as an ogg vorbis file
 // and if succesfull, sets up the player for playing this file
 func (af *AudioFile) openVorbis(filename string) error {
-
 	// Try to open file as ogg vorbis
 	vf, err := ov.Fopen(filename)
 	if err != nil {

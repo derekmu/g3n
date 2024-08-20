@@ -31,7 +31,6 @@ type Application struct {
 
 // App returns the Application singleton, creating it the first time.
 func App(width, height int, title string) *Application {
-
 	// Return singleton if already created
 	if a != nil {
 		return a
@@ -57,7 +56,6 @@ func App(width, height int, title string) *Application {
 // Run starts the update loop.
 // It calls the user-provided update function every frame.
 func (a *Application) Run(update func(rend *renderer.Renderer, deltaTime time.Duration)) {
-
 	// Create channel so later we can prevent application from finishing while we wait for callbacks
 	done := make(chan bool)
 
@@ -98,24 +96,20 @@ func (a *Application) Run(update func(rend *renderer.Renderer, deltaTime time.Du
 
 // Exit exits the app.
 func (a *Application) Exit() {
-
 	a.exit = true
 }
 
 // Renderer returns the application's renderer.
 func (a *Application) Renderer() *renderer.Renderer {
-
 	return a.renderer
 }
 
 // KeyState returns the application's KeyState.
 func (a *Application) KeyState() *window.KeyState {
-
 	return a.keyState
 }
 
 // RunTime returns the elapsed duration since the call to Run().
 func (a *Application) RunTime() time.Duration {
-
 	return time.Now().Sub(a.startTime)
 }

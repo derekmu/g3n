@@ -9,26 +9,22 @@ type ShaderDefines map[string]string
 
 // NewShaderDefines creates and returns a pointer to a ShaderDefines object.
 func NewShaderDefines() *ShaderDefines {
-
 	sd := ShaderDefines(make(map[string]string))
 	return &sd
 }
 
 // Set sets a shader define with the specified value.
 func (sd *ShaderDefines) Set(name, value string) {
-
 	(*sd)[name] = value
 }
 
 // Unset removes the specified name from the shader defines.
 func (sd *ShaderDefines) Unset(name string) {
-
 	delete(*sd, name)
 }
 
 // Add adds to this ShaderDefines all the key-value pairs in the specified ShaderDefines.
 func (sd *ShaderDefines) Add(other *ShaderDefines) {
-
 	for k, v := range map[string]string(*other) {
 		(*sd)[k] = v
 	}
@@ -36,7 +32,6 @@ func (sd *ShaderDefines) Add(other *ShaderDefines) {
 
 // Equals compares two ShaderDefines and return true if they contain the same key-value pairs.
 func (sd *ShaderDefines) Equals(other *ShaderDefines) bool {
-
 	if sd == nil && other == nil {
 		return true
 	}

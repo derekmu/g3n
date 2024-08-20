@@ -8,7 +8,6 @@ import (
 )
 
 func (g *GLTF) loadMaterialPBR(m *Material) (material.IMaterial, error) {
-
 	// Get pbr information
 	pbr := m.PbrMetallicRoughness
 	if pbr == nil {

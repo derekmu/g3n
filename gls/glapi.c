@@ -25,7 +25,6 @@ static HMODULE libgl;
 
 // open_libgl opens the OpenGL dll for Windows
 static int open_libgl(void) {
-
 	libgl = LoadLibraryA("opengl32.dll");
 	if (libgl == NULL) {
 		return -1;
@@ -35,13 +34,11 @@ static int open_libgl(void) {
 
 // close_libgl closes the OpenGL dll object for Windows
 static void close_libgl(void) {
-
 	FreeLibrary(libgl);
 }
 
 // get_proc gets the pointer for an OpenGL function for Windows
 static void* get_proc(const char *proc) {
-
 	void* res;
 	res = (void*)wglGetProcAddress(proc);
 	if (!res) {
@@ -59,7 +56,6 @@ static void* get_proc(const char *proc) {
 static void *libgl;
 
 static int open_libgl(void) {
-
 	libgl = dlopen("/System/Library/Frameworks/OpenGL.framework/OpenGL", RTLD_LAZY | RTLD_GLOBAL);
 	if (!libgl) {
 		return -1;
@@ -68,12 +64,10 @@ static int open_libgl(void) {
 }
 
 static void close_libgl(void) {
-
 	dlclose(libgl);
 }
 
 static void* get_proc(const char *proc) {
-
 	void* res;
 	*(void **)(&res) = dlsym(libgl, proc);
 	return res;
@@ -91,7 +85,6 @@ static PFNGLXGETPROCADDRESSPROC glx_get_proc_address;
 
 // open_libgl opens the OpenGL shared object for Linux/Freebsd
 static int open_libgl(void) {
-
 	libgl = dlopen("libGL.so.1", RTLD_LAZY | RTLD_GLOBAL);
 	if (libgl == NULL) {
 		return -1;
@@ -105,13 +98,11 @@ static int open_libgl(void) {
 
 // close_libgl closes the OpenGL shared object for Linux/Freebsd
 static void close_libgl(void) {
-
 	dlclose(libgl);
 }
 
 // get_proc gets the pointer for an OpenGL function for Linux/Freebsd
 static void* get_proc(const char *proc) {
-
 	void* res;
 	res = glx_get_proc_address((const GLubyte *)proc);
 	if (!res) {
@@ -131,7 +122,6 @@ static void load_procs();
 // glapiLoad() tries to load functions addresses from the OpenGL library
 //
 int glapiLoad(void) {
-
 	int res = open_libgl();
 	if (res != 0) {
 		return res;
@@ -146,13 +136,11 @@ int glapiLoad(void) {
 // if error checking must be done for OpenGL calls
 //
 void glapiCheckError(int check) {
-
 	checkError = check;
 }
 
 // Internal function to abort process when error
 static void panic(GLenum err, const char* fname) {
-
 		const char *msg;
 		switch(err) {
     	case GL_NO_ERROR:
@@ -541,8 +529,7 @@ static PFNGLVERTEXATTRIBP4UIVPROC                     pglVertexAttribP4uiv;
 // load_procs loads all gl functions addresses into the pointers
 //
 static void load_procs() {
-
-	pglCullFace = (PFNGLCULLFACEPROC)get_proc("glCullFace"); 
+	pglCullFace = (PFNGLCULLFACEPROC)get_proc("glCullFace");
 	pglFrontFace = (PFNGLFRONTFACEPROC)get_proc("glFrontFace"); 
 	pglHint = (PFNGLHINTPROC)get_proc("glHint"); 
 	pglLineWidth = (PFNGLLINEWIDTHPROC)get_proc("glLineWidth"); 
@@ -897,7 +884,6 @@ static void load_procs() {
 //
 
 void glCullFace(GLenum mode) {
-
 	pglCullFace(mode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -908,7 +894,6 @@ void glCullFace(GLenum mode) {
 }
 
 void glFrontFace(GLenum mode) {
-
 	pglFrontFace(mode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -919,7 +904,6 @@ void glFrontFace(GLenum mode) {
 }
 
 void glHint(GLenum target, GLenum mode) {
-
 	pglHint(target, mode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -930,7 +914,6 @@ void glHint(GLenum target, GLenum mode) {
 }
 
 void glLineWidth(GLfloat width) {
-
 	pglLineWidth(width);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -941,7 +924,6 @@ void glLineWidth(GLfloat width) {
 }
 
 void glPointSize(GLfloat size) {
-
 	pglPointSize(size);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -952,7 +934,6 @@ void glPointSize(GLfloat size) {
 }
 
 void glPolygonMode(GLenum face, GLenum mode) {
-
 	pglPolygonMode(face, mode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -963,7 +944,6 @@ void glPolygonMode(GLenum face, GLenum mode) {
 }
 
 void glScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
-
 	pglScissor(x, y, width, height);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -974,7 +954,6 @@ void glScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
 }
 
 void glTexParameterf(GLenum target, GLenum pname, GLfloat param) {
-
 	pglTexParameterf(target, pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -985,7 +964,6 @@ void glTexParameterf(GLenum target, GLenum pname, GLfloat param) {
 }
 
 void glTexParameterfv(GLenum target, GLenum pname, const GLfloat *params) {
-
 	pglTexParameterfv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -996,7 +974,6 @@ void glTexParameterfv(GLenum target, GLenum pname, const GLfloat *params) {
 }
 
 void glTexParameteri(GLenum target, GLenum pname, GLint param) {
-
 	pglTexParameteri(target, pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1007,7 +984,6 @@ void glTexParameteri(GLenum target, GLenum pname, GLint param) {
 }
 
 void glTexParameteriv(GLenum target, GLenum pname, const GLint *params) {
-
 	pglTexParameteriv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1018,7 +994,6 @@ void glTexParameteriv(GLenum target, GLenum pname, const GLint *params) {
 }
 
 void glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const void *pixels) {
-
 	pglTexImage1D(target, level, internalformat, width, border, format, type, pixels);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1029,7 +1004,6 @@ void glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei widt
 }
 
 void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels) {
-
 	pglTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1040,7 +1014,6 @@ void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei widt
 }
 
 void glDrawBuffer(GLenum buf) {
-
 	pglDrawBuffer(buf);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1051,7 +1024,6 @@ void glDrawBuffer(GLenum buf) {
 }
 
 void glClear(GLbitfield mask) {
-
 	pglClear(mask);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1062,7 +1034,6 @@ void glClear(GLbitfield mask) {
 }
 
 void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-
 	pglClearColor(red, green, blue, alpha);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1073,7 +1044,6 @@ void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
 }
 
 void glClearStencil(GLint s) {
-
 	pglClearStencil(s);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1084,7 +1054,6 @@ void glClearStencil(GLint s) {
 }
 
 void glClearDepth(GLdouble depth) {
-
 	pglClearDepth(depth);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1095,7 +1064,6 @@ void glClearDepth(GLdouble depth) {
 }
 
 void glStencilMask(GLuint mask) {
-
 	pglStencilMask(mask);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1106,7 +1074,6 @@ void glStencilMask(GLuint mask) {
 }
 
 void glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha) {
-
 	pglColorMask(red, green, blue, alpha);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1117,7 +1084,6 @@ void glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha
 }
 
 void glDepthMask(GLboolean flag) {
-
 	pglDepthMask(flag);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1128,7 +1094,6 @@ void glDepthMask(GLboolean flag) {
 }
 
 void glDisable(GLenum cap) {
-
 	pglDisable(cap);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1139,7 +1104,6 @@ void glDisable(GLenum cap) {
 }
 
 void glEnable(GLenum cap) {
-
 	pglEnable(cap);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1150,7 +1114,6 @@ void glEnable(GLenum cap) {
 }
 
 void glFinish(void) {
-
 	pglFinish();
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1161,7 +1124,6 @@ void glFinish(void) {
 }
 
 void glFlush(void) {
-
 	pglFlush();
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1172,7 +1134,6 @@ void glFlush(void) {
 }
 
 void glBlendFunc(GLenum sfactor, GLenum dfactor) {
-
 	pglBlendFunc(sfactor, dfactor);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1183,7 +1144,6 @@ void glBlendFunc(GLenum sfactor, GLenum dfactor) {
 }
 
 void glLogicOp(GLenum opcode) {
-
 	pglLogicOp(opcode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1194,7 +1154,6 @@ void glLogicOp(GLenum opcode) {
 }
 
 void glStencilFunc(GLenum func, GLint ref, GLuint mask) {
-
 	pglStencilFunc(func, ref, mask);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1205,7 +1164,6 @@ void glStencilFunc(GLenum func, GLint ref, GLuint mask) {
 }
 
 void glStencilOp(GLenum fail, GLenum zfail, GLenum zpass) {
-
 	pglStencilOp(fail, zfail, zpass);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1216,7 +1174,6 @@ void glStencilOp(GLenum fail, GLenum zfail, GLenum zpass) {
 }
 
 void glDepthFunc(GLenum func) {
-
 	pglDepthFunc(func);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1227,7 +1184,6 @@ void glDepthFunc(GLenum func) {
 }
 
 void glPixelStoref(GLenum pname, GLfloat param) {
-
 	pglPixelStoref(pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1238,7 +1194,6 @@ void glPixelStoref(GLenum pname, GLfloat param) {
 }
 
 void glPixelStorei(GLenum pname, GLint param) {
-
 	pglPixelStorei(pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1249,7 +1204,6 @@ void glPixelStorei(GLenum pname, GLint param) {
 }
 
 void glReadBuffer(GLenum src) {
-
 	pglReadBuffer(src);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1260,7 +1214,6 @@ void glReadBuffer(GLenum src) {
 }
 
 void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void *pixels) {
-
 	pglReadPixels(x, y, width, height, format, type, pixels);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1271,7 +1224,6 @@ void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format
 }
 
 void glGetBooleanv(GLenum pname, GLboolean *data) {
-
 	pglGetBooleanv(pname, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1282,7 +1234,6 @@ void glGetBooleanv(GLenum pname, GLboolean *data) {
 }
 
 void glGetDoublev(GLenum pname, GLdouble *data) {
-
 	pglGetDoublev(pname, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1293,7 +1244,6 @@ void glGetDoublev(GLenum pname, GLdouble *data) {
 }
 
 GLenum glGetError(void) {
-
 	GLenum res = pglGetError();
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1305,7 +1255,6 @@ GLenum glGetError(void) {
 }
 
 void glGetFloatv(GLenum pname, GLfloat *data) {
-
 	pglGetFloatv(pname, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1316,7 +1265,6 @@ void glGetFloatv(GLenum pname, GLfloat *data) {
 }
 
 void glGetIntegerv(GLenum pname, GLint *data) {
-
 	pglGetIntegerv(pname, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1327,7 +1275,6 @@ void glGetIntegerv(GLenum pname, GLint *data) {
 }
 
 const GLubyte * glGetString(GLenum name) {
-
 	const GLubyte * res = pglGetString(name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1339,7 +1286,6 @@ const GLubyte * glGetString(GLenum name) {
 }
 
 void glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, void *pixels) {
-
 	pglGetTexImage(target, level, format, type, pixels);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1350,7 +1296,6 @@ void glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, void 
 }
 
 void glGetTexParameterfv(GLenum target, GLenum pname, GLfloat *params) {
-
 	pglGetTexParameterfv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1361,7 +1306,6 @@ void glGetTexParameterfv(GLenum target, GLenum pname, GLfloat *params) {
 }
 
 void glGetTexParameteriv(GLenum target, GLenum pname, GLint *params) {
-
 	pglGetTexParameteriv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1372,7 +1316,6 @@ void glGetTexParameteriv(GLenum target, GLenum pname, GLint *params) {
 }
 
 void glGetTexLevelParameterfv(GLenum target, GLint level, GLenum pname, GLfloat *params) {
-
 	pglGetTexLevelParameterfv(target, level, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1383,7 +1326,6 @@ void glGetTexLevelParameterfv(GLenum target, GLint level, GLenum pname, GLfloat 
 }
 
 void glGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint *params) {
-
 	pglGetTexLevelParameteriv(target, level, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1394,7 +1336,6 @@ void glGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint *p
 }
 
 GLboolean glIsEnabled(GLenum cap) {
-
 	GLboolean res = pglIsEnabled(cap);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1406,7 +1347,6 @@ GLboolean glIsEnabled(GLenum cap) {
 }
 
 void glDepthRange(GLdouble near, GLdouble far) {
-
 	pglDepthRange(near, far);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1417,7 +1357,6 @@ void glDepthRange(GLdouble near, GLdouble far) {
 }
 
 void glViewport(GLint x, GLint y, GLsizei width, GLsizei height) {
-
 	pglViewport(x, y, width, height);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1428,7 +1367,6 @@ void glViewport(GLint x, GLint y, GLsizei width, GLsizei height) {
 }
 
 void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
-
 	pglDrawArrays(mode, first, count);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1439,7 +1377,6 @@ void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
 }
 
 void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void *indices) {
-
 	pglDrawElements(mode, count, type, indices);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1450,7 +1387,6 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void *indices
 }
 
 void glGetPointerv(GLenum pname, void **params) {
-
 	pglGetPointerv(pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1461,7 +1397,6 @@ void glGetPointerv(GLenum pname, void **params) {
 }
 
 void glPolygonOffset(GLfloat factor, GLfloat units) {
-
 	pglPolygonOffset(factor, units);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1472,7 +1407,6 @@ void glPolygonOffset(GLfloat factor, GLfloat units) {
 }
 
 void glCopyTexImage1D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLint border) {
-
 	pglCopyTexImage1D(target, level, internalformat, x, y, width, border);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1483,7 +1417,6 @@ void glCopyTexImage1D(GLenum target, GLint level, GLenum internalformat, GLint x
 }
 
 void glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border) {
-
 	pglCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1494,7 +1427,6 @@ void glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x
 }
 
 void glCopyTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width) {
-
 	pglCopyTexSubImage1D(target, level, xoffset, x, y, width);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1505,7 +1437,6 @@ void glCopyTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLint x, GLi
 }
 
 void glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
-
 	pglCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1516,7 +1447,6 @@ void glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffse
 }
 
 void glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void *pixels) {
-
 	pglTexSubImage1D(target, level, xoffset, width, format, type, pixels);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1527,7 +1457,6 @@ void glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, G
 }
 
 void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pixels) {
-
 	pglTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1538,7 +1467,6 @@ void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, G
 }
 
 void glBindTexture(GLenum target, GLuint texture) {
-
 	pglBindTexture(target, texture);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1549,7 +1477,6 @@ void glBindTexture(GLenum target, GLuint texture) {
 }
 
 void glDeleteTextures(GLsizei n, const GLuint *textures) {
-
 	pglDeleteTextures(n, textures);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1560,7 +1487,6 @@ void glDeleteTextures(GLsizei n, const GLuint *textures) {
 }
 
 void glGenTextures(GLsizei n, GLuint *textures) {
-
 	pglGenTextures(n, textures);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1571,7 +1497,6 @@ void glGenTextures(GLsizei n, GLuint *textures) {
 }
 
 GLboolean glIsTexture(GLuint texture) {
-
 	GLboolean res = pglIsTexture(texture);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1583,7 +1508,6 @@ GLboolean glIsTexture(GLuint texture) {
 }
 
 void glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void *indices) {
-
 	pglDrawRangeElements(mode, start, end, count, type, indices);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1594,7 +1518,6 @@ void glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, G
 }
 
 void glTexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void *pixels) {
-
 	pglTexImage3D(target, level, internalformat, width, height, depth, border, format, type, pixels);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1605,7 +1528,6 @@ void glTexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei widt
 }
 
 void glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels) {
-
 	pglTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1616,7 +1538,6 @@ void glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, G
 }
 
 void glCopyTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height) {
-
 	pglCopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y, width, height);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1627,7 +1548,6 @@ void glCopyTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffse
 }
 
 void glActiveTexture(GLenum texture) {
-
 	pglActiveTexture(texture);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1638,7 +1558,6 @@ void glActiveTexture(GLenum texture) {
 }
 
 void glSampleCoverage(GLfloat value, GLboolean invert) {
-
 	pglSampleCoverage(value, invert);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1649,7 +1568,6 @@ void glSampleCoverage(GLfloat value, GLboolean invert) {
 }
 
 void glCompressedTexImage3D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const void *data) {
-
 	pglCompressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1660,7 +1578,6 @@ void glCompressedTexImage3D(GLenum target, GLint level, GLenum internalformat, G
 }
 
 void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const void *data) {
-
 	pglCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1671,7 +1588,6 @@ void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, G
 }
 
 void glCompressedTexImage1D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLsizei imageSize, const void *data) {
-
 	pglCompressedTexImage1D(target, level, internalformat, width, border, imageSize, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1682,7 +1598,6 @@ void glCompressedTexImage1D(GLenum target, GLint level, GLenum internalformat, G
 }
 
 void glCompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const void *data) {
-
 	pglCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1693,7 +1608,6 @@ void glCompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint 
 }
 
 void glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void *data) {
-
 	pglCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1704,7 +1618,6 @@ void glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint 
 }
 
 void glCompressedTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, const void *data) {
-
 	pglCompressedTexSubImage1D(target, level, xoffset, width, format, imageSize, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1715,7 +1628,6 @@ void glCompressedTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsize
 }
 
 void glGetCompressedTexImage(GLenum target, GLint level, void *img) {
-
 	pglGetCompressedTexImage(target, level, img);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1726,7 +1638,6 @@ void glGetCompressedTexImage(GLenum target, GLint level, void *img) {
 }
 
 void glBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha) {
-
 	pglBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1737,7 +1648,6 @@ void glBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlp
 }
 
 void glMultiDrawArrays(GLenum mode, const GLint *first, const GLsizei *count, GLsizei drawcount) {
-
 	pglMultiDrawArrays(mode, first, count, drawcount);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1748,7 +1658,6 @@ void glMultiDrawArrays(GLenum mode, const GLint *first, const GLsizei *count, GL
 }
 
 void glMultiDrawElements(GLenum mode, const GLsizei *count, GLenum type, const void *const*indices, GLsizei drawcount) {
-
 	pglMultiDrawElements(mode, count, type, indices, drawcount);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1759,7 +1668,6 @@ void glMultiDrawElements(GLenum mode, const GLsizei *count, GLenum type, const v
 }
 
 void glPointParameterf(GLenum pname, GLfloat param) {
-
 	pglPointParameterf(pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1770,7 +1678,6 @@ void glPointParameterf(GLenum pname, GLfloat param) {
 }
 
 void glPointParameterfv(GLenum pname, const GLfloat *params) {
-
 	pglPointParameterfv(pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1781,7 +1688,6 @@ void glPointParameterfv(GLenum pname, const GLfloat *params) {
 }
 
 void glPointParameteri(GLenum pname, GLint param) {
-
 	pglPointParameteri(pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1792,7 +1698,6 @@ void glPointParameteri(GLenum pname, GLint param) {
 }
 
 void glPointParameteriv(GLenum pname, const GLint *params) {
-
 	pglPointParameteriv(pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1803,7 +1708,6 @@ void glPointParameteriv(GLenum pname, const GLint *params) {
 }
 
 void glBlendColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-
 	pglBlendColor(red, green, blue, alpha);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1814,7 +1718,6 @@ void glBlendColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
 }
 
 void glBlendEquation(GLenum mode) {
-
 	pglBlendEquation(mode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1825,7 +1728,6 @@ void glBlendEquation(GLenum mode) {
 }
 
 void glGenQueries(GLsizei n, GLuint *ids) {
-
 	pglGenQueries(n, ids);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1836,7 +1738,6 @@ void glGenQueries(GLsizei n, GLuint *ids) {
 }
 
 void glDeleteQueries(GLsizei n, const GLuint *ids) {
-
 	pglDeleteQueries(n, ids);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1847,7 +1748,6 @@ void glDeleteQueries(GLsizei n, const GLuint *ids) {
 }
 
 GLboolean glIsQuery(GLuint id) {
-
 	GLboolean res = pglIsQuery(id);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1859,7 +1759,6 @@ GLboolean glIsQuery(GLuint id) {
 }
 
 void glBeginQuery(GLenum target, GLuint id) {
-
 	pglBeginQuery(target, id);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1870,7 +1769,6 @@ void glBeginQuery(GLenum target, GLuint id) {
 }
 
 void glEndQuery(GLenum target) {
-
 	pglEndQuery(target);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1881,7 +1779,6 @@ void glEndQuery(GLenum target) {
 }
 
 void glGetQueryiv(GLenum target, GLenum pname, GLint *params) {
-
 	pglGetQueryiv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1892,7 +1789,6 @@ void glGetQueryiv(GLenum target, GLenum pname, GLint *params) {
 }
 
 void glGetQueryObjectiv(GLuint id, GLenum pname, GLint *params) {
-
 	pglGetQueryObjectiv(id, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1903,7 +1799,6 @@ void glGetQueryObjectiv(GLuint id, GLenum pname, GLint *params) {
 }
 
 void glGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params) {
-
 	pglGetQueryObjectuiv(id, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1914,7 +1809,6 @@ void glGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params) {
 }
 
 void glBindBuffer(GLenum target, GLuint buffer) {
-
 	pglBindBuffer(target, buffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1925,7 +1819,6 @@ void glBindBuffer(GLenum target, GLuint buffer) {
 }
 
 void glDeleteBuffers(GLsizei n, const GLuint *buffers) {
-
 	pglDeleteBuffers(n, buffers);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1936,7 +1829,6 @@ void glDeleteBuffers(GLsizei n, const GLuint *buffers) {
 }
 
 void glGenBuffers(GLsizei n, GLuint *buffers) {
-
 	pglGenBuffers(n, buffers);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1947,7 +1839,6 @@ void glGenBuffers(GLsizei n, GLuint *buffers) {
 }
 
 GLboolean glIsBuffer(GLuint buffer) {
-
 	GLboolean res = pglIsBuffer(buffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1959,7 +1850,6 @@ GLboolean glIsBuffer(GLuint buffer) {
 }
 
 void glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage) {
-
 	pglBufferData(target, size, data, usage);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1970,7 +1860,6 @@ void glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage
 }
 
 void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void *data) {
-
 	pglBufferSubData(target, offset, size, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1981,7 +1870,6 @@ void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void
 }
 
 void glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data) {
-
 	pglGetBufferSubData(target, offset, size, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -1992,7 +1880,6 @@ void glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *d
 }
 
 void * glMapBuffer(GLenum target, GLenum access) {
-
 	void * res = pglMapBuffer(target, access);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2004,7 +1891,6 @@ void * glMapBuffer(GLenum target, GLenum access) {
 }
 
 GLboolean glUnmapBuffer(GLenum target) {
-
 	GLboolean res = pglUnmapBuffer(target);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2016,7 +1902,6 @@ GLboolean glUnmapBuffer(GLenum target) {
 }
 
 void glGetBufferParameteriv(GLenum target, GLenum pname, GLint *params) {
-
 	pglGetBufferParameteriv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2027,7 +1912,6 @@ void glGetBufferParameteriv(GLenum target, GLenum pname, GLint *params) {
 }
 
 void glGetBufferPointerv(GLenum target, GLenum pname, void **params) {
-
 	pglGetBufferPointerv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2038,7 +1922,6 @@ void glGetBufferPointerv(GLenum target, GLenum pname, void **params) {
 }
 
 void glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha) {
-
 	pglBlendEquationSeparate(modeRGB, modeAlpha);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2049,7 +1932,6 @@ void glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha) {
 }
 
 void glDrawBuffers(GLsizei n, const GLenum *bufs) {
-
 	pglDrawBuffers(n, bufs);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2060,7 +1942,6 @@ void glDrawBuffers(GLsizei n, const GLenum *bufs) {
 }
 
 void glStencilOpSeparate(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass) {
-
 	pglStencilOpSeparate(face, sfail, dpfail, dppass);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2071,7 +1952,6 @@ void glStencilOpSeparate(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass
 }
 
 void glStencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask) {
-
 	pglStencilFuncSeparate(face, func, ref, mask);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2082,7 +1962,6 @@ void glStencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask) {
 }
 
 void glStencilMaskSeparate(GLenum face, GLuint mask) {
-
 	pglStencilMaskSeparate(face, mask);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2093,7 +1972,6 @@ void glStencilMaskSeparate(GLenum face, GLuint mask) {
 }
 
 void glAttachShader(GLuint program, GLuint shader) {
-
 	pglAttachShader(program, shader);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2104,7 +1982,6 @@ void glAttachShader(GLuint program, GLuint shader) {
 }
 
 void glBindAttribLocation(GLuint program, GLuint index, const GLchar *name) {
-
 	pglBindAttribLocation(program, index, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2115,7 +1992,6 @@ void glBindAttribLocation(GLuint program, GLuint index, const GLchar *name) {
 }
 
 void glCompileShader(GLuint shader) {
-
 	pglCompileShader(shader);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2126,7 +2002,6 @@ void glCompileShader(GLuint shader) {
 }
 
 GLuint glCreateProgram(void) {
-
 	GLuint res = pglCreateProgram();
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2138,7 +2013,6 @@ GLuint glCreateProgram(void) {
 }
 
 GLuint glCreateShader(GLenum type) {
-
 	GLuint res = pglCreateShader(type);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2150,7 +2024,6 @@ GLuint glCreateShader(GLenum type) {
 }
 
 void glDeleteProgram(GLuint program) {
-
 	pglDeleteProgram(program);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2161,7 +2034,6 @@ void glDeleteProgram(GLuint program) {
 }
 
 void glDeleteShader(GLuint shader) {
-
 	pglDeleteShader(shader);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2172,7 +2044,6 @@ void glDeleteShader(GLuint shader) {
 }
 
 void glDetachShader(GLuint program, GLuint shader) {
-
 	pglDetachShader(program, shader);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2183,7 +2054,6 @@ void glDetachShader(GLuint program, GLuint shader) {
 }
 
 void glDisableVertexAttribArray(GLuint index) {
-
 	pglDisableVertexAttribArray(index);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2194,7 +2064,6 @@ void glDisableVertexAttribArray(GLuint index) {
 }
 
 void glEnableVertexAttribArray(GLuint index) {
-
 	pglEnableVertexAttribArray(index);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2205,7 +2074,6 @@ void glEnableVertexAttribArray(GLuint index) {
 }
 
 void glGetActiveAttrib(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) {
-
 	pglGetActiveAttrib(program, index, bufSize, length, size, type, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2216,7 +2084,6 @@ void glGetActiveAttrib(GLuint program, GLuint index, GLsizei bufSize, GLsizei *l
 }
 
 void glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name) {
-
 	pglGetActiveUniform(program, index, bufSize, length, size, type, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2227,7 +2094,6 @@ void glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *
 }
 
 void glGetAttachedShaders(GLuint program, GLsizei maxCount, GLsizei *count, GLuint *shaders) {
-
 	pglGetAttachedShaders(program, maxCount, count, shaders);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2238,7 +2104,6 @@ void glGetAttachedShaders(GLuint program, GLsizei maxCount, GLsizei *count, GLui
 }
 
 GLint glGetAttribLocation(GLuint program, const GLchar *name) {
-
 	GLint res = pglGetAttribLocation(program, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2250,7 +2115,6 @@ GLint glGetAttribLocation(GLuint program, const GLchar *name) {
 }
 
 void glGetProgramiv(GLuint program, GLenum pname, GLint *params) {
-
 	pglGetProgramiv(program, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2261,7 +2125,6 @@ void glGetProgramiv(GLuint program, GLenum pname, GLint *params) {
 }
 
 void glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei *length, GLchar *infoLog) {
-
 	pglGetProgramInfoLog(program, bufSize, length, infoLog);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2272,7 +2135,6 @@ void glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei *length, GLcha
 }
 
 void glGetShaderiv(GLuint shader, GLenum pname, GLint *params) {
-
 	pglGetShaderiv(shader, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2283,7 +2145,6 @@ void glGetShaderiv(GLuint shader, GLenum pname, GLint *params) {
 }
 
 void glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog) {
-
 	pglGetShaderInfoLog(shader, bufSize, length, infoLog);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2294,7 +2155,6 @@ void glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei *length, GLchar 
 }
 
 void glGetShaderSource(GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *source) {
-
 	pglGetShaderSource(shader, bufSize, length, source);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2305,7 +2165,6 @@ void glGetShaderSource(GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *
 }
 
 GLint glGetUniformLocation(GLuint program, const GLchar *name) {
-
 	GLint res = pglGetUniformLocation(program, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2317,7 +2176,6 @@ GLint glGetUniformLocation(GLuint program, const GLchar *name) {
 }
 
 void glGetUniformfv(GLuint program, GLint location, GLfloat *params) {
-
 	pglGetUniformfv(program, location, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2328,7 +2186,6 @@ void glGetUniformfv(GLuint program, GLint location, GLfloat *params) {
 }
 
 void glGetUniformiv(GLuint program, GLint location, GLint *params) {
-
 	pglGetUniformiv(program, location, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2339,7 +2196,6 @@ void glGetUniformiv(GLuint program, GLint location, GLint *params) {
 }
 
 void glGetVertexAttribdv(GLuint index, GLenum pname, GLdouble *params) {
-
 	pglGetVertexAttribdv(index, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2350,7 +2206,6 @@ void glGetVertexAttribdv(GLuint index, GLenum pname, GLdouble *params) {
 }
 
 void glGetVertexAttribfv(GLuint index, GLenum pname, GLfloat *params) {
-
 	pglGetVertexAttribfv(index, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2361,7 +2216,6 @@ void glGetVertexAttribfv(GLuint index, GLenum pname, GLfloat *params) {
 }
 
 void glGetVertexAttribiv(GLuint index, GLenum pname, GLint *params) {
-
 	pglGetVertexAttribiv(index, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2372,7 +2226,6 @@ void glGetVertexAttribiv(GLuint index, GLenum pname, GLint *params) {
 }
 
 void glGetVertexAttribPointerv(GLuint index, GLenum pname, void **pointer) {
-
 	pglGetVertexAttribPointerv(index, pname, pointer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2383,7 +2236,6 @@ void glGetVertexAttribPointerv(GLuint index, GLenum pname, void **pointer) {
 }
 
 GLboolean glIsProgram(GLuint program) {
-
 	GLboolean res = pglIsProgram(program);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2395,7 +2247,6 @@ GLboolean glIsProgram(GLuint program) {
 }
 
 GLboolean glIsShader(GLuint shader) {
-
 	GLboolean res = pglIsShader(shader);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2407,7 +2258,6 @@ GLboolean glIsShader(GLuint shader) {
 }
 
 void glLinkProgram(GLuint program) {
-
 	pglLinkProgram(program);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2418,7 +2268,6 @@ void glLinkProgram(GLuint program) {
 }
 
 void glShaderSource(GLuint shader, GLsizei count, const GLchar *const*string, const GLint *length) {
-
 	pglShaderSource(shader, count, string, length);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2429,7 +2278,6 @@ void glShaderSource(GLuint shader, GLsizei count, const GLchar *const*string, co
 }
 
 void glUseProgram(GLuint program) {
-
 	pglUseProgram(program);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2440,7 +2288,6 @@ void glUseProgram(GLuint program) {
 }
 
 void glUniform1f(GLint location, GLfloat v0) {
-
 	pglUniform1f(location, v0);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2451,7 +2298,6 @@ void glUniform1f(GLint location, GLfloat v0) {
 }
 
 void glUniform2f(GLint location, GLfloat v0, GLfloat v1) {
-
 	pglUniform2f(location, v0, v1);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2462,7 +2308,6 @@ void glUniform2f(GLint location, GLfloat v0, GLfloat v1) {
 }
 
 void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
-
 	pglUniform3f(location, v0, v1, v2);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2473,7 +2318,6 @@ void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
 }
 
 void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
-
 	pglUniform4f(location, v0, v1, v2, v3);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2484,7 +2328,6 @@ void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 }
 
 void glUniform1i(GLint location, GLint v0) {
-
 	pglUniform1i(location, v0);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2495,7 +2338,6 @@ void glUniform1i(GLint location, GLint v0) {
 }
 
 void glUniform2i(GLint location, GLint v0, GLint v1) {
-
 	pglUniform2i(location, v0, v1);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2506,7 +2348,6 @@ void glUniform2i(GLint location, GLint v0, GLint v1) {
 }
 
 void glUniform3i(GLint location, GLint v0, GLint v1, GLint v2) {
-
 	pglUniform3i(location, v0, v1, v2);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2517,7 +2358,6 @@ void glUniform3i(GLint location, GLint v0, GLint v1, GLint v2) {
 }
 
 void glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
-
 	pglUniform4i(location, v0, v1, v2, v3);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2528,7 +2368,6 @@ void glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
 }
 
 void glUniform1fv(GLint location, GLsizei count, const GLfloat *value) {
-
 	pglUniform1fv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2539,7 +2378,6 @@ void glUniform1fv(GLint location, GLsizei count, const GLfloat *value) {
 }
 
 void glUniform2fv(GLint location, GLsizei count, const GLfloat *value) {
-
 	pglUniform2fv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2550,7 +2388,6 @@ void glUniform2fv(GLint location, GLsizei count, const GLfloat *value) {
 }
 
 void glUniform3fv(GLint location, GLsizei count, const GLfloat *value) {
-
 	pglUniform3fv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2561,7 +2398,6 @@ void glUniform3fv(GLint location, GLsizei count, const GLfloat *value) {
 }
 
 void glUniform4fv(GLint location, GLsizei count, const GLfloat *value) {
-
 	pglUniform4fv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2572,7 +2408,6 @@ void glUniform4fv(GLint location, GLsizei count, const GLfloat *value) {
 }
 
 void glUniform1iv(GLint location, GLsizei count, const GLint *value) {
-
 	pglUniform1iv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2583,7 +2418,6 @@ void glUniform1iv(GLint location, GLsizei count, const GLint *value) {
 }
 
 void glUniform2iv(GLint location, GLsizei count, const GLint *value) {
-
 	pglUniform2iv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2594,7 +2428,6 @@ void glUniform2iv(GLint location, GLsizei count, const GLint *value) {
 }
 
 void glUniform3iv(GLint location, GLsizei count, const GLint *value) {
-
 	pglUniform3iv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2605,7 +2438,6 @@ void glUniform3iv(GLint location, GLsizei count, const GLint *value) {
 }
 
 void glUniform4iv(GLint location, GLsizei count, const GLint *value) {
-
 	pglUniform4iv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2616,7 +2448,6 @@ void glUniform4iv(GLint location, GLsizei count, const GLint *value) {
 }
 
 void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix2fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2627,7 +2458,6 @@ void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, cons
 }
 
 void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix3fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2638,7 +2468,6 @@ void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, cons
 }
 
 void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix4fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2649,7 +2478,6 @@ void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, cons
 }
 
 void glValidateProgram(GLuint program) {
-
 	pglValidateProgram(program);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2660,7 +2488,6 @@ void glValidateProgram(GLuint program) {
 }
 
 void glVertexAttrib1d(GLuint index, GLdouble x) {
-
 	pglVertexAttrib1d(index, x);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2671,7 +2498,6 @@ void glVertexAttrib1d(GLuint index, GLdouble x) {
 }
 
 void glVertexAttrib1dv(GLuint index, const GLdouble *v) {
-
 	pglVertexAttrib1dv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2682,7 +2508,6 @@ void glVertexAttrib1dv(GLuint index, const GLdouble *v) {
 }
 
 void glVertexAttrib1f(GLuint index, GLfloat x) {
-
 	pglVertexAttrib1f(index, x);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2693,7 +2518,6 @@ void glVertexAttrib1f(GLuint index, GLfloat x) {
 }
 
 void glVertexAttrib1fv(GLuint index, const GLfloat *v) {
-
 	pglVertexAttrib1fv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2704,7 +2528,6 @@ void glVertexAttrib1fv(GLuint index, const GLfloat *v) {
 }
 
 void glVertexAttrib1s(GLuint index, GLshort x) {
-
 	pglVertexAttrib1s(index, x);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2715,7 +2538,6 @@ void glVertexAttrib1s(GLuint index, GLshort x) {
 }
 
 void glVertexAttrib1sv(GLuint index, const GLshort *v) {
-
 	pglVertexAttrib1sv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2726,7 +2548,6 @@ void glVertexAttrib1sv(GLuint index, const GLshort *v) {
 }
 
 void glVertexAttrib2d(GLuint index, GLdouble x, GLdouble y) {
-
 	pglVertexAttrib2d(index, x, y);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2737,7 +2558,6 @@ void glVertexAttrib2d(GLuint index, GLdouble x, GLdouble y) {
 }
 
 void glVertexAttrib2dv(GLuint index, const GLdouble *v) {
-
 	pglVertexAttrib2dv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2748,7 +2568,6 @@ void glVertexAttrib2dv(GLuint index, const GLdouble *v) {
 }
 
 void glVertexAttrib2f(GLuint index, GLfloat x, GLfloat y) {
-
 	pglVertexAttrib2f(index, x, y);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2759,7 +2578,6 @@ void glVertexAttrib2f(GLuint index, GLfloat x, GLfloat y) {
 }
 
 void glVertexAttrib2fv(GLuint index, const GLfloat *v) {
-
 	pglVertexAttrib2fv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2770,7 +2588,6 @@ void glVertexAttrib2fv(GLuint index, const GLfloat *v) {
 }
 
 void glVertexAttrib2s(GLuint index, GLshort x, GLshort y) {
-
 	pglVertexAttrib2s(index, x, y);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2781,7 +2598,6 @@ void glVertexAttrib2s(GLuint index, GLshort x, GLshort y) {
 }
 
 void glVertexAttrib2sv(GLuint index, const GLshort *v) {
-
 	pglVertexAttrib2sv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2792,7 +2608,6 @@ void glVertexAttrib2sv(GLuint index, const GLshort *v) {
 }
 
 void glVertexAttrib3d(GLuint index, GLdouble x, GLdouble y, GLdouble z) {
-
 	pglVertexAttrib3d(index, x, y, z);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2803,7 +2618,6 @@ void glVertexAttrib3d(GLuint index, GLdouble x, GLdouble y, GLdouble z) {
 }
 
 void glVertexAttrib3dv(GLuint index, const GLdouble *v) {
-
 	pglVertexAttrib3dv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2814,7 +2628,6 @@ void glVertexAttrib3dv(GLuint index, const GLdouble *v) {
 }
 
 void glVertexAttrib3f(GLuint index, GLfloat x, GLfloat y, GLfloat z) {
-
 	pglVertexAttrib3f(index, x, y, z);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2825,7 +2638,6 @@ void glVertexAttrib3f(GLuint index, GLfloat x, GLfloat y, GLfloat z) {
 }
 
 void glVertexAttrib3fv(GLuint index, const GLfloat *v) {
-
 	pglVertexAttrib3fv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2836,7 +2648,6 @@ void glVertexAttrib3fv(GLuint index, const GLfloat *v) {
 }
 
 void glVertexAttrib3s(GLuint index, GLshort x, GLshort y, GLshort z) {
-
 	pglVertexAttrib3s(index, x, y, z);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2847,7 +2658,6 @@ void glVertexAttrib3s(GLuint index, GLshort x, GLshort y, GLshort z) {
 }
 
 void glVertexAttrib3sv(GLuint index, const GLshort *v) {
-
 	pglVertexAttrib3sv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2858,7 +2668,6 @@ void glVertexAttrib3sv(GLuint index, const GLshort *v) {
 }
 
 void glVertexAttrib4Nbv(GLuint index, const GLbyte *v) {
-
 	pglVertexAttrib4Nbv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2869,7 +2678,6 @@ void glVertexAttrib4Nbv(GLuint index, const GLbyte *v) {
 }
 
 void glVertexAttrib4Niv(GLuint index, const GLint *v) {
-
 	pglVertexAttrib4Niv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2880,7 +2688,6 @@ void glVertexAttrib4Niv(GLuint index, const GLint *v) {
 }
 
 void glVertexAttrib4Nsv(GLuint index, const GLshort *v) {
-
 	pglVertexAttrib4Nsv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2891,7 +2698,6 @@ void glVertexAttrib4Nsv(GLuint index, const GLshort *v) {
 }
 
 void glVertexAttrib4Nub(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w) {
-
 	pglVertexAttrib4Nub(index, x, y, z, w);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2902,7 +2708,6 @@ void glVertexAttrib4Nub(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w
 }
 
 void glVertexAttrib4Nubv(GLuint index, const GLubyte *v) {
-
 	pglVertexAttrib4Nubv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2913,7 +2718,6 @@ void glVertexAttrib4Nubv(GLuint index, const GLubyte *v) {
 }
 
 void glVertexAttrib4Nuiv(GLuint index, const GLuint *v) {
-
 	pglVertexAttrib4Nuiv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2924,7 +2728,6 @@ void glVertexAttrib4Nuiv(GLuint index, const GLuint *v) {
 }
 
 void glVertexAttrib4Nusv(GLuint index, const GLushort *v) {
-
 	pglVertexAttrib4Nusv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2935,7 +2738,6 @@ void glVertexAttrib4Nusv(GLuint index, const GLushort *v) {
 }
 
 void glVertexAttrib4bv(GLuint index, const GLbyte *v) {
-
 	pglVertexAttrib4bv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2946,7 +2748,6 @@ void glVertexAttrib4bv(GLuint index, const GLbyte *v) {
 }
 
 void glVertexAttrib4d(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w) {
-
 	pglVertexAttrib4d(index, x, y, z, w);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2957,7 +2758,6 @@ void glVertexAttrib4d(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble
 }
 
 void glVertexAttrib4dv(GLuint index, const GLdouble *v) {
-
 	pglVertexAttrib4dv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2968,7 +2768,6 @@ void glVertexAttrib4dv(GLuint index, const GLdouble *v) {
 }
 
 void glVertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
-
 	pglVertexAttrib4f(index, x, y, z, w);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2979,7 +2778,6 @@ void glVertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w) 
 }
 
 void glVertexAttrib4fv(GLuint index, const GLfloat *v) {
-
 	pglVertexAttrib4fv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -2990,7 +2788,6 @@ void glVertexAttrib4fv(GLuint index, const GLfloat *v) {
 }
 
 void glVertexAttrib4iv(GLuint index, const GLint *v) {
-
 	pglVertexAttrib4iv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3001,7 +2798,6 @@ void glVertexAttrib4iv(GLuint index, const GLint *v) {
 }
 
 void glVertexAttrib4s(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w) {
-
 	pglVertexAttrib4s(index, x, y, z, w);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3012,7 +2808,6 @@ void glVertexAttrib4s(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w) 
 }
 
 void glVertexAttrib4sv(GLuint index, const GLshort *v) {
-
 	pglVertexAttrib4sv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3023,7 +2818,6 @@ void glVertexAttrib4sv(GLuint index, const GLshort *v) {
 }
 
 void glVertexAttrib4ubv(GLuint index, const GLubyte *v) {
-
 	pglVertexAttrib4ubv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3034,7 +2828,6 @@ void glVertexAttrib4ubv(GLuint index, const GLubyte *v) {
 }
 
 void glVertexAttrib4uiv(GLuint index, const GLuint *v) {
-
 	pglVertexAttrib4uiv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3045,7 +2838,6 @@ void glVertexAttrib4uiv(GLuint index, const GLuint *v) {
 }
 
 void glVertexAttrib4usv(GLuint index, const GLushort *v) {
-
 	pglVertexAttrib4usv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3056,7 +2848,6 @@ void glVertexAttrib4usv(GLuint index, const GLushort *v) {
 }
 
 void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLsizeiptr pointer) {
-
 	pglVertexAttribPointer(index, size, type, normalized, stride, (void*)(pointer));
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3067,7 +2858,6 @@ void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean norm
 }
 
 void glUniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix2x3fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3078,7 +2868,6 @@ void glUniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose, co
 }
 
 void glUniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix3x2fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3089,7 +2878,6 @@ void glUniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose, co
 }
 
 void glUniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix2x4fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3100,7 +2888,6 @@ void glUniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose, co
 }
 
 void glUniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix4x2fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3111,7 +2898,6 @@ void glUniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose, co
 }
 
 void glUniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix3x4fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3122,7 +2908,6 @@ void glUniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose, co
 }
 
 void glUniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
-
 	pglUniformMatrix4x3fv(location, count, transpose, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3133,7 +2918,6 @@ void glUniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, co
 }
 
 void glColorMaski(GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a) {
-
 	pglColorMaski(index, r, g, b, a);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3144,7 +2928,6 @@ void glColorMaski(GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean
 }
 
 void glGetBooleani_v(GLenum target, GLuint index, GLboolean *data) {
-
 	pglGetBooleani_v(target, index, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3155,7 +2938,6 @@ void glGetBooleani_v(GLenum target, GLuint index, GLboolean *data) {
 }
 
 void glGetIntegeri_v(GLenum target, GLuint index, GLint *data) {
-
 	pglGetIntegeri_v(target, index, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3166,7 +2948,6 @@ void glGetIntegeri_v(GLenum target, GLuint index, GLint *data) {
 }
 
 void glEnablei(GLenum target, GLuint index) {
-
 	pglEnablei(target, index);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3177,7 +2958,6 @@ void glEnablei(GLenum target, GLuint index) {
 }
 
 void glDisablei(GLenum target, GLuint index) {
-
 	pglDisablei(target, index);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3188,7 +2968,6 @@ void glDisablei(GLenum target, GLuint index) {
 }
 
 GLboolean glIsEnabledi(GLenum target, GLuint index) {
-
 	GLboolean res = pglIsEnabledi(target, index);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3200,7 +2979,6 @@ GLboolean glIsEnabledi(GLenum target, GLuint index) {
 }
 
 void glBeginTransformFeedback(GLenum primitiveMode) {
-
 	pglBeginTransformFeedback(primitiveMode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3211,7 +2989,6 @@ void glBeginTransformFeedback(GLenum primitiveMode) {
 }
 
 void glEndTransformFeedback(void) {
-
 	pglEndTransformFeedback();
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3222,7 +2999,6 @@ void glEndTransformFeedback(void) {
 }
 
 void glBindBufferRange(GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size) {
-
 	pglBindBufferRange(target, index, buffer, offset, size);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3233,7 +3009,6 @@ void glBindBufferRange(GLenum target, GLuint index, GLuint buffer, GLintptr offs
 }
 
 void glBindBufferBase(GLenum target, GLuint index, GLuint buffer) {
-
 	pglBindBufferBase(target, index, buffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3244,7 +3019,6 @@ void glBindBufferBase(GLenum target, GLuint index, GLuint buffer) {
 }
 
 void glTransformFeedbackVaryings(GLuint program, GLsizei count, const GLchar *const*varyings, GLenum bufferMode) {
-
 	pglTransformFeedbackVaryings(program, count, varyings, bufferMode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3255,7 +3029,6 @@ void glTransformFeedbackVaryings(GLuint program, GLsizei count, const GLchar *co
 }
 
 void glGetTransformFeedbackVarying(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLsizei *size, GLenum *type, GLchar *name) {
-
 	pglGetTransformFeedbackVarying(program, index, bufSize, length, size, type, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3266,7 +3039,6 @@ void glGetTransformFeedbackVarying(GLuint program, GLuint index, GLsizei bufSize
 }
 
 void glClampColor(GLenum target, GLenum clamp) {
-
 	pglClampColor(target, clamp);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3277,7 +3049,6 @@ void glClampColor(GLenum target, GLenum clamp) {
 }
 
 void glBeginConditionalRender(GLuint id, GLenum mode) {
-
 	pglBeginConditionalRender(id, mode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3288,7 +3059,6 @@ void glBeginConditionalRender(GLuint id, GLenum mode) {
 }
 
 void glEndConditionalRender(void) {
-
 	pglEndConditionalRender();
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3299,7 +3069,6 @@ void glEndConditionalRender(void) {
 }
 
 void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void *pointer) {
-
 	pglVertexAttribIPointer(index, size, type, stride, pointer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3310,7 +3079,6 @@ void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei strid
 }
 
 void glGetVertexAttribIiv(GLuint index, GLenum pname, GLint *params) {
-
 	pglGetVertexAttribIiv(index, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3321,7 +3089,6 @@ void glGetVertexAttribIiv(GLuint index, GLenum pname, GLint *params) {
 }
 
 void glGetVertexAttribIuiv(GLuint index, GLenum pname, GLuint *params) {
-
 	pglGetVertexAttribIuiv(index, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3332,7 +3099,6 @@ void glGetVertexAttribIuiv(GLuint index, GLenum pname, GLuint *params) {
 }
 
 void glVertexAttribI1i(GLuint index, GLint x) {
-
 	pglVertexAttribI1i(index, x);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3343,7 +3109,6 @@ void glVertexAttribI1i(GLuint index, GLint x) {
 }
 
 void glVertexAttribI2i(GLuint index, GLint x, GLint y) {
-
 	pglVertexAttribI2i(index, x, y);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3354,7 +3119,6 @@ void glVertexAttribI2i(GLuint index, GLint x, GLint y) {
 }
 
 void glVertexAttribI3i(GLuint index, GLint x, GLint y, GLint z) {
-
 	pglVertexAttribI3i(index, x, y, z);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3365,7 +3129,6 @@ void glVertexAttribI3i(GLuint index, GLint x, GLint y, GLint z) {
 }
 
 void glVertexAttribI4i(GLuint index, GLint x, GLint y, GLint z, GLint w) {
-
 	pglVertexAttribI4i(index, x, y, z, w);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3376,7 +3139,6 @@ void glVertexAttribI4i(GLuint index, GLint x, GLint y, GLint z, GLint w) {
 }
 
 void glVertexAttribI1ui(GLuint index, GLuint x) {
-
 	pglVertexAttribI1ui(index, x);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3387,7 +3149,6 @@ void glVertexAttribI1ui(GLuint index, GLuint x) {
 }
 
 void glVertexAttribI2ui(GLuint index, GLuint x, GLuint y) {
-
 	pglVertexAttribI2ui(index, x, y);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3398,7 +3159,6 @@ void glVertexAttribI2ui(GLuint index, GLuint x, GLuint y) {
 }
 
 void glVertexAttribI3ui(GLuint index, GLuint x, GLuint y, GLuint z) {
-
 	pglVertexAttribI3ui(index, x, y, z);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3409,7 +3169,6 @@ void glVertexAttribI3ui(GLuint index, GLuint x, GLuint y, GLuint z) {
 }
 
 void glVertexAttribI4ui(GLuint index, GLuint x, GLuint y, GLuint z, GLuint w) {
-
 	pglVertexAttribI4ui(index, x, y, z, w);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3420,7 +3179,6 @@ void glVertexAttribI4ui(GLuint index, GLuint x, GLuint y, GLuint z, GLuint w) {
 }
 
 void glVertexAttribI1iv(GLuint index, const GLint *v) {
-
 	pglVertexAttribI1iv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3431,7 +3189,6 @@ void glVertexAttribI1iv(GLuint index, const GLint *v) {
 }
 
 void glVertexAttribI2iv(GLuint index, const GLint *v) {
-
 	pglVertexAttribI2iv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3442,7 +3199,6 @@ void glVertexAttribI2iv(GLuint index, const GLint *v) {
 }
 
 void glVertexAttribI3iv(GLuint index, const GLint *v) {
-
 	pglVertexAttribI3iv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3453,7 +3209,6 @@ void glVertexAttribI3iv(GLuint index, const GLint *v) {
 }
 
 void glVertexAttribI4iv(GLuint index, const GLint *v) {
-
 	pglVertexAttribI4iv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3464,7 +3219,6 @@ void glVertexAttribI4iv(GLuint index, const GLint *v) {
 }
 
 void glVertexAttribI1uiv(GLuint index, const GLuint *v) {
-
 	pglVertexAttribI1uiv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3475,7 +3229,6 @@ void glVertexAttribI1uiv(GLuint index, const GLuint *v) {
 }
 
 void glVertexAttribI2uiv(GLuint index, const GLuint *v) {
-
 	pglVertexAttribI2uiv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3486,7 +3239,6 @@ void glVertexAttribI2uiv(GLuint index, const GLuint *v) {
 }
 
 void glVertexAttribI3uiv(GLuint index, const GLuint *v) {
-
 	pglVertexAttribI3uiv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3497,7 +3249,6 @@ void glVertexAttribI3uiv(GLuint index, const GLuint *v) {
 }
 
 void glVertexAttribI4uiv(GLuint index, const GLuint *v) {
-
 	pglVertexAttribI4uiv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3508,7 +3259,6 @@ void glVertexAttribI4uiv(GLuint index, const GLuint *v) {
 }
 
 void glVertexAttribI4bv(GLuint index, const GLbyte *v) {
-
 	pglVertexAttribI4bv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3519,7 +3269,6 @@ void glVertexAttribI4bv(GLuint index, const GLbyte *v) {
 }
 
 void glVertexAttribI4sv(GLuint index, const GLshort *v) {
-
 	pglVertexAttribI4sv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3530,7 +3279,6 @@ void glVertexAttribI4sv(GLuint index, const GLshort *v) {
 }
 
 void glVertexAttribI4ubv(GLuint index, const GLubyte *v) {
-
 	pglVertexAttribI4ubv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3541,7 +3289,6 @@ void glVertexAttribI4ubv(GLuint index, const GLubyte *v) {
 }
 
 void glVertexAttribI4usv(GLuint index, const GLushort *v) {
-
 	pglVertexAttribI4usv(index, v);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3552,7 +3299,6 @@ void glVertexAttribI4usv(GLuint index, const GLushort *v) {
 }
 
 void glGetUniformuiv(GLuint program, GLint location, GLuint *params) {
-
 	pglGetUniformuiv(program, location, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3563,7 +3309,6 @@ void glGetUniformuiv(GLuint program, GLint location, GLuint *params) {
 }
 
 void glBindFragDataLocation(GLuint program, GLuint color, const GLchar *name) {
-
 	pglBindFragDataLocation(program, color, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3574,7 +3319,6 @@ void glBindFragDataLocation(GLuint program, GLuint color, const GLchar *name) {
 }
 
 GLint glGetFragDataLocation(GLuint program, const GLchar *name) {
-
 	GLint res = pglGetFragDataLocation(program, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3586,7 +3330,6 @@ GLint glGetFragDataLocation(GLuint program, const GLchar *name) {
 }
 
 void glUniform1ui(GLint location, GLuint v0) {
-
 	pglUniform1ui(location, v0);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3597,7 +3340,6 @@ void glUniform1ui(GLint location, GLuint v0) {
 }
 
 void glUniform2ui(GLint location, GLuint v0, GLuint v1) {
-
 	pglUniform2ui(location, v0, v1);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3608,7 +3350,6 @@ void glUniform2ui(GLint location, GLuint v0, GLuint v1) {
 }
 
 void glUniform3ui(GLint location, GLuint v0, GLuint v1, GLuint v2) {
-
 	pglUniform3ui(location, v0, v1, v2);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3619,7 +3360,6 @@ void glUniform3ui(GLint location, GLuint v0, GLuint v1, GLuint v2) {
 }
 
 void glUniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) {
-
 	pglUniform4ui(location, v0, v1, v2, v3);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3630,7 +3370,6 @@ void glUniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) {
 }
 
 void glUniform1uiv(GLint location, GLsizei count, const GLuint *value) {
-
 	pglUniform1uiv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3641,7 +3380,6 @@ void glUniform1uiv(GLint location, GLsizei count, const GLuint *value) {
 }
 
 void glUniform2uiv(GLint location, GLsizei count, const GLuint *value) {
-
 	pglUniform2uiv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3652,7 +3390,6 @@ void glUniform2uiv(GLint location, GLsizei count, const GLuint *value) {
 }
 
 void glUniform3uiv(GLint location, GLsizei count, const GLuint *value) {
-
 	pglUniform3uiv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3663,7 +3400,6 @@ void glUniform3uiv(GLint location, GLsizei count, const GLuint *value) {
 }
 
 void glUniform4uiv(GLint location, GLsizei count, const GLuint *value) {
-
 	pglUniform4uiv(location, count, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3674,7 +3410,6 @@ void glUniform4uiv(GLint location, GLsizei count, const GLuint *value) {
 }
 
 void glTexParameterIiv(GLenum target, GLenum pname, const GLint *params) {
-
 	pglTexParameterIiv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3685,7 +3420,6 @@ void glTexParameterIiv(GLenum target, GLenum pname, const GLint *params) {
 }
 
 void glTexParameterIuiv(GLenum target, GLenum pname, const GLuint *params) {
-
 	pglTexParameterIuiv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3696,7 +3430,6 @@ void glTexParameterIuiv(GLenum target, GLenum pname, const GLuint *params) {
 }
 
 void glGetTexParameterIiv(GLenum target, GLenum pname, GLint *params) {
-
 	pglGetTexParameterIiv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3707,7 +3440,6 @@ void glGetTexParameterIiv(GLenum target, GLenum pname, GLint *params) {
 }
 
 void glGetTexParameterIuiv(GLenum target, GLenum pname, GLuint *params) {
-
 	pglGetTexParameterIuiv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3718,7 +3450,6 @@ void glGetTexParameterIuiv(GLenum target, GLenum pname, GLuint *params) {
 }
 
 void glClearBufferiv(GLenum buffer, GLint drawbuffer, const GLint *value) {
-
 	pglClearBufferiv(buffer, drawbuffer, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3729,7 +3460,6 @@ void glClearBufferiv(GLenum buffer, GLint drawbuffer, const GLint *value) {
 }
 
 void glClearBufferuiv(GLenum buffer, GLint drawbuffer, const GLuint *value) {
-
 	pglClearBufferuiv(buffer, drawbuffer, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3740,7 +3470,6 @@ void glClearBufferuiv(GLenum buffer, GLint drawbuffer, const GLuint *value) {
 }
 
 void glClearBufferfv(GLenum buffer, GLint drawbuffer, const GLfloat *value) {
-
 	pglClearBufferfv(buffer, drawbuffer, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3751,7 +3480,6 @@ void glClearBufferfv(GLenum buffer, GLint drawbuffer, const GLfloat *value) {
 }
 
 void glClearBufferfi(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil) {
-
 	pglClearBufferfi(buffer, drawbuffer, depth, stencil);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3762,7 +3490,6 @@ void glClearBufferfi(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stenc
 }
 
 const GLubyte * glGetStringi(GLenum name, GLuint index) {
-
 	const GLubyte * res = pglGetStringi(name, index);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3774,7 +3501,6 @@ const GLubyte * glGetStringi(GLenum name, GLuint index) {
 }
 
 GLboolean glIsRenderbuffer(GLuint renderbuffer) {
-
 	GLboolean res = pglIsRenderbuffer(renderbuffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3786,7 +3512,6 @@ GLboolean glIsRenderbuffer(GLuint renderbuffer) {
 }
 
 void glBindRenderbuffer(GLenum target, GLuint renderbuffer) {
-
 	pglBindRenderbuffer(target, renderbuffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3797,7 +3522,6 @@ void glBindRenderbuffer(GLenum target, GLuint renderbuffer) {
 }
 
 void glDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers) {
-
 	pglDeleteRenderbuffers(n, renderbuffers);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3808,7 +3532,6 @@ void glDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers) {
 }
 
 void glGenRenderbuffers(GLsizei n, GLuint *renderbuffers) {
-
 	pglGenRenderbuffers(n, renderbuffers);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3819,7 +3542,6 @@ void glGenRenderbuffers(GLsizei n, GLuint *renderbuffers) {
 }
 
 void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height) {
-
 	pglRenderbufferStorage(target, internalformat, width, height);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3830,7 +3552,6 @@ void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, 
 }
 
 void glGetRenderbufferParameteriv(GLenum target, GLenum pname, GLint *params) {
-
 	pglGetRenderbufferParameteriv(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3841,7 +3562,6 @@ void glGetRenderbufferParameteriv(GLenum target, GLenum pname, GLint *params) {
 }
 
 GLboolean glIsFramebuffer(GLuint framebuffer) {
-
 	GLboolean res = pglIsFramebuffer(framebuffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3853,7 +3573,6 @@ GLboolean glIsFramebuffer(GLuint framebuffer) {
 }
 
 void glBindFramebuffer(GLenum target, GLuint framebuffer) {
-
 	pglBindFramebuffer(target, framebuffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3864,7 +3583,6 @@ void glBindFramebuffer(GLenum target, GLuint framebuffer) {
 }
 
 void glDeleteFramebuffers(GLsizei n, const GLuint *framebuffers) {
-
 	pglDeleteFramebuffers(n, framebuffers);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3875,7 +3593,6 @@ void glDeleteFramebuffers(GLsizei n, const GLuint *framebuffers) {
 }
 
 void glGenFramebuffers(GLsizei n, GLuint *framebuffers) {
-
 	pglGenFramebuffers(n, framebuffers);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3886,7 +3603,6 @@ void glGenFramebuffers(GLsizei n, GLuint *framebuffers) {
 }
 
 GLenum glCheckFramebufferStatus(GLenum target) {
-
 	GLenum res = pglCheckFramebufferStatus(target);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3898,7 +3614,6 @@ GLenum glCheckFramebufferStatus(GLenum target) {
 }
 
 void glFramebufferTexture1D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level) {
-
 	pglFramebufferTexture1D(target, attachment, textarget, texture, level);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3909,7 +3624,6 @@ void glFramebufferTexture1D(GLenum target, GLenum attachment, GLenum textarget, 
 }
 
 void glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level) {
-
 	pglFramebufferTexture2D(target, attachment, textarget, texture, level);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3920,7 +3634,6 @@ void glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, 
 }
 
 void glFramebufferTexture3D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint zoffset) {
-
 	pglFramebufferTexture3D(target, attachment, textarget, texture, level, zoffset);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3931,7 +3644,6 @@ void glFramebufferTexture3D(GLenum target, GLenum attachment, GLenum textarget, 
 }
 
 void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer) {
-
 	pglFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3942,7 +3654,6 @@ void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbu
 }
 
 void glGetFramebufferAttachmentParameteriv(GLenum target, GLenum attachment, GLenum pname, GLint *params) {
-
 	pglGetFramebufferAttachmentParameteriv(target, attachment, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3953,7 +3664,6 @@ void glGetFramebufferAttachmentParameteriv(GLenum target, GLenum attachment, GLe
 }
 
 void glGenerateMipmap(GLenum target) {
-
 	pglGenerateMipmap(target);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3964,7 +3674,6 @@ void glGenerateMipmap(GLenum target) {
 }
 
 void glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter) {
-
 	pglBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3975,7 +3684,6 @@ void glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint
 }
 
 void glRenderbufferStorageMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height) {
-
 	pglRenderbufferStorageMultisample(target, samples, internalformat, width, height);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3986,7 +3694,6 @@ void glRenderbufferStorageMultisample(GLenum target, GLsizei samples, GLenum int
 }
 
 void glFramebufferTextureLayer(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer) {
-
 	pglFramebufferTextureLayer(target, attachment, texture, level, layer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -3997,7 +3704,6 @@ void glFramebufferTextureLayer(GLenum target, GLenum attachment, GLuint texture,
 }
 
 void * glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) {
-
 	void * res = pglMapBufferRange(target, offset, length, access);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4009,7 +3715,6 @@ void * glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbit
 }
 
 void glFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length) {
-
 	pglFlushMappedBufferRange(target, offset, length);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4020,7 +3725,6 @@ void glFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length)
 }
 
 void glBindVertexArray(GLuint array) {
-
 	pglBindVertexArray(array);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4031,7 +3735,6 @@ void glBindVertexArray(GLuint array) {
 }
 
 void glDeleteVertexArrays(GLsizei n, const GLuint *arrays) {
-
 	pglDeleteVertexArrays(n, arrays);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4042,7 +3745,6 @@ void glDeleteVertexArrays(GLsizei n, const GLuint *arrays) {
 }
 
 void glGenVertexArrays(GLsizei n, GLuint *arrays) {
-
 	pglGenVertexArrays(n, arrays);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4053,7 +3755,6 @@ void glGenVertexArrays(GLsizei n, GLuint *arrays) {
 }
 
 GLboolean glIsVertexArray(GLuint array) {
-
 	GLboolean res = pglIsVertexArray(array);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4065,7 +3766,6 @@ GLboolean glIsVertexArray(GLuint array) {
 }
 
 void glDrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei instancecount) {
-
 	pglDrawArraysInstanced(mode, first, count, instancecount);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4076,7 +3776,6 @@ void glDrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei inst
 }
 
 void glDrawElementsInstanced(GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount) {
-
 	pglDrawElementsInstanced(mode, count, type, indices, instancecount);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4087,7 +3786,6 @@ void glDrawElementsInstanced(GLenum mode, GLsizei count, GLenum type, const void
 }
 
 void glTexBuffer(GLenum target, GLenum internalformat, GLuint buffer) {
-
 	pglTexBuffer(target, internalformat, buffer);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4098,7 +3796,6 @@ void glTexBuffer(GLenum target, GLenum internalformat, GLuint buffer) {
 }
 
 void glPrimitiveRestartIndex(GLuint index) {
-
 	pglPrimitiveRestartIndex(index);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4109,7 +3806,6 @@ void glPrimitiveRestartIndex(GLuint index) {
 }
 
 void glCopyBufferSubData(GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-
 	pglCopyBufferSubData(readTarget, writeTarget, readOffset, writeOffset, size);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4120,7 +3816,6 @@ void glCopyBufferSubData(GLenum readTarget, GLenum writeTarget, GLintptr readOff
 }
 
 void glGetUniformIndices(GLuint program, GLsizei uniformCount, const GLchar *const*uniformNames, GLuint *uniformIndices) {
-
 	pglGetUniformIndices(program, uniformCount, uniformNames, uniformIndices);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4131,7 +3826,6 @@ void glGetUniformIndices(GLuint program, GLsizei uniformCount, const GLchar *con
 }
 
 void glGetActiveUniformsiv(GLuint program, GLsizei uniformCount, const GLuint *uniformIndices, GLenum pname, GLint *params) {
-
 	pglGetActiveUniformsiv(program, uniformCount, uniformIndices, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4142,7 +3836,6 @@ void glGetActiveUniformsiv(GLuint program, GLsizei uniformCount, const GLuint *u
 }
 
 void glGetActiveUniformName(GLuint program, GLuint uniformIndex, GLsizei bufSize, GLsizei *length, GLchar *uniformName) {
-
 	pglGetActiveUniformName(program, uniformIndex, bufSize, length, uniformName);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4153,7 +3846,6 @@ void glGetActiveUniformName(GLuint program, GLuint uniformIndex, GLsizei bufSize
 }
 
 GLuint glGetUniformBlockIndex(GLuint program, const GLchar *uniformBlockName) {
-
 	GLuint res = pglGetUniformBlockIndex(program, uniformBlockName);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4165,7 +3857,6 @@ GLuint glGetUniformBlockIndex(GLuint program, const GLchar *uniformBlockName) {
 }
 
 void glGetActiveUniformBlockiv(GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint *params) {
-
 	pglGetActiveUniformBlockiv(program, uniformBlockIndex, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4176,7 +3867,6 @@ void glGetActiveUniformBlockiv(GLuint program, GLuint uniformBlockIndex, GLenum 
 }
 
 void glGetActiveUniformBlockName(GLuint program, GLuint uniformBlockIndex, GLsizei bufSize, GLsizei *length, GLchar *uniformBlockName) {
-
 	pglGetActiveUniformBlockName(program, uniformBlockIndex, bufSize, length, uniformBlockName);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4187,7 +3877,6 @@ void glGetActiveUniformBlockName(GLuint program, GLuint uniformBlockIndex, GLsiz
 }
 
 void glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding) {
-
 	pglUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4198,7 +3887,6 @@ void glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint unif
 }
 
 void glDrawElementsBaseVertex(GLenum mode, GLsizei count, GLenum type, const void *indices, GLint basevertex) {
-
 	pglDrawElementsBaseVertex(mode, count, type, indices, basevertex);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4209,7 +3897,6 @@ void glDrawElementsBaseVertex(GLenum mode, GLsizei count, GLenum type, const voi
 }
 
 void glDrawRangeElementsBaseVertex(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void *indices, GLint basevertex) {
-
 	pglDrawRangeElementsBaseVertex(mode, start, end, count, type, indices, basevertex);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4220,7 +3907,6 @@ void glDrawRangeElementsBaseVertex(GLenum mode, GLuint start, GLuint end, GLsize
 }
 
 void glDrawElementsInstancedBaseVertex(GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLint basevertex) {
-
 	pglDrawElementsInstancedBaseVertex(mode, count, type, indices, instancecount, basevertex);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4231,7 +3917,6 @@ void glDrawElementsInstancedBaseVertex(GLenum mode, GLsizei count, GLenum type, 
 }
 
 void glMultiDrawElementsBaseVertex(GLenum mode, const GLsizei *count, GLenum type, const void *const*indices, GLsizei drawcount, const GLint *basevertex) {
-
 	pglMultiDrawElementsBaseVertex(mode, count, type, indices, drawcount, basevertex);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4242,7 +3927,6 @@ void glMultiDrawElementsBaseVertex(GLenum mode, const GLsizei *count, GLenum typ
 }
 
 void glProvokingVertex(GLenum mode) {
-
 	pglProvokingVertex(mode);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4253,7 +3937,6 @@ void glProvokingVertex(GLenum mode) {
 }
 
 GLsync glFenceSync(GLenum condition, GLbitfield flags) {
-
 	GLsync res = pglFenceSync(condition, flags);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4265,7 +3948,6 @@ GLsync glFenceSync(GLenum condition, GLbitfield flags) {
 }
 
 GLboolean glIsSync(GLsync sync) {
-
 	GLboolean res = pglIsSync(sync);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4277,7 +3959,6 @@ GLboolean glIsSync(GLsync sync) {
 }
 
 void glDeleteSync(GLsync sync) {
-
 	pglDeleteSync(sync);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4288,7 +3969,6 @@ void glDeleteSync(GLsync sync) {
 }
 
 GLenum glClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout) {
-
 	GLenum res = pglClientWaitSync(sync, flags, timeout);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4300,7 +3980,6 @@ GLenum glClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout) {
 }
 
 void glWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout) {
-
 	pglWaitSync(sync, flags, timeout);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4311,7 +3990,6 @@ void glWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout) {
 }
 
 void glGetInteger64v(GLenum pname, GLint64 *data) {
-
 	pglGetInteger64v(pname, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4322,7 +4000,6 @@ void glGetInteger64v(GLenum pname, GLint64 *data) {
 }
 
 void glGetSynciv(GLsync sync, GLenum pname, GLsizei bufSize, GLsizei *length, GLint *values) {
-
 	pglGetSynciv(sync, pname, bufSize, length, values);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4333,7 +4010,6 @@ void glGetSynciv(GLsync sync, GLenum pname, GLsizei bufSize, GLsizei *length, GL
 }
 
 void glGetInteger64i_v(GLenum target, GLuint index, GLint64 *data) {
-
 	pglGetInteger64i_v(target, index, data);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4344,7 +4020,6 @@ void glGetInteger64i_v(GLenum target, GLuint index, GLint64 *data) {
 }
 
 void glGetBufferParameteri64v(GLenum target, GLenum pname, GLint64 *params) {
-
 	pglGetBufferParameteri64v(target, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4355,7 +4030,6 @@ void glGetBufferParameteri64v(GLenum target, GLenum pname, GLint64 *params) {
 }
 
 void glFramebufferTexture(GLenum target, GLenum attachment, GLuint texture, GLint level) {
-
 	pglFramebufferTexture(target, attachment, texture, level);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4366,7 +4040,6 @@ void glFramebufferTexture(GLenum target, GLenum attachment, GLuint texture, GLin
 }
 
 void glTexImage2DMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations) {
-
 	pglTexImage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4377,7 +4050,6 @@ void glTexImage2DMultisample(GLenum target, GLsizei samples, GLenum internalform
 }
 
 void glTexImage3DMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations) {
-
 	pglTexImage3DMultisample(target, samples, internalformat, width, height, depth, fixedsamplelocations);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4388,7 +4060,6 @@ void glTexImage3DMultisample(GLenum target, GLsizei samples, GLenum internalform
 }
 
 void glGetMultisamplefv(GLenum pname, GLuint index, GLfloat *val) {
-
 	pglGetMultisamplefv(pname, index, val);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4399,7 +4070,6 @@ void glGetMultisamplefv(GLenum pname, GLuint index, GLfloat *val) {
 }
 
 void glSampleMaski(GLuint maskNumber, GLbitfield mask) {
-
 	pglSampleMaski(maskNumber, mask);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4410,7 +4080,6 @@ void glSampleMaski(GLuint maskNumber, GLbitfield mask) {
 }
 
 void glBindFragDataLocationIndexed(GLuint program, GLuint colorNumber, GLuint index, const GLchar *name) {
-
 	pglBindFragDataLocationIndexed(program, colorNumber, index, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4421,7 +4090,6 @@ void glBindFragDataLocationIndexed(GLuint program, GLuint colorNumber, GLuint in
 }
 
 GLint glGetFragDataIndex(GLuint program, const GLchar *name) {
-
 	GLint res = pglGetFragDataIndex(program, name);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4433,7 +4101,6 @@ GLint glGetFragDataIndex(GLuint program, const GLchar *name) {
 }
 
 void glGenSamplers(GLsizei count, GLuint *samplers) {
-
 	pglGenSamplers(count, samplers);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4444,7 +4111,6 @@ void glGenSamplers(GLsizei count, GLuint *samplers) {
 }
 
 void glDeleteSamplers(GLsizei count, const GLuint *samplers) {
-
 	pglDeleteSamplers(count, samplers);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4455,7 +4121,6 @@ void glDeleteSamplers(GLsizei count, const GLuint *samplers) {
 }
 
 GLboolean glIsSampler(GLuint sampler) {
-
 	GLboolean res = pglIsSampler(sampler);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4467,7 +4132,6 @@ GLboolean glIsSampler(GLuint sampler) {
 }
 
 void glBindSampler(GLuint unit, GLuint sampler) {
-
 	pglBindSampler(unit, sampler);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4478,7 +4142,6 @@ void glBindSampler(GLuint unit, GLuint sampler) {
 }
 
 void glSamplerParameteri(GLuint sampler, GLenum pname, GLint param) {
-
 	pglSamplerParameteri(sampler, pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4489,7 +4152,6 @@ void glSamplerParameteri(GLuint sampler, GLenum pname, GLint param) {
 }
 
 void glSamplerParameteriv(GLuint sampler, GLenum pname, const GLint *param) {
-
 	pglSamplerParameteriv(sampler, pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4500,7 +4162,6 @@ void glSamplerParameteriv(GLuint sampler, GLenum pname, const GLint *param) {
 }
 
 void glSamplerParameterf(GLuint sampler, GLenum pname, GLfloat param) {
-
 	pglSamplerParameterf(sampler, pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4511,7 +4172,6 @@ void glSamplerParameterf(GLuint sampler, GLenum pname, GLfloat param) {
 }
 
 void glSamplerParameterfv(GLuint sampler, GLenum pname, const GLfloat *param) {
-
 	pglSamplerParameterfv(sampler, pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4522,7 +4182,6 @@ void glSamplerParameterfv(GLuint sampler, GLenum pname, const GLfloat *param) {
 }
 
 void glSamplerParameterIiv(GLuint sampler, GLenum pname, const GLint *param) {
-
 	pglSamplerParameterIiv(sampler, pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4533,7 +4192,6 @@ void glSamplerParameterIiv(GLuint sampler, GLenum pname, const GLint *param) {
 }
 
 void glSamplerParameterIuiv(GLuint sampler, GLenum pname, const GLuint *param) {
-
 	pglSamplerParameterIuiv(sampler, pname, param);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4544,7 +4202,6 @@ void glSamplerParameterIuiv(GLuint sampler, GLenum pname, const GLuint *param) {
 }
 
 void glGetSamplerParameteriv(GLuint sampler, GLenum pname, GLint *params) {
-
 	pglGetSamplerParameteriv(sampler, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4555,7 +4212,6 @@ void glGetSamplerParameteriv(GLuint sampler, GLenum pname, GLint *params) {
 }
 
 void glGetSamplerParameterIiv(GLuint sampler, GLenum pname, GLint *params) {
-
 	pglGetSamplerParameterIiv(sampler, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4566,7 +4222,6 @@ void glGetSamplerParameterIiv(GLuint sampler, GLenum pname, GLint *params) {
 }
 
 void glGetSamplerParameterfv(GLuint sampler, GLenum pname, GLfloat *params) {
-
 	pglGetSamplerParameterfv(sampler, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4577,7 +4232,6 @@ void glGetSamplerParameterfv(GLuint sampler, GLenum pname, GLfloat *params) {
 }
 
 void glGetSamplerParameterIuiv(GLuint sampler, GLenum pname, GLuint *params) {
-
 	pglGetSamplerParameterIuiv(sampler, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4588,7 +4242,6 @@ void glGetSamplerParameterIuiv(GLuint sampler, GLenum pname, GLuint *params) {
 }
 
 void glQueryCounter(GLuint id, GLenum target) {
-
 	pglQueryCounter(id, target);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4599,7 +4252,6 @@ void glQueryCounter(GLuint id, GLenum target) {
 }
 
 void glGetQueryObjecti64v(GLuint id, GLenum pname, GLint64 *params) {
-
 	pglGetQueryObjecti64v(id, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4610,7 +4262,6 @@ void glGetQueryObjecti64v(GLuint id, GLenum pname, GLint64 *params) {
 }
 
 void glGetQueryObjectui64v(GLuint id, GLenum pname, GLuint64 *params) {
-
 	pglGetQueryObjectui64v(id, pname, params);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4621,7 +4272,6 @@ void glGetQueryObjectui64v(GLuint id, GLenum pname, GLuint64 *params) {
 }
 
 void glVertexAttribDivisor(GLuint index, GLuint divisor) {
-
 	pglVertexAttribDivisor(index, divisor);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4632,7 +4282,6 @@ void glVertexAttribDivisor(GLuint index, GLuint divisor) {
 }
 
 void glVertexAttribP1ui(GLuint index, GLenum type, GLboolean normalized, GLuint value) {
-
 	pglVertexAttribP1ui(index, type, normalized, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4643,7 +4292,6 @@ void glVertexAttribP1ui(GLuint index, GLenum type, GLboolean normalized, GLuint 
 }
 
 void glVertexAttribP1uiv(GLuint index, GLenum type, GLboolean normalized, const GLuint *value) {
-
 	pglVertexAttribP1uiv(index, type, normalized, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4654,7 +4302,6 @@ void glVertexAttribP1uiv(GLuint index, GLenum type, GLboolean normalized, const 
 }
 
 void glVertexAttribP2ui(GLuint index, GLenum type, GLboolean normalized, GLuint value) {
-
 	pglVertexAttribP2ui(index, type, normalized, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4665,7 +4312,6 @@ void glVertexAttribP2ui(GLuint index, GLenum type, GLboolean normalized, GLuint 
 }
 
 void glVertexAttribP2uiv(GLuint index, GLenum type, GLboolean normalized, const GLuint *value) {
-
 	pglVertexAttribP2uiv(index, type, normalized, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4676,7 +4322,6 @@ void glVertexAttribP2uiv(GLuint index, GLenum type, GLboolean normalized, const 
 }
 
 void glVertexAttribP3ui(GLuint index, GLenum type, GLboolean normalized, GLuint value) {
-
 	pglVertexAttribP3ui(index, type, normalized, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4687,7 +4332,6 @@ void glVertexAttribP3ui(GLuint index, GLenum type, GLboolean normalized, GLuint 
 }
 
 void glVertexAttribP3uiv(GLuint index, GLenum type, GLboolean normalized, const GLuint *value) {
-
 	pglVertexAttribP3uiv(index, type, normalized, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4698,7 +4342,6 @@ void glVertexAttribP3uiv(GLuint index, GLenum type, GLboolean normalized, const 
 }
 
 void glVertexAttribP4ui(GLuint index, GLenum type, GLboolean normalized, GLuint value) {
-
 	pglVertexAttribP4ui(index, type, normalized, value);
 	if (checkError) {
 		GLenum err = pglGetError();
@@ -4709,7 +4352,6 @@ void glVertexAttribP4ui(GLuint index, GLenum type, GLboolean normalized, GLuint 
 }
 
 void glVertexAttribP4uiv(GLuint index, GLenum type, GLboolean normalized, const GLuint *value) {
-
 	pglVertexAttribP4uiv(index, type, normalized, value);
 	if (checkError) {
 		GLenum err = pglGetError();

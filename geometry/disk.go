@@ -21,7 +21,6 @@ func NewDisk(radius float64, segments int) *Geometry {
 // number of radial segments/triangles (minimum 3), sector start angle in radians, and sector size angle in radians.
 // The center of the disk is at the origin, and theta runs counter-clockwise on the XY plane, starting at (x,y,z)=(1,0,0).
 func NewDiskSector(radius float64, segments int, thetaStart, thetaLength float64) *Geometry {
-
 	d := NewGeometry()
 
 	// Validate arguments

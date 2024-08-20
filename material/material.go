@@ -9,11 +9,7 @@ package material
 import (
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/texture"
-	"github.com/derekmu/g3n/util/logger"
 )
-
-// Package logger
-var log = logger.New("MATERIAL", logger.Default)
 
 // Side represents the material's visible side(s).
 type Side int
@@ -95,14 +91,12 @@ type Material struct {
 
 // NewMaterial creates and returns a pointer to a new Material.
 func NewMaterial() *Material {
-
 	mat := new(Material)
 	return mat.Init()
 }
 
 // Init initializes the material.
 func (mat *Material) Init() *Material {
-
 	mat.refcount = 1
 	mat.useLights = UseLightAll
 	mat.side = SideFront
@@ -125,7 +119,6 @@ func (mat *Material) Init() *Material {
 
 // GetMaterial satisfies the IMaterial interface.
 func (mat *Material) GetMaterial() *Material {
-
 	return mat
 }
 
@@ -134,7 +127,6 @@ func (mat *Material) GetMaterial() *Material {
 // It should be used when this material is shared by another
 // Graphic object.
 func (mat *Material) Incref() *Material {
-
 	mat.refcount++
 	return mat
 }
@@ -143,7 +135,6 @@ func (mat *Material) Incref() *Material {
 // if necessary releases OpenGL resources, C memory
 // and textures associated with this material.
 func (mat *Material) Dispose() {
-
 	// Only dispose if last
 	if mat.refcount > 1 {
 		mat.refcount--
@@ -158,13 +149,11 @@ func (mat *Material) Dispose() {
 
 // SetShader sets the name of the shader program for this material
 func (mat *Material) SetShader(sname string) {
-
 	mat.shader = sname
 }
 
 // Shader returns the current name of the shader program for this material
 func (mat *Material) Shader() string {
-
 	return mat.shader
 }
 
@@ -172,13 +161,11 @@ func (mat *Material) Shader() string {
 // does not depend on the number of lights in the scene and/or the
 // number of textures in the material.
 func (mat *Material) SetShaderUnique(unique bool) {
-
 	mat.shaderUnique = unique
 }
 
 // ShaderUnique returns this material shader is unique.
 func (mat *Material) ShaderUnique() bool {
-
 	return mat.shaderUnique
 }
 
@@ -186,86 +173,71 @@ func (mat *Material) ShaderUnique() bool {
 // light types will be used when rendering the material
 // By default the material will use all lights
 func (mat *Material) SetUseLights(lights UseLights) {
-
 	mat.useLights = lights
 }
 
 // UseLights returns the current use lights bitmask
 func (mat *Material) UseLights() UseLights {
-
 	return mat.useLights
 }
 
 // SetSide sets the visible side(s) (SideFront | SideBack | SideDouble)
 func (mat *Material) SetSide(side Side) {
-
 	mat.side = side
 }
 
 // Side returns the current side visibility for this material
 func (mat *Material) Side() Side {
-
 	return mat.side
 }
 
 // SetTransparent sets whether this material is transparent.
 func (mat *Material) SetTransparent(state bool) {
-
 	mat.transparent = state
 }
 
 // Transparent returns whether this material has been set as transparent.
 func (mat *Material) Transparent() bool {
-
 	return mat.transparent
 }
 
 // SetWireframe sets whether only the wireframe is rendered.
 func (mat *Material) SetWireframe(state bool) {
-
 	mat.wireframe = state
 }
 
 // Wireframe returns whether only the wireframe is rendered.
 func (mat *Material) Wireframe() bool {
-
 	return mat.wireframe
 }
 
 func (mat *Material) SetDepthMask(state bool) {
-
 	mat.depthMask = state
 }
 
 func (mat *Material) SetDepthTest(state bool) {
-
 	mat.depthTest = state
 }
 
 func (mat *Material) SetDepthFunc(state uint32) {
-
 	mat.depthFunc = state
 }
 
 func (mat *Material) SetBlending(blending Blending) {
-
 	mat.blending = blending
 }
 
 func (mat *Material) SetLineWidth(width float32) {
-
 	mat.lineWidth = width
 }
 
 func (mat *Material) SetPolygonOffset(factor, units float32) {
-
 	mat.polyOffsetFactor = factor
 	mat.polyOffsetUnits = units
 }
 
 // RenderSetup is called by the renderer before drawing objects with this material.
 func (mat *Material) RenderSetup(gs *gls.GLS) {
-
 	// Sets triangle side view mode
 	switch mat.side {
 	case SideFront:
@@ -342,13 +314,11 @@ func (mat *Material) RenderSetup(gs *gls.GLS) {
 
 // AddTexture adds the specified Texture2d to the material
 func (mat *Material) AddTexture(tex *texture.Texture2D) {
-
 	mat.textures = append(mat.textures, tex)
 }
 
 // RemoveTexture removes the specified Texture2d from the material
 func (mat *Material) RemoveTexture(tex *texture.Texture2D) {
-
 	for pos, curr := range mat.textures {
 		if curr == tex {
 			copy(mat.textures[pos:], mat.textures[pos+1:])
@@ -361,7 +331,6 @@ func (mat *Material) RemoveTexture(tex *texture.Texture2D) {
 
 // HasTexture checks if the material contains the specified texture
 func (mat *Material) HasTexture(tex *texture.Texture2D) bool {
-
 	for _, curr := range mat.textures {
 		if curr == tex {
 			return true
@@ -372,12 +341,10 @@ func (mat *Material) HasTexture(tex *texture.Texture2D) bool {
 
 // TextureCount returns the current number of textures
 func (mat *Material) TextureCount() int {
-
 	return len(mat.textures)
 }
 
 // Textures returns a slice with this material's textures
 func (mat *Material) Textures() []*texture.Texture2D {
-
 	return mat.textures
 }

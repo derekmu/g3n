@@ -6,6 +6,7 @@ package gls
 
 import (
 	"github.com/derekmu/g3n/math32"
+	"log"
 )
 
 // VBO abstracts an OpenGL Vertex Buffer Object.
@@ -288,7 +289,7 @@ func (vbo *VBO) Transfer(gs *GLS) {
 			// Get attribute location in the current program
 			loc := gs.prog.GetAttribLocation(attrib.Name)
 			if loc < 0 {
-				log.Warn("Attribute not found: %v", attrib.Name)
+				log.Printf("Attribute not found: %v", attrib.Name)
 				continue
 			}
 			// Enables attribute and sets its stride and offset in the buffer

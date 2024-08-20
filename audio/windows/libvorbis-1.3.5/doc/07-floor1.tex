@@ -114,24 +114,20 @@ context.
   1) [floor1\_partitions] = read 5 bits as unsigned integer
   2) [maximum\_class] = -1
   3) iterate [i] over the range 0 ... [floor1\_partitions]-1 \{
-
         4) vector [floor1\_partition\_class\_list] element [i] = read 4 bits as unsigned integer
 
      \}
 
   5) [maximum\_class] = largest integer scalar value in vector [floor1\_partition\_class\_list]
   6) iterate [i] over the range 0 ... [maximum\_class] \{
-
         7) vector [floor1\_class\_dimensions] element [i] = read 3 bits as unsigned integer and add 1
 	8) vector [floor1\_class\_subclasses] element [i] = read 2 bits as unsigned integer
         9) if ( vector [floor1\_class\_subclasses] element [i] is nonzero ) \{
-
              10) vector [floor1\_class\_masterbooks] element [i] = read 8 bits as unsigned integer
 
            \}
 
        11) iterate [j] over the range 0 ... (2 exponent [floor1\_class\_subclasses] element [i]) - 1 \{
-
              12) array [floor1\_subclass\_books] element [i],[j] =
                  read 8 bits as unsigned integer and subtract one
            \}
@@ -143,7 +139,6 @@ context.
  16) vector [floor1\_X\_list] element [1] = 2 exponent [rangebits];
  17) [floor1\_values] = 2
  18) iterate [i] over the range 0 ... [floor1\_partitions]-1 \{
-
        19) [current\_class\_number] = vector [floor1\_partition\_class\_list] element [i]
        20) iterate [j] over the range 0 ... ([floor1\_class\_dimensions] element [current\_class\_number])-1 \{
              21) vector [floor1\_X\_list] element ([floor1\_values]) =
@@ -191,29 +186,24 @@ Assuming \varname{[nonzero]} is set, decode proceeds as follows:
   3) vector [floor1\_Y] element [1] = read \link{vorbis:spec:ilog}{ilog}([range]-1) bits as unsigned integer
   4) [offset] = 2;
   5) iterate [i] over the range 0 ... [floor1\_partitions]-1 \{
-
        6) [class] = vector [floor1\_partition\_class]  element [i]
        7) [cdim]  = vector [floor1\_class\_dimensions] element [class]
        8) [cbits] = vector [floor1\_class\_subclasses] element [class]
        9) [csub]  = (2 exponent [cbits])-1
       10) [cval]  = 0
       11) if ( [cbits] is greater than zero ) \{
-
              12) [cval] = read from packet using codebook number
                  (vector [floor1\_class\_masterbooks] element [class]) in scalar context
           \}
 
       13) iterate [j] over the range 0 ... [cdim]-1 \{
-
              14) [book] = array [floor1\_subclass\_books] element [class],([cval] bitwise AND [csub])
              15) [cval] = [cval] right shifted [cbits] bits
 	     16) if ( [book] is not less than zero ) \{
-
 	           17) vector [floor1\_Y] element ([j]+[offset]) = read from packet using codebook
                        [book] in scalar context
 
                  \} else [book] is less than zero \{
-
 	           18) vector [floor1\_Y] element ([j]+[offset]) = 0
 
                  \}
@@ -275,7 +265,6 @@ Unwrap the always-positive-or-zero values read from the packet into
   4) vector [floor1\_final\_Y] element [0] = vector [floor1\_Y] element [0]
   5) vector [floor1\_final\_Y] element [1] = vector [floor1\_Y] element [1]
   6) iterate [i] over the range 2 ... [floor1\_values]-1 \{
-
        7) [low\_neighbor\_offset] = \link{vorbis:spec:low:neighbor}{low\_neighbor}([floor1\_X\_list],[i])
        8) [high\_neighbor\_offset] = \link{vorbis:spec:high:neighbor}{high\_neighbor}([floor1\_X\_list],[i])
 
@@ -289,41 +278,32 @@ Unwrap the always-positive-or-zero values read from the packet into
       11) [highroom] = [range] - [predicted]
       12) [lowroom]  = [predicted]
       13) if ( [highroom] is less than [lowroom] ) \{
-
             14) [room] = [highroom] * 2
 
           \} else [highroom] is not less than [lowroom] \{
-
             15) [room] = [lowroom] * 2
 
           \}
 
       16) if ( [val] is nonzero ) \{
-
             17) vector [floor1\_step2\_flag] element [low\_neighbor\_offset] = set
             18) vector [floor1\_step2\_flag] element [high\_neighbor\_offset] = set
             19) vector [floor1\_step2\_flag] element [i] = set
             20) if ( [val] is greater than or equal to [room] ) \{
-
                   21) if ( [highroom] is greater than [lowroom] ) \{
-
                         22) vector [floor1\_final\_Y] element [i] = [val] - [lowroom] + [predicted]
 
 		      \} else [highroom] is not greater than [lowroom] \{
-
                         23) vector [floor1\_final\_Y] element [i] = [predicted] - [val] + [highroom] - 1
 
                       \}
 
                 \} else [val] is less than [room] \{
-
                     24) if ([val] is odd) \{
-
                         25) vector [floor1\_final\_Y] element [i] =
                             [predicted] - (([val] + 1) divided by  2 using integer division)
 
                       \} else [val] is even \{
-
                         26) vector [floor1\_final\_Y] element [i] =
                             [predicted] + ([val] / 2 using integer division)
 
@@ -332,7 +312,6 @@ Unwrap the always-positive-or-zero values read from the packet into
                 \}
 
           \} else [val] is zero \{
-
             27) vector [floor1\_step2\_flag] element [i] = unset
             28) vector [floor1\_final\_Y] element [i] = [predicted]
 
@@ -372,9 +351,7 @@ Then compute the final curve in one pass:
   2) [lx] = 0
   3) [ly] = vector [floor1\_final\_Y]' element [0] * [floor1\_multiplier]
   4) iterate [i] over the range 1 ... [floor1\_values]-1 \{
-
        5) if ( [floor1\_step2\_flag]' element [i] is set ) \{
-
              6) [hy] = [floor1\_final\_Y]' element [i] * [floor1\_multiplier]
  	     7) [hx] = [floor1\_X\_list]' element [i]
              8) \link{vorbis:spec:render:line}{render\_line}( [lx], [ly], [hx], [hy], [floor] )
@@ -384,13 +361,11 @@ Then compute the final curve in one pass:
      \}
 
  11) if ( [hx] is less than [n] ) \{
-
         12) \link{vorbis:spec:render:line}{render\_line}( [hx], [hy], [n], [hy], [floor] )
 
      \}
 
  13) if ( [hx] is greater than [n] ) \{
-
             14) truncate vector [floor] to [n] elements
 
      \}
