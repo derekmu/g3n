@@ -3,18 +3,16 @@
 // license that can be found in the LICENSE file.
 
 //go:build !wasm
-// +build !wasm
 
 package app
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/derekmu/g3n/audio/al"
 	"github.com/derekmu/g3n/audio/vorbis"
 	"github.com/derekmu/g3n/renderer"
 	"github.com/derekmu/g3n/window"
+	"time"
 )
 
 // Application
@@ -30,7 +28,6 @@ type Application struct {
 
 // App returns the Application singleton, creating it the first time.
 func App(width, height int, title string) *Application {
-
 	// Return singleton if already created
 	if a != nil {
 		return a
@@ -56,11 +53,9 @@ func App(width, height int, title string) *Application {
 // Run starts the update loop.
 // It calls the user-provided update function every frame.
 func (a *Application) Run(update func(rend *renderer.Renderer, deltaTime time.Duration)) {
-
 	// Initialize start and frame time
 	a.startTime = time.Now()
 	a.frameStart = time.Now()
-
 	// Set up recurring calls to user's update function
 	for {
 		// If Exit() was called or there was an attempt to close the window dispatch OnExit event for subscribers.
@@ -84,7 +79,6 @@ func (a *Application) Run(update func(rend *renderer.Renderer, deltaTime time.Du
 		a.IWindow.(*window.GlfwWindow).SwapBuffers()
 		a.IWindow.(*window.GlfwWindow).PollEvents()
 	}
-
 	// Close default audio device
 	if a.audioDev != nil {
 		al.CloseDevice(a.audioDev)
@@ -97,25 +91,21 @@ func (a *Application) Run(update func(rend *renderer.Renderer, deltaTime time.Du
 // Application will dispatch OnQuit events to registered subscribers which
 // can cancel the process by calling CancelDispatch().
 func (a *Application) Exit() {
-
 	a.IWindow.(*window.GlfwWindow).SetShouldClose(true)
 }
 
 // Renderer returns the application's renderer.
 func (a *Application) Renderer() *renderer.Renderer {
-
 	return a.renderer
 }
 
 // KeyState returns the application's KeyState.
 func (a *Application) KeyState() *window.KeyState {
-
 	return a.keyState
 }
 
 // RunTime returns the elapsed duration since the call to Run().
 func (a *Application) RunTime() time.Duration {
-
 	return time.Since(a.startTime)
 }
 

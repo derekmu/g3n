@@ -1,5 +1,4 @@
-//go:build wasm && go1.13
-// +build wasm,go1.13
+//go:build wasm
 
 package wasm
 
