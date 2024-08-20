@@ -93,6 +93,7 @@ func (vbo *VBO) init() {
 	vbo.update = true
 	vbo.attribs = make([]VBOattrib, 0)
 }
+
 func (vbo *VBO) Clone() *VBO {
 	vbo2 := NewVBO(vbo.buffer[:])
 	vbo2.usage = vbo.usage
