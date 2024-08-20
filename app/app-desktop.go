@@ -39,7 +39,6 @@ func App(width, height int, title string) *Application {
 		panic(err)
 	}
 	a.IWindow = window.Get()
-	a.openDefaultAudioDevice()         // Set up audio
 	a.keyState = window.NewKeyState(a) // Create KeyState
 	// Create renderer and add default shaders
 	a.renderer = renderer.NewRenderer(a.Gls())
@@ -109,9 +108,8 @@ func (a *Application) RunTime() time.Duration {
 	return time.Since(a.startTime)
 }
 
-// openDefaultAudioDevice opens the default audio device setting it to the current context
-func (a *Application) openDefaultAudioDevice() error {
-
+// OpenDefaultAudioDevice opens the default audio device setting it to the current context
+func (a *Application) OpenDefaultAudioDevice() error {
 	// Opens default audio device
 	var err error
 	a.audioDev, err = al.OpenDevice("")
