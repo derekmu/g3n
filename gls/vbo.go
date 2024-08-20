@@ -27,7 +27,7 @@ type VBOattrib struct {
 	ElementType uint32     // Type of the element (e.g. FLOAT, INT, UNSIGNED_SHORT, etc...)
 }
 
-// AttribType is the functional type of a vbo attribute.
+// AttribType is the functional type of vbo attribute.
 type AttribType int
 
 const (
@@ -58,7 +58,7 @@ var attribTypeNameMap = map[AttribType]string{
 var attribTypeSizeMap = map[AttribType]int32{
 	VertexPosition:  3,
 	VertexNormal:    3,
-	VertexTangent:   3, // TODO
+	VertexTangent:   3,
 	VertexColor:     3,
 	VertexTexcoord:  2,
 	VertexTexcoord2: 2,
@@ -79,7 +79,6 @@ var elementTypeSizeMap = map[uint32]int{
 
 // NewVBO creates and returns a pointer to a new OpenGL Vertex Buffer Object.
 func NewVBO(buffer math32.ArrayF32) *VBO {
-
 	vbo := new(VBO)
 	vbo.init()
 	vbo.SetBuffer(buffer)
@@ -88,18 +87,22 @@ func NewVBO(buffer math32.ArrayF32) *VBO {
 
 // init initializes the VBO.
 func (vbo *VBO) init() {
-
 	vbo.gs = nil
 	vbo.handle = 0
 	vbo.usage = STATIC_DRAW
 	vbo.update = true
 	vbo.attribs = make([]VBOattrib, 0)
 }
+func (vbo *VBO) Clone() *VBO {
+	vbo2 := NewVBO(vbo.buffer[:])
+	vbo2.usage = vbo.usage
+	vbo2.attribs = vbo.attribs[:]
+	return vbo2
+}
 
 // AddAttrib adds a new attribute to the VBO with the specified type.
 // The attribute's ByteOffset is computed automatically based on the existing attributes.
 func (vbo *VBO) AddAttrib(atype AttribType) *VBO {
-
 	vbo.attribs = append(vbo.attribs, VBOattrib{
 		Type:        atype,
 		Name:        attribTypeNameMap[atype],
@@ -112,7 +115,6 @@ func (vbo *VBO) AddAttrib(atype AttribType) *VBO {
 
 // AddAttribOffset adds a new attribute to the VBO with the specified type and byteOffset.
 func (vbo *VBO) AddAttribOffset(atype AttribType, byteOffset uint32) *VBO {
-
 	vbo.attribs = append(vbo.attribs, VBOattrib{
 		Type:        atype,
 		Name:        attribTypeNameMap[atype],
@@ -125,7 +127,6 @@ func (vbo *VBO) AddAttribOffset(atype AttribType, byteOffset uint32) *VBO {
 
 // AddCustomAttrib adds a new attribute to the VBO with the specified name and itemSize.
 func (vbo *VBO) AddCustomAttrib(name string, itemSize int32) *VBO {
-
 	vbo.attribs = append(vbo.attribs, VBOattrib{
 		Type:        Undefined,
 		Name:        name,
@@ -138,7 +139,6 @@ func (vbo *VBO) AddCustomAttrib(name string, itemSize int32) *VBO {
 
 // AddCustomAttribOffset adds a new attribute to the VBO with the specified name, itemSize and byteOffset.
 func (vbo *VBO) AddCustomAttribOffset(name string, itemSize int32, byteOffset uint32) *VBO {
-
 	vbo.attribs = append(vbo.attribs, VBOattrib{
 		Type:        Undefined,
 		Name:        name,
@@ -152,7 +152,6 @@ func (vbo *VBO) AddCustomAttribOffset(name string, itemSize int32, byteOffset ui
 // Attrib finds and returns a pointer to the VBO attribute with the specified type.
 // Returns nil if not found.
 func (vbo *VBO) Attrib(atype AttribType) *VBOattrib {
-
 	for i := range vbo.attribs {
 		if vbo.attribs[i].Type == atype {
 			return &vbo.attribs[i]
@@ -164,7 +163,6 @@ func (vbo *VBO) Attrib(atype AttribType) *VBOattrib {
 // AttribName finds and returns a pointer to the VBO attribute with the specified name.
 // Returns nil if not found.
 func (vbo *VBO) AttribName(name string) *VBOattrib {
-
 	for i := range vbo.attribs {
 		if vbo.attribs[i].Name == name {
 			return &vbo.attribs[i]
@@ -175,19 +173,16 @@ func (vbo *VBO) AttribName(name string) *VBOattrib {
 
 // AttribAt returns a pointer to the VBO attribute at the specified index.
 func (vbo *VBO) AttribAt(idx int) *VBOattrib {
-
 	return &vbo.attribs[idx]
 }
 
 // AttribCount returns the current number of attributes for this VBO.
 func (vbo *VBO) AttribCount() int {
-
 	return len(vbo.attribs)
 }
 
 // Attributes returns the attributes for this VBO.
 func (vbo *VBO) Attributes() []VBOattrib {
-
 	return vbo.attribs
 }
 
@@ -195,7 +190,6 @@ func (vbo *VBO) Attributes() []VBOattrib {
 // As currently the VBO is used only by Geometry objects
 // it is not referenced counted.
 func (vbo *VBO) Dispose() {
-
 	if vbo.gs != nil {
 		vbo.gs.DeleteBuffers(vbo.handle)
 	}
@@ -204,7 +198,6 @@ func (vbo *VBO) Dispose() {
 
 // SetBuffer sets the VBO buffer.
 func (vbo *VBO) SetBuffer(buffer math32.ArrayF32) *VBO {
-
 	vbo.buffer = buffer
 	vbo.update = true
 	return vbo
@@ -213,26 +206,22 @@ func (vbo *VBO) SetBuffer(buffer math32.ArrayF32) *VBO {
 // SetUsage sets the expected usage pattern of the buffer.
 // The default value is GL_STATIC_DRAW.
 func (vbo *VBO) SetUsage(usage uint32) {
-
 	vbo.usage = usage
 }
 
 // Buffer returns a pointer to the VBO buffer.
 func (vbo *VBO) Buffer() *math32.ArrayF32 {
-
 	return &vbo.buffer
 }
 
 // Update sets the update flag to force the VBO update.
 func (vbo *VBO) Update() {
-
 	vbo.update = true
 }
 
 // AttribOffset returns the total number of elements from
 // all attributes preceding the attribute specified by type.
 func (vbo *VBO) AttribOffset(attribType AttribType) int {
-
 	elementCount := 0
 	for _, attr := range vbo.attribs {
 		if attr.Type == attribType {
@@ -246,7 +235,6 @@ func (vbo *VBO) AttribOffset(attribType AttribType) int {
 // AttribOffsetName returns the total number of elements from
 // all attributes preceding the attribute specified by name.
 func (vbo *VBO) AttribOffsetName(name string) int {
-
 	elementCount := 0
 	for _, attr := range vbo.attribs {
 		if attr.Name == name {
@@ -262,7 +250,6 @@ func (vbo *VBO) AttribOffsetName(name string) int {
 // "VertexPosition" (3 elements) and "VertexTexcoord" (2 elements), the stride would be 5:
 // [X, Y, Z, U, V], X, Y, Z, U, V, X, Y, Z, U, V... X, Y, Z, U, V.
 func (vbo *VBO) Stride() int {
-
 	stride := 0
 	for _, attrib := range vbo.attribs {
 		stride += int(attrib.NumElements)
@@ -276,7 +263,6 @@ func (vbo *VBO) Stride() int {
 // [X, Y, Z, U, V], X, Y, Z, U, V, X, Y, Z, U, V... X, Y, Z, U, V
 // and the stride size would be: sizeof(float)*stride = 4*5 = 20
 func (vbo *VBO) StrideSize() int {
-
 	strideSize := 0
 	for _, attrib := range vbo.attribs {
 		strideSize += int(attrib.NumElements) * elementTypeSizeMap[attrib.ElementType]
@@ -286,12 +272,10 @@ func (vbo *VBO) StrideSize() int {
 
 // Transfer (called internally) transfers the data from the VBO buffer to OpenGL if necessary.
 func (vbo *VBO) Transfer(gs *GLS) {
-
 	// If the VBO buffer is empty, ignore
 	if vbo.buffer.Bytes() == 0 {
 		return
 	}
-
 	// First time initialization
 	if vbo.gs == nil {
 		vbo.handle = gs.GenBuffer()
@@ -312,12 +296,10 @@ func (vbo *VBO) Transfer(gs *GLS) {
 		}
 		vbo.gs = gs // this indicates that the vbo was initialized
 	}
-
 	// If nothing has changed, no need to transfer data to OpenGL
 	if !vbo.update {
 		return
 	}
-
 	// Transfer the VBO data to OpenGL
 	gs.BindBuffer(ARRAY_BUFFER, vbo.handle)
 	gs.BufferData(ARRAY_BUFFER, vbo.buffer.Bytes(), vbo.buffer.ToFloat32(), vbo.usage)
@@ -329,11 +311,9 @@ func (vbo *VBO) Transfer(gs *GLS) {
 // The vector pointers can be modified inside the callback and the modifications will be applied to the buffer at each iteration.
 // The callback function returns false to continue or true to break.
 func (vbo *VBO) OperateOnVectors3(attribType AttribType, cb func(vec *math32.Vector3) bool) {
-
 	stride := vbo.Stride()
 	offset := vbo.AttribOffset(attribType)
 	buffer := vbo.Buffer()
-
 	// Call callback for each vector3, updating the buffer afterward
 	var vec math32.Vector3
 	for i := offset; i < vbo.buffer.Size(); i += stride {
@@ -351,11 +331,9 @@ func (vbo *VBO) OperateOnVectors3(attribType AttribType, cb func(vec *math32.Vec
 // and calls the specified callback function with the value of each item as a Vector3.
 // The callback function returns false to continue or true to break.
 func (vbo *VBO) ReadVectors3(attribType AttribType, cb func(vec math32.Vector3) bool) {
-
 	stride := vbo.Stride()
 	offset := vbo.AttribOffset(attribType)
 	positions := vbo.Buffer()
-
 	// Call callback for each vector3
 	var vec math32.Vector3
 	for i := offset; i < positions.Size(); i += stride {
@@ -367,18 +345,15 @@ func (vbo *VBO) ReadVectors3(attribType AttribType, cb func(vec math32.Vector3) 
 	}
 }
 
-// Read3Vectors3 iterates over all 3-float32 items (3 items at a time) for the specified attribute
+// ReadTripleVectors3 iterates over all 3-float32 items (3 items at a time) for the specified attribute
 // and calls the specified callback function with the value of each of the 3 items as Vector3.
 // The callback function returns false to continue or true to break.
 func (vbo *VBO) ReadTripleVectors3(attribType AttribType, cb func(vec1, vec2, vec3 math32.Vector3) bool) {
-
 	stride := vbo.Stride()
 	offset := vbo.AttribOffset(attribType)
 	positions := vbo.Buffer()
-
 	doubleStride := 2 * stride
 	loopStride := 3 * stride
-
 	// Call callback for each vector3 triple
 	var vec1, vec2, vec3 math32.Vector3
 	for i := offset; i < positions.Size(); i += loopStride {

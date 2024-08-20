@@ -76,9 +76,12 @@ func (g *Geometry) Init() {
 
 func (g *Geometry) Clone() *Geometry {
 	g2 := NewGeometry()
-	g2.groups = g.groups
-	g2.vbos = g.vbos
-	g2.indices = g.indices
+	g2.groups = g.groups[:]
+	g2.vbos = make([]*gls.VBO, len(g.vbos))
+	for i := range g2.vbos {
+		g2.vbos[i] = g.vbos[i].Clone()
+	}
+	g2.indices = g.indices[:]
 	return g2
 }
 
