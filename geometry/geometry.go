@@ -73,15 +73,13 @@ func (g *Geometry) Init() {
 	g.updateIndices = true
 	g.ShaderDefines = *gls.NewShaderDefines()
 }
-func (g *Geometry) Reset() {
-	if g.gs != nil {
-		g.gs.DeleteVertexArrays(g.handleVAO)
-		g.gs.DeleteBuffers(g.handleIndices)
-		g.handleVAO = 0
-		g.handleIndices = 0
-	}
-	g.updateIndices = true
-	g.gs = nil
+
+func (g *Geometry) Clone() *Geometry {
+	g2 := NewGeometry()
+	g2.groups = g.groups
+	g2.vbos = g.vbos
+	g2.indices = g.indices
+	return g2
 }
 
 // GetGeometry satisfies the IGeometry interface.
