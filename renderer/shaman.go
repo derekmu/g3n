@@ -6,7 +6,6 @@ package renderer
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 
@@ -153,7 +152,6 @@ func (sm *Shaman) SetProgram(s *ShaderSpecs) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	log.Printf("Created new shader:%v", specs.Name)
 
 	// Save specs as current specs, adds new program to the list and activates the program
 	sm.specs = specs
