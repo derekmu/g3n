@@ -450,7 +450,7 @@ func (gs *GLS) GenRenderbuffer() uint32 {
 
 // DeleteRenderbuffer deletes a renderbuffer.
 func (gs *GLS) DeleteRenderbuffer(rb uint32) {
-	C.glDeleteRenderbuffers(1, rb)
+	C.glDeleteRenderbuffers(1, (*C.GLuint)(&rb))
 	gs.stats.Rbos--
 }
 
