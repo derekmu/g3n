@@ -426,7 +426,7 @@ func (gs *GLS) GenBuffer() uint32 {
 }
 
 // GenFramebuffer creates a new framebuffer.
-// Framebuffers store (usually two) render buffers.
+// Framebuffers store (usually two) renderbuffers.
 func (gs *GLS) GenFramebuffer() uint32 {
 	var fb uint32
 	C.glGenFramebuffers(1, (*C.GLuint)(&fb))
@@ -434,7 +434,13 @@ func (gs *GLS) GenFramebuffer() uint32 {
 	return fb
 }
 
-// GenRenderbuffer creates a new render buffer.
+// DeleteFramebuffer deletes a framebuffer.
+func (gs *GLS) DeleteFramebuffer(fb uint32) {
+	C.glDeleteFramebuffers(1, (*C.GLuint)(&fb))
+	gs.stats.Fbos--
+}
+
+// GenRenderbuffer creates a new renderbuffer.
 func (gs *GLS) GenRenderbuffer() uint32 {
 	var rb uint32
 	C.glGenRenderbuffers(1, (*C.GLuint)(&rb))
@@ -442,17 +448,23 @@ func (gs *GLS) GenRenderbuffer() uint32 {
 	return rb
 }
 
+// DeleteRenderbuffer deletes a renderbuffer.
+func (gs *GLS) DeleteRenderbuffer(rb uint32) {
+	C.glDeleteRenderbuffers(1, rb)
+	gs.stats.Rbos--
+}
+
 // BindFramebuffer sets the current framebuffer.
 func (gs *GLS) BindFramebuffer(fb uint32) {
 	C.glBindFramebuffer(FRAMEBUFFER, C.GLuint(fb))
 }
 
-// BindRenderbuffer sets the current render buffer.
+// BindRenderbuffer sets the current renderbuffer.
 func (gs *GLS) BindRenderbuffer(rb uint32) {
 	C.glBindRenderbuffer(RENDERBUFFER, C.GLuint(rb))
 }
 
-// RenderbufferStorage allocates space for the bound render buffer.
+// RenderbufferStorage allocates space for the bound renderbuffer.
 // Format is the internal storage format, e.g. RGBA32F
 func (gs *GLS) RenderbufferStorage(format uint, width int, height int) {
 	C.glRenderbufferStorage(RENDERBUFFER, C.GLuint(format), C.GLint(width), C.GLint(height))
