@@ -6,6 +6,9 @@ uniform mat4 ModelMatrix;
 // Outputs for fragment shader
 out vec2 FragTexcoord;
 
+// Texture uniforms
+uniform vec2        MatTexinfo[3];
+
 #define MatTexFlipY            bool(MatTexinfo[2].x)
 
 void main() {
