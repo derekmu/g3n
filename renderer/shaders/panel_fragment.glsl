@@ -7,8 +7,6 @@ uniform vec2        MatTexinfo[3];
 // Macros to access elements inside the MatTexinfo array
 #define MatTexOffset        MatTexinfo[0]
 #define MatTexRepeat        MatTexinfo[1]
-#define MatTexFlipY            bool(MatTexinfo[2].x)// not used
-#define MatTexVisible        bool(MatTexinfo[2].y)// not used
 
 // Inputs from vertex shader
 in vec2 FragTexcoord;

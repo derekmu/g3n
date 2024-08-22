@@ -6,11 +6,14 @@ uniform mat4 ModelMatrix;
 // Outputs for fragment shader
 out vec2 FragTexcoord;
 
+#define MatTexFlipY            bool(MatTexinfo[2].x)
 
 void main() {
-    // Always flip texture coordinates
     vec2 texcoord = VertexTexcoord;
-    texcoord.y = 1.0 - texcoord.y;
+    // Flip texture coordinate Y if requested.
+    if (MatTexFlipY) {
+        texcoord.y = 1.0 - texcoord.y;
+    }
     FragTexcoord = texcoord;
 
     // Set position
