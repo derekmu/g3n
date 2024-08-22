@@ -52,7 +52,39 @@ uniform vec4 Material[3];
 #define uMetallicFactor     Material[2].x
 #define uRoughnessFactor    Material[2].y
 
-#include <lights>
+// Lights uniforms
+#if AMB_LIGHTS > 0
+// Ambient lights color uniform
+uniform vec3 AmbientLightColor[AMB_LIGHTS];
+#endif
+#if DIR_LIGHTS > 0
+// Directional lights uniform array. Each directional light uses 2 elements
+uniform vec3 DirLight[2 * DIR_LIGHTS];
+// Macros to access elements inside the DirectionalLight uniform array
+#define DirLightColor(a)    DirLight[2 * a]
+#define DirLightPosition(a) DirLight[2 * a + 1]
+#endif
+#if POINT_LIGHTS > 0
+// Point lights uniform array. Each point light uses 3 elements
+uniform vec3 PointLight[3 * POINT_LIGHTS];
+// Macros to access elements inside the PointLight uniform array
+#define PointLightColor(a)          PointLight[3 * a]
+#define PointLightPosition(a)       PointLight[3 * a + 1]
+#define PointLightLinearDecay(a)    PointLight[3 * a + 2].x
+#define PointLightQuadraticDecay(a) PointLight[3 * a + 2].y
+#endif
+#if SPOT_LIGHTS > 0
+// Spot lights uniforms. Each spot light uses 5 elements
+uniform vec3 SpotLight[5 * SPOT_LIGHTS];
+// Macros to access elements inside the PointLight uniform array
+#define SpotLightColor(a)           SpotLight[5 * a]
+#define SpotLightPosition(a)        SpotLight[5 * a + 1]
+#define SpotLightDirection(a)       SpotLight[5 * a + 2]
+#define SpotLightAngularDecay(a)    SpotLight[5 * a + 3].x
+#define SpotLightCutoffAngle(a)     SpotLight[5 * a + 3].y
+#define SpotLightLinearDecay(a)     SpotLight[5 * a + 3].z
+#define SpotLightQuadraticDecay(a)  SpotLight[5 * a + 4].x
+#endif
 
 // Inputs from vertex shader
 in vec3 Position;// Vertex position in camera coordinates.
@@ -95,7 +127,7 @@ vec4 SRGBtoLINEAR(vec4 srgbIn) {
     //        vec3 linOut = pow(srgbIn.xyz,vec3(2.2));
     //    #else //SRGB_FAST_APPROXIMATION
     vec3 bLess = step(vec3(0.04045), srgbIn.xyz);
-    vec3 linOut = mix(srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055), vec3(2.4)), bLess);
+    vec3 linOut = mix(srgbIn.xyz / vec3(12.92), pow((srgbIn.xyz + vec3(0.055)) / vec3(1.055), vec3(2.4)), bLess);
     //    #endif //SRGB_FAST_APPROXIMATION
     return vec4(linOut, srgbIn.w);
     //#else //MANUAL_SRGB
@@ -211,7 +243,7 @@ vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
     vec3 n = getNormal();// normal at surface point
     vec3 v = normalize(CamDir);// Vector from surface point to camera
     vec3 l = normalize(lightDir);// Vector from surface point to light
-    vec3 h = normalize(l+v);// Half vector between both l and v
+    vec3 h = normalize(l + v);// Half vector between both l and v
     vec3 reflection = -normalize(reflect(v, n));
 
     float NdotL = clamp(dot(n, l), 0.001, 1.0);
@@ -295,14 +327,14 @@ void main() {
     //    vec3 normal = getNormal();
     vec3 color = vec3(0.0);
 
-    #if AMB_LIGHTS>0
+    #if AMB_LIGHTS > 0
     // Ambient lights
     for (int i = 0; i < AMB_LIGHTS; i++) {
         color += AmbientLightColor[i] * pbrInputs.diffuseColor;
     }
     #endif
 
-    #if DIR_LIGHTS>0
+    #if DIR_LIGHTS > 0
     // Directional lights
     for (int i = 0; i < DIR_LIGHTS; i++) {
         // Diffuse reflection
@@ -313,7 +345,7 @@ void main() {
     }
     #endif
 
-    #if POINT_LIGHTS>0
+    #if POINT_LIGHTS > 0
     // Point lights
     for (int i = 0; i < POINT_LIGHTS; i++) {
         // Common calculations
@@ -331,7 +363,7 @@ void main() {
     }
     #endif
 
-    #if SPOT_LIGHTS>0
+    #if SPOT_LIGHTS > 0
     for (int i = 0; i < SPOT_LIGHTS; i++) {
         // Calculates the direction and distance from the current vertex to this spot light.
         vec3 lightDirection = SpotLightPosition(i) - vec3(Position);
@@ -406,5 +438,5 @@ void main() {
     //    color = vec3(metallic);
 
     // Final fragment color
-    FragColor = vec4(pow(color, vec3(1.0/2.2)), baseColor.a);
+    FragColor = vec4(pow(color, vec3(1.0 / 2.2)), baseColor.a);
 }

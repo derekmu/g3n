@@ -5,23 +5,11 @@
 // Package shaders contains the several shaders used by the engine
 package shaders
 
-// Generates shaders sources from this directory and include directory *.glsl files
-//go:generate g3nshaders -in=. -out=sources.go -pkg=shaders -v
-
 // ProgramInfo contains information for a registered shader program
 type ProgramInfo struct {
 	Vertex   string // Vertex shader name
 	Fragment string // Fragment shader name
 	Geometry string // Geometry shader name (optional)
-}
-
-// AddInclude adds a chunk of shader code to the default shaders registry
-// which can be included in a shader using the "#include <name>" directive
-func AddInclude(name string, source string) {
-	if len(name) == 0 || len(source) == 0 {
-		panic("Invalid include name and/or source")
-	}
-	includeMap[name] = source
 }
 
 // AddShader add a shader to default shaders registry.
@@ -57,21 +45,6 @@ func AddProgram(name string, vertex string, frag string, others ...string) {
 		Fragment: frag,
 		Geometry: geom,
 	}
-}
-
-// Includes returns list with the names of all include chunks currently in the default shaders registry.
-func Includes() []string {
-	list := make([]string, 0)
-	for name := range includeMap {
-		list = append(list, name)
-	}
-	return list
-}
-
-// IncludeSource returns the source code of the specified shader include chunk.
-// If the name is not found an empty string is returned.
-func IncludeSource(name string) string {
-	return includeMap[name]
 }
 
 // Shaders returns list with the names of all shaders currently in the default shaders registry.

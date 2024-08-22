@@ -1,4 +1,8 @@
-#include <attributes>
+// Vertex attributes
+layout (location = 0) in vec3 VertexPosition;
+layout (location = 1) in vec3 VertexNormal;
+layout (location = 2) in vec3 VertexColor;
+layout (location = 3) in vec2 VertexTexcoord;
 
 // Model uniforms
 uniform mat4 ModelMatrix;
@@ -7,7 +11,7 @@ uniform mat4 ModelMatrix;
 out vec2 FragTexcoord;
 
 // Texture uniforms
-uniform vec2        MatTexinfo[3];
+uniform vec2 MatTexinfo[3];
 
 #define MatTexFlipY            bool(MatTexinfo[2].x)
 

@@ -1,23 +1,23 @@
 precision highp float;
 
 // Texture uniforms
-uniform sampler2D    MatTexture;
-uniform vec2        MatTexinfo[3];
+uniform sampler2D MatTexture;
+uniform vec2 MatTexinfo[3];
 
 // Macros to access elements inside the MatTexinfo array
-#define MatTexOffset        MatTexinfo[0]
-#define MatTexRepeat        MatTexinfo[1]
+#define MatTexOffset    MatTexinfo[0]
+#define MatTexRepeat    MatTexinfo[1]
 
 // Inputs from vertex shader
 in vec2 FragTexcoord;
 
 // Input uniform
 uniform vec4 Panel[8];
-#define Bounds            Panel[0]// panel bounds in texture coordinates
-#define Border            Panel[1]// panel border in texture coordinates
-#define Padding            Panel[2]// panel padding in texture coordinates
-#define Content            Panel[3]// panel content area in texture coordinates
-#define BorderColor        Panel[4]// panel border color
+#define Bounds          Panel[0]// panel bounds in texture coordinates
+#define Border          Panel[1]// panel border in texture coordinates
+#define Padding         Panel[2]// panel padding in texture coordinates
+#define Content         Panel[3]// panel content area in texture coordinates
+#define BorderColor     Panel[4]// panel border color
 #define PaddingColor    Panel[5]// panel padding color
 #define ContentColor    Panel[6]// panel content color
 #define TextureValid    bool(Panel[7].x)// texture valid flag
@@ -72,7 +72,7 @@ void main() {
         if (TextureValid) {
             // Adjust texture coordinates to fit texture inside the content area
             vec2 offset = vec2(-Content[0], -Content[1]);
-            vec2 factor = vec2(1.0/Content[2], 1.0/Content[3]);
+            vec2 factor = vec2(1.0 / Content[2], 1.0 / Content[3]);
             vec2 texcoord = (FragTexcoord + offset) * factor;
             vec4 texColor = texture(MatTexture, texcoord * MatTexRepeat + MatTexOffset);
 
