@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build !wasm
-
 package audio
 
 import (
@@ -166,8 +164,7 @@ func (af *AudioFile) SetLooping(looping bool) {
 	af.looping = looping
 }
 
-// openWave tries to open the specified file as a wave file
-// and if succesfull, sets the file pointer positioned after the header.
+// openWave tries to open the specified file as a wave file and if successful, sets the file pointer positioned after the header.
 func (af *AudioFile) openWave(filename string) error {
 	// Open file
 	osf, err := os.Open(filename)
@@ -179,20 +176,20 @@ func (af *AudioFile) openWave(filename string) error {
 	header := make([]uint8, waveHeaderSize)
 	n, err := osf.Read(header)
 	if err != nil {
-		osf.Close()
+		_ = osf.Close()
 		return err
 	}
 	if n < waveHeaderSize {
-		osf.Close()
-		return fmt.Errorf("File size less than header")
+		_ = osf.Close()
+		return fmt.Errorf("file size less than header")
 	}
 	// Checks file marks
 	if string(header[0:4]) != fileMark {
-		osf.Close()
+		_ = osf.Close()
 		return fmt.Errorf("'RIFF' mark not found")
 	}
 	if string(header[8:12]) != fileHead {
-		osf.Close()
+		_ = osf.Close()
 		return fmt.Errorf("'WAVE' mark not found")
 	}
 
@@ -218,8 +215,8 @@ func (af *AudioFile) openWave(filename string) error {
 		}
 	}
 	if af.info.Format == -1 {
-		osf.Close()
-		return fmt.Errorf("Unsupported OpenAL format")
+		_ = osf.Close()
+		return fmt.Errorf("unsupported OpenAL format")
 	}
 
 	// Calculates bytes/sec and total time
@@ -235,7 +232,7 @@ func (af *AudioFile) openWave(filename string) error {
 	// Seeks after the header
 	_, err = osf.Seek(waveHeaderSize, 0)
 	if err != nil {
-		osf.Close()
+		_ = osf.Close()
 		return err
 	}
 
@@ -243,10 +240,9 @@ func (af *AudioFile) openWave(filename string) error {
 	return nil
 }
 
-// openVorbis tries to open the specified file as an ogg vorbis file
-// and if succesfull, sets up the player for playing this file
+// openVorbis tries to open the specified file as an Ogg Vorbis file and if successful, sets up the player for playing this file.
 func (af *AudioFile) openVorbis(filename string) error {
-	// Try to open file as ogg vorbis
+	// Try to open file as Ogg Vorbis
 	vf, err := ov.Fopen(filename)
 	if err != nil {
 		return err
@@ -263,17 +259,15 @@ func (af *AudioFile) openVorbis(filename string) error {
 	} else if info.Channels == 2 {
 		af.info.Format = al.FormatStereo16
 	} else {
-		return fmt.Errorf("Unsupported number of channels")
+		return fmt.Errorf("unsupported number of channels")
 	}
 	totalSamples, err := ov.PcmTotal(vf, -1)
 	if err != nil {
-		ov.Clear(vf)
-		return nil
+		return ov.Clear(vf)
 	}
 	timeTotal, err := ov.TimeTotal(vf, -1)
 	if err != nil {
-		ov.Clear(vf)
-		return nil
+		return ov.Clear(vf)
 	}
 
 	af.vorbisf = vf

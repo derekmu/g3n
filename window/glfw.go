@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build !wasm
-
 package window
 
 import (
@@ -176,7 +174,9 @@ const (
 	StickyMouseButtonsInputMode = InputMode(glfw.StickyMouseButtonsMode) // Value can be either 1 or 0
 )
 
-// Cursor mode values
+// CursorMode is an enum of the possible GLFW cu
+type CursorMode int
+
 const (
 	CursorNormal   = CursorMode(glfw.CursorNormal)
 	CursorHidden   = CursorMode(glfw.CursorHidden)
@@ -259,7 +259,7 @@ func Init(width, height int, title string) error {
 	w.MakeContextCurrent()
 
 	// Create OpenGL state
-	w.gls, err = gls.New()
+	w.gls, err = gls.NewGLS()
 	if err != nil {
 		return err
 	}
@@ -308,9 +308,8 @@ func Init(width, height int, title string) error {
 	})
 
 	// Set up char callback to dispatch event
-	w.SetCharModsCallback(func(x *glfw.Window, char rune, mods glfw.ModifierKey) {
+	w.SetCharCallback(func(x *glfw.Window, char rune) {
 		w.charEv.Char = char
-		w.charEv.Mods = ModifierKey(mods)
 		w.Dispatch(OnChar, &w.charEv)
 	})
 

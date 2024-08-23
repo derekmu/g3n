@@ -2,6 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package helper
+package renderer
 
-// TODO: draw the camera frustum
+const GLSL_VERSION = "330 core"

@@ -286,7 +286,9 @@ func DecodeImage(imgfile string) (*image.RGBA, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		_ = file.Close()
+	}(file)
 
 	// Decodes image
 	img, _, err := image.Decode(file)

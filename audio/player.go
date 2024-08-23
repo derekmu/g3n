@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build !wasm
-
 package audio
 
 // #include <stdlib.h>
@@ -72,7 +70,7 @@ func (p *Player) Dispose() {
 	p.Stop()
 
 	// Close file
-	p.af.Close()
+	_ = p.af.Close()
 
 	// Release OpenAL resources
 	al.DeleteSource(p.source)
@@ -266,7 +264,7 @@ func (p *Player) SetRolloffFactor(rfactor float32) {
 // Render satisfies the INode interface.
 // It is called by renderer at every frame and is used to
 // update the audio source position and direction
-func (p *Player) Render(gl *gls.GLS) {
+func (p *Player) Render(_ *gls.GLS) {
 	// Sets the player source world position
 	var wpos math32.Vector3
 	p.WorldPosition(&wpos)

@@ -52,9 +52,6 @@ type MouseButton int
 // InputMode corresponds to an input mode.
 type InputMode int
 
-// InputMode corresponds to an input mode.
-type CursorMode int
-
 // Cursor corresponds to a g3n standard or user-created cursor icon.
 type Cursor int
 
@@ -71,19 +68,19 @@ const (
 	CursorLast = DiagResizeTlbrCursor
 )
 
-// Window event names. See availability per platform below ("x" indicates available).
-const ( //                               Desktop | Browser |
-	OnWindowFocus = "w.OnWindowFocus" //    x    |    x    |
-	OnWindowPos   = "w.OnWindowPos"   //    x    |         |
-	OnWindowSize  = "w.OnWindowSize"  //    x    |         |
-	OnKeyUp       = "w.OnKeyUp"       //    x    |    x    |
-	OnKeyDown     = "w.OnKeyDown"     //    x    |    x    |
-	OnKeyRepeat   = "w.OnKeyRepeat"   //    x    |         |
-	OnChar        = "w.OnChar"        //    x    |    x    |
-	OnCursor      = "w.OnCursor"      //    x    |    x    |
-	OnMouseUp     = "w.OnMouseUp"     //    x    |    x    |
-	OnMouseDown   = "w.OnMouseDown"   //    x    |    x    |
-	OnScroll      = "w.OnScroll"      //    x    |    x    |
+// Window event names
+const (
+	OnWindowFocus = "w.OnWindowFocus"
+	OnWindowPos   = "w.OnWindowPos"
+	OnWindowSize  = "w.OnWindowSize"
+	OnKeyUp       = "w.OnKeyUp"
+	OnKeyDown     = "w.OnKeyDown"
+	OnKeyRepeat   = "w.OnKeyRepeat"
+	OnChar        = "w.OnChar"
+	OnCursor      = "w.OnCursor"
+	OnMouseUp     = "w.OnMouseUp"
+	OnMouseDown   = "w.OnMouseDown"
+	OnScroll      = "w.OnScroll"
 )
 
 // PosEvent describes a windows position changed event
@@ -107,7 +104,6 @@ type KeyEvent struct {
 // CharEvent describes a window char event
 type CharEvent struct {
 	Char rune
-	Mods ModifierKey
 }
 
 // MouseEvent describes a mouse event over the window

@@ -287,7 +287,7 @@ func (vbo *VBO) Transfer(gs *GLS) {
 		// For each attribute
 		for _, attrib := range vbo.attribs {
 			// Get attribute location in the current program
-			loc := gs.prog.GetAttribLocation(attrib.Name)
+			loc := gs.activeProgram.GetAttribLocation(attrib.Name)
 			if loc < 0 {
 				log.Printf("Attribute not found: %v", attrib.Name)
 				continue

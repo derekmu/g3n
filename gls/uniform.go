@@ -33,9 +33,9 @@ func (u *Uniform) Name() string {
 // Location returns the location of this uniform for the current shader program.
 // The returned location can be -1 if not found.
 func (u *Uniform) Location(gs *GLS) int32 {
-	handle := gs.prog.Handle()
+	handle := gs.activeProgram.Handle()
 	if handle != u.handle {
-		u.location = gs.prog.GetUniformLocation(u.name)
+		u.location = gs.activeProgram.GetUniformLocation(u.name)
 		u.handle = handle
 	}
 	return u.location
@@ -49,9 +49,9 @@ func (u *Uniform) LocationIdx(gs *GLS, idx int32) int32 {
 		u.lastIndex = idx
 		u.handle = 0
 	}
-	handle := gs.prog.Handle()
+	handle := gs.activeProgram.Handle()
 	if handle != u.handle {
-		u.location = gs.prog.GetUniformLocation(u.nameIdx)
+		u.location = gs.activeProgram.GetUniformLocation(u.nameIdx)
 		u.handle = handle
 	}
 	return u.location
