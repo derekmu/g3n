@@ -283,6 +283,9 @@ func Init(width, height int, title string) error {
 
 	// Preallocate extra G3N standard cursors (diagonal resize cursors)
 	trblImage, _, err := assets.NewCursorTrblImage()
+	if err != nil {
+		return err
+	}
 	tlbrImage, _, err := assets.NewCursorTlbrImage()
 	if err != nil {
 		return err

@@ -10,29 +10,45 @@ import (
 //go:embed fonts/FreeMono.ttf
 var freeMonoTTF []byte
 
-func NewFreeMonoFont() (*text.Font, error) {
-	return text.NewFontFromData(freeMonoTTF)
+func NewFreeMonoFont() *text.Font {
+	font, err := text.NewFontFromData(freeMonoTTF)
+	if err != nil {
+		panic(err)
+	}
+	return font
 }
 
 //go:embed fonts/FreeSans.ttf
 var freeSansTTF []byte
 
-func NewFreeSansFont() (*text.Font, error) {
-	return text.NewFontFromData(freeSansTTF)
+func NewFreeSansFont() *text.Font {
+	font, err := text.NewFontFromData(freeSansTTF)
+	if err != nil {
+		panic(err)
+	}
+	return font
 }
 
 //go:embed fonts/FreeSansBold.ttf
 var freeSansBoldTTF []byte
 
-func NewFreeSansBoldFont() (*text.Font, error) {
-	return text.NewFontFromData(freeSansBoldTTF)
+func NewFreeSansBoldFont() *text.Font {
+	font, err := text.NewFontFromData(freeSansBoldTTF)
+	if err != nil {
+		panic(err)
+	}
+	return font
 }
 
 //go:embed fonts/MaterialIcons-Regular.ttf
 var materialIconsRegularTTF []byte
 
-func NewMaterialIconsRegularFont() (*text.Font, error) {
-	return text.NewFontFromData(materialIconsRegularTTF)
+func NewMaterialIconsRegularFont() *text.Font {
+	font, err := text.NewFontFromData(materialIconsRegularTTF)
+	if err != nil {
+		panic(err)
+	}
+	return font
 }
 
 //go:embed cursors/trbl.png

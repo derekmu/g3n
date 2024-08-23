@@ -15,17 +15,8 @@ import (
 func NewLightStyle() *Style {
 	s := new(Style)
 
-	font, err := assets.NewFreeSansFont()
-	if err != nil {
-		panic(err)
-	}
-	s.Font = font
-
-	fontIcon, err := assets.NewMaterialIconsRegularFont()
-	if err != nil {
-		panic(err)
-	}
-	s.FontIcon = fontIcon
+	s.Font = assets.NewFreeSansFont()
+	s.FontIcon = assets.NewMaterialIconsRegularFont()
 
 	zeroBounds := RectBounds{0, 0, 0, 0}
 	oneBounds := RectBounds{1, 1, 1, 1}
