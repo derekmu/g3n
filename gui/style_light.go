@@ -11,24 +11,17 @@ import (
 	"github.com/derekmu/g3n/text"
 )
 
-// NewLightStyle creates and returns a pointer to the a new "light" style
+// NewLightStyle creates and returns a pointer to a new "light" style.
 func NewLightStyle() *Style {
-	// Fonts to use
-	const fontName = "fonts/FreeSans.ttf"
-	const iconName = "fonts/MaterialIcons-Regular.ttf"
 	s := new(Style)
 
-	// Creates text font
-	fontData := assets.MustAsset(fontName)
-	font, err := text.NewFontFromData(fontData)
+	font, err := assets.NewFreeSansFont()
 	if err != nil {
 		panic(err)
 	}
 	s.Font = font
 
-	// Creates icon font
-	fontIconData := assets.MustAsset(iconName)
-	fontIcon, err := text.NewFontFromData(fontIconData)
+	fontIcon, err := assets.NewMaterialIconsRegularFont()
 	if err != nil {
 		panic(err)
 	}

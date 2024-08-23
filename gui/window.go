@@ -129,7 +129,7 @@ func (w *Window) SetLayout(layout ILayout) {
 }
 
 // onMouse process subscribed mouse events over the window
-func (w *Window) onMouse(evname string, ev interface{}) {
+func (w *Window) onMouse(evname string, _ interface{}) {
 	switch evname {
 	case OnMouseDown:
 		// Move the window above everything contained in its parent
@@ -238,9 +238,9 @@ func (w *Window) onCursor(evname string, ev interface{}) {
 			} else if (w.overRight || w.overLeft) && !w.overTop && !w.overBottom {
 				window.Get().SetCursor(window.HResizeCursor)
 			} else if (w.overRight && w.overTop) || (w.overBottom && w.overLeft) {
-				window.Get().SetCursor(window.DiagResize1Cursor)
+				window.Get().SetCursor(window.DiagResizeTrblCursor)
 			} else if (w.overRight && w.overBottom) || (w.overTop && w.overLeft) {
-				window.Get().SetCursor(window.DiagResize2Cursor)
+				window.Get().SetCursor(window.DiagResizeTlbrCursor)
 			}
 			// If cursor is not near the border of the window then reset the cursor
 			if !w.overTop && !w.overRight && !w.overBottom && !w.overLeft {

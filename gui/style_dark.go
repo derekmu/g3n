@@ -11,24 +11,17 @@ import (
 	"github.com/derekmu/g3n/text"
 )
 
-// NewDarkStyle creates and returns a pointer to the a new "dark" style
+// NewDarkStyle creates and returns a pointer to a new "dark" style.
 func NewDarkStyle() *Style {
-	// Fonts to use
-	const textFont = "fonts/FreeSans.ttf"
-	const iconFont = "fonts/MaterialIcons-Regular.ttf"
 	s := new(Style)
 
-	// Creates text font
-	fontData := assets.MustAsset(textFont)
-	font, err := text.NewFontFromData(fontData)
+	font, err := assets.NewFreeSansFont()
 	if err != nil {
 		panic(err)
 	}
 	s.Font = font
 
-	// Creates icon font
-	fontIconData := assets.MustAsset(iconFont)
-	fontIcon, err := text.NewFontFromData(fontIconData)
+	fontIcon, err := assets.NewMaterialIconsRegularFont()
 	if err != nil {
 		panic(err)
 	}

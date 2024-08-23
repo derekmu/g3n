@@ -66,9 +66,9 @@ const (
 	HandCursor
 	HResizeCursor
 	VResizeCursor
-	DiagResize1Cursor
-	DiagResize2Cursor
-	CursorLast = DiagResize2Cursor
+	DiagResizeTrblCursor
+	DiagResizeTlbrCursor
+	CursorLast = DiagResizeTlbrCursor
 )
 
 // Window event names. See availability per platform below ("x" indicates available).

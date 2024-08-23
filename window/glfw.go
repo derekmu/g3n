@@ -7,7 +7,6 @@
 package window
 
 import (
-	"bytes"
 	"fmt"
 	"image"
 	_ "image/png"
@@ -283,15 +282,13 @@ func Init(width, height int, title string) error {
 	w.cursors[VResizeCursor] = glfw.CreateStandardCursor(glfw.VResizeCursor)
 
 	// Preallocate extra G3N standard cursors (diagonal resize cursors)
-	cursorDiag1Png := assets.MustAsset("cursors/diag1.png") // [/]
-	cursorDiag2Png := assets.MustAsset("cursors/diag2.png") // [\]
-	diag1Img, _, err := image.Decode(bytes.NewReader(cursorDiag1Png))
-	diag2Img, _, err := image.Decode(bytes.NewReader(cursorDiag2Png))
+	trblImage, _, err := assets.NewCursorTrblImage()
+	tlbrImage, _, err := assets.NewCursorTlbrImage()
 	if err != nil {
 		return err
 	}
-	w.cursors[DiagResize1Cursor] = glfw.CreateCursor(diag1Img, 8, 8) // [/]
-	w.cursors[DiagResize2Cursor] = glfw.CreateCursor(diag2Img, 8, 8) // [\]
+	w.cursors[DiagResizeTrblCursor] = glfw.CreateCursor(trblImage, 8, 8)
+	w.cursors[DiagResizeTlbrCursor] = glfw.CreateCursor(tlbrImage, 8, 8)
 
 	// Set up key callback to dispatch event
 	w.SetKeyCallback(func(x *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
@@ -319,7 +316,7 @@ func Init(width, height int, title string) error {
 		xpos, ypos := x.GetCursorPos()
 		w.mouseEv.Button = MouseButton(button)
 		w.mouseEv.Mods = ModifierKey(mods)
-		w.mouseEv.Xpos = float32(xpos) //* float32(w.scaleX) TODO
+		w.mouseEv.Xpos = float32(xpos) //* float32(w.scaleX)
 		w.mouseEv.Ypos = float32(ypos) //* float32(w.scaleY)
 		if action == glfw.Press {
 			w.Dispatch(OnMouseDown, &w.mouseEv)
@@ -382,7 +379,6 @@ func (w *GlfwWindow) FullScreen() bool {
 }
 
 // SetFullScreen sets this window as fullscreen on the primary monitor
-// TODO allow for fullscreen with resolutions different than the monitor's
 func (w *GlfwWindow) SetFullScreen(full bool) {
 	// If already in the desired state, nothing to do
 	if w.fullscreen == full {
@@ -415,13 +411,13 @@ func (w *GlfwWindow) Destroy() {
 	runtime.UnlockOSThread() // Important when using the execution tracer
 }
 
-// Scale returns this window's DPI scale factor (FramebufferSize / Size)
+// GetScale returns this window's DPI scale factor (FramebufferSize / Size)
 func (w *GlfwWindow) GetScale() (x float64, y float64) {
 	return w.scaleX, w.scaleY
 }
 
 // ScreenResolution returns the screen resolution
-func (w *GlfwWindow) ScreenResolution(p interface{}) (width, height int) {
+func (w *GlfwWindow) ScreenResolution() (width, height int) {
 	mon := glfw.GetPrimaryMonitor()
 	vmode := mon.GetVideoMode()
 	return vmode.Width, vmode.Height
@@ -454,7 +450,9 @@ func (w *GlfwWindow) CreateCursor(imgFile string, xhot, yhot int) (Cursor, error
 	if err != nil {
 		return 0, err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		_ = file.Close()
+	}(file)
 	// Decode image
 	img, _, err := image.Decode(file)
 	if err != nil {
@@ -476,7 +474,7 @@ func (w *GlfwWindow) DisposeCursor(cursor Cursor) {
 	delete(w.cursors, cursor)
 }
 
-// DisposeAllCursors deletes all existing custom cursors.
+// DisposeAllCustomCursors deletes all existing custom cursors.
 func (w *GlfwWindow) DisposeAllCustomCursors() {
 	// Destroy and delete all custom cursors
 	for key := range w.cursors {
@@ -488,9 +486,3 @@ func (w *GlfwWindow) DisposeAllCustomCursors() {
 	// Set the next cursor key as the last standard cursor key + 1
 	w.lastCursorKey = CursorLast
 }
-
-// Center centers the window on the screen.
-//func (w *GlfwWindow) Center() {
-//
-//	// TODO
-//}
