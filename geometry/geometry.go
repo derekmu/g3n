@@ -68,7 +68,7 @@ func (g *Geometry) Init() {
 	g.handleVAO = 0
 	g.handleIndices = 0
 	g.updateIndices = true
-	g.ShaderDefines = *gls.NewShaderDefines()
+	g.ShaderDefines = gls.NewShaderDefines()
 }
 
 func (g *Geometry) Clone() *Geometry {
@@ -279,7 +279,6 @@ func (g *Geometry) ReadFaces(cb func(vA, vB, vC math32.Vector3) bool) {
 	}
 }
 
-// TODO Read and Operate on Texcoords, Faces, Edges, FaceNormals, etc...
 // Indexed returns whether the geometry is indexed or not.
 func (g *Geometry) Indexed() bool {
 	return g.indices.Size() > 0
@@ -411,11 +410,6 @@ func (g *Geometry) ProjectOntoAxis(localAxis *math32.Vector3) (float32, float32)
 	return maxVal, minVal
 }
 
-// TODO:
-// https://stackoverflow.com/questions/21640545/how-to-check-for-convexity-of-a-3d-mesh
-// func (g *Geometry) IsConvex() bool {
-//
-// {
 // ApplyMatrix multiplies each of the geometry position vertices
 // by the specified matrix and apply the correspondent normal
 // transform matrix to the geometry normal vectors.
@@ -428,7 +422,10 @@ func (g *Geometry) ApplyMatrix(m *math32.Matrix4) {
 	})
 	// Apply normal matrix to all normal vectors
 	var normalMatrix math32.Matrix3
-	normalMatrix.GetNormalMatrix(m)
+	err := normalMatrix.GetNormalMatrix(m)
+	if err != nil {
+		normalMatrix.Identity()
+	}
 	g.OperateOnVertexNormals(func(normal *math32.Vector3) bool {
 		normal.ApplyMatrix3(&normalMatrix).Normalize()
 		return false

@@ -32,7 +32,7 @@ func NewMorphGeometry(baseGeometry *Geometry) *MorphGeometry {
 	mg.targets = make([]*Geometry, 0)
 	mg.weights = make([]float32, 0)
 
-	mg.baseGeometry.ShaderDefines.Set("MORPHTARGETS", strconv.Itoa(MaxActiveMorphTargets))
+	mg.baseGeometry.ShaderDefines["MORPHTARGETS"] = strconv.Itoa(MaxActiveMorphTargets)
 	mg.uniWeights.Init("morphTargetInfluences")
 	return mg
 }
@@ -144,16 +144,6 @@ func (mg *MorphGeometry) SetIndices(indices math32.ArrayU32) {
 	for i := range mg.targets {
 		mg.targets[i].SetIndices(indices)
 	}
-}
-
-// ComputeMorphed computes a morphed geometry from the provided morph target weights.
-// Note that morphing is usually computed by the GPU in shaders.
-// This CPU implementation allows users to obtain an instance of a morphed geometry
-// if so desired (loosing morphing ability).
-func (mg *MorphGeometry) ComputeMorphed(weights []float32) *Geometry {
-	morphed := NewGeometry()
-	// TODO
-	return morphed
 }
 
 // Dispose releases, if possible, OpenGL resources, C memory

@@ -87,7 +87,7 @@ func (r *Renderer) ObjectSorting() bool {
 	return r.sortObjects
 }
 
-// Render renders the specified scene using the specified camera. Returns an an error.
+// Render renders the specified scene using the specified camera. Returns an error.
 func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 	// Updates world matrices of all scene nodes
 	scene.UpdateMatrixWorld()
@@ -116,7 +116,7 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 	proj.MultiplyMatrices(&r.rinfo.ProjMatrix, &r.rinfo.ViewMatrix)
 	frustum := math32.NewFrustumFromMatrix(&proj)
 
-	// Classify scene and all scene nodes, culling renderable IGraphics which are fully outside of the camera frustum
+	// Classify scene and all scene nodes, culling IGraphics which are fully outside the camera frustum
 	r.classifyAndCull(scene, frustum, 0)
 
 	// Set light counts in shader specs
@@ -128,7 +128,7 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 	// Pre-calculate MV and MVP matrices and compile initial lists of opaque and transparent graphic materials
 	for _, gr := range r.graphics {
 		// Calculate MV and MVP matrices for all non-GUI graphics to be rendered
-		gr.CalculateMatrices(r.gs, &r.rinfo)
+		gr.CalculateMatrices(&r.rinfo)
 		// Append all graphic materials of this graphic to lists of graphic materials to be rendered
 		materials := gr.Materials()
 		for i := range materials {
@@ -141,7 +141,6 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 		}
 	}
 
-	// TODO: If both GraphicMaterials belong to same Graphic we might want to keep their relative order...
 	// Z-sort graphic materials back to front
 	if r.sortObjects {
 		zSort(r.grmatsOpaque)
@@ -192,8 +191,6 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 
 	// Enable depth mask so that clearing the depth buffer works
 	r.gs.DepthMask(true)
-	// TODO enable color mask, stencil mask?
-	// TODO clear the buffers for the user, and set the appropriate masks to true before clearing
 
 	return nil
 }
@@ -292,17 +289,14 @@ func (r *Renderer) renderGraphicMaterial(grmat *graphic.GraphicMaterial) error {
 	geom := grmat.IGraphic().GetGeometry()
 	gr := grmat.IGraphic().GetGraphic()
 
-	// Add defines from material, geometry and graphic
-	r.specs.Defines = *gls.NewShaderDefines()
-	r.specs.Defines.Add(&mat.ShaderDefines)
-	r.specs.Defines.Add(&geom.ShaderDefines)
-	r.specs.Defines.Add(&gr.ShaderDefines)
-
 	// Set the shader specs for this material and set shader program
 	r.specs.Name = mat.Shader()
 	r.specs.ShaderUnique = mat.ShaderUnique()
 	r.specs.UseLights = mat.UseLights()
 	r.specs.MatTexturesMax = mat.TextureCount()
+	r.specs.MatDefines = mat.ShaderDefines
+	r.specs.GeomDefines = geom.ShaderDefines
+	r.specs.GrDefines = gr.ShaderDefines
 
 	// Set active program and apply shader specs
 	_, err := r.Shaman.SetProgram(&r.specs)

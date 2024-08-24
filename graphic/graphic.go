@@ -63,7 +63,7 @@ func (gr *Graphic) Init(igr IGraphic, igeom geometry.IGeometry, mode uint32) *Gr
 	gr.materials = make([]GraphicMaterial, 0)
 	gr.renderable = true
 	gr.cullable = true
-	gr.ShaderDefines = *gls.NewShaderDefines()
+	gr.ShaderDefines = gls.NewShaderDefines()
 	return gr
 }
 
@@ -223,13 +223,13 @@ func (gr *Graphic) BoundingBox() math32.Box3 {
 }
 
 // CalculateMatrices calculates the model view and model view projection matrices.
-func (gr *Graphic) CalculateMatrices(gs *gls.GLS, rinfo *core.RenderInfo) {
+func (gr *Graphic) CalculateMatrices(rinfo *core.RenderInfo) {
 	gr.mm = gr.MatrixWorld()
 	gr.mvm.MultiplyMatrices(&rinfo.ViewMatrix, &gr.mm)
 	gr.mvpm.MultiplyMatrices(&rinfo.ProjMatrix, &gr.mvm)
 }
 
-// ModelViewMatrix returns the last cached model view matrix for this graphic.
+// ModelMatrix returns the last cached model view matrix for this graphic.
 func (gr *Graphic) ModelMatrix() *math32.Matrix4 {
 	return &gr.mm
 }

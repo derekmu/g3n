@@ -29,8 +29,8 @@ func NewRiggedMesh(mesh *Mesh) *RiggedMesh {
 	rm.Mesh = mesh
 	rm.SetIGraphic(rm)
 	rm.mBones.Init("mBones")
-	rm.ShaderDefines.Set("BONE_INFLUENCERS", strconv.Itoa(MaxBoneInfluencers))
-	rm.ShaderDefines.Set("TOTAL_BONES", "0")
+	rm.ShaderDefines["BONE_INFLUENCERS"] = strconv.Itoa(MaxBoneInfluencers)
+	rm.ShaderDefines["TOTAL_BONES"] = "0"
 
 	return rm
 }
@@ -38,7 +38,7 @@ func NewRiggedMesh(mesh *Mesh) *RiggedMesh {
 // SetSkeleton sets the skeleton used by the rigged mesh.
 func (rm *RiggedMesh) SetSkeleton(sk *Skeleton) {
 	rm.skeleton = sk
-	rm.ShaderDefines.Set("TOTAL_BONES", strconv.Itoa(len(rm.skeleton.Bones())))
+	rm.ShaderDefines["TOTAL_BONES"] = strconv.Itoa(len(rm.skeleton.Bones()))
 }
 
 // SetSkeleton returns the skeleton used by the rigged mesh.

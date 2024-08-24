@@ -85,10 +85,10 @@ func (m *Physical) SetBaseColorMap(tex *texture.Texture2D) *Physical {
 	m.baseColorTex = tex
 	if m.baseColorTex != nil {
 		m.baseColorTex.SetUniformNames("uBaseColorSampler", "uBaseColorTexParams")
-		m.ShaderDefines.Set("HAS_BASECOLORMAP", "")
+		m.ShaderDefines["HAS_BASECOLORMAP"] = ""
 		m.AddTexture(m.baseColorTex)
 	} else {
-		m.ShaderDefines.Unset("HAS_BASECOLORMAP")
+		delete(m.ShaderDefines, "HAS_BASECOLORMAP")
 		m.RemoveTexture(m.baseColorTex)
 	}
 	return m
@@ -100,10 +100,10 @@ func (m *Physical) SetMetallicRoughnessMap(tex *texture.Texture2D) *Physical {
 	m.metallicRoughnessTex = tex
 	if m.metallicRoughnessTex != nil {
 		m.metallicRoughnessTex.SetUniformNames("uMetallicRoughnessSampler", "uMetallicRoughnessTexParams")
-		m.ShaderDefines.Set("HAS_METALROUGHNESSMAP", "")
+		m.ShaderDefines["HAS_METALROUGHNESSMAP"] = ""
 		m.AddTexture(m.metallicRoughnessTex)
 	} else {
-		m.ShaderDefines.Unset("HAS_METALROUGHNESSMAP")
+		delete(m.ShaderDefines, "HAS_METALROUGHNESSMAP")
 		m.RemoveTexture(m.metallicRoughnessTex)
 	}
 	return m
@@ -111,15 +111,14 @@ func (m *Physical) SetMetallicRoughnessMap(tex *texture.Texture2D) *Physical {
 
 // SetNormalMap sets this material optional normal texture.
 // Returns pointer to this updated material.
-// TODO add SetNormalMap (and SetSpecularMap) to StandardMaterial.
 func (m *Physical) SetNormalMap(tex *texture.Texture2D) *Physical {
 	m.normalTex = tex
 	if m.normalTex != nil {
 		m.normalTex.SetUniformNames("uNormalSampler", "uNormalTexParams")
-		m.ShaderDefines.Set("HAS_NORMALMAP", "")
+		m.ShaderDefines["HAS_NORMALMAP"] = ""
 		m.AddTexture(m.normalTex)
 	} else {
-		m.ShaderDefines.Unset("HAS_NORMALMAP")
+		delete(m.ShaderDefines, "HAS_NORMALMAP")
 		m.RemoveTexture(m.normalTex)
 	}
 	return m
@@ -131,10 +130,10 @@ func (m *Physical) SetOcclusionMap(tex *texture.Texture2D) *Physical {
 	m.occlusionTex = tex
 	if m.occlusionTex != nil {
 		m.occlusionTex.SetUniformNames("uOcclusionSampler", "uOcclusionTexParams")
-		m.ShaderDefines.Set("HAS_OCCLUSIONMAP", "")
+		m.ShaderDefines["HAS_OCCLUSIONMAP"] = ""
 		m.AddTexture(m.occlusionTex)
 	} else {
-		m.ShaderDefines.Unset("HAS_OCCLUSIONMAP")
+		delete(m.ShaderDefines, "HAS_OCCLUSIONMAP")
 		m.RemoveTexture(m.occlusionTex)
 	}
 	return m
@@ -146,10 +145,10 @@ func (m *Physical) SetEmissiveMap(tex *texture.Texture2D) *Physical {
 	m.emissiveTex = tex
 	if m.emissiveTex != nil {
 		m.emissiveTex.SetUniformNames("uEmissiveSampler", "uEmissiveTexParams")
-		m.ShaderDefines.Set("HAS_EMISSIVEMAP", "")
+		m.ShaderDefines["HAS_EMISSIVEMAP"] = ""
 		m.AddTexture(m.emissiveTex)
 	} else {
-		m.ShaderDefines.Unset("HAS_EMISSIVEMAP")
+		delete(m.ShaderDefines, "HAS_EMISSIVEMAP")
 		m.RemoveTexture(m.emissiveTex)
 	}
 	return m

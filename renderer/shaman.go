@@ -6,6 +6,7 @@ package renderer
 
 import (
 	"fmt"
+	"maps"
 	"strconv"
 
 	"github.com/derekmu/g3n/gls"
@@ -24,7 +25,9 @@ type ShaderSpecs struct {
 	PointLightsMax   int                // Current Number of point lights
 	SpotLightsMax    int                // Current Number of spot lights
 	MatTexturesMax   int                // Current Number of material textures
-	Defines          gls.ShaderDefines  // Additional shader defines
+	MatDefines       gls.ShaderDefines  // Additional shader defines
+	GeomDefines      gls.ShaderDefines  // Additional shader defines
+	GrDefines        gls.ShaderDefines  // Additional shader defines
 }
 
 // ProgSpecs represents a compiled shader program along with its specs
@@ -102,8 +105,8 @@ func (sm *Shaman) AddProgram(name, vertexName, fragName string, others ...string
 // number of lights depending on the UseLights flags.
 func (sm *Shaman) SetProgram(s *ShaderSpecs) (bool, error) {
 	// Checks material use lights bit mask
-	var specs ShaderSpecs
-	specs.copy(s)
+	// copy so we don't change light settings provided
+	specs := *s
 	if (specs.UseLights & material.UseLightAmbient) == 0 {
 		specs.AmbientLightsMax = 0
 	}
@@ -137,6 +140,18 @@ func (sm *Shaman) SetProgram(s *ShaderSpecs) (bool, error) {
 		return false, err
 	}
 
+	// create copy of defines so cached specs don't get modified
+	// do this after looking at cached specs so we don't create copies of maps every frame
+	if specs.MatDefines != nil {
+		specs.MatDefines = maps.Clone(s.MatDefines)
+	}
+	if specs.GeomDefines != nil {
+		specs.GeomDefines = maps.Clone(s.GeomDefines)
+	}
+	if specs.GrDefines != nil {
+		specs.GrDefines = maps.Clone(s.GrDefines)
+	}
+
 	// Save specs as current specs, adds new program to the list and activates the program
 	sm.specs = specs
 	sm.programs = append(sm.programs, ProgSpecs{prog, specs})
@@ -160,7 +175,13 @@ func (sm *Shaman) GenProgram(specs *ShaderSpecs) (*gls.Program, error) {
 		"SPOT_LIGHTS":  strconv.Itoa(specs.SpotLightsMax),
 		"MAT_TEXTURES": strconv.Itoa(specs.MatTexturesMax),
 	}
-	for name, value := range specs.Defines {
+	for name, value := range specs.MatDefines {
+		defines[name] = value
+	}
+	for name, value := range specs.GeomDefines {
+		defines[name] = value
+	}
+	for name, value := range specs.GrDefines {
 		defines[name] = value
 	}
 
@@ -214,15 +235,6 @@ func (sm *Shaman) preprocess(source string, defines map[string]string) string {
 	return prefix + source
 }
 
-// copy copies other spec into this
-func (ss *ShaderSpecs) copy(other *ShaderSpecs) {
-	*ss = *other
-	if other.Defines != nil {
-		ss.Defines = *gls.NewShaderDefines()
-		ss.Defines.Add(&other.Defines)
-	}
-}
-
 // equals compares two ShaderSpecs and returns true if they are effectively equal.
 func (ss *ShaderSpecs) equals(other *ShaderSpecs) bool {
 	if ss.Name != other.Name {
@@ -236,7 +248,9 @@ func (ss *ShaderSpecs) equals(other *ShaderSpecs) bool {
 		ss.PointLightsMax == other.PointLightsMax &&
 		ss.SpotLightsMax == other.SpotLightsMax &&
 		ss.MatTexturesMax == other.MatTexturesMax &&
-		ss.Defines.Equals(&other.Defines) {
+		ss.MatDefines.Equals(other.MatDefines) &&
+		ss.GeomDefines.Equals(other.GeomDefines) &&
+		ss.GrDefines.Equals(other.GrDefines) {
 		return true
 	}
 	return false

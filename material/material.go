@@ -112,7 +112,7 @@ func (mat *Material) Init() *Material {
 	mat.textures = make([]*texture.Texture2D, 0)
 
 	// Setup shader defines and add default values
-	mat.ShaderDefines = *gls.NewShaderDefines()
+	mat.ShaderDefines = gls.NewShaderDefines()
 
 	return mat
 }
