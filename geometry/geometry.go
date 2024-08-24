@@ -257,15 +257,17 @@ func (g *Geometry) ReadFaces(cb func(vA, vB, vC math32.Vector3) bool) {
 	if vbo == nil {
 		return
 	}
+	stride := vbo.Stride()
+	offset := vbo.AttribOffset(gls.VertexPosition)
 	// If geometry has indexed vertices need to loop over indexes
 	if g.Indexed() {
 		var vA, vB, vC math32.Vector3
 		positions := vbo.Buffer()
 		for i := 0; i < g.indices.Size(); i += 3 {
 			// Get face vertices
-			positions.GetVector3(int(3*g.indices[i]), &vA)
-			positions.GetVector3(int(3*g.indices[i+1]), &vB)
-			positions.GetVector3(int(3*g.indices[i+2]), &vC)
+			positions.GetVector3(int(g.indices[i])*stride+offset, &vA)
+			positions.GetVector3(int(g.indices[i+1])*stride+offset, &vB)
+			positions.GetVector3(int(g.indices[i+2])*stride+offset, &vC)
 			// Call callback with face vertices
 			brk := cb(vA, vB, vC)
 			if brk {
