@@ -16,7 +16,6 @@ import (
 // ShaderSpecs describes the specification of a compiled shader program
 type ShaderSpecs struct {
 	Name             string              // Shader name
-	Version          string              // GLSL version
 	UseLights        material.UseLights  // Bitmask indicating which lights to consider
 	AmbientLightsMax int                 // Current number of ambient lights
 	DirLightsMax     int                 // Current Number of directional lights
