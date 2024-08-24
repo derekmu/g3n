@@ -243,15 +243,12 @@ func (ss *ShaderSpecs) equals(other *ShaderSpecs) bool {
 	if other.ShaderUnique {
 		return true
 	}
-	if ss.AmbientLightsMax == other.AmbientLightsMax &&
+	return ss.AmbientLightsMax == other.AmbientLightsMax &&
 		ss.DirLightsMax == other.DirLightsMax &&
 		ss.PointLightsMax == other.PointLightsMax &&
 		ss.SpotLightsMax == other.SpotLightsMax &&
 		ss.MatTexturesMax == other.MatTexturesMax &&
 		maps.Equal(ss.MatDefines, other.MatDefines) &&
 		maps.Equal(ss.GeomDefines, other.GeomDefines) &&
-		maps.Equal(ss.GrDefines, other.GrDefines) {
-		return true
-	}
-	return false
+		maps.Equal(ss.GrDefines, other.GrDefines)
 }
