@@ -248,9 +248,9 @@ func (ss *ShaderSpecs) equals(other *ShaderSpecs) bool {
 		ss.PointLightsMax == other.PointLightsMax &&
 		ss.SpotLightsMax == other.SpotLightsMax &&
 		ss.MatTexturesMax == other.MatTexturesMax &&
-		ss.MatDefines.Equals(other.MatDefines) &&
-		ss.GeomDefines.Equals(other.GeomDefines) &&
-		ss.GrDefines.Equals(other.GrDefines) {
+		maps.Equal(ss.MatDefines, other.MatDefines) &&
+		maps.Equal(ss.GeomDefines, other.GeomDefines) &&
+		maps.Equal(ss.GrDefines, other.GrDefines) {
 		return true
 	}
 	return false

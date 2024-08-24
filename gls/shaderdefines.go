@@ -4,8 +4,6 @@
 
 package gls
 
-import "maps"
-
 // ShaderDefines is a store of shader defines ("#define <key> <value>" in GLSL).
 type ShaderDefines map[string]string
 
@@ -19,14 +17,4 @@ func (sd ShaderDefines) Add(other ShaderDefines) {
 	for k, v := range other {
 		sd[k] = v
 	}
-}
-
-// Equals compares two ShaderDefines and return true if they contain the same key-value pairs.
-func (sd ShaderDefines) Equals(other ShaderDefines) bool {
-	if sd == nil && other == nil {
-		return true
-	} else if sd != nil || other != nil {
-		return false
-	}
-	return maps.Equal(sd, other)
 }
