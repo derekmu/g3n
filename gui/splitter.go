@@ -5,8 +5,8 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
 )
 
 // Splitter is a GUI element that splits two panels and can be adjusted
@@ -108,8 +108,8 @@ func (s *Splitter) onResize(evname string, ev interface{}) {
 
 // onMouse receives subscribed mouse events over the spacer panel
 func (s *Splitter) onMouse(evname string, ev interface{}) {
-	mev := ev.(*window.MouseEvent)
-	if mev.Button != window.MouseButtonLeft {
+	mev := ev.(*core.MouseEvent)
+	if mev.Button != core.MouseButtonLeft {
 		return
 	}
 	switch evname {
@@ -120,11 +120,11 @@ func (s *Splitter) onMouse(evname string, ev interface{}) {
 		} else {
 			s.posLast = mev.Ypos
 		}
-		Manager().SetCursorFocus(&s.spacer)
+		GetManager().SetCursorFocus(&s.spacer)
 	case OnMouseUp:
 		s.pressed = false
-		window.Get().SetCursor(window.ArrowCursor)
-		Manager().SetCursorFocus(nil)
+		GetManager().window.SetCursor(core.ArrowCursor)
+		GetManager().SetCursorFocus(nil)
 	}
 }
 
@@ -132,21 +132,21 @@ func (s *Splitter) onMouse(evname string, ev interface{}) {
 func (s *Splitter) onCursor(evname string, ev interface{}) {
 	if evname == OnCursorEnter {
 		if s.horiz {
-			window.Get().SetCursor(window.HResizeCursor)
+			GetManager().window.SetCursor(core.HResizeCursor)
 		} else {
-			window.Get().SetCursor(window.VResizeCursor)
+			GetManager().window.SetCursor(core.VResizeCursor)
 		}
 		s.mouseOver = true
 		s.update()
 	} else if evname == OnCursorLeave {
-		window.Get().SetCursor(window.ArrowCursor)
+		GetManager().window.SetCursor(core.ArrowCursor)
 		s.mouseOver = false
 		s.update()
 	} else if evname == OnCursor {
 		if !s.pressed {
 			return
 		}
-		cev := ev.(*window.CursorEvent)
+		cev := ev.(*core.CursorEvent)
 		var delta float32
 		pos := s.pos
 		if s.horiz {

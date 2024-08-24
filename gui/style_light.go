@@ -132,7 +132,7 @@ func NewLightStyle() *Style {
 	s.Splitter.Over.SpacerColor = bgColorOver
 	s.Splitter.Drag = s.Splitter.Over
 
-	// Window styles
+	// window styles
 	s.Window = WindowStyles{}
 	s.Window.Normal = WindowStyle{}
 	s.Window.Normal.Border = RectBounds{4, 4, 4, 4}

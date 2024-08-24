@@ -5,8 +5,8 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
 )
 
 /***************************************
@@ -142,8 +142,8 @@ func (sb *ScrollBar) SetValue(v float32) {
 
 // onMouse receives subscribed mouse events over the scrollbar outer panel
 func (sb *ScrollBar) onMouse(evname string, ev interface{}) {
-	e := ev.(*window.MouseEvent)
-	if e.Button != window.MouseButtonLeft {
+	e := ev.(*core.MouseEvent)
+	if e.Button != core.MouseButtonLeft {
 		return
 	}
 	if sb.vertical {
@@ -191,8 +191,8 @@ func (sb *ScrollBar) applyStyle(sbs *ScrollBarStyle) {
 
 // onMouse receives subscribed mouse events for the scroll bar button
 func (button *scrollBarButton) onMouse(evname string, ev interface{}) {
-	e := ev.(*window.MouseEvent)
-	if e.Button != window.MouseButtonLeft {
+	e := ev.(*core.MouseEvent)
+	if e.Button != core.MouseButtonLeft {
 		return
 	}
 	switch evname {
@@ -200,10 +200,10 @@ func (button *scrollBarButton) onMouse(evname string, ev interface{}) {
 		button.pressed = true
 		button.mouseX = e.Xpos
 		button.mouseY = e.Ypos
-		Manager().SetCursorFocus(button)
+		GetManager().SetCursorFocus(button)
 	case OnMouseUp:
 		button.pressed = false
-		Manager().SetCursorFocus(nil)
+		GetManager().SetCursorFocus(nil)
 	default:
 		return
 	}
@@ -211,7 +211,7 @@ func (button *scrollBarButton) onMouse(evname string, ev interface{}) {
 
 // onCursor receives subscribed cursor events for the scroll bar button
 func (button *scrollBarButton) onCursor(evname string, ev interface{}) {
-	e := ev.(*window.CursorEvent)
+	e := ev.(*core.CursorEvent)
 	if !button.pressed {
 		return
 	}

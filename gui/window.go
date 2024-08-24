@@ -5,9 +5,9 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gui/assets/icon"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
 )
 
 /*********************************************
@@ -138,11 +138,11 @@ func (w *Window) onMouse(evname string, _ interface{}) {
 		// If the click happened inside the draggable area, then set drag to true
 		if w.overTop || w.overRight || w.overBottom || w.overLeft {
 			w.drag = true
-			Manager().SetCursorFocus(w)
+			GetManager().SetCursorFocus(w)
 		}
 	case OnMouseUp:
 		w.drag = false
-		Manager().SetCursorFocus(nil)
+		GetManager().SetCursorFocus(nil)
 	default:
 		return
 	}
@@ -155,7 +155,7 @@ func (w *Window) onCursor(evname string, ev interface{}) {
 		return
 	}
 	if evname == OnCursor {
-		cev := ev.(*window.CursorEvent)
+		cev := ev.(*core.CursorEvent)
 		// If already dragging - update window size and position depending
 		// on the cursor position and the borders being dragged
 		if w.drag {
@@ -234,21 +234,21 @@ func (w *Window) onCursor(evname string, ev interface{}) {
 			}
 			// Update cursor image based on cursor position
 			if (w.overTop || w.overBottom) && !w.overRight && !w.overLeft {
-				window.Get().SetCursor(window.VResizeCursor)
+				GetManager().window.SetCursor(core.VResizeCursor)
 			} else if (w.overRight || w.overLeft) && !w.overTop && !w.overBottom {
-				window.Get().SetCursor(window.HResizeCursor)
+				GetManager().window.SetCursor(core.HResizeCursor)
 			} else if (w.overRight && w.overTop) || (w.overBottom && w.overLeft) {
-				window.Get().SetCursor(window.DiagResizeTrblCursor)
+				GetManager().window.SetCursor(core.DiagResizeTrblCursor)
 			} else if (w.overRight && w.overBottom) || (w.overTop && w.overLeft) {
-				window.Get().SetCursor(window.DiagResizeTlbrCursor)
+				GetManager().window.SetCursor(core.DiagResizeTlbrCursor)
 			}
 			// If cursor is not near the border of the window then reset the cursor
 			if !w.overTop && !w.overRight && !w.overBottom && !w.overLeft {
-				window.Get().SetCursor(window.ArrowCursor)
+				GetManager().window.SetCursor(core.ArrowCursor)
 			}
 		}
 	} else if evname == OnCursorLeave {
-		window.Get().SetCursor(window.ArrowCursor)
+		GetManager().window.SetCursor(core.ArrowCursor)
 		w.drag = false
 	}
 }
@@ -274,10 +274,9 @@ func (w *Window) applyStyle(s *WindowStyle) {
 	}
 }
 
-// recalc recalculates the sizes and positions of the internal panels
-// from the outside to the inside.
+// recalc recalculates the sizes and positions of the internal panels from the outside to the inside.
 func (w *Window) recalc() {
-	// Window title
+	// window title
 	height := w.content.Height
 	width := w.content.Width
 	cx := float32(0)
@@ -327,7 +326,7 @@ func newWindowTitle(win *Window, text string) *WindowTitle {
 	wt.closeButton = NewButton("")
 	wt.closeButton.SetIcon(icon.Close)
 	wt.closeButton.Subscribe(OnCursorEnter, func(s string, i interface{}) {
-		window.Get().SetCursor(window.ArrowCursor)
+		GetManager().window.SetCursor(core.ArrowCursor)
 	})
 	wt.closeButton.Subscribe(OnClick, func(s string, i interface{}) {
 		wt.win.Parent().GetNode().Remove(wt.win)
@@ -360,16 +359,16 @@ func (wt *WindowTitle) setCloseButton(state bool) {
 
 // onMouse process subscribed mouse button events over the window title.
 func (wt *WindowTitle) onMouse(evname string, ev interface{}) {
-	mev := ev.(*window.MouseEvent)
+	mev := ev.(*core.MouseEvent)
 	switch evname {
 	case OnMouseDown:
 		wt.pressed = true
 		wt.mouseX = mev.Xpos
 		wt.mouseY = mev.Ypos
-		Manager().SetCursorFocus(wt)
+		GetManager().SetCursorFocus(wt)
 	case OnMouseUp:
 		wt.pressed = false
-		Manager().SetCursorFocus(nil)
+		GetManager().SetCursorFocus(nil)
 	default:
 		return
 	}
@@ -378,13 +377,13 @@ func (wt *WindowTitle) onMouse(evname string, ev interface{}) {
 // onCursor process subscribed cursor events over the window title.
 func (wt *WindowTitle) onCursor(evname string, ev interface{}) {
 	if evname == OnCursorLeave {
-		window.Get().SetCursor(window.ArrowCursor)
+		GetManager().window.SetCursor(core.ArrowCursor)
 		wt.pressed = false
 	} else if evname == OnCursor {
 		if !wt.pressed {
 			return
 		}
-		cev := ev.(*window.CursorEvent)
+		cev := ev.(*core.CursorEvent)
 		dy := wt.mouseY - cev.Ypos
 		dx := wt.mouseX - cev.Xpos
 		wt.mouseX = cev.Xpos

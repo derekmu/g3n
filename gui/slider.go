@@ -5,7 +5,7 @@
 package gui
 
 import (
-	"github.com/derekmu/g3n/window"
+	"github.com/derekmu/g3n/core"
 )
 
 /***************************************
@@ -156,8 +156,8 @@ func (s *Slider) onMouse(evname string, ev interface{}) {
 		return
 	}
 
-	mev := ev.(*window.MouseEvent)
-	if mev.Button != window.MouseButtonLeft {
+	mev := ev.(*core.MouseEvent)
+	if mev.Button != core.MouseButtonLeft {
 		return
 	}
 	switch evname {
@@ -168,11 +168,11 @@ func (s *Slider) onMouse(evname string, ev interface{}) {
 		} else {
 			s.posLast = mev.Ypos
 		}
-		Manager().SetKeyFocus(s)
-		Manager().SetCursorFocus(s)
+		GetManager().SetKeyFocus(s)
+		GetManager().SetCursorFocus(s)
 	case OnMouseUp:
 		s.pressed = false
-		Manager().SetCursorFocus(nil)
+		GetManager().SetCursorFocus(nil)
 	default:
 		return
 	}
@@ -187,20 +187,20 @@ func (s *Slider) onCursor(evname string, ev interface{}) {
 	if evname == OnCursorEnter {
 		s.cursorOver = true
 		if s.horiz {
-			window.Get().SetCursor(window.HResizeCursor)
+			GetManager().window.SetCursor(core.HResizeCursor)
 		} else {
-			window.Get().SetCursor(window.VResizeCursor)
+			GetManager().window.SetCursor(core.VResizeCursor)
 		}
 		s.update()
 	} else if evname == OnCursorLeave {
 		s.cursorOver = false
-		window.Get().SetCursor(window.ArrowCursor)
+		GetManager().window.SetCursor(core.ArrowCursor)
 		s.update()
 	} else if evname == OnCursor {
 		if !s.pressed {
 			return
 		}
-		cev := ev.(*window.CursorEvent)
+		cev := ev.(*core.CursorEvent)
 		var pos float32
 		if s.horiz {
 			delta := cev.Xpos - s.posLast
@@ -223,7 +223,7 @@ func (s *Slider) onScroll(evname string, ev interface{}) {
 		return
 	}
 
-	sev := ev.(*window.ScrollEvent)
+	sev := ev.(*core.ScrollEvent)
 	v := s.pos
 	v += sev.Yoffset * 0.01
 	s.setPos(v)
@@ -235,14 +235,14 @@ func (s *Slider) onKey(evname string, ev interface{}) {
 		return
 	}
 
-	kev := ev.(*window.KeyEvent)
+	kev := ev.(*core.KeyEvent)
 	delta := float32(0.01)
 	// Horizontal slider
 	if s.horiz {
 		switch kev.Key {
-		case window.KeyLeft:
+		case core.KeyLeft:
 			s.setPos(s.pos - delta)
-		case window.KeyRight:
+		case core.KeyRight:
 			s.setPos(s.pos + delta)
 		default:
 			return
@@ -250,9 +250,9 @@ func (s *Slider) onKey(evname string, ev interface{}) {
 		// Vertical slider
 	} else {
 		switch kev.Key {
-		case window.KeyDown:
+		case core.KeyDown:
 			s.setPos(s.pos - delta)
-		case window.KeyUp:
+		case core.KeyUp:
 			s.setPos(s.pos + delta)
 		default:
 			return

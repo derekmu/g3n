@@ -6,9 +6,8 @@ package gui
 
 import (
 	"fmt"
+	"github.com/derekmu/g3n/core"
 	"log"
-
-	"github.com/derekmu/g3n/window"
 )
 
 // TabBar is a panel which can contain other panels arranged in horizontal Tabs.
@@ -424,7 +423,7 @@ func (tab *Tab) onCursor(evname string, ev interface{}) {
 
 // onMouse process subscribed mouse events over the tab header
 func (tab *Tab) onMouseHeader(evname string, ev interface{}) {
-	if evname == OnMouseDown && ev.(*window.MouseEvent).Button == window.MouseButtonLeft {
+	if evname == OnMouseDown && ev.(*core.MouseEvent).Button == core.MouseButtonLeft {
 		tab.tb.SetSelected(tab.tb.TabPosition(tab))
 	}
 }

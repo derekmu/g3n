@@ -5,8 +5,8 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/texture"
-	"github.com/derekmu/g3n/window"
 )
 
 // ImageButton represents an image button GUI element
@@ -176,7 +176,7 @@ func (b *ImageButton) onCursor(evname string, ev interface{}) {
 func (b *ImageButton) onMouse(evname string, ev interface{}) {
 	switch evname {
 	case OnMouseDown:
-		Manager().SetKeyFocus(b)
+		GetManager().SetKeyFocus(b)
 		b.pressed = true
 		b.update()
 		b.Dispatch(OnClick, nil)
@@ -190,14 +190,14 @@ func (b *ImageButton) onMouse(evname string, ev interface{}) {
 
 // onKey processes subscribed key events
 func (b *ImageButton) onKey(evname string, ev interface{}) {
-	kev := ev.(*window.KeyEvent)
-	if evname == OnKeyDown && kev.Key == window.KeyEnter {
+	kev := ev.(*core.KeyEvent)
+	if evname == OnKeyDown && kev.Key == core.KeyEnter {
 		b.pressed = true
 		b.update()
 		b.Dispatch(OnClick, nil)
 		return
 	}
-	if evname == OnKeyUp && kev.Key == window.KeyEnter {
+	if evname == OnKeyUp && kev.Key == core.KeyEnter {
 		b.pressed = false
 		b.update()
 		return

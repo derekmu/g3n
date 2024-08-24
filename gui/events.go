@@ -5,18 +5,18 @@
 package gui
 
 import (
-	"github.com/derekmu/g3n/window"
+	"github.com/derekmu/g3n/core"
 )
 
-// Core events sent by the GUI manager.
+// Core events sent by the GUI eventManager.
 // The target panel is the panel immediately under the mouse cursor.
 
 // Events sent to target panel's lowest subscribed ancestor.
 
 const (
-	OnMouseDown = window.OnMouseDown
-	OnMouseUp   = window.OnMouseUp
-	OnScroll    = window.OnScroll
+	OnMouseDown = core.OnMouseDown
+	OnMouseUp   = core.OnMouseUp
+	OnScroll    = core.OnScroll
 )
 
 // Events sent to all panels except the ancestors of the target panel.
@@ -36,9 +36,9 @@ const OnCursorLeave = "gui.OnCursorLeave"
 
 // Events sent to the cursor-focused IDispatcher if any, else sent to target panel's lowest subscribed ancestor.
 
-const OnCursor = window.OnCursor
+const OnCursor = core.OnCursor
 
-// Events sent to the new key-focused IDispatcher, specified on a call to gui.Manager().SetKeyFocus(core.IDispatcher).
+// Events sent to the new key-focused IDispatcher, specified on a call to gui.eventManager().SetKeyFocus(core.IDispatcher).
 
 const (
 	OnFocus     = "gui.OnFocus"
@@ -48,10 +48,10 @@ const (
 // Events sent to the key-focused IDispatcher.
 
 const (
-	OnKeyDown   = window.OnKeyDown
-	OnKeyUp     = window.OnKeyUp
-	OnKeyRepeat = window.OnKeyRepeat
-	OnChar      = window.OnChar
+	OnKeyDown   = core.OnKeyDown
+	OnKeyUp     = core.OnKeyUp
+	OnKeyRepeat = core.OnKeyRepeat
+	OnChar      = core.OnChar
 )
 
 // Events sent in other circumstances.

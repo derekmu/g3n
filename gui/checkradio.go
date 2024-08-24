@@ -5,8 +5,8 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gui/assets/icon"
-	"github.com/derekmu/g3n/window"
 )
 
 const (
@@ -133,7 +133,7 @@ func (cb *CheckRadio) toggleState() {
 	// Subscribes once to the root panel for OnRadioGroup events
 	// The root panel is used to dispatch events to all checkradios
 	if !cb.subroot {
-		Manager().Subscribe(OnRadioGroup, func(name string, ev interface{}) {
+		GetManager().Subscribe(OnRadioGroup, func(name string, ev interface{}) {
 			cb.onRadioGroup(ev.(*CheckRadio))
 		})
 		cb.subroot = true
@@ -154,7 +154,7 @@ func (cb *CheckRadio) toggleState() {
 	cb.update()
 	cb.Dispatch(OnChange, nil)
 	if !cb.check && len(cb.group) > 0 {
-		Manager().Dispatch(OnRadioGroup, cb)
+		GetManager().Dispatch(OnRadioGroup, cb)
 	}
 }
 
@@ -162,9 +162,9 @@ func (cb *CheckRadio) toggleState() {
 func (cb *CheckRadio) onMouse(evname string, ev interface{}) {
 	// Dispatch OnClick for left mouse button down
 	if evname == OnMouseDown {
-		mev := ev.(*window.MouseEvent)
-		if mev.Button == window.MouseButtonLeft && cb.Enabled() {
-			Manager().SetKeyFocus(cb)
+		mev := ev.(*core.MouseEvent)
+		if mev.Button == core.MouseButtonLeft && cb.Enabled() {
+			GetManager().SetKeyFocus(cb)
 			cb.toggleState()
 			cb.Dispatch(OnClick, nil)
 		}
@@ -183,8 +183,8 @@ func (cb *CheckRadio) onCursor(evname string, ev interface{}) {
 
 // onKey receives subscribed key events
 func (cb *CheckRadio) onKey(evname string, ev interface{}) {
-	kev := ev.(*window.KeyEvent)
-	if evname == OnKeyDown && kev.Key == window.KeyEnter {
+	kev := ev.(*core.KeyEvent)
+	if evname == OnKeyDown && kev.Key == core.KeyEnter {
 		cb.toggleState()
 		cb.update()
 		cb.Dispatch(OnClick, nil)

@@ -5,7 +5,7 @@
 package gui
 
 import (
-	"github.com/derekmu/g3n/window"
+	"github.com/derekmu/g3n/core"
 )
 
 /***************************************
@@ -136,7 +136,7 @@ func (b *Button) onMouse(evname string, ev interface{}) {
 
 	switch evname {
 	case OnMouseDown:
-		Manager().SetKeyFocus(b)
+		GetManager().SetKeyFocus(b)
 		b.pressed = true
 		b.update()
 	case OnMouseUpOut:
@@ -154,8 +154,8 @@ func (b *Button) onMouse(evname string, ev interface{}) {
 
 // onKey processes subscribed key events
 func (b *Button) onKey(evname string, ev interface{}) {
-	kev := ev.(*window.KeyEvent)
-	if kev.Key != window.KeyEnter {
+	kev := ev.(*core.KeyEvent)
+	if kev.Key != core.KeyEnter {
 		return
 	}
 	switch evname {

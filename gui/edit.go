@@ -5,12 +5,12 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"strings"
 	"time"
 
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/text"
-	"github.com/derekmu/g3n/window"
 )
 
 // Edit represents a text edit box GUI element
@@ -140,7 +140,7 @@ func (ed *Edit) SetStyles(es *EditStyles) {
 func (ed *Edit) OnFocusLost(evname string, ev interface{}) {
 	ed.focus = false
 	ed.update()
-	Manager().ClearTimeout(ed.blinkID)
+	GetManager().ClearTimeout(ed.blinkID)
 }
 
 // CursorPos sets the position of the cursor at the
@@ -389,51 +389,51 @@ func (ed *Edit) CursorInput(s string) {
 // the selection caret is always shown (when text is selected)
 func (ed *Edit) redraw(caret bool) {
 	line := 0
-	scaleX, _ := window.Get().GetScale()
+	scaleX, _ := GetManager().window.GetScale()
 	ed.Label.setTextCaret(ed.text, editMarginX, int(float64(ed.width)*scaleX), caret, line, ed.col, ed.selStart, ed.selEnd)
 }
 
 // onKey receives subscribed key events
 func (ed *Edit) onKey(evname string, ev interface{}) {
-	kev := ev.(*window.KeyEvent)
-	if kev.Mods != window.ModShift && kev.Mods != window.ModControl {
+	kev := ev.(*core.KeyEvent)
+	if kev.Mods != core.ModShift && kev.Mods != core.ModControl {
 		switch kev.Key {
-		case window.KeyLeft:
+		case core.KeyLeft:
 			ed.CursorLeft()
-		case window.KeyRight:
+		case core.KeyRight:
 			ed.CursorRight()
-		case window.KeyHome:
+		case core.KeyHome:
 			ed.CursorHome()
-		case window.KeyEnd:
+		case core.KeyEnd:
 			ed.CursorEnd()
-		case window.KeyBackspace:
+		case core.KeyBackspace:
 			ed.CursorBack()
-		case window.KeyDelete:
+		case core.KeyDelete:
 			ed.CursorDelete()
 		default:
 			return
 		}
-	} else if kev.Mods == window.ModShift {
+	} else if kev.Mods == core.ModShift {
 		switch kev.Key {
-		case window.KeyLeft:
+		case core.KeyLeft:
 			ed.SelectLeft()
-		case window.KeyRight:
+		case core.KeyRight:
 			ed.SelectRight()
-		case window.KeyHome:
+		case core.KeyHome:
 			ed.SelectHome()
-		case window.KeyEnd:
+		case core.KeyEnd:
 			ed.SelectEnd()
-		case window.KeyBackspace:
+		case core.KeyBackspace:
 			ed.CursorBack()
-		case window.KeyDelete:
+		case core.KeyDelete:
 			ed.SelectAll()
 			ed.DeleteSelection()
 		default:
 			return
 		}
-	} else if kev.Mods == window.ModControl {
+	} else if kev.Mods == core.ModControl {
 		switch kev.Key {
-		case window.KeyA:
+		case core.KeyA:
 			ed.SelectAll()
 		}
 	}
@@ -441,14 +441,14 @@ func (ed *Edit) onKey(evname string, ev interface{}) {
 
 // onChar receives subscribed char events
 func (ed *Edit) onChar(evname string, ev interface{}) {
-	cev := ev.(*window.CharEvent)
+	cev := ev.(*core.CharEvent)
 	ed.CursorInput(string(cev.Char))
 }
 
 // onMouseDown receives subscribed mouse down events
 func (ed *Edit) onMouseDown(evname string, ev interface{}) {
-	e := ev.(*window.MouseEvent)
-	if e.Button != window.MouseButtonLeft {
+	e := ev.(*core.MouseEvent)
+	if e.Button != core.MouseButtonLeft {
 		return
 	}
 
@@ -462,7 +462,7 @@ func (ed *Edit) onMouseDown(evname string, ev interface{}) {
 	// Otherwise the OnFocus event would fire before the cursor is set.
 	// That way the OnFocus handler could NOT influence the selection
 	// Because it would be overridden/cleared directly afterwards.
-	Manager().SetKeyFocus(ed)
+	GetManager().SetKeyFocus(ed)
 }
 
 // handleMouse is setting the caret when the mouse is clicked
@@ -479,7 +479,7 @@ func (ed *Edit) handleMouse(mouseX float32, dragged bool) {
 	}
 	if !ed.focus {
 		ed.focus = true
-		ed.blinkID = Manager().SetInterval(750*time.Millisecond, nil, ed.blink)
+		ed.blinkID = GetManager().SetInterval(750*time.Millisecond, nil, ed.blink)
 	}
 	if !dragged {
 		ed.CursorPos(nchars - 1)
@@ -507,20 +507,20 @@ func (ed *Edit) onMouseUp(evname string, ev interface{}) {
 // onCursor receives subscribed cursor events
 func (ed *Edit) onCursor(evname string, ev interface{}) {
 	if evname == OnCursorEnter {
-		window.Get().SetCursor(window.IBeamCursor)
+		GetManager().window.SetCursor(core.IBeamCursor)
 		ed.cursorOver = true
 		ed.update()
 		return
 	}
 	if evname == OnCursorLeave {
-		window.Get().SetCursor(window.ArrowCursor)
+		GetManager().window.SetCursor(core.ArrowCursor)
 		ed.cursorOver = false
 		ed.mouseDrag = false
 		ed.update()
 		return
 	}
 	if ed.mouseDrag {
-		e := ev.(*window.CursorEvent)
+		e := ev.(*core.CursorEvent)
 		// select text based on mouse position
 		ed.handleMouse(e.Xpos, true)
 	}
@@ -566,7 +566,7 @@ func (ed *Edit) applyStyle(s *EditStyle) {
 	//ed.Label.SetBgAlpha(s.BgAlpha)
 
 	if !ed.focus && len(ed.text) == 0 && len(ed.placeHolder) > 0 {
-		scaleX, _ := window.Get().GetScale()
+		scaleX, _ := GetManager().window.GetScale()
 		ed.Label.SetColor4(&s.HolderColor)
 		ed.Label.setTextCaret(ed.placeHolder, editMarginX, int(float64(ed.width)*scaleX), false, -1, ed.col, ed.selStart, ed.selEnd)
 	} else {

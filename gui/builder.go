@@ -6,6 +6,7 @@ package gui
 
 import (
 	"fmt"
+	"github.com/derekmu/g3n/core"
 	"io/ioutil"
 	"os"
 	"sort"
@@ -14,7 +15,6 @@ import (
 
 	"github.com/derekmu/g3n/gui/assets/icon"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
 	"gopkg.in/yaml.v2"
 )
 
@@ -763,15 +763,15 @@ func AttribCheckMenuShortcut(b *Builder, am map[string]interface{}, fname string
 		return nil
 	}
 	parts := strings.Split(sc, "+")
-	var mods window.ModifierKey
+	var mods core.ModifierKey
 	for i := 0; i < len(parts)-1; i++ {
 		switch parts[i] {
 		case "Shift":
-			mods |= window.ModShift
+			mods |= core.ModShift
 		case "Ctrl":
-			mods |= window.ModControl
+			mods |= core.ModControl
 		case "Alt":
-			mods |= window.ModAlt
+			mods |= core.ModAlt
 		default:
 			return b.err(am, fname, "Invalid shortcut:"+sc)
 		}

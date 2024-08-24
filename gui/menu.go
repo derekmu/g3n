@@ -5,10 +5,9 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gui/assets/icon"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
-
 	"time"
 )
 
@@ -41,20 +40,20 @@ type MenuStyles struct {
 
 // MenuItem is an option of a Menu
 type MenuItem struct {
-	Panel                       // embedded panel
-	styles   *MenuItemStyles    // pointer to current styles
-	menu     *Menu              // pointer to parent menu
-	licon    *Label             // optional left icon label
-	label    *Label             // optional text label (nil for separators)
-	shortcut *Label             // optional shorcut text label
-	ricon    *Label             // optional right internal icon label for submenu
-	id       string             // optional text id
-	icode    int                // icon code (if icon is set)
-	submenu  *Menu              // pointer to optional associated sub menu
-	keyMods  window.ModifierKey // shortcut key modifier
-	keyCode  window.Key         // shortcut key code
-	disabled bool               // item disabled state
-	selected bool               // selection state
+	Panel                     // embedded panel
+	styles   *MenuItemStyles  // pointer to current styles
+	menu     *Menu            // pointer to parent menu
+	licon    *Label           // optional left icon label
+	label    *Label           // optional text label (nil for separators)
+	shortcut *Label           // optional shorcut text label
+	ricon    *Label           // optional right internal icon label for submenu
+	id       string           // optional text id
+	icode    int              // icon code (if icon is set)
+	submenu  *Menu            // pointer to optional associated sub menu
+	keyMods  core.ModifierKey // shortcut key modifier
+	keyCode  core.Key         // shortcut key code
+	disabled bool             // item disabled state
+	selected bool             // selection state
 }
 
 // MenuItemStyle describes the style of a menu item
@@ -74,67 +73,67 @@ type MenuItemStyles struct {
 	Separator MenuItemStyle
 }
 
-var mapKeyModifier = map[window.ModifierKey]string{
-	window.ModShift:   "Shift",
-	window.ModControl: "Ctrl",
-	window.ModAlt:     "Alt",
+var mapKeyModifier = map[core.ModifierKey]string{
+	core.ModShift:   "Shift",
+	core.ModControl: "Ctrl",
+	core.ModAlt:     "Alt",
 }
-var mapKeyText = map[window.Key]string{
-	window.KeyApostrophe: "'",
-	window.KeyComma:      ",",
-	window.KeyMinus:      "-",
-	window.KeyPeriod:     ".",
-	window.KeySlash:      "/",
-	window.Key0:          "0",
-	window.Key1:          "1",
-	window.Key2:          "2",
-	window.Key3:          "3",
-	window.Key4:          "4",
-	window.Key5:          "5",
-	window.Key6:          "6",
-	window.Key7:          "7",
-	window.Key8:          "8",
-	window.Key9:          "9",
-	window.KeySemicolon:  ";",
-	window.KeyEqual:      "=",
-	window.KeyA:          "A",
-	window.KeyB:          "B",
-	window.KeyC:          "C",
-	window.KeyD:          "D",
-	window.KeyE:          "E",
-	window.KeyF:          "F",
-	window.KeyG:          "G",
-	window.KeyH:          "H",
-	window.KeyI:          "I",
-	window.KeyJ:          "J",
-	window.KeyK:          "K",
-	window.KeyL:          "L",
-	window.KeyM:          "M",
-	window.KeyN:          "N",
-	window.KeyO:          "O",
-	window.KeyP:          "P",
-	window.KeyQ:          "Q",
-	window.KeyR:          "R",
-	window.KeyS:          "S",
-	window.KeyT:          "T",
-	window.KeyU:          "U",
-	window.KeyV:          "V",
-	window.KeyW:          "W",
-	window.KeyX:          "X",
-	window.KeyY:          "Y",
-	window.KeyZ:          "Z",
-	window.KeyF1:         "F1",
-	window.KeyF2:         "F2",
-	window.KeyF3:         "F3",
-	window.KeyF4:         "F4",
-	window.KeyF5:         "F5",
-	window.KeyF6:         "F6",
-	window.KeyF7:         "F7",
-	window.KeyF8:         "F8",
-	window.KeyF9:         "F9",
-	window.KeyF10:        "F10",
-	window.KeyF11:        "F11",
-	window.KeyF12:        "F12",
+var mapKeyText = map[core.Key]string{
+	core.KeyApostrophe: "'",
+	core.KeyComma:      ",",
+	core.KeyMinus:      "-",
+	core.KeyPeriod:     ".",
+	core.KeySlash:      "/",
+	core.Key0:          "0",
+	core.Key1:          "1",
+	core.Key2:          "2",
+	core.Key3:          "3",
+	core.Key4:          "4",
+	core.Key5:          "5",
+	core.Key6:          "6",
+	core.Key7:          "7",
+	core.Key8:          "8",
+	core.Key9:          "9",
+	core.KeySemicolon:  ";",
+	core.KeyEqual:      "=",
+	core.KeyA:          "A",
+	core.KeyB:          "B",
+	core.KeyC:          "C",
+	core.KeyD:          "D",
+	core.KeyE:          "E",
+	core.KeyF:          "F",
+	core.KeyG:          "G",
+	core.KeyH:          "H",
+	core.KeyI:          "I",
+	core.KeyJ:          "J",
+	core.KeyK:          "K",
+	core.KeyL:          "L",
+	core.KeyM:          "M",
+	core.KeyN:          "N",
+	core.KeyO:          "O",
+	core.KeyP:          "P",
+	core.KeyQ:          "Q",
+	core.KeyR:          "R",
+	core.KeyS:          "S",
+	core.KeyT:          "T",
+	core.KeyU:          "U",
+	core.KeyV:          "V",
+	core.KeyW:          "W",
+	core.KeyX:          "X",
+	core.KeyY:          "Y",
+	core.KeyZ:          "Z",
+	core.KeyF1:         "F1",
+	core.KeyF2:         "F2",
+	core.KeyF3:         "F3",
+	core.KeyF4:         "F4",
+	core.KeyF5:         "F5",
+	core.KeyF6:         "F6",
+	core.KeyF7:         "F7",
+	core.KeyF8:         "F8",
+	core.KeyF9:         "F9",
+	core.KeyF10:        "F10",
+	core.KeyF11:        "F11",
+	core.KeyF12:        "F12",
 }
 
 // NewMenuBar creates and returns a pointer to a new empty menu bar
@@ -209,10 +208,10 @@ func (m *Menu) RemoveItem(mi *MenuItem) {
 // onKey process subscribed key events
 func (m *Menu) onKey(evname string, ev interface{}) {
 	sel := m.selectedPos()
-	kev := ev.(*window.KeyEvent)
+	kev := ev.(*core.KeyEvent)
 	switch kev.Key {
 	// Select next enabled menu item
-	case window.KeyDown:
+	case core.KeyDown:
 		if sel < 0 {
 			return
 		}
@@ -226,7 +225,7 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 			// Sets autoOpen and selects sub menu
 			m.autoOpen = true
 			mi.update()
-			Manager().SetKeyFocus(mi.submenu)
+			GetManager().SetKeyFocus(mi.submenu)
 			mi.submenu.setSelectedPos(0)
 			return
 		}
@@ -234,7 +233,7 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 		next := m.nextItem(sel)
 		m.setSelectedPos(next)
 	// Up -> Previous item for vertical menus
-	case window.KeyUp:
+	case core.KeyUp:
 		if sel < 0 {
 			return
 		}
@@ -244,7 +243,7 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 		prev := m.prevItem(sel)
 		m.setSelectedPos(prev)
 	// Left -> Previous menu item for menu bar
-	case window.KeyLeft:
+	case core.KeyLeft:
 		if sel < 0 {
 			return
 		}
@@ -263,12 +262,12 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 			} else {
 				m.mitem.menu.setSelectedItem(m.mitem)
 			}
-			Manager().SetKeyFocus(m.mitem.menu)
+			GetManager().SetKeyFocus(m.mitem.menu)
 			return
 		}
 
 	// Right -> Next menu bar item || Next sub menu
-	case window.KeyRight:
+	case core.KeyRight:
 		if sel < 0 {
 			return
 		}
@@ -281,7 +280,7 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 		}
 		// Enter into sub menu
 		if mi.submenu != nil {
-			Manager().SetKeyFocus(mi.submenu)
+			GetManager().SetKeyFocus(mi.submenu)
 			mi.submenu.setSelectedPos(0)
 			return
 		}
@@ -290,10 +289,10 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 			sel := m.mitem.menu.selectedPos()
 			next := m.mitem.menu.nextItem(sel)
 			m.mitem.menu.setSelectedPos(next)
-			Manager().SetKeyFocus(m.mitem.menu)
+			GetManager().SetKeyFocus(m.mitem.menu)
 		}
 	// Enter -> Select menu option
-	case window.KeyEnter:
+	case core.KeyEnter:
 		if sel < 0 {
 			return
 		}
@@ -327,7 +326,7 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 func (m *Menu) onMouse(evname string, ev interface{}) {
 	// Clear menu bar after some time, to give time for menu items
 	// to receive onMouse events.
-	Manager().SetTimeout(1*time.Millisecond, nil, func(arg interface{}) {
+	GetManager().SetTimeout(1*time.Millisecond, nil, func(arg interface{}) {
 		m.autoOpen = false
 		m.setSelectedPos(-1)
 	})
@@ -342,7 +341,7 @@ func (m *Menu) onResize(evname string, ev interface{}) {
 
 // checkKey checks if this menu and any of its children contains
 // a menu item with the specified key shortcut
-func (m *Menu) checkKey(kev *window.KeyEvent) *MenuItem {
+func (m *Menu) checkKey(kev *core.KeyEvent) *MenuItem {
 	for i := 0; i < len(m.items); i++ {
 		mi := m.items[i]
 		if mi.keyCode == kev.Key && mi.keyMods == kev.Mods {
@@ -586,7 +585,7 @@ func (mi *MenuItem) SetText(text string) *MenuItem {
 }
 
 // SetShortcut sets the keyboard shortcut of this menu item
-func (mi *MenuItem) SetShortcut(mods window.ModifierKey, key window.Key) *MenuItem {
+func (mi *MenuItem) SetShortcut(mods core.ModifierKey, key core.Key) *MenuItem {
 	if mapKeyText[key] == "" {
 		panic("Invalid menu shortcut key")
 	}
@@ -600,20 +599,20 @@ func (mi *MenuItem) SetShortcut(mods window.ModifierKey, key window.Key) *MenuIt
 
 	// Builds shortcut text
 	text := ""
-	if mi.keyMods&window.ModShift != 0 {
-		text = mapKeyModifier[window.ModShift]
+	if mi.keyMods&core.ModShift != 0 {
+		text = mapKeyModifier[core.ModShift]
 	}
-	if mi.keyMods&window.ModControl != 0 {
+	if mi.keyMods&core.ModControl != 0 {
 		if text != "" {
 			text += "+"
 		}
-		text += mapKeyModifier[window.ModControl]
+		text += mapKeyModifier[core.ModControl]
 	}
-	if mi.keyMods&window.ModAlt != 0 {
+	if mi.keyMods&core.ModAlt != 0 {
 		if text != "" {
 			text += "+"
 		}
-		text += mapKeyModifier[window.ModAlt]
+		text += mapKeyModifier[core.ModAlt]
 	}
 	if text != "" {
 		text += "+"
@@ -685,7 +684,7 @@ func (mi *MenuItem) onMouse(evname string, ev interface{}) {
 			mi.menu.autoOpen = !mi.menu.autoOpen
 			if mi.submenu != nil && mi.submenu.Visible() {
 				mi.submenu.SetVisible(false)
-				Manager().SetKeyFocus(mi.menu)
+				GetManager().SetKeyFocus(mi.menu)
 			} else {
 				mi.update()
 			}
@@ -704,7 +703,7 @@ func (mi *MenuItem) activate() {
 		rm.autoOpen = false
 	}
 	rm.setSelectedPos(-1)
-	Manager().SetKeyFocus(rm)
+	GetManager().SetKeyFocus(rm)
 	mi.dispatchAll(OnClick, mi)
 }
 

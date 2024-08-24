@@ -596,7 +596,7 @@ func (p *Panel) ContentCoords(wx, wy float32) (float32, float32) {
 // setContentSize is an internal version of SetContentSize() which allows
 // to determine if the panel will recalculate its layout and dispatch event.
 // It is normally used by layout managers when setting the panel content size
-// to avoid another invocation of the layout manager.
+// to avoid another invocation of the layout eventManager.
 func (p *Panel) setContentSize(width, height float32, dispatch bool) {
 	// Calculates the new desired external width and height
 	eWidth := width +
@@ -807,7 +807,7 @@ func (p *Panel) RenderSetup(gl *gls.GLS, rinfo *core.RenderInfo) {
 // SetModelMatrix calculates and sets the specified matrix with the model matrix for this panel
 func (p *Panel) SetModelMatrix(gl *gls.GLS, mm *math32.Matrix4) {
 	// Get scale of window (for HiDPI support)
-	sX, sY := Manager().win.GetScale()
+	sX, sY := GetManager().window.GetScale()
 
 	// Get the current viewport width and height
 	_, _, width, height := gl.GetViewport()

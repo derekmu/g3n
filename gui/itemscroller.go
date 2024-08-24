@@ -5,9 +5,8 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"math"
-
-	"github.com/derekmu/g3n/window"
 )
 
 // ItemScroller is the GUI element that allows scrolling of IPanels
@@ -295,7 +294,7 @@ func (s *ItemScroller) onCursor(evname string, ev interface{}) {
 
 // onScroll receives mouse scroll events
 func (s *ItemScroller) onScroll(evname string, ev interface{}) {
-	sev := ev.(*window.ScrollEvent)
+	sev := ev.(*core.ScrollEvent)
 	if sev.Yoffset > 0 {
 		s.ScrollUp()
 	} else if sev.Yoffset < 0 {

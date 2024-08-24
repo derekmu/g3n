@@ -6,13 +6,13 @@ package gui
 
 import (
 	"fmt"
+	"github.com/derekmu/g3n/core"
 	"math"
 	"sort"
 	"strconv"
 
 	"github.com/derekmu/g3n/gui/assets/icon"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
 )
 
 const (
@@ -135,13 +135,13 @@ type TableStyles struct {
 // TableClickEvent describes a mouse click event over a table
 // It contains the original mouse event plus additional information
 type TableClickEvent struct {
-	window.MouseEvent         // Embedded window mouse event
-	X                 float32 // Table content area X coordinate
-	Y                 float32 // Table content area Y coordinate
-	Header            bool    // True if header was clicked
-	Row               int     // Index of table row (may be -1)
-	Col               string  // Id of table column (may be empty)
-	ColOrder          int     // Current column exhibition order
+	core.MouseEvent         // Embedded window mouse event
+	X               float32 // Table content area X coordinate
+	Y               float32 // Table content area Y coordinate
+	Header          bool    // True if header was clicked
+	Row             int     // Index of table row (may be -1)
+	Col             string  // Id of table column (may be empty)
+	ColOrder        int     // Current column exhibition order
 }
 
 // tableHeader is panel which contains the individual header panels for each column
@@ -746,7 +746,7 @@ func (t *Table) removeRow(row int) {
 // onCursorPos process subscribed cursor position events
 func (t *Table) onCursorPos(evname string, ev interface{}) {
 	// Convert mouse window coordinates to table content coordinates
-	cev := ev.(*window.CursorEvent)
+	cev := ev.(*core.CursorEvent)
 	cx, _ := t.ContentCoords(cev.Xpos, cev.Ypos)
 
 	// If user is dragging the resizer, updates its position
@@ -765,27 +765,26 @@ func (t *Table) onCursorPos(evname string, ev interface{}) {
 				found = true
 				t.resizeCol = ci
 				t.resizerX = c.xr
-				window.Get().SetCursor(window.HResizeCursor)
+				GetManager().window.SetCursor(core.HResizeCursor)
 			}
 			break
 		}
 	}
-	// If column not found but previously was near a resizable column,
-	// resets the the window cursor.
+	// If column not found but previously was near a resizable column, resets the window cursor.
 	if !found && t.resizeCol >= 0 {
-		window.Get().SetCursor(window.ArrowCursor)
+		GetManager().window.SetCursor(core.ArrowCursor)
 		t.resizeCol = -1
 	}
 }
 
 // onMouseEvent process subscribed mouse events
 func (t *Table) onMouse(evname string, ev interface{}) {
-	e := ev.(*window.MouseEvent)
-	Manager().SetKeyFocus(t)
+	e := ev.(*core.MouseEvent)
+	GetManager().SetKeyFocus(t)
 	switch evname {
 	case OnMouseDown:
 		// If over a resizable column border, shows the resizer panel
-		if t.resizeCol >= 0 && e.Button == window.MouseButtonLeft {
+		if t.resizeCol >= 0 && e.Button == core.MouseButtonLeft {
 			t.resizing = true
 			height := t.ContentHeight()
 			if t.statusPanel.Visible() {
@@ -803,9 +802,9 @@ func (t *Table) onMouse(evname string, ev interface{}) {
 		tce.MouseEvent = *e
 		t.findClick(&tce)
 		// If row is clicked, selects it
-		if tce.Row >= 0 && e.Button == window.MouseButtonLeft {
+		if tce.Row >= 0 && e.Button == core.MouseButtonLeft {
 			t.rowCursor = tce.Row
-			if t.selType == TableSelMultiRow && e.Mods == window.ModControl {
+			if t.selType == TableSelMultiRow && e.Mods == core.ModControl {
 				t.toggleRowSel(t.rowCursor)
 			}
 			t.recalc()
@@ -819,7 +818,7 @@ func (t *Table) onMouse(evname string, ev interface{}) {
 		if t.resizing {
 			t.resizing = false
 			t.resizerPanel.SetVisible(false)
-			window.Get().SetCursor(window.ArrowCursor)
+			GetManager().window.SetCursor(core.ArrowCursor)
 			// Calculates the new column width
 			cx, _ := t.ContentCoords(e.Xpos, e.Ypos)
 			c := t.header.cols[t.resizeCol]
@@ -833,20 +832,20 @@ func (t *Table) onMouse(evname string, ev interface{}) {
 
 // onKeyEvent receives subscribed key events for this table
 func (t *Table) onKey(evname string, ev interface{}) {
-	kev := ev.(*window.KeyEvent)
-	if kev.Key == window.KeyUp && kev.Mods == 0 {
+	kev := ev.(*core.KeyEvent)
+	if kev.Key == core.KeyUp && kev.Mods == 0 {
 		t.selPrev()
-	} else if kev.Key == window.KeyDown && kev.Mods == 0 {
+	} else if kev.Key == core.KeyDown && kev.Mods == 0 {
 		t.selNext()
-	} else if kev.Key == window.KeyPageUp && kev.Mods == 0 {
+	} else if kev.Key == core.KeyPageUp && kev.Mods == 0 {
 		t.prevPage()
-	} else if kev.Key == window.KeyPageDown && kev.Mods == 0 {
+	} else if kev.Key == core.KeyPageDown && kev.Mods == 0 {
 		t.nextPage()
-	} else if kev.Key == window.KeyPageUp && kev.Mods == window.ModControl {
+	} else if kev.Key == core.KeyPageUp && kev.Mods == core.ModControl {
 		t.firstPage()
-	} else if kev.Key == window.KeyPageDown && kev.Mods == window.ModControl {
+	} else if kev.Key == core.KeyPageDown && kev.Mods == core.ModControl {
 		t.lastPage()
-	} else if kev.Key == window.KeyEnter && kev.Mods == window.ModControl {
+	} else if kev.Key == core.KeyEnter && kev.Mods == core.ModControl {
 		if t.selType == TableSelMultiRow {
 			t.toggleRowSel(t.rowCursor)
 		}
@@ -861,7 +860,7 @@ func (t *Table) onResize(evname string, ev interface{}) {
 
 // onScroll receives subscribed scroll events for this table
 func (t *Table) onScroll(evname string, ev interface{}) {
-	sev := ev.(*window.ScrollEvent)
+	sev := ev.(*core.ScrollEvent)
 	if sev.Yoffset > 0 {
 		t.scrollUp(1)
 	} else if sev.Yoffset < 0 {

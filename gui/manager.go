@@ -5,67 +5,77 @@
 package gui
 
 import (
+	"fmt"
 	"github.com/derekmu/g3n/core"
-	"github.com/derekmu/g3n/window"
 )
 
-// manager singleton
-var gm *manager
+var gm *Manager
 
-// manager routes GUI events to the appropriate panels.
-type manager struct {
-	core.Dispatcher                       // Embedded Dispatcher
-	core.TimerManager                     // Embedded TimerManager
-	win               window.IWindow      // The current IWindow
-	scene             core.INode          // INode containing IPanels to dispatch events to (can contain non-IPanels as well)
-	modal             IPanel              // Panel which along its descendants will exclusively receive all events
-	target            IPanel              // Panel immediately under the cursor
-	keyFocus          core.IDispatcher    // IDispatcher which will exclusively receive all key and char events
-	cursorFocus       core.IDispatcher    // IDispatcher which will exclusively receive all OnCursor events
-	cev               *window.CursorEvent // IDispatcher which will exclusively receive all OnCursor events
-}
-
-// Manager returns the GUI manager singleton (creating it the first time)
-func Manager() *manager {
+// GetManager returns the GUI Manager singleton or panics if InitManager hasn't been called.
+func GetManager() *Manager {
 	// Return singleton if already created
 	if gm != nil {
 		return gm
 	}
+	panic(fmt.Errorf("gui.InitManager not called"))
+}
 
-	gm = new(manager)
+type IWindow interface {
+	core.IDispatcher
+	GetScale() (x float64, y float64)
+	SetCursor(cursor core.Cursor)
+}
+
+// Manager routes events to the appropriate places
+type Manager struct {
+	core.Dispatcher   // Embedded Dispatcher
+	core.TimerManager // Embedded TimerManager
+	window            IWindow
+	scene             core.INode        // INode containing IPanels to dispatch events to (can contain non-IPanels as well)
+	modal             IPanel            // Panel which along its descendants will exclusively receive all events
+	target            IPanel            // Panel immediately under the cursor
+	keyFocus          core.IDispatcher  // IDispatcher which will exclusively receive all key and char events
+	cursorFocus       core.IDispatcher  // IDispatcher which will exclusively receive all OnCursor events
+	cev               *core.CursorEvent // IDispatcher which will exclusively receive all OnCursor events
+}
+
+// InitManager creates the GUI Manager or panics if it's already been called.
+func InitManager(window IWindow) {
+	if gm != nil {
+		panic(fmt.Errorf("gui.InitManager already called"))
+	}
+	gm = new(Manager)
 	gm.Dispatcher.Initialize()
 	gm.TimerManager.Initialize()
+	gm.window = window
 
 	// Subscribe to window events
-	gm.win = window.Get()
-	gm.win.Subscribe(window.OnKeyUp, gm.onKeyboard)
-	gm.win.Subscribe(window.OnKeyDown, gm.onKeyboard)
-	gm.win.Subscribe(window.OnKeyRepeat, gm.onKeyboard)
-	gm.win.Subscribe(window.OnChar, gm.onKeyboard)
-	gm.win.Subscribe(window.OnCursor, gm.onCursor)
-	gm.win.Subscribe(window.OnMouseUp, gm.onMouse)
-	gm.win.Subscribe(window.OnMouseDown, gm.onMouse)
-	gm.win.Subscribe(window.OnScroll, gm.onScroll)
-
-	return gm
+	window.Subscribe(core.OnKeyUp, gm.onKeyboard)
+	window.Subscribe(core.OnKeyDown, gm.onKeyboard)
+	window.Subscribe(core.OnKeyRepeat, gm.onKeyboard)
+	window.Subscribe(core.OnChar, gm.onKeyboard)
+	window.Subscribe(core.OnCursor, gm.onCursor)
+	window.Subscribe(core.OnMouseUp, gm.onMouse)
+	window.Subscribe(core.OnMouseDown, gm.onMouse)
+	window.Subscribe(core.OnScroll, gm.onScroll)
 }
 
 // Set sets the INode to watch for events.
 // It's usually a scene containing a hierarchy of INodes.
-// The manager only cares about IPanels inside that hierarchy.
-func (gm *manager) Set(scene core.INode) {
+// The Manager only cares about IPanels inside that hierarchy.
+func (gm *Manager) Set(scene core.INode) {
 	gm.scene = scene
 }
 
 // SetModal sets the specified panel and its descendants to be the exclusive receivers of events.
-func (gm *manager) SetModal(ipan IPanel) {
+func (gm *Manager) SetModal(ipan IPanel) {
 	gm.modal = ipan
 	gm.SetKeyFocus(nil)
 	gm.SetCursorFocus(nil)
 }
 
 // SetKeyFocus sets the key-focused IDispatcher, which will exclusively receive key and char events.
-func (gm *manager) SetKeyFocus(disp core.IDispatcher) {
+func (gm *Manager) SetKeyFocus(disp core.IDispatcher) {
 	if gm.keyFocus == disp {
 		return
 	}
@@ -79,7 +89,7 @@ func (gm *manager) SetKeyFocus(disp core.IDispatcher) {
 }
 
 // SetCursorFocus sets the cursor-focused IDispatcher, which will exclusively receive OnCursor events.
-func (gm *manager) SetCursorFocus(disp core.IDispatcher) {
+func (gm *Manager) SetCursorFocus(disp core.IDispatcher) {
 	if gm.cursorFocus == disp {
 		return
 	}
@@ -91,7 +101,7 @@ func (gm *manager) SetCursorFocus(disp core.IDispatcher) {
 
 // onKeyboard is called when char or key events are received.
 // The events are dispatched to the focused IDispatcher or to non-GUI.
-func (gm *manager) onKeyboard(evname string, ev interface{}) {
+func (gm *Manager) onKeyboard(evname string, ev interface{}) {
 	if gm.keyFocus != nil {
 		if gm.modal == nil {
 			gm.keyFocus.Dispatch(evname, ev)
@@ -106,11 +116,11 @@ func (gm *manager) onKeyboard(evname string, ev interface{}) {
 // onMouse is called when mouse events are received.
 // OnMouseDown/OnMouseUp are dispatched to gm.target or to non-GUI, while
 // OnMouseDownOut/OnMouseUpOut are dispatched to all non-target panels.
-func (gm *manager) onMouse(evname string, ev interface{}) {
+func (gm *Manager) onMouse(evname string, ev interface{}) {
 	// To fix #299
 	if gm.cev == nil {
-		mev := ev.(*window.MouseEvent)
-		gm.cev = &window.CursorEvent{
+		mev := ev.(*core.MouseEvent)
+		gm.cev = &core.CursorEvent{
 			Xpos: mev.Xpos,
 			Ypos: mev.Ypos,
 			Mods: mev.Mods,
@@ -147,7 +157,7 @@ func (gm *manager) onMouse(evname string, ev interface{}) {
 
 // onScroll is called when scroll events are received.
 // The events are dispatched to the target panel or to non-GUI.
-func (gm *manager) onScroll(evname string, ev interface{}) {
+func (gm *Manager) onScroll(evname string, ev interface{}) {
 	// Check if gm.scene is nil and if so then there are no IPanels to send events to
 	if gm.scene == nil {
 		gm.Dispatch(evname, ev) // Dispatch event to non-GUI since event was not filtered by any GUI component
@@ -166,7 +176,7 @@ func (gm *manager) onScroll(evname string, ev interface{}) {
 
 // onCursor is called when (mouse) cursor events are received.
 // Updates the target/click panels and dispatches OnCursor, OnCursorEnter, OnCursorLeave events.
-func (gm *manager) onCursor(evname string, ev interface{}) {
+func (gm *Manager) onCursor(evname string, ev interface{}) {
 	// If an IDispatcher is capturing cursor events dispatch to it and return
 	if gm.cursorFocus != nil {
 		gm.cursorFocus.Dispatch(evname, ev)
@@ -180,7 +190,7 @@ func (gm *manager) onCursor(evname string, ev interface{}) {
 	}
 
 	// Get and store CursorEvent
-	gm.cev = ev.(*window.CursorEvent)
+	gm.cev = ev.(*core.CursorEvent)
 
 	// Temporarily store last target and clear current one
 	oldTarget := gm.target
@@ -271,6 +281,6 @@ func traverseINode(inode core.INode, f func(ipan IPanel)) {
 }
 
 // forEachIPanel executes the specified function for each enabled and visible IPanel in gm.scene.
-func (gm *manager) forEachIPanel(f func(ipan IPanel)) {
+func (gm *Manager) forEachIPanel(f func(ipan IPanel)) {
 	traverseINode(gm.scene, f)
 }

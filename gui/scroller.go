@@ -5,8 +5,8 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
 	"log"
 )
 
@@ -84,7 +84,7 @@ type ScrollerScrollbarStyle struct {
 // They should not be added to style since they are not style changes and not to the struct since they are global
 
 // ScrollModifierKey is the ModifierKey that changes the scrolling direction from vertical to horizontal when pressed
-const ScrollModifierKey = window.ModShift
+const ScrollModifierKey = core.ModShift
 
 // NewScroller creates and returns a pointer to a new Scroller with the specified
 // target IPanel and ScrollMode.
@@ -252,7 +252,7 @@ func (s *Scroller) ScrollTo(x, y float32) {
 
 // onScroll receives mouse scroll events when this scroller has the scroll focus (set by OnMouseEnter)
 func (s *Scroller) onScroll(evname string, ev interface{}) {
-	sev := ev.(*window.ScrollEvent)
+	sev := ev.(*core.ScrollEvent)
 
 	vScrollVisible := (s.vscroll != nil) && s.vscroll.Visible()
 	hScrollVisible := (s.hscroll != nil) && s.hscroll.Visible()

@@ -9,7 +9,6 @@ import (
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/text"
 	"github.com/derekmu/g3n/texture"
-	"github.com/derekmu/g3n/window"
 )
 
 // Label is a panel which contains a texture with text.
@@ -57,7 +56,6 @@ func (l *Label) initialize(msg string, font *text.Font) {
 	l.Panel.Initialize(l, 0, 0)
 	l.Panel.mat.SetTransparent(true)
 
-	// TODO: Remove this hack in an elegant way e.g. set the label style depending of if it's an icon or text label and have two defaults (one for icon labels one for text tabels)
 	if font != StyleDefault().FontIcon {
 		l.Panel.SetPaddings(2, 0, 2, 0)
 	}
@@ -81,7 +79,7 @@ func (l *Label) SetText(text string) {
 	l.font.SetAttributes(&l.style.FontAttributes)
 	l.font.SetColor(&l.style.FgColor)
 
-	scaleX, scaleY := window.Get().GetScale()
+	scaleX, scaleY := GetManager().window.GetScale()
 	l.font.SetScaleXY(scaleX, scaleY)
 
 	// Create an image with the text
@@ -207,7 +205,7 @@ func (l *Label) setTextCaret(msg string, mx, width int, drawCaret bool, line, co
 	l.font.SetAttributes(&l.style.FontAttributes)
 	l.font.SetColor(&l.style.FgColor)
 
-	scaleX, scaleY := window.Get().GetScale()
+	scaleX, scaleY := GetManager().window.GetScale()
 	l.font.SetScaleXY(scaleX, scaleY)
 
 	// Create canvas and draw text

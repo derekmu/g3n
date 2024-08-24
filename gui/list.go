@@ -5,7 +5,7 @@
 package gui
 
 import (
-	"github.com/derekmu/g3n/window"
+	"github.com/derekmu/g3n/core"
 )
 
 // List represents a list GUI element
@@ -15,8 +15,8 @@ type List struct {
 	single       bool        // Single selection flag (default is true)
 	focus        bool        // has keyboard focus
 	dropdown     bool        // this is used as dropdown
-	keyNext      window.Key  // Code of key to select next item
-	keyPrev      window.Key  // Code of key to select previous item
+	keyNext      core.Key    // Code of key to select next item
+	keyPrev      core.Key    // Code of key to select previous item
 }
 
 // ListItem encapsulates each item inserted into the list
@@ -81,11 +81,11 @@ func (li *List) initialize(vert bool, width, height float32) {
 	li.ItemScroller.Subscribe(OnKeyRepeat, li.onKeyEvent)
 
 	if vert {
-		li.keyNext = window.KeyDown
-		li.keyPrev = window.KeyUp
+		li.keyNext = core.KeyDown
+		li.keyPrev = core.KeyUp
 	} else {
-		li.keyNext = window.KeyRight
-		li.keyPrev = window.KeyLeft
+		li.keyNext = core.KeyRight
+		li.keyPrev = core.KeyLeft
 	}
 
 	li.update()
@@ -347,7 +347,7 @@ func (li *List) highlighted() (pos int) {
 
 // onKeyEvent receives subscribed key events for the list
 func (li *List) onKeyEvent(evname string, ev interface{}) {
-	kev := ev.(*window.KeyEvent)
+	kev := ev.(*core.KeyEvent)
 	// Dropdown mode
 	if li.dropdown {
 		switch kev.Key {
@@ -355,7 +355,7 @@ func (li *List) onKeyEvent(evname string, ev interface{}) {
 			li.selNext(true, true)
 		case li.keyPrev:
 			li.selPrev(true, true)
-		case window.KeyEnter:
+		case core.KeyEnter:
 			li.SetVisible(false)
 		default:
 			return
@@ -382,7 +382,7 @@ func (li *List) onKeyEvent(evname string, ev interface{}) {
 		li.selNext(false, true)
 	case li.keyPrev:
 		li.selPrev(false, true)
-	case window.KeySpace:
+	case core.KeySpace:
 		pos := li.highlighted()
 		if pos >= 0 {
 			litem := li.items[pos].(*ListItem)
@@ -396,7 +396,7 @@ func (li *List) onKeyEvent(evname string, ev interface{}) {
 // setSelection sets the selected state of the specified item
 // updating the visual appearance of the list if necessary
 func (li *List) setSelection(litem *ListItem, state bool, force bool, dispatch bool) {
-	Manager().SetKeyFocus(li)
+	GetManager().SetKeyFocus(li)
 	// If already at this state, nothing to do
 	if litem.selected == state && !force {
 		return

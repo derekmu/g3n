@@ -135,7 +135,7 @@ func NewDarkStyle() *Style {
 	s.Splitter.Over.SpacerColor = s.Color.BgOver
 	s.Splitter.Drag = s.Splitter.Over
 
-	// Window styles
+	// window styles
 	s.Window = WindowStyles{}
 	s.Window.Normal = WindowStyle{}
 	s.Window.Normal.Border = RectBounds{2, 2, 2, 2}

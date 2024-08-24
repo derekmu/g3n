@@ -5,10 +5,10 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"path/filepath"
 
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
 )
 
 // buildPanel builds an object of type Panel
@@ -409,7 +409,7 @@ func buildMenu(b *Builder, am map[string]interface{}) (IPanel, error) {
 			// Sets optional menu item shortcut
 			if sci := item[AttribShortcut]; sci != nil {
 				sc := sci.([]int)
-				mi.SetShortcut(window.ModifierKey(sc[0]), window.Key(sc[1]))
+				mi.SetShortcut(core.ModifierKey(sc[0]), core.Key(sc[1]))
 			}
 		}
 	}

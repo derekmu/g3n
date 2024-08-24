@@ -5,8 +5,8 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/math32"
-	"github.com/derekmu/g3n/window"
 )
 
 // Tree is the tree structure GUI element.
@@ -166,8 +166,8 @@ func (t *Tree) onKey(evname string, ev interface{}) {
 		return
 	}
 	// If not enter key pressed, ignore
-	kev := ev.(*window.KeyEvent)
-	if evname != OnKeyDown || kev.Key != window.KeyEnter {
+	kev := ev.(*core.KeyEvent)
+	if evname != OnKeyDown || kev.Key != core.KeyEnter {
 		return
 	}
 	// Toggles the expansion state of the node
