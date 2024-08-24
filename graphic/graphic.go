@@ -39,7 +39,7 @@ type Graphic struct {
 	cullable    bool               // Cullable flag
 	renderOrder int                // Render order
 
-	ShaderDefines gls.ShaderDefines // Graphic-specific shader defines
+	ShaderDefines gls.GraphicDefines // Graphic-specific shader defines
 
 	mm   math32.Matrix4 // Cached Model matrix
 	mvm  math32.Matrix4 // Cached ModelView matrix
@@ -63,7 +63,6 @@ func (gr *Graphic) Init(igr IGraphic, igeom geometry.IGeometry, mode uint32) *Gr
 	gr.materials = make([]GraphicMaterial, 0)
 	gr.renderable = true
 	gr.cullable = true
-	gr.ShaderDefines = gls.NewShaderDefines()
 	return gr
 }
 

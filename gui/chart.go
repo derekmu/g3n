@@ -381,7 +381,7 @@ func (ch *Chart) updateGraphs() {
 }
 
 // onResize process OnResize events for this chart
-func (ch *Chart) onResize(evname string, ev interface{}) {
+func (ch *Chart) onResize(_ string, _ interface{}) {
 	ch.recalc()
 }
 
@@ -472,7 +472,7 @@ func (sx *chartScaleX) recalc() {
 // RenderSetup is called by the renderer before drawing this graphic
 // It overrides the original panel RenderSetup
 // Calculates the model matrix and transfer to OpenGL.
-func (sx *chartScaleX) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
+func (sx *chartScaleX) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 	// Sets model matrix
 	var mm math32.Matrix4
 	sx.SetModelMatrix(gs, &mm)
@@ -552,7 +552,7 @@ func (sy *chartScaleY) recalc() {
 // RenderSetup is called by the renderer before drawing this graphic
 // It overrides the original panel RenderSetup
 // Calculates the model matrix and transfer to OpenGL.
-func (sy *chartScaleY) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
+func (sy *chartScaleY) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 	// Sets model matrix
 	var mm math32.Matrix4
 	sy.SetModelMatrix(gs, &mm)
@@ -656,7 +656,7 @@ func (lg *Graph) recalc() {
 // RenderSetup is called by the renderer before drawing this graphic
 // It overrides the original panel RenderSetup
 // Calculates the model matrix and transfer to OpenGL.
-func (lg *Graph) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
+func (lg *Graph) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 	// Sets model matrix
 	var mm math32.Matrix4
 	lg.SetModelMatrix(gs, &mm)
@@ -681,7 +681,6 @@ type chartMaterial struct {
 func (cm *chartMaterial) Init(color *math32.Color) {
 	cm.Material.Init()
 	cm.SetShader("shaderChart")
-	cm.SetShaderUnique(true)
 	cm.uniColor.Init("MatColor")
 	cm.color = *color
 }

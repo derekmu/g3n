@@ -21,15 +21,15 @@ type IGeometry interface {
 
 // Geometry encapsulates a three-dimensional vertex-based geometry.
 type Geometry struct {
-	gs            *gls.GLS          // Reference to OpenGL state (valid after first RenderSetup)
-	refcount      int               // Current number of references
-	groups        []Group           // Array geometry groups
-	vbos          []*gls.VBO        // Array of VBOs
-	handleVAO     uint32            // Handle to OpenGL VAO
-	indices       math32.ArrayU32   // Buffer with indices
-	handleIndices uint32            // Handle to OpenGL buffer for indices
-	updateIndices bool              // Flag to indicate that indices must be transferred
-	ShaderDefines gls.ShaderDefines // Geometry-specific shader defines
+	gs            *gls.GLS            // Reference to OpenGL state (valid after first RenderSetup)
+	refcount      int                 // Current number of references
+	groups        []Group             // Array geometry groups
+	vbos          []*gls.VBO          // Array of VBOs
+	handleVAO     uint32              // Handle to OpenGL VAO
+	indices       math32.ArrayU32     // Buffer with indices
+	handleIndices uint32              // Handle to OpenGL buffer for indices
+	updateIndices bool                // Flag to indicate that indices must be transferred
+	ShaderDefines gls.GeometryDefines // Geometry-specific shader defines
 	// Geometric properties
 	boundingBox    math32.Box3    // Last calculated bounding box
 	boundingSphere math32.Sphere  // Last calculated bounding sphere
@@ -68,7 +68,6 @@ func (g *Geometry) Init() {
 	g.handleVAO = 0
 	g.handleIndices = 0
 	g.updateIndices = true
-	g.ShaderDefines = gls.NewShaderDefines()
 }
 
 func (g *Geometry) Clone() *Geometry {

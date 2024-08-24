@@ -59,9 +59,8 @@ type Material struct {
 	refcount int // Current number of references
 
 	// Shader specification
-	shader        string            // Shader name
-	shaderUnique  bool              // shader has only one instance (does not depend on lights or textures)
-	ShaderDefines gls.ShaderDefines // shader defines
+	shader        string              // Shader name
+	ShaderDefines gls.MaterialDefines // shader defines
 
 	side        Side                 // Face side(s) visibility
 	blending    Blending             // Blending mode
@@ -110,10 +109,6 @@ func (mat *Material) Init() *Material {
 	mat.polyOffsetFactor = 0
 	mat.polyOffsetUnits = 0
 	mat.textures = make([]*texture.Texture2D, 0)
-
-	// Setup shader defines and add default values
-	mat.ShaderDefines = gls.NewShaderDefines()
-
 	return mat
 }
 
@@ -155,18 +150,6 @@ func (mat *Material) SetShader(sname string) {
 // Shader returns the current name of the shader program for this material
 func (mat *Material) Shader() string {
 	return mat.shader
-}
-
-// SetShaderUnique sets indication that this material shader is unique and
-// does not depend on the number of lights in the scene and/or the
-// number of textures in the material.
-func (mat *Material) SetShaderUnique(unique bool) {
-	mat.shaderUnique = unique
-}
-
-// ShaderUnique returns this material shader is unique.
-func (mat *Material) ShaderUnique() bool {
-	return mat.shaderUnique
 }
 
 // SetUseLights sets the material use lights bit mask specifying which

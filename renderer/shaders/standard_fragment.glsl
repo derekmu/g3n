@@ -117,14 +117,14 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
     for (int i = 0; i < DIR_LIGHTS; ++i) {
         vec3 lightDirection = normalize(DirLightPosition(i)); // Vector from fragment to light source
         float dotNormal = dot(lightDirection, normal); // Dot product between light direction and fragment normal
-        if (dotNormal > EPS) { // If the fragment is lit
-                               diffuseTotal += DirLightColor(i) * matDiffuse * dotNormal;
-
-                               #ifdef BLINN
+        if (dotNormal > EPS) {
+            // If the fragment is lit
+            diffuseTotal += DirLightColor(i) * matDiffuse * dotNormal;
+            #ifdef BLINN
             specular = pow(max(dot(normal, normalize(lightDirection + camDir)), 0.0), MatShininess);
-                               #else
+            #else
             specular = pow(max(dot(reflect(-lightDirection, normal), camDir), 0.0), MatShininess);
-                               #endif
+            #endif
             specularTotal += DirLightColor(i) * MatSpecularColor * specular;
         }
     }
@@ -138,16 +138,17 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
         float lightDistance = length(lightDirection); // Distance from fragment to light source
         lightDirection = lightDirection / lightDistance; // Normalize lightDirection
         float dotNormal = dot(lightDirection, normal);  // Dot product between light direction and fragment normal
-        if (dotNormal > EPS) { // If the fragment is lit
-                               float attenuation = 1.0 / (1.0 + lightDistance * (PointLightLinearDecay(i) + PointLightQuadraticDecay(i) * lightDistance));
-                               vec3 attenuatedColor = PointLightColor(i) * attenuation;
-                               diffuseTotal += attenuatedColor * matDiffuse * dotNormal;
+        if (dotNormal > EPS) {
+            // If the fragment is lit
+            float attenuation = 1.0 / (1.0 + lightDistance * (PointLightLinearDecay(i) + PointLightQuadraticDecay(i) * lightDistance));
+            vec3 attenuatedColor = PointLightColor(i) * attenuation;
+            diffuseTotal += attenuatedColor * matDiffuse * dotNormal;
 
-                               #ifdef BLINN
+            #ifdef BLINN
             specular = pow(max(dot(normal, normalize(lightDirection + camDir)), 0.0), MatShininess);
-                               #else
+            #else
             specular = pow(max(dot(reflect(-lightDirection, normal), camDir), 0.0), MatShininess);
-                               #endif
+            #endif
             specularTotal += attenuatedColor * MatSpecularColor * specular;
         }
     }
@@ -163,21 +164,23 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
         float angleDot = dot(-lightDirection, SpotLightDirection(i));
         float angle = acos(angleDot);
         float cutoff = radians(clamp(SpotLightCutoffAngle(i), 0.0, 90.0));
-        if (angle < cutoff) { // Check if fragment is inside spotlight beam
-                              float dotNormal = dot(lightDirection, normal); // Dot product between light direction and fragment normal
-                              if (dotNormal > EPS) { // If the fragment is lit
-                                                     float attenuation = 1.0 / (1.0 + lightDistance * (SpotLightLinearDecay(i) + SpotLightQuadraticDecay(i) * lightDistance));
-                                                     float spotFactor = pow(angleDot, SpotLightAngularDecay(i));
-                                                     vec3 attenuatedColor = SpotLightColor(i) * attenuation * spotFactor;
-                                                     diffuseTotal += attenuatedColor * matDiffuse * dotNormal;
+        if (angle < cutoff) {
+            // Check if fragment is inside spotlight beam
+            float dotNormal = dot(lightDirection, normal); // Dot product between light direction and fragment normal
+            if (dotNormal > EPS) {
+                // If the fragment is lit
+                float attenuation = 1.0 / (1.0 + lightDistance * (SpotLightLinearDecay(i) + SpotLightQuadraticDecay(i) * lightDistance));
+                float spotFactor = pow(angleDot, SpotLightAngularDecay(i));
+                vec3 attenuatedColor = SpotLightColor(i) * attenuation * spotFactor;
+                diffuseTotal += attenuatedColor * matDiffuse * dotNormal;
 
-                                                     #ifdef BLINN
+                #ifdef BLINN
                 specular = pow(max(dot(normal, normalize(lightDirection + camDir)), 0.0), MatShininess);
-                                                     #else
+                #else
                 specular = pow(max(dot(reflect(-lightDirection, normal), camDir), 0.0), MatShininess);
-                                                     #endif
+                #endif
                 specularTotal += attenuatedColor * MatSpecularColor * specular;
-                              }
+            }
         }
     }
     #endif
@@ -244,8 +247,9 @@ void main() {
     vec3 fdx = dFdx(Position.xyz);
     vec3 fdy = dFdy(Position.xyz);
     vec3 faceNormal = normalize(cross(fdx, fdy));
-    if (dot(fragNormal, faceNormal) < 0.0) { // Back-facing
-                                             fragNormal = -fragNormal;
+    if (dot(fragNormal, faceNormal) < 0.0) {
+        // Back-facing
+        fragNormal = -fragNormal;
     }
 
     // Calculates the Ambient+Diffuse and Specular colors for this fragment using the Phong model.

@@ -42,7 +42,7 @@ func NewStandard(color *math32.Color) *Standard {
 func NewBlinnPhong(color *math32.Color) *Standard {
 	ms := new(Standard)
 	ms.Init("standard", color)
-	ms.ShaderDefines["BLINN"] = "true"
+	ms.ShaderDefines.BLINN = true
 	return ms
 }
 

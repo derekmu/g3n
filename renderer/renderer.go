@@ -291,12 +291,11 @@ func (r *Renderer) renderGraphicMaterial(grmat *graphic.GraphicMaterial) error {
 
 	// Set the shader specs for this material and set shader program
 	r.specs.Name = mat.Shader()
-	r.specs.ShaderUnique = mat.ShaderUnique()
 	r.specs.UseLights = mat.UseLights()
 	r.specs.MatTexturesMax = mat.TextureCount()
-	r.specs.MatDefines = mat.ShaderDefines
-	r.specs.GeomDefines = geom.ShaderDefines
-	r.specs.GrDefines = gr.ShaderDefines
+	r.specs.MaterialDefines = mat.ShaderDefines
+	r.specs.GeometryDefines = geom.ShaderDefines
+	r.specs.GraphicDefines = gr.ShaderDefines
 
 	// Set active program and apply shader specs
 	_, err := r.Shaman.SetProgram(&r.specs)

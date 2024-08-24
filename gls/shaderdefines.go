@@ -4,7 +4,62 @@
 
 package gls
 
-import "maps"
+import (
+	"maps"
+	"strconv"
+)
+
+type MaterialDefines struct {
+	HAS_BASECOLORMAP      bool
+	HAS_METALROUGHNESSMAP bool
+	HAS_NORMALMAP         bool
+	HAS_OCCLUSIONMAP      bool
+	HAS_EMISSIVEMAP       bool
+	BLINN                 bool
+}
+
+func (d MaterialDefines) AddToMap(defines map[string]string) {
+	if d.HAS_BASECOLORMAP {
+		defines["HAS_BASECOLORMAP"] = ""
+	}
+	if d.HAS_METALROUGHNESSMAP {
+		defines["HAS_METALROUGHNESSMAP"] = ""
+	}
+	if d.HAS_NORMALMAP {
+		defines["HAS_NORMALMAP"] = ""
+	}
+	if d.HAS_OCCLUSIONMAP {
+		defines["HAS_OCCLUSIONMAP"] = ""
+	}
+	if d.HAS_EMISSIVEMAP {
+		defines["HAS_EMISSIVEMAP"] = ""
+	}
+	if d.BLINN {
+		defines["BLINN"] = ""
+	}
+}
+
+type GeometryDefines struct {
+	MORPHTARGETS int
+}
+
+func (d GeometryDefines) AddToMap(defines map[string]string) {
+	if d.MORPHTARGETS > 0 {
+		defines["MORPHTARGETS"] = strconv.Itoa(d.MORPHTARGETS)
+	}
+}
+
+type GraphicDefines struct {
+	BONE_INFLUENCERS int
+	TOTAL_BONES      int
+}
+
+func (d GraphicDefines) AddToMap(defines map[string]string) {
+	if d.BONE_INFLUENCERS > 0 {
+		defines["BONE_INFLUENCERS"] = strconv.Itoa(d.BONE_INFLUENCERS)
+		defines["TOTAL_BONES"] = strconv.Itoa(d.TOTAL_BONES)
+	}
+}
 
 // ShaderDefines is a store of shader defines ("#define <key> <value>" in GLSL).
 type ShaderDefines map[string]string

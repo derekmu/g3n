@@ -32,7 +32,7 @@ func NewMorphGeometry(baseGeometry *Geometry) *MorphGeometry {
 	mg.targets = make([]*Geometry, 0)
 	mg.weights = make([]float32, 0)
 
-	mg.baseGeometry.ShaderDefines["MORPHTARGETS"] = strconv.Itoa(MaxActiveMorphTargets)
+	mg.baseGeometry.ShaderDefines.MORPHTARGETS = MaxActiveMorphTargets
 	mg.uniWeights.Init("morphTargetInfluences")
 	return mg
 }

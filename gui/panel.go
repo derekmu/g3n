@@ -164,7 +164,6 @@ func (p *Panel) Initialize(ipan IPanel, width, height float32) { // TODO rename 
 	p.mat = material.NewMaterial()
 	p.mat.SetUseLights(material.UseLightNone)
 	p.mat.SetShader("panel")
-	p.mat.SetShaderUnique(true)
 
 	// For now set all panels as transparent by default
 	// This means they are all rendered back to front, after and on top of everything else
@@ -781,7 +780,7 @@ func (p *Panel) resize(width, height float32, dispatch bool) {
 }
 
 // RenderSetup is called by the Engine before drawing the object
-func (p *Panel) RenderSetup(gl *gls.GLS, rinfo *core.RenderInfo) {
+func (p *Panel) RenderSetup(gl *gls.GLS, _ *core.RenderInfo) {
 	// Sets texture valid flag in uniforms
 	// depending if the material has texture
 	if p.mat.TextureCount() > 0 {

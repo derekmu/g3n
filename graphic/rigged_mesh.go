@@ -5,12 +5,10 @@
 package graphic
 
 import (
-	"log"
-	"strconv"
-
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/math32"
+	"log"
 )
 
 // MaxBoneInfluencers is the maximum number of bone influencers per vertex.
@@ -29,16 +27,15 @@ func NewRiggedMesh(mesh *Mesh) *RiggedMesh {
 	rm.Mesh = mesh
 	rm.SetIGraphic(rm)
 	rm.mBones.Init("mBones")
-	rm.ShaderDefines["BONE_INFLUENCERS"] = strconv.Itoa(MaxBoneInfluencers)
-	rm.ShaderDefines["TOTAL_BONES"] = "0"
-
+	rm.ShaderDefines.BONE_INFLUENCERS = MaxBoneInfluencers
+	rm.ShaderDefines.TOTAL_BONES = 0
 	return rm
 }
 
 // SetSkeleton sets the skeleton used by the rigged mesh.
 func (rm *RiggedMesh) SetSkeleton(sk *Skeleton) {
 	rm.skeleton = sk
-	rm.ShaderDefines["TOTAL_BONES"] = strconv.Itoa(len(rm.skeleton.Bones()))
+	rm.ShaderDefines.TOTAL_BONES = len(rm.skeleton.Bones())
 }
 
 // SetSkeleton returns the skeleton used by the rigged mesh.
