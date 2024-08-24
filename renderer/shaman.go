@@ -51,6 +51,7 @@ func (sm *Shaman) Init(gs *gls.GLS) {
 	sm.includes = make(map[string]string)
 	sm.shadersm = make(map[string]string)
 	sm.proginfo = make(map[string]shaders.ProgramInfo)
+	sm.programs = make(map[ShaderSpecs]*gls.Program)
 }
 
 // AddDefaultShaders adds to this shader manager all default
