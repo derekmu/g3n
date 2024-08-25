@@ -670,68 +670,90 @@ func (gs *GLS) PolygonOffset(factor float32, units float32) {
 
 // Uniform1i sets the value of an int uniform variable for the current program object.
 func (gs *GLS) Uniform1i(location int32, v0 int32) {
-	C.glUniform1i(C.GLint(location), C.GLint(v0))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform1i(C.GLint(location), C.GLint(v0))
+		gs.stats.Unisets++
+	}
 }
 
 // Uniform1f sets the value of a float uniform variable for the current program object.
 func (gs *GLS) Uniform1f(location int32, v0 float32) {
-	C.glUniform1f(C.GLint(location), C.GLfloat(v0))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform1f(C.GLint(location), C.GLfloat(v0))
+		gs.stats.Unisets++
+	}
 }
 
 // Uniform2f sets the value of a vec2 uniform variable for the current program object.
 func (gs *GLS) Uniform2f(location int32, v0, v1 float32) {
-	C.glUniform2f(C.GLint(location), C.GLfloat(v0), C.GLfloat(v1))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform2f(C.GLint(location), C.GLfloat(v0), C.GLfloat(v1))
+		gs.stats.Unisets++
+	}
 }
 
 // Uniform3f sets the value of a vec3 uniform variable for the current program object.
 func (gs *GLS) Uniform3f(location int32, v0, v1, v2 float32) {
-	C.glUniform3f(C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform3f(C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2))
+		gs.stats.Unisets++
+	}
 }
 
 // Uniform4f sets the value of a vec4 uniform variable for the current program object.
 func (gs *GLS) Uniform4f(location int32, v0, v1, v2, v3 float32) {
-	C.glUniform4f(C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform4f(C.GLint(location), C.GLfloat(v0), C.GLfloat(v1), C.GLfloat(v2), C.GLfloat(v3))
+		gs.stats.Unisets++
+	}
 }
 
 // UniformMatrix3fv sets the value of one or many 3x3 float matrices for the current program object.
 func (gs *GLS) UniformMatrix3fv(location int32, count int32, transpose bool, pm *float32) {
-	C.glUniformMatrix3fv(C.GLint(location), C.GLsizei(count), bool2c(transpose), (*C.GLfloat)(pm))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniformMatrix3fv(C.GLint(location), C.GLsizei(count), bool2c(transpose), (*C.GLfloat)(pm))
+		gs.stats.Unisets++
+	}
 }
 
 // UniformMatrix4fv sets the value of one or many 4x4 float matrices for the current program object.
 func (gs *GLS) UniformMatrix4fv(location int32, count int32, transpose bool, pm *float32) {
-	C.glUniformMatrix4fv(C.GLint(location), C.GLsizei(count), bool2c(transpose), (*C.GLfloat)(pm))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniformMatrix4fv(C.GLint(location), C.GLsizei(count), bool2c(transpose), (*C.GLfloat)(pm))
+		gs.stats.Unisets++
+	}
 }
 
 // Uniform1fv sets the value of one or many float uniform variables for the current program object.
 func (gs *GLS) Uniform1fv(location int32, count int32, v *float32) {
-	C.glUniform1fv(C.GLint(location), C.GLsizei(count), (*C.GLfloat)(v))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform1fv(C.GLint(location), C.GLsizei(count), (*C.GLfloat)(v))
+		gs.stats.Unisets++
+	}
 }
 
 // Uniform2fv sets the value of one or many vec2 uniform variables for the current program object.
 func (gs *GLS) Uniform2fv(location int32, count int32, v *float32) {
-	C.glUniform2fv(C.GLint(location), C.GLsizei(count), (*C.GLfloat)(v))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform2fv(C.GLint(location), C.GLsizei(count), (*C.GLfloat)(v))
+		gs.stats.Unisets++
+	}
 }
 
 // Uniform3fv sets the value of one or many vec3 uniform variables for the current program object.
 func (gs *GLS) Uniform3fv(location int32, count int32, v *float32) {
-	C.glUniform3fv(C.GLint(location), C.GLsizei(count), (*C.GLfloat)(v))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform3fv(C.GLint(location), C.GLsizei(count), (*C.GLfloat)(v))
+		gs.stats.Unisets++
+	}
 }
 
 // Uniform4fv sets the value of one or many vec4 uniform variables for the current program object.
 func (gs *GLS) Uniform4fv(location int32, count int32, v *float32) {
-	C.glUniform4fv(C.GLint(location), C.GLsizei(count), (*C.GLfloat)(v))
-	gs.stats.Unisets++
+	if location >= 0 {
+		C.glUniform4fv(C.GLint(location), C.GLsizei(count), (*C.GLfloat)(v))
+		gs.stats.Unisets++
+	}
 }
 
 // VertexAttribPointer defines an array of generic vertex attribute data.
