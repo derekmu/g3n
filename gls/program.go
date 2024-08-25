@@ -44,7 +44,7 @@ var shaderNames = map[uint32]string{
 func (gs *GLS) NewProgram() *Program {
 	prog := new(Program)
 	prog.gs = gs
-
+	gs.stats.Shaders++
 	prog.shaders = make([]shaderInfo, 0)
 	prog.uniforms = make(map[string]int32)
 	prog.ShowSource = true
@@ -118,9 +118,9 @@ func (prog *Program) Build() error {
 	var status int32
 	prog.gs.GetProgramiv(prog.handle, LINK_STATUS, &status)
 	if status == FALSE {
-		log := prog.gs.GetProgramInfoLog(prog.handle)
+		pil := prog.gs.GetProgramInfoLog(prog.handle)
 		prog.handle = 0
-		return fmt.Errorf("error linking program: %v", log)
+		return fmt.Errorf("error linking program: %v", pil)
 	}
 
 	return nil

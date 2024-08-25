@@ -52,7 +52,6 @@ type Stats struct {
 type GLS struct {
 	stats         Stats
 	activeProgram *Program
-	programCache  map[*Program]bool
 	checkErrors   bool // check openGL API errors flag
 
 	// Cache OpenGL state to avoid making unnecessary API calls
@@ -130,7 +129,6 @@ func (gs *GLS) reset() {
 	gs.depthFunc = 0
 	gs.depthMask = uintUndef
 	gs.capabilities = make(map[int]int)
-	gs.programCache = make(map[*Program]bool)
 	gs.activeProgram = nil
 	gs.activeTexture = uintUndef
 	gs.blendEquation = uintUndef
@@ -173,7 +171,6 @@ func (gs *GLS) setDefaultState() {
 // Stats copy the current values of the internal statistics structure to the specified pointer.
 func (gs *GLS) Stats(s *Stats) {
 	*s = gs.stats
-	s.Shaders = len(gs.programCache)
 }
 
 // ActiveTexture selects which texture unit subsequent texture state calls will affect.
@@ -758,9 +755,6 @@ func (gs *GLS) UseProgram(prog *Program) {
 	}
 	C.glUseProgram(C.GLuint(prog.handle))
 	gs.activeProgram = prog
-	if !gs.programCache[prog] {
-		gs.programCache[prog] = true
-	}
 }
 
 // Ptr takes a slice or pointer (to a singular scalar value or the first
