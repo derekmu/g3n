@@ -8,20 +8,19 @@ This repository is a fork of [g3n/engine](https://github.com/g3n/engine).
 ## Features
 
 * Cross-platform: Windows, Linux, and macOS
-* Integrated GUI (graphical user interface) with many widgets
-* Hierarchical scene graph - nodes can contain other nodes
+* Integrated GUI with many widgets
+* Hierarchical scene graph
 * 3D spatial audio via [OpenAL](https://www.openal.org/)
-* Real-time lighting: ambient, directional, point, and spot lights
-* Physically-based rendering: fresnel reflectance, geometric occlusion, microfacet distribution
-* Model loaders: glTF (.gltf, .glb), Wavefront OBJ (.obj), and COLLADA (.dae)
-* Geometry generators: box, sphere, cylinder, torus, etc...
+* Real-time lighting with ambient, directional, point, and spot lights
+* Physically-based rendering shaders
+* Geometry generators for box, sphere, cylinder, torus, etc...
 * Geometries support morph targets and multimaterials
 * Support for animated sprites based on sprite sheets
 * Perspective and orthographic cameras
 * Text image generation and support for TrueType fonts
 * Image textures can be loaded from GIF, PNG or JPEG files
 * Animation framework for position, rotation, and scale of objects
-* Support for user-created GLSL shaders: vertex, fragment, and geometry shaders
+* Support for user-created GLSL shaders
 * Support for HiDPI displays
 
 ## Dependencies
