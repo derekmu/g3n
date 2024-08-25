@@ -15,7 +15,6 @@ import (
 // Mesh is a Graphic with uniforms for the model, view, projection, and normal matrices.
 type Mesh struct {
 	Graphic             // Embedded graphic
-	uniMm   gls.Uniform // Model matrix uniform location cache
 	uniMVm  gls.Uniform // Model view matrix uniform location cache
 	uniMVPm gls.Uniform // Model view projection matrix uniform cache
 	uniNm   gls.Uniform // Normal matrix uniform cache
@@ -35,7 +34,6 @@ func (m *Mesh) Init(igeom geometry.IGeometry, imat material.IMaterial) {
 	m.Graphic.Init(m, igeom, gls.TRIANGLES)
 
 	// Initialize uniforms
-	m.uniMm.Init("ModelMatrix")
 	m.uniMVm.Init("ModelViewMatrix")
 	m.uniMVPm.Init("MVP")
 	m.uniNm.Init("NormalMatrix")
@@ -69,7 +67,6 @@ func (m *Mesh) Clone() core.INode {
 	clone.SetIGraphic(clone)
 
 	// Initialize uniforms
-	clone.uniMm.Init("ModelMatrix")
 	clone.uniMVm.Init("ModelViewMatrix")
 	clone.uniMVPm.Init("MVP")
 	clone.uniNm.Init("NormalMatrix")
@@ -77,18 +74,12 @@ func (m *Mesh) Clone() core.INode {
 	return clone
 }
 
-// RenderSetup is called by the engine before drawing the mesh geometry
-// It is responsible to updating the current shader uniforms with
-// the model matrices.
-func (m *Mesh) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-	// Transfer uniform for model matrix
-	mm := m.ModelMatrix()
-	location := m.uniMm.Location(gs)
-	gs.UniformMatrix4fv(location, 1, false, &mm[0])
-
+// RenderSetup is called by the engine before drawing the mesh geometry.
+// It is responsible for updating the current shader uniforms with the model matrices.
+func (m *Mesh) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 	// Transfer uniform for model view matrix
 	mvm := m.ModelViewMatrix()
-	location = m.uniMVm.Location(gs)
+	location := m.uniMVm.Location(gs)
 	gs.UniformMatrix4fv(location, 1, false, &mvm[0])
 
 	// Transfer uniform for model view projection matrix
@@ -98,7 +89,7 @@ func (m *Mesh) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 
 	// Calculates normal matrix and transfer uniform
 	var nm math32.Matrix3
-	nm.GetNormalMatrix(mvm)
+	_ = nm.GetNormalMatrix(mvm)
 	location = m.uniNm.Location(gs)
 	gs.UniformMatrix3fv(location, 1, false, &nm[0])
 }

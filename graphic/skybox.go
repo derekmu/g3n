@@ -65,9 +65,8 @@ func NewSkybox(data SkyboxData) (*Skybox, error) {
 	return skybox, nil
 }
 
-// RenderSetup is called by the engine before drawing the skybox geometry
-// It is responsible to updating the current shader uniforms with
-// the model matrices.
+// RenderSetup is called by the engine before drawing the skybox geometry.
+// It is responsible for updating the current shader uniforms with the model matrices.
 func (skybox *Skybox) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 	mvm := *skybox.ModelViewMatrix()
 
@@ -75,7 +74,6 @@ func (skybox *Skybox) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 	mvm[12] = 0
 	mvm[13] = 0
 	mvm[14] = 0
-	// mvm.ExtractRotation(&rinfo.ViewMatrix) // TODO <- ExtractRotation does not work as expected?
 
 	// Transfer mvp uniform
 	location := skybox.uniMVm.Location(gs)
@@ -89,7 +87,7 @@ func (skybox *Skybox) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 
 	// Calculates normal matrix and updates uniform
 	var nm math32.Matrix3
-	nm.GetNormalMatrix(&mvm)
+	_ = nm.GetNormalMatrix(&mvm)
 	location = skybox.uniNm.Location(gs)
 	gs.UniformMatrix3fv(location, 1, false, &nm[0])
 }

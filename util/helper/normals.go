@@ -62,7 +62,7 @@ func (nh *Normals) Update() {
 
 	// Updates the target object matrix and get its normal matrix
 	matrixWorld := nh.targetNode.MatrixWorld()
-	normalMatrix.GetNormalMatrix(&matrixWorld)
+	_ = normalMatrix.GetNormalMatrix(&matrixWorld)
 
 	// Get the target positions and normals buffers
 	tPosVBO := nh.targetGeometry.VBO(gls.VertexPosition)

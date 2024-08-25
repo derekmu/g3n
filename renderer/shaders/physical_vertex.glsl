@@ -114,7 +114,5 @@ void main() {
     #endif
     #endif
 
-
     gl_Position = MVP * finalWorld * vec4(vPosition, 1.0);
-
 }

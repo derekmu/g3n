@@ -423,10 +423,7 @@ func (g *Geometry) ApplyMatrix(m *math32.Matrix4) {
 	})
 	// Apply normal matrix to all normal vectors
 	var normalMatrix math32.Matrix3
-	err := normalMatrix.GetNormalMatrix(m)
-	if err != nil {
-		normalMatrix.Identity()
-	}
+	_ = normalMatrix.GetNormalMatrix(m)
 	g.OperateOnVertexNormals(func(normal *math32.Vector3) bool {
 		normal.ApplyMatrix3(&normalMatrix).Normalize()
 		return false
