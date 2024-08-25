@@ -84,7 +84,7 @@ func (m *Physical) SetEmissiveFactor(c *math32.Color) *Physical {
 func (m *Physical) SetBaseColorMap(tex *texture.Texture2D) *Physical {
 	m.baseColorTex = tex
 	if m.baseColorTex != nil {
-		m.baseColorTex.SetUniformNames("uBaseColorSampler", "uBaseColorTexParams")
+		m.baseColorTex.SetUniformNames("uBaseColorSampler", "")
 		m.ShaderDefines.HAS_BASECOLORMAP = true
 		m.AddTexture(m.baseColorTex)
 	} else {
@@ -99,7 +99,7 @@ func (m *Physical) SetBaseColorMap(tex *texture.Texture2D) *Physical {
 func (m *Physical) SetMetallicRoughnessMap(tex *texture.Texture2D) *Physical {
 	m.metallicRoughnessTex = tex
 	if m.metallicRoughnessTex != nil {
-		m.metallicRoughnessTex.SetUniformNames("uMetallicRoughnessSampler", "uMetallicRoughnessTexParams")
+		m.metallicRoughnessTex.SetUniformNames("uMetallicRoughnessSampler", "")
 		m.ShaderDefines.HAS_METALROUGHNESSMAP = true
 		m.AddTexture(m.metallicRoughnessTex)
 	} else {
@@ -114,7 +114,7 @@ func (m *Physical) SetMetallicRoughnessMap(tex *texture.Texture2D) *Physical {
 func (m *Physical) SetNormalMap(tex *texture.Texture2D) *Physical {
 	m.normalTex = tex
 	if m.normalTex != nil {
-		m.normalTex.SetUniformNames("uNormalSampler", "uNormalTexParams")
+		m.normalTex.SetUniformNames("uNormalSampler", "")
 		m.ShaderDefines.HAS_NORMALMAP = true
 		m.AddTexture(m.normalTex)
 	} else {
@@ -129,7 +129,7 @@ func (m *Physical) SetNormalMap(tex *texture.Texture2D) *Physical {
 func (m *Physical) SetOcclusionMap(tex *texture.Texture2D) *Physical {
 	m.occlusionTex = tex
 	if m.occlusionTex != nil {
-		m.occlusionTex.SetUniformNames("uOcclusionSampler", "uOcclusionTexParams")
+		m.occlusionTex.SetUniformNames("uOcclusionSampler", "")
 		m.ShaderDefines.HAS_OCCLUSIONMAP = true
 		m.AddTexture(m.occlusionTex)
 	} else {
@@ -144,7 +144,7 @@ func (m *Physical) SetOcclusionMap(tex *texture.Texture2D) *Physical {
 func (m *Physical) SetEmissiveMap(tex *texture.Texture2D) *Physical {
 	m.emissiveTex = tex
 	if m.emissiveTex != nil {
-		m.emissiveTex.SetUniformNames("uEmissiveSampler", "uEmissiveTexParams")
+		m.emissiveTex.SetUniformNames("uEmissiveSampler", "")
 		m.ShaderDefines.HAS_EMISSIVEMAP = true
 		m.AddTexture(m.emissiveTex)
 	} else {

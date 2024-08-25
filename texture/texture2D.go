@@ -324,9 +324,11 @@ func (t *Texture2D) RenderSetup(gs *gls.GLS, slotIdx, uniIdx int) {
 	gs.Uniform1i(location, int32(slotIdx))
 
 	// Transfer texture info combined uniform
-	const vec2count = 3
-	location = t.uniInfo.LocationIdx(gs, vec2count*int32(uniIdx))
-	gs.Uniform2fv(location, vec2count, &t.udata.offsetX)
+	if t.uniInfo.Name() != "" {
+		const vec2count = 3
+		location = t.uniInfo.LocationIdx(gs, vec2count*int32(uniIdx))
+		gs.Uniform2fv(location, vec2count, &t.udata.offsetX)
+	}
 }
 
 // BindAndTransfer binds the texture to the active texture unit and transfers data and parameters.

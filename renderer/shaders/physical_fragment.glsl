@@ -1,4 +1,3 @@
-//
 // Physically Based Shading of a microfacet surface material - Fragment Shader
 // Modified from reference implementation at https://github.com/KhronosGroup/glTF-WebGL-PBR
 //
@@ -47,7 +46,7 @@ uniform float uOcclusionStrength;
 // Material parameters uniform array
 uniform vec4 Material[3];
 // Macros to access elements inside the Material array
-#define uBaseColor            Material[0]
+#define uBaseColor          Material[0]
 #define uEmissiveColor      Material[1]
 #define uMetallicFactor     Material[2].x
 #define uRoughnessFactor    Material[2].y
