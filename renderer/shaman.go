@@ -95,10 +95,8 @@ func (sm *Shaman) AddProgram(name, vertexName, fragName string, others ...string
 // when creating a new shader program.
 // Receives a copy of the specs because it changes the fields which specify the
 // number of lights depending on the UseLights flags.
-func (sm *Shaman) SetProgram(s *ShaderSpecs) (bool, error) {
+func (sm *Shaman) SetProgram(specs ShaderSpecs) (bool, error) {
 	// Checks material use lights bit mask
-	// copy so we don't change light settings provided
-	specs := *s
 	if (specs.UseLights & material.UseLightAmbient) == 0 {
 		specs.AmbientLightsMax = 0
 	}

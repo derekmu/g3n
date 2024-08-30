@@ -65,7 +65,7 @@ func NewRenderer(gs *gls.GLS) *Renderer {
 	r.grmatsOpaque = make([]*graphic.GraphicMaterial, 0)
 	r.grmatsTransp = make([]*graphic.GraphicMaterial, 0)
 	r.zLayers = make(map[int][]gui.IPanel)
-	r.zLayers[0] = make([]gui.IPanel, 0)
+	r.zLayers[0] = nil
 	r.zLayerKeys = append(r.zLayerKeys, 0)
 
 	return r
@@ -106,8 +106,8 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 	r.graphics = r.graphics[0:0]
 	r.grmatsOpaque = r.grmatsOpaque[0:0]
 	r.grmatsTransp = r.grmatsTransp[0:0]
-	r.zLayers = make(map[int][]gui.IPanel)
-	r.zLayers[0] = make([]gui.IPanel, 0)
+	clear(r.zLayers)
+	r.zLayers[0] = nil
 	r.zLayerKeys = r.zLayerKeys[0:1]
 	r.zLayerKeys[0] = 0
 
@@ -196,7 +196,7 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 }
 
 // classifyAndCull classifies the provided INode and all of its descendents.
-// It ignores (culls) renderable IGraphics which are fully outside of the specified frustum.
+// It ignores (culls) renderable IGraphics which are fully outside the specified frustum.
 func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zLayer int) {
 	// Ignore invisible nodes and their descendants
 	if !inode.Visible() {
@@ -206,13 +206,11 @@ func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zL
 	if ipan, ok := inode.(gui.IPanel); ok {
 		zLayer += ipan.ZLayerDelta()
 		if ipan.Renderable() {
-			// TODO cull panels
-			_, ok := r.zLayers[zLayer]
+			layer, ok := r.zLayers[zLayer]
 			if !ok {
 				r.zLayerKeys = append(r.zLayerKeys, zLayer)
-				r.zLayers[zLayer] = make([]gui.IPanel, 0)
 			}
-			r.zLayers[zLayer] = append(r.zLayers[zLayer], ipan)
+			r.zLayers[zLayer] = append(layer, ipan)
 			r.stats.Panels++
 		}
 		// Check if node is an IGraphic
@@ -298,7 +296,7 @@ func (r *Renderer) renderGraphicMaterial(grmat *graphic.GraphicMaterial) error {
 	r.specs.GraphicDefines = gr.ShaderDefines
 
 	// Set active program and apply shader specs
-	_, err := r.Shaman.SetProgram(&r.specs)
+	_, err := r.Shaman.SetProgram(r.specs)
 	if err != nil {
 		return err
 	}
