@@ -150,6 +150,7 @@ func (l *Label) LineSpacing() float64 {
 	return l.style.LineSpacing
 }
 
+// drawText redraws the label texture.
 func (l *Label) drawText() {
 	// Set font properties
 	l.font.SetAttributes(&l.style.FontAttributes)
@@ -166,8 +167,10 @@ func (l *Label) drawText() {
 		// Keep track of the full RGBA
 		l.rgba = l.canvas.RGBA
 	} else {
-		l.canvas.BgColor = l.style.BgColor
+		// Reuse part of the already allocated image
 		l.canvas.RGBA = l.rgba.SubImage(image.Rect(0, 0, width, height)).(*image.RGBA)
+		// Update the color
+		l.canvas.BgColor = l.style.BgColor
 	}
 	l.canvas.DrawText(0, 0, l.text, l.font)
 
@@ -182,5 +185,6 @@ func (l *Label) drawText() {
 		l.tex.SetFromRGBA(l.canvas.RGBA)
 	}
 
+	// Change the image texture
 	l.SetTexture(l.tex)
 }
