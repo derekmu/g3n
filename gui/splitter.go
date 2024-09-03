@@ -70,10 +70,10 @@ func newSplitter(horiz bool, width, height float32) *Splitter {
 	s.Panel.Add(&s.spacer)
 
 	if horiz {
-		s.spacer.SetBorders(0, 1, 0, 1)
+		s.spacer.SetBorders(RectBounds{0, 1, 0, 1})
 		s.pos = 0.5
 	} else {
-		s.spacer.SetBorders(1, 0, 1, 0)
+		s.spacer.SetBorders(RectBounds{1, 0, 1, 0})
 		s.pos = 0.5
 	}
 

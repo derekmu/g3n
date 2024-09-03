@@ -78,7 +78,7 @@ func NewTabBar(width, height float32) *TabBar {
 
 	// Creates list icon button
 	tb.listButton = NewIconLabel(tb.styles.ListButtonIcon)
-	tb.listButton.SetPaddingsFrom(tb.styles.ListButtonPaddings)
+	tb.listButton.SetPaddings(tb.styles.ListButtonPaddings)
 	tb.listButton.Subscribe(OnMouseDown, tb.onListButton)
 	tb.Add(tb.listButton)
 
@@ -457,7 +457,7 @@ func (tab *Tab) SetIcon(icon string) *Tab {
 	// Creates or updates icon
 	if tab.icon == nil {
 		tab.icon = NewIconLabel(icon)
-		tab.icon.SetPaddingsFrom(tab.styles.IconPaddings)
+		tab.icon.SetPaddings(tab.styles.IconPaddings)
 		tab.header.Add(tab.icon)
 	} else {
 		tab.icon.SetText(icon)
@@ -483,7 +483,7 @@ func (tab *Tab) SetImage(imgfile string) error {
 			return err
 		}
 		tab.image = img
-		tab.image.SetPaddingsFrom(tab.styles.ImagePaddings)
+		tab.image.SetPaddings(tab.styles.ImagePaddings)
 		tab.header.Add(tab.image)
 	} else {
 		err := tab.image.SetImage(imgfile)

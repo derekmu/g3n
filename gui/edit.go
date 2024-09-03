@@ -558,9 +558,9 @@ func (ed *Edit) update() {
 
 // applyStyle applies the specified style
 func (ed *Edit) applyStyle(s *EditStyle) {
-	ed.SetBordersFrom(s.Border)
+	ed.SetBorders(s.Border)
 	ed.SetBorderColor(s.BorderColor)
-	ed.SetPaddingsFrom(s.Paddings)
+	ed.SetPaddings(s.Paddings)
 	ed.Label.SetColor(s.FgColor)
 	ed.Label.SetBgColor(s.BgColor)
 	//ed.Label.SetBgAlpha(s.BgAlpha)

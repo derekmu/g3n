@@ -754,16 +754,16 @@ func (mi *MenuItem) update() {
 func (mi *MenuItem) applyStyle(mis *MenuItemStyle) {
 	mi.Panel.ApplyStyle(&mis.PanelStyle)
 	if mi.licon != nil {
-		mi.licon.SetPaddingsFrom(mis.IconPaddings)
+		mi.licon.SetPaddings(mis.IconPaddings)
 	}
 	if mi.label != nil {
 		mi.label.SetColor(mis.FgColor)
 	}
 	if mi.shortcut != nil {
-		mi.shortcut.SetPaddingsFrom(mis.ShortcutPaddings)
+		mi.shortcut.SetPaddings(mis.ShortcutPaddings)
 	}
 	if mi.ricon != nil {
-		mi.ricon.SetPaddingsFrom(mis.RiconPaddings)
+		mi.ricon.SetPaddings(mis.RiconPaddings)
 	}
 }
 

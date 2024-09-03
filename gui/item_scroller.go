@@ -525,7 +525,7 @@ func (s *ItemScroller) setVScrollBar(state bool) {
 		var scrollWidth float32 = 20
 		if s.vscroll == nil {
 			s.vscroll = NewVScrollBar(0, 0)
-			s.vscroll.SetBorders(0, 0, 0, 1)
+			s.vscroll.SetBorders(RectBounds{0, 0, 0, 1})
 			s.vscroll.Subscribe(OnChange, s.onScrollBarEvent)
 			s.Panel.Add(s.vscroll)
 		}
@@ -549,7 +549,7 @@ func (s *ItemScroller) setHScrollBar(state bool) {
 		var scrollHeight float32 = 20
 		if s.hscroll == nil {
 			s.hscroll = NewHScrollBar(0, 0)
-			s.hscroll.SetBorders(1, 0, 0, 0)
+			s.hscroll.SetBorders(RectBounds{1, 0, 0, 0})
 			s.hscroll.Subscribe(OnChange, s.onScrollBarEvent)
 			s.Panel.Add(s.hscroll)
 		}

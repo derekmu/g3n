@@ -50,7 +50,7 @@ func (l *Label) InitLabel(text string, font *text.Font) {
 	l.Panel.InitPanel(l, 0, 0)
 	l.Panel.mat.SetTransparent(true)
 	if font != StyleDefault().FontIcon {
-		l.Panel.SetPaddings(2, 0, 2, 0)
+		l.Panel.SetPaddings(RectBounds{2, 0, 2, 0})
 	}
 	styleCopy := StyleDefault().Label
 	l.style = &styleCopy

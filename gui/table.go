@@ -1386,7 +1386,7 @@ func (t *Table) setVScrollBar(state bool) {
 		// Creates scroll bar if necessary
 		if t.vscroll == nil {
 			t.vscroll = NewVScrollBar(0, 0)
-			t.vscroll.SetBorders(0, 0, 0, 1)
+			t.vscroll.SetBorders(RectBounds{0, 0, 0, 1})
 			t.vscroll.Subscribe(OnChange, t.onVScrollBar)
 			t.Panel.Add(t.vscroll)
 		}
@@ -1511,7 +1511,7 @@ func (t *Table) applyStatusStyle() {
 // applyResizerStyle applies the status style
 func (t *Table) applyResizerStyle() {
 	s := t.styles.Resizer
-	t.resizerPanel.SetBordersFrom(s.Border)
+	t.resizerPanel.SetBorders(s.Border)
 	t.resizerPanel.SetBorderColor(s.BorderColor)
 	t.resizerPanel.SetColor(s.BgColor)
 }

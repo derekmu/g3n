@@ -88,7 +88,7 @@ func (sb *ScrollBar) InitScrollBar(width, height float32, vertical bool) {
 	sb.button.Panel.Subscribe(OnMouseDown, sb.button.onMouse)
 	sb.button.Panel.Subscribe(OnMouseUp, sb.button.onMouse)
 	sb.button.Panel.Subscribe(OnCursor, sb.button.onCursor)
-	sb.button.SetMargins(1, 1, 1, 1)
+	sb.button.SetMargins(RectBounds{1, 1, 1, 1})
 	sb.button.Size = sb.styles.Normal.ButtonLength
 	sb.button.sb = sb
 	sb.Add(&sb.button)

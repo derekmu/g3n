@@ -265,9 +265,9 @@ func (w *Window) update() {
 // applyStyle applies a window style to the window.
 func (w *Window) applyStyle(s *WindowStyle) {
 	w.SetBorderColor(s.BorderColor)
-	w.SetBordersFrom(s.Border)
-	w.SetPaddingsFrom(s.Padding)
-	w.client.SetMarginsFrom(s.Margin)
+	w.SetBorders(s.Border)
+	w.SetPaddings(s.Padding)
+	w.client.SetMargins(s.Margin)
 	w.client.SetColor(s.BgColor)
 	if w.title != nil {
 		w.title.applyStyle(&s.TitleStyle)

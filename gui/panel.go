@@ -290,14 +290,8 @@ func (p *Panel) ContentHeight() float32 {
 	return p.content.Height
 }
 
-// SetMargins set the panel's margin sizes.
-func (p *Panel) SetMargins(top, right, bottom, left float32) {
-	p.marginSizes.Set(top, right, bottom, left)
-	p.resize(p.calcWidth(), p.calcHeight(), true)
-}
-
-// SetMarginsFrom sets the panel's margin sizes.
-func (p *Panel) SetMarginsFrom(src RectBounds) {
+// SetMargins sets the panel's margin sizes.
+func (p *Panel) SetMargins(src RectBounds) {
 	p.marginSizes = src
 	p.resize(p.calcWidth(), p.calcHeight(), true)
 }
@@ -308,13 +302,7 @@ func (p *Panel) Margins() RectBounds {
 }
 
 // SetBorders sets the panel's border sizes.
-func (p *Panel) SetBorders(top, right, bottom, left float32) {
-	p.borderSizes.Set(top, right, bottom, left)
-	p.resize(p.calcWidth(), p.calcHeight(), true)
-}
-
-// SetBordersFrom sets the panel's border sizes.
-func (p *Panel) SetBordersFrom(src RectBounds) {
+func (p *Panel) SetBorders(src RectBounds) {
 	p.borderSizes = src
 	p.resize(p.calcWidth(), p.calcHeight(), true)
 }
@@ -325,13 +313,7 @@ func (p *Panel) Borders() RectBounds {
 }
 
 // SetPaddings sets the panel's padding sizes.
-func (p *Panel) SetPaddings(top, right, bottom, left float32) {
-	p.paddingSizes.Set(top, right, bottom, left)
-	p.resize(p.calcWidth(), p.calcHeight(), true)
-}
-
-// SetPaddingsFrom sets the panel's padding sizes.
-func (p *Panel) SetPaddingsFrom(src RectBounds) {
+func (p *Panel) SetPaddings(src RectBounds) {
 	p.paddingSizes = src
 	p.resize(p.calcWidth(), p.calcHeight(), true)
 }
