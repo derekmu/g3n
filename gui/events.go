@@ -60,6 +60,6 @@ const (
 	OnResize     = "gui.OnResize"     // Panel size changed (no parameters)
 	OnEnable     = "gui.OnEnable"     // Panel enabled/disabled (no parameters)
 	OnClick      = "gui.OnClick"      // Widget clicked by mouse left button or via key press
-	OnChange     = "gui.OnChange"     // Value was changed. Emitted by List, DropDownList, CheckBox and Edit
+	OnChange     = "gui.OnChange"     // Value was changed.
 	OnRadioGroup = "gui.OnRadioGroup" // Radio button within a group changed state
 )

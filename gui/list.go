@@ -66,15 +66,15 @@ func NewHList(width, height float32) *List {
 // with the specified orientation and dimensions
 func newList(vert bool, width, height float32) *List {
 	li := new(List)
-	li.initialize(vert, width, height)
+	li.InitList(vert, width, height)
 	return li
 }
 
-func (li *List) initialize(vert bool, width, height float32) {
+func (li *List) InitList(vert bool, width, height float32) {
 	li.styles = &StyleDefault().List
 	li.single = true
 
-	li.ItemScroller.initialize(vert, width, height)
+	li.ItemScroller.InitScroller(vert, width, height)
 	li.ItemScroller.SetStyles(li.styles.Scroller)
 	li.ItemScroller.adjustItem = true
 	li.ItemScroller.Subscribe(OnKeyDown, li.onKeyEvent)
@@ -346,7 +346,7 @@ func (li *List) highlighted() (pos int) {
 }
 
 // onKeyEvent receives subscribed key events for the list
-func (li *List) onKeyEvent(evname string, ev interface{}) {
+func (li *List) onKeyEvent(_ string, ev interface{}) {
 	kev := ev.(*core.KeyEvent)
 	// Dropdown mode
 	if li.dropdown {
@@ -432,7 +432,7 @@ func (li *List) update() {
 
 func newListItem(list *List, item IPanel) *ListItem {
 	litem := new(ListItem)
-	litem.Panel.Initialize(litem, 0, 0)
+	litem.Panel.InitPanel(litem, 0, 0)
 	litem.item = item
 	litem.list = list
 	litem.Panel.Add(item)
@@ -447,7 +447,7 @@ func newListItem(list *List, item IPanel) *ListItem {
 }
 
 // onMouse receives mouse button events over the list item
-func (litem *ListItem) onMouse(evname string, ev interface{}) {
+func (litem *ListItem) onMouse(_ string, _ interface{}) {
 	if litem.list.single {
 		litem.list.setSelection(litem, true, true, true)
 	} else {
@@ -459,7 +459,7 @@ func (litem *ListItem) onMouse(evname string, ev interface{}) {
 }
 
 // onCursor receives subscribed cursor events over the list item
-func (litem *ListItem) onCursor(evname string, ev interface{}) {
+func (litem *ListItem) onCursor(_ string, _ interface{}) {
 	if litem.list.dropdown {
 		litem.list.setSelection(litem, true, true, false)
 		return

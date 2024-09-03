@@ -55,18 +55,18 @@ func newSplitter(horiz bool, width, height float32) *Splitter {
 	s := new(Splitter)
 	s.horiz = horiz
 	s.styles = &StyleDefault().Splitter
-	s.Panel.Initialize(s, width, height)
+	s.Panel.InitPanel(s, width, height)
 
 	// Initialize left/top panel
-	s.P0.Initialize(&s.P0, 0, 0)
+	s.P0.InitPanel(&s.P0, 0, 0)
 	s.Panel.Add(&s.P0)
 
 	// Initialize right/bottom panel
-	s.P1.Initialize(&s.P1, 0, 0)
+	s.P1.InitPanel(&s.P1, 0, 0)
 	s.Panel.Add(&s.P1)
 
 	// Initialize spacer panel
-	s.spacer.Initialize(&s.spacer, 0, 0)
+	s.spacer.InitPanel(&s.spacer, 0, 0)
 	s.Panel.Add(&s.spacer)
 
 	if horiz {
@@ -102,7 +102,7 @@ func (s *Splitter) Split() float32 {
 }
 
 // onResize receives subscribed resize events for the whole splitter panel
-func (s *Splitter) onResize(evname string, ev interface{}) {
+func (s *Splitter) onResize(string, interface{}) {
 	s.recalc()
 }
 
@@ -189,8 +189,8 @@ func (s *Splitter) update() {
 
 // applyStyle applies the specified splitter style
 func (s *Splitter) applyStyle(ss *SplitterStyle) {
-	s.spacer.SetBordersColor4(&ss.SpacerBorderColor)
-	s.spacer.SetColor4(&ss.SpacerColor)
+	s.spacer.SetBorderColor(ss.SpacerBorderColor)
+	s.spacer.SetColor(ss.SpacerColor)
 	if s.horiz {
 		s.spacer.SetWidth(ss.SpacerSize)
 	} else {

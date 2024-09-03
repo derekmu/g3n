@@ -71,7 +71,7 @@ func NewWindow(width, height float32) *Window {
 	w := new(Window)
 	w.styles = &StyleDefault().Window
 
-	w.Panel.Initialize(w, width, height)
+	w.Panel.InitPanel(w, width, height)
 	w.Panel.Subscribe(OnMouseDown, w.onMouse)
 	w.Panel.Subscribe(OnMouseUp, w.onMouse)
 	w.Panel.Subscribe(OnCursor, w.onCursor)
@@ -79,7 +79,7 @@ func NewWindow(width, height float32) *Window {
 	w.Panel.Subscribe(OnCursorLeave, w.onCursor)
 	w.Panel.Subscribe(OnResize, func(evname string, ev interface{}) { w.recalc() })
 
-	w.client.Initialize(&w.client, 0, 0)
+	w.client.InitPanel(&w.client, 0, 0)
 	w.Panel.Add(&w.client)
 
 	w.dragPadding = 5
@@ -264,11 +264,11 @@ func (w *Window) update() {
 
 // applyStyle applies a window style to the window.
 func (w *Window) applyStyle(s *WindowStyle) {
-	w.SetBordersColor4(&s.BorderColor)
-	w.SetBordersFrom(&s.Border)
-	w.SetPaddingsFrom(&s.Padding)
-	w.client.SetMarginsFrom(&s.Margin)
-	w.client.SetColor4(&s.BgColor)
+	w.SetBorderColor(s.BorderColor)
+	w.SetBordersFrom(s.Border)
+	w.SetPaddingsFrom(s.Padding)
+	w.client.SetMarginsFrom(s.Margin)
+	w.client.SetColor(s.BgColor)
 	if w.title != nil {
 		w.title.applyStyle(&s.TitleStyle)
 	}
@@ -319,12 +319,13 @@ func newWindowTitle(win *Window, text string) *WindowTitle {
 	wt := new(WindowTitle)
 	wt.win = win
 
-	wt.Panel.Initialize(wt, 0, 0)
-	wt.label.initialize(text, StyleDefault().Font)
+	wt.Panel.InitPanel(wt, 0, 0)
+	wt.label.InitLabel(text, StyleDefault().Font)
 	wt.Panel.Add(&wt.label)
 
 	wt.closeButton = NewButton("")
-	wt.closeButton.SetIcon(icon.Close)
+	wt.closeButton.Label.SetFont(StyleDefault().FontIcon)
+	wt.closeButton.Label.SetText(icon.Close)
 	wt.closeButton.Subscribe(OnCursorEnter, func(s string, i interface{}) {
 		GetManager().window.SetCursor(core.ArrowCursor)
 	})
@@ -397,7 +398,7 @@ func (wt *WindowTitle) onCursor(evname string, ev interface{}) {
 // applyStyle applies the specified WindowTitleStyle.
 func (wt *WindowTitle) applyStyle(s *WindowTitleStyle) {
 	wt.Panel.ApplyStyle(&s.PanelStyle)
-	wt.label.SetColor4(&s.FgColor)
+	wt.label.SetColor(s.FgColor)
 }
 
 // recalc recalculates the height and position of the label in the title bar.

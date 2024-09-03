@@ -9,6 +9,7 @@ import (
 	"github.com/derekmu/g3n/gui/assets/icon"
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/text"
+	"golang.org/x/image/font"
 )
 
 // NewDarkStyle creates and returns a pointer to a new "dark" style.
@@ -34,19 +35,19 @@ func NewDarkStyle() *Style {
 	borderColor := s.Color.BgDark
 	transparent := math32.Color4{0, 0, 0, 0}
 
-	//bgColorBlue := math32.Color4{59.0/256.0, 71.0/256.0, 84.0/256.0, 1}
-	//bgColorBlue2 := math32.Color4{59.0/256.0, 71.0/256.0, 120.0/256.0, 1}
-	//bgColorBlueDark := math32.Color4{49.0/256.0, 59.0/256.0, 69.0/256.0, 1}
-	//bgColorGrey := math32.Color4{85.0/256.0, 85.0/256.0, 85.0/256.0, 1}
+	//bgColorBlue := math32.ContentColor{59.0/256.0, 71.0/256.0, 84.0/256.0, 1}
+	//bgColorBlue2 := math32.ContentColor{59.0/256.0, 71.0/256.0, 120.0/256.0, 1}
+	//bgColorBlueDark := math32.ContentColor{49.0/256.0, 59.0/256.0, 69.0/256.0, 1}
+	//bgColorGrey := math32.ContentColor{85.0/256.0, 85.0/256.0, 85.0/256.0, 1}
 
-	//bgColorOld := math32.Color4{0.85, 0.85, 0.85, 1}
+	//bgColorOld := math32.ContentColor{0.85, 0.85, 0.85, 1}
 
 	// Label style
 	s.Label = LabelStyle{}
 	s.Label.FontAttributes = text.FontAttributes{}
 	s.Label.FontAttributes.PointSize = 14
 	s.Label.FontAttributes.DPI = 72
-	s.Label.FontAttributes.Hinting = text.HintingNone
+	s.Label.FontAttributes.Hinting = font.HintingNone
 	s.Label.FontAttributes.LineSpacing = 1.0
 	s.Label.BgColor = math32.Color4{1, 1, 1, 0}
 	s.Label.FgColor = math32.Color4{1, 1, 1, 1}
@@ -116,11 +117,11 @@ func NewDarkStyle() *Style {
 	s.Slider.Normal.Border = oneBounds
 	s.Slider.Normal.BorderColor = borderColor
 	s.Slider.Normal.BgColor = s.Color.BgDark
-	s.Slider.Normal.FgColor = s.Color.Highlight //bgColorBlue2 //math32.Color4{0, 0.4, 0, 1}
+	s.Slider.Normal.FgColor = s.Color.Highlight //bgColorBlue2 //math32.ContentColor{0, 0.4, 0, 1}
 	s.Slider.Normal.FgColor.A = 0.5
 	s.Slider.Over = s.Slider.Normal
 	s.Slider.Over.BgColor = s.Color.BgNormal
-	s.Slider.Over.FgColor = s.Color.Highlight //math32.Color4{0, 0.5, 0, 1}
+	s.Slider.Over.FgColor = s.Color.Highlight //math32.ContentColor{0, 0.5, 0, 1}
 	s.Slider.Focus = s.Slider.Over
 	s.Slider.Disabled = s.Slider.Normal
 
@@ -204,33 +205,18 @@ func NewDarkStyle() *Style {
 	s.List.Item.SelHigh.BgColor = s.Color.BgNormal
 	s.List.Item.SelHigh.FgColor = s.Color.Select
 
-	// DropDown styles
-	s.DropDown = DropDownStyles{}
-	s.DropDown.Normal = DropDownStyle{}
-	s.DropDown.Normal.Border = oneBounds
-	s.DropDown.Normal.Padding = RectBounds{0, 0, 0, 2}
-	s.DropDown.Normal.BorderColor = borderColor
-	s.DropDown.Normal.BgColor = s.Color.BgNormal
-	s.DropDown.Normal.FgColor = s.Color.Text
-	s.DropDown.Over = s.DropDown.Normal
-	s.DropDown.Over.BgColor = s.Color.BgOver
-	s.DropDown.Focus = s.DropDown.Over
-	s.DropDown.Disabled = s.DropDown.Normal
-
-	// Folder styles
-	s.Folder = FolderStyles{}
-	s.Folder.Normal = FolderStyle{}
-	s.Folder.Normal.Border = oneBounds
-	s.Folder.Normal.Padding = RectBounds{2, 0, 2, 2}
-	s.Folder.Normal.BorderColor = borderColor
-	s.Folder.Normal.BgColor = s.Color.BgNormal
-	s.Folder.Normal.FgColor = s.Color.Text
-	s.Folder.Normal.Icons = [2]string{icon.ExpandMore, icon.ExpandLess}
-	s.Folder.Over = s.Folder.Normal
-	s.Folder.Over.BgColor = s.Color.BgOver
-	s.Folder.Focus = s.Folder.Over
-	s.Folder.Focus.Padding = twoBounds
-	s.Folder.Disabled = s.Folder.Focus
+	// Dropdown styles
+	s.Dropdown = DropdownStyles{}
+	s.Dropdown.Normal = DropdownStyle{}
+	s.Dropdown.Normal.Border = oneBounds
+	s.Dropdown.Normal.Padding = RectBounds{0, 0, 0, 2}
+	s.Dropdown.Normal.BorderColor = borderColor
+	s.Dropdown.Normal.BgColor = s.Color.BgNormal
+	s.Dropdown.Normal.FgColor = s.Color.Text
+	s.Dropdown.Over = s.Dropdown.Normal
+	s.Dropdown.Over.BgColor = s.Color.BgOver
+	s.Dropdown.Focus = s.Dropdown.Over
+	s.Dropdown.Disabled = s.Dropdown.Normal
 
 	// Tree styles
 	s.Tree = TreeStyles{}
@@ -242,29 +228,6 @@ func NewDarkStyle() *Style {
 	s.Tree.Node.Normal.BgColor = transparent
 	s.Tree.Node.Normal.FgColor = s.Color.Text
 	s.Tree.Node.Normal.Icons = [2]string{icon.ExpandMore, icon.ExpandLess}
-
-	// ControlFolder styles
-	s.ControlFolder = ControlFolderStyles{}
-	s.ControlFolder.Folder = &FolderStyles{}
-	s.ControlFolder.Folder.Normal = s.Folder.Normal
-	s.ControlFolder.Folder.Normal.BorderColor = math32.Color4{0, 0, 0, 0}
-	s.ControlFolder.Folder.Normal.BgColor = math32.Color4{0, 0.5, 1, 1}
-	s.ControlFolder.Folder.Over = s.ControlFolder.Folder.Normal
-	s.ControlFolder.Folder.Focus = s.ControlFolder.Folder.Normal
-	s.ControlFolder.Folder.Focus.Padding = twoBounds
-	s.ControlFolder.Folder.Disabled = s.ControlFolder.Folder.Focus
-	s.ControlFolder.Tree = &TreeStyles{}
-	s.ControlFolder.Tree.Padlevel = 2.0
-	s.ControlFolder.Tree.List = &ListStyles{}
-	scrollerStylesCopy := *s.List.Scroller
-	s.ControlFolder.Tree.List.Scroller = &scrollerStylesCopy
-	s.ControlFolder.Tree.List.Scroller.Normal.Padding = RectBounds{0, 2, 0, 0}
-	s.ControlFolder.Tree.List.Scroller.Over.Padding = RectBounds{0, 2, 0, 0}
-	s.ControlFolder.Tree.List.Scroller.Focus.Padding = RectBounds{0, 2, 0, 0}
-	s.ControlFolder.Tree.List.Scroller.Disabled.Padding = RectBounds{0, 2, 0, 0}
-	s.ControlFolder.Tree.List.Item = s.List.Item
-	s.ControlFolder.Tree.Node = &TreeNodeStyles{}
-	s.ControlFolder.Tree.Node.Normal = s.Tree.Node.Normal
 
 	// Menu styles
 	s.Menu = MenuStyles{}
@@ -331,19 +294,6 @@ func NewDarkStyle() *Style {
 		BorderColor: borderColor,
 		BgColor:     math32.Color4{0.4, 0.4, 0.4, 0.6},
 	}
-
-	// ImageButton styles
-	s.ImageButton = ImageButtonStyles{}
-	s.ImageButton.Normal = ImageButtonStyle{}
-	s.ImageButton.Normal.BgColor = transparent
-	s.ImageButton.Normal.FgColor = s.Color.Text
-	s.ImageButton.Over = s.ImageButton.Normal
-	s.ImageButton.Over.BgColor = s.Color.BgOver
-	s.ImageButton.Focus = s.ImageButton.Over
-	s.ImageButton.Pressed = s.ImageButton.Over
-	s.ImageButton.Pressed.Border = oneBounds
-	s.ImageButton.Disabled = s.ImageButton.Normal
-	s.ImageButton.Disabled.FgColor = s.Color.TextDis
 
 	// TabBar styles
 	s.TabBar = TabBarStyles{

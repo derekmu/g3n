@@ -8,34 +8,20 @@ import (
 	"github.com/derekmu/g3n/core"
 )
 
-/***************************************
-
- Button Panel
- +-------------------------------+
- |  Image/Icon      Label        |
- |  +----------+   +----------+  |
- |  |          |   |          |  |
- |  |          |   |          |  |
- |  +----------+   +----------+  |
- +-------------------------------+
-
-****************************************/
-
-// Button represents a button GUI element
+// Button is a button UI element.
 type Button struct {
 	Panel                   // Embedded Panel
 	Label     *Label        // Label panel
 	image     *Image        // pointer to button image (may be nil)
-	icon      *Label        // pointer to button icon (may be nil
 	styles    *ButtonStyles // pointer to current button styles
 	mouseOver bool          // true if mouse is over button
 	pressed   bool          // true if button is pressed
 }
 
-// ButtonStyle contains the styling of a Button
+// ButtonStyle contains the styling of a Button.
 type ButtonStyle BasicStyle
 
-// ButtonStyles contains one ButtonStyle for each possible button state
+// ButtonStyles contains one ButtonStyle for each ButtonState.
 type ButtonStyles struct {
 	Normal   ButtonStyle
 	Over     ButtonStyle
@@ -44,14 +30,24 @@ type ButtonStyles struct {
 	Disabled ButtonStyle
 }
 
-// NewButton creates and returns a pointer to a new button widget
-// with the specified text for the button label.
+// ButtonState identifies the state of a Button.
+type ButtonState int
+
+const (
+	ButtonNormal ButtonState = iota
+	ButtonOver
+	ButtonPressed
+	ButtonDisabled
+	// ButtonFocus
+)
+
+// NewButton creates a new Button with the specified text for the button label.
 func NewButton(text string) *Button {
 	b := new(Button)
 	b.styles = &StyleDefault().Button
 
 	// Initializes the button panel
-	b.Panel.Initialize(b, 0, 0)
+	b.Panel.InitPanel(b, 0, 0)
 
 	// Subscribe to panel events
 	b.Subscribe(OnKeyDown, b.onKey)
@@ -75,27 +71,7 @@ func NewButton(text string) *Button {
 	return b
 }
 
-// SetIcon sets the button icon from the default Icon font.
-// If there is currently a selected image, it is removed
-func (b *Button) SetIcon(icode string) {
-	ico := NewIcon(icode)
-	if b.image != nil {
-		b.Panel.Remove(b.image)
-		b.image = nil
-	}
-	if b.icon != nil {
-		b.Panel.Remove(b.icon)
-	}
-	b.icon = ico
-	b.icon.SetFontSize(b.Label.FontSize() * 1.4)
-	b.Panel.Add(b.icon)
-
-	b.recalc()
-	b.update()
-}
-
-// SetImage sets the button left image from the specified filename
-// If there is currently a selected icon, it is removed
+// SetImage sets the button image from the specified filename.
 func (b *Button) SetImage(imgfile string) error {
 	img, err := NewImage(imgfile)
 	if err != nil {
@@ -110,14 +86,14 @@ func (b *Button) SetImage(imgfile string) error {
 	return nil
 }
 
-// SetStyles set the button styles overriding the default style
+// SetStyles set the button styles overriding the default style.
 func (b *Button) SetStyles(bs *ButtonStyles) {
 	b.styles = bs
 	b.update()
 }
 
-// onCursor process subscribed cursor events
-func (b *Button) onCursor(evname string, ev interface{}) {
+// onCursor processes subscribed cursor events.
+func (b *Button) onCursor(evname string, _ interface{}) {
 	switch evname {
 	case OnCursorEnter:
 		b.mouseOver = true
@@ -128,12 +104,11 @@ func (b *Button) onCursor(evname string, ev interface{}) {
 	}
 }
 
-// onMouseEvent process subscribed mouse events
-func (b *Button) onMouse(evname string, ev interface{}) {
+// onMouse processes subscribed mouse events.
+func (b *Button) onMouse(evname string, _ interface{}) {
 	if !b.Enabled() {
 		return
 	}
-
 	switch evname {
 	case OnMouseDown:
 		GetManager().SetKeyFocus(b)
@@ -152,7 +127,7 @@ func (b *Button) onMouse(evname string, ev interface{}) {
 	}
 }
 
-// onKey processes subscribed key events
+// onKey processes subscribed key events.
 func (b *Button) onKey(evname string, ev interface{}) {
 	kev := ev.(*core.KeyEvent)
 	if kev.Key != core.KeyEnter {
@@ -169,7 +144,7 @@ func (b *Button) onKey(evname string, ev interface{}) {
 	}
 }
 
-// update updates the button visual state
+// update updates the button visual state.
 func (b *Button) update() {
 	if !b.Enabled() {
 		b.applyStyle(&b.styles.Disabled)
@@ -186,42 +161,37 @@ func (b *Button) update() {
 	b.applyStyle(&b.styles.Normal)
 }
 
-// applyStyle applies the specified button style
+// applyStyle applies the specified button style.
 func (b *Button) applyStyle(bs *ButtonStyle) {
 	b.Panel.ApplyStyle(&bs.PanelStyle)
-	if b.icon != nil {
-		b.icon.SetColor4(&bs.FgColor)
-	}
-	b.Label.SetColor4(&bs.FgColor)
+	b.Label.SetColor(bs.FgColor)
 }
 
-// recalc recalculates all dimensions and position from inside out
+// recalc recalculates all dimensions and position from inside out.
 func (b *Button) recalc() {
 	// Current width and height of button content area
 	width := b.Panel.ContentWidth()
 	height := b.Panel.ContentHeight()
 
-	// Image or icon width
-	imgWidth := float32(0)
+	// Image width
+	imageWidth := float32(0)
 	spacing := float32(4)
 	if b.image != nil {
-		imgWidth = b.image.Width()
-	} else if b.icon != nil {
-		imgWidth = b.icon.Width()
+		imageWidth = b.image.Width()
 	}
-	if imgWidth == 0 {
+	if imageWidth == 0 {
 		spacing = 0
 	}
 
-	// If the label is empty and an icon of image was defined ignore the label widthh
-	// to centralize the icon/image in the button
+	// Label width
 	labelWidth := spacing + b.Label.Width()
-	if b.Label.Text() == "" && imgWidth > 0 {
+	// If the label is empty and an image was defined, ignore the label to centralize the image
+	if b.Label.Text() == "" && imageWidth > 0 {
 		labelWidth = 0
 	}
 
 	// Sets new content width and height if necessary
-	minWidth := imgWidth + labelWidth
+	minWidth := imageWidth + labelWidth
 	minHeight := b.Label.Height()
 	resize := false
 	if width < minWidth {
@@ -241,13 +211,11 @@ func (b *Button) recalc() {
 
 	// Set label position
 	ly := (height - b.Label.Height()) / 2
-	b.Label.SetPosition(px+imgWidth+spacing, ly)
+	b.Label.SetPosition(px+imageWidth+spacing, ly)
 
-	// Image/icon position
+	// Image position
 	if b.image != nil {
 		iy := (height - b.image.height) / 2
 		b.image.SetPosition(px, iy)
-	} else if b.icon != nil {
-		b.icon.SetPosition(px, ly)
 	}
 }

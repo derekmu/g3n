@@ -37,7 +37,7 @@ func NewImageFromRGBA(rgba *image.RGBA) *Image {
 // NewImageFromTex creates and returns an image panel from the specified texture2D
 func NewImageFromTex(tex *texture.Texture2D) *Image {
 	i := new(Image)
-	i.Panel.Initialize(i, 0, 0)
+	i.Panel.InitPanel(i, 0, 0)
 	i.tex = tex
 	i.Panel.SetContentSize(float32(i.tex.Width()), float32(i.tex.Height()))
 	i.Material().AddTexture(i.tex)

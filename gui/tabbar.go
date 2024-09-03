@@ -59,13 +59,13 @@ type TabStyles struct {
 func NewTabBar(width, height float32) *TabBar {
 	// Creates new TabBar
 	tb := new(TabBar)
-	tb.Initialize(tb, width, height)
+	tb.InitPanel(tb, width, height)
 	tb.styles = &StyleDefault().TabBar
 	tb.tabs = make([]*Tab, 0)
 	tb.selected = -1
 
 	// Creates separator panel (between the tab headers and content panel)
-	tb.separator.Initialize(&tb.separator, 0, 0)
+	tb.separator.InitPanel(&tb.separator, 0, 0)
 	tb.Add(&tb.separator)
 
 	// Create list for contained tabs not visible
@@ -77,8 +77,8 @@ func NewTabBar(width, height float32) *TabBar {
 	tb.Add(tb.list)
 
 	// Creates list icon button
-	tb.listButton = NewIcon(tb.styles.ListButtonIcon)
-	tb.listButton.SetPaddingsFrom(&tb.styles.ListButtonPaddings)
+	tb.listButton = NewIconLabel(tb.styles.ListButtonIcon)
+	tb.listButton.SetPaddingsFrom(tb.styles.ListButtonPaddings)
 	tb.listButton.Subscribe(OnMouseDown, tb.onListButton)
 	tb.Add(tb.listButton)
 
@@ -228,7 +228,7 @@ func (tb *TabBar) Selected() int {
 }
 
 // onCursor process subscribed cursor events
-func (tb *TabBar) onCursor(evname string, ev interface{}) {
+func (tb *TabBar) onCursor(evname string, _ interface{}) {
 	switch evname {
 	case OnCursorEnter:
 		tb.cursorOver = true
@@ -242,7 +242,7 @@ func (tb *TabBar) onCursor(evname string, ev interface{}) {
 }
 
 // onListButtonMouse process subscribed MouseButton events over the list button
-func (tb *TabBar) onListButton(evname string, ev interface{}) {
+func (tb *TabBar) onListButton(evname string, _ interface{}) {
 	switch evname {
 	case OnMouseDown:
 		if !tb.list.Visible() {
@@ -254,7 +254,7 @@ func (tb *TabBar) onListButton(evname string, ev interface{}) {
 }
 
 // onListChange process OnChange event from the tab list
-func (tb *TabBar) onListChange(evname string, ev interface{}) {
+func (tb *TabBar) onListChange(_ string, _ interface{}) {
 	selected := tb.list.Selected()
 	pos := selected[0].GetPanel().UserData().(int)
 	log.Printf("onListChange:%v", pos)
@@ -265,7 +265,7 @@ func (tb *TabBar) onListChange(evname string, ev interface{}) {
 // applyStyle applies the specified TabBar style
 func (tb *TabBar) applyStyle(s *TabBarStyle) {
 	tb.Panel.ApplyStyle(&s.PanelStyle)
-	tb.separator.SetColor4(&s.BorderColor)
+	tb.separator.SetColor(s.BorderColor)
 }
 
 // recalc recalculates and updates the positions of all tabs
@@ -386,15 +386,15 @@ func newTab(text string, tb *TabBar, styles *TabStyles) *Tab {
 	tab.tb = tb
 	tab.styles = styles
 	// Setup the header panel
-	tab.header.Initialize(&tab.header, 0, 0)
+	tab.header.InitPanel(&tab.header, 0, 0)
 	tab.label = NewLabel(text)
-	tab.iconClose = NewIcon(styles.IconClose)
+	tab.iconClose = NewIconLabel(styles.IconClose)
 	tab.header.Add(tab.label)
 	tab.header.Add(tab.iconClose)
 	// Creates the bottom panel
-	tab.bottom.Initialize(&tab.bottom, 0, 0)
+	tab.bottom.InitPanel(&tab.bottom, 0, 0)
 	tab.bottom.SetBounded(false)
-	tab.bottom.SetColor4(&tab.styles.Selected.BgColor)
+	tab.bottom.SetColor(tab.styles.Selected.BgColor)
 	tab.header.Add(&tab.bottom)
 
 	// Subscribe to header panel events
@@ -408,7 +408,7 @@ func newTab(text string, tb *TabBar, styles *TabStyles) *Tab {
 }
 
 // onCursor process subscribed cursor events over the tab header
-func (tab *Tab) onCursor(evname string, ev interface{}) {
+func (tab *Tab) onCursor(evname string, _ interface{}) {
 	switch evname {
 	case OnCursorEnter:
 		tab.cursorOver = true
@@ -429,10 +429,10 @@ func (tab *Tab) onMouseHeader(evname string, ev interface{}) {
 }
 
 // onMouseIcon process subscribed mouse events over the tab close icon
-func (tab *Tab) onMouseIcon(evname string, ev interface{}) {
+func (tab *Tab) onMouseIcon(evname string, _ interface{}) {
 	switch evname {
 	case OnMouseDown:
-		tab.tb.RemoveTab(tab.tb.TabPosition(tab))
+		_ = tab.tb.RemoveTab(tab.tb.TabPosition(tab))
 	default:
 		return
 	}
@@ -456,8 +456,8 @@ func (tab *Tab) SetIcon(icon string) *Tab {
 	}
 	// Creates or updates icon
 	if tab.icon == nil {
-		tab.icon = NewIcon(icon)
-		tab.icon.SetPaddingsFrom(&tab.styles.IconPaddings)
+		tab.icon = NewIconLabel(icon)
+		tab.icon.SetPaddingsFrom(tab.styles.IconPaddings)
 		tab.header.Add(tab.icon)
 	} else {
 		tab.icon.SetText(icon)
@@ -483,7 +483,7 @@ func (tab *Tab) SetImage(imgfile string) error {
 			return err
 		}
 		tab.image = img
-		tab.image.SetPaddingsFrom(&tab.styles.ImagePaddings)
+		tab.image.SetPaddingsFrom(tab.styles.ImagePaddings)
 		tab.header.Add(tab.image)
 	} else {
 		err := tab.image.SetImage(imgfile)

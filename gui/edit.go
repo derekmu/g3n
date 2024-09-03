@@ -69,7 +69,7 @@ func NewEdit(width int, placeHolder string) *Edit {
 	ed.selEnd = 0
 	ed.focus = false
 
-	ed.Label.initialize("", StyleDefault().Font)
+	ed.Label.InitLabel("", StyleDefault().Font)
 	ed.Label.Subscribe(OnKeyDown, ed.onKey)
 	ed.Label.Subscribe(OnKeyRepeat, ed.onKey)
 	ed.Label.Subscribe(OnChar, ed.onChar)
@@ -137,7 +137,7 @@ func (ed *Edit) SetStyles(es *EditStyles) {
 
 // LostKeyFocus satisfies the IPanel interface and is called by gui root
 // container when the panel loses the key focus
-func (ed *Edit) OnFocusLost(evname string, ev interface{}) {
+func (ed *Edit) OnFocusLost(string, interface{}) {
 	ed.focus = false
 	ed.update()
 	GetManager().ClearTimeout(ed.blinkID)
@@ -394,7 +394,7 @@ func (ed *Edit) redraw(caret bool) {
 }
 
 // onKey receives subscribed key events
-func (ed *Edit) onKey(evname string, ev interface{}) {
+func (ed *Edit) onKey(_ string, ev interface{}) {
 	kev := ev.(*core.KeyEvent)
 	if kev.Mods != core.ModShift && kev.Mods != core.ModControl {
 		switch kev.Key {
@@ -440,13 +440,13 @@ func (ed *Edit) onKey(evname string, ev interface{}) {
 }
 
 // onChar receives subscribed char events
-func (ed *Edit) onChar(evname string, ev interface{}) {
+func (ed *Edit) onChar(_ string, ev interface{}) {
 	cev := ev.(*core.CharEvent)
 	ed.CursorInput(string(cev.Char))
 }
 
 // onMouseDown receives subscribed mouse down events
-func (ed *Edit) onMouseDown(evname string, ev interface{}) {
+func (ed *Edit) onMouseDown(_ string, ev interface{}) {
 	e := ev.(*core.MouseEvent)
 	if e.Button != core.MouseButtonLeft {
 		return
@@ -500,7 +500,7 @@ func (ed *Edit) handleMouse(mouseX float32, dragged bool) {
 }
 
 // onMouseEvent receives subscribed mouse up events
-func (ed *Edit) onMouseUp(evname string, ev interface{}) {
+func (ed *Edit) onMouseUp(_ string, _ interface{}) {
 	ed.mouseDrag = false
 }
 
@@ -527,7 +527,7 @@ func (ed *Edit) onCursor(evname string, ev interface{}) {
 }
 
 // blink blinks the caret
-func (ed *Edit) blink(arg interface{}) {
+func (ed *Edit) blink(_ interface{}) {
 	if !ed.focus {
 		return
 	}
@@ -558,19 +558,19 @@ func (ed *Edit) update() {
 
 // applyStyle applies the specified style
 func (ed *Edit) applyStyle(s *EditStyle) {
-	ed.SetBordersFrom(&s.Border)
-	ed.SetBordersColor4(&s.BorderColor)
-	ed.SetPaddingsFrom(&s.Paddings)
-	ed.Label.SetColor4(&s.FgColor)
-	ed.Label.SetBgColor4(&s.BgColor)
+	ed.SetBordersFrom(s.Border)
+	ed.SetBorderColor(s.BorderColor)
+	ed.SetPaddingsFrom(s.Paddings)
+	ed.Label.SetColor(s.FgColor)
+	ed.Label.SetBgColor(s.BgColor)
 	//ed.Label.SetBgAlpha(s.BgAlpha)
 
 	if !ed.focus && len(ed.text) == 0 && len(ed.placeHolder) > 0 {
 		scaleX, _ := GetManager().window.GetScale()
-		ed.Label.SetColor4(&s.HolderColor)
+		ed.Label.SetColor(s.HolderColor)
 		ed.Label.setTextCaret(ed.placeHolder, editMarginX, int(float64(ed.width)*scaleX), false, -1, ed.col, ed.selStart, ed.selEnd)
 	} else {
-		ed.Label.SetColor4(&s.FgColor)
+		ed.Label.SetColor(s.FgColor)
 		ed.redraw(ed.focus)
 	}
 }

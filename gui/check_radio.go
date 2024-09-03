@@ -72,7 +72,7 @@ func newCheckRadio(check bool, text string) *CheckRadio {
 	}
 
 	// Initialize panel
-	cb.Panel.Initialize(cb, 0, 0)
+	cb.Panel.InitPanel(cb, 0, 0)
 
 	// Subscribe to events
 	cb.Panel.Subscribe(OnKeyDown, cb.onKey)
@@ -87,7 +87,7 @@ func newCheckRadio(check bool, text string) *CheckRadio {
 	cb.Panel.Add(cb.Label)
 
 	// Creates icon label
-	cb.icon = NewIcon(" ")
+	cb.icon = NewIconLabel(" ")
 	cb.Panel.Add(cb.icon)
 
 	cb.recalc()
@@ -172,7 +172,7 @@ func (cb *CheckRadio) onMouse(evname string, ev interface{}) {
 }
 
 // onCursor process OnCursor* events
-func (cb *CheckRadio) onCursor(evname string, ev interface{}) {
+func (cb *CheckRadio) onCursor(evname string, _ interface{}) {
 	if evname == OnCursorEnter {
 		cb.cursorOver = true
 	} else {
@@ -229,8 +229,8 @@ func (cb *CheckRadio) update() {
 // setStyle sets the specified checkradio style
 func (cb *CheckRadio) applyStyle(s *CheckRadioStyle) {
 	cb.Panel.ApplyStyle(&s.PanelStyle)
-	cb.icon.SetColor4(&s.FgColor)
-	cb.Label.SetColor4(&s.FgColor)
+	cb.icon.SetColor(s.FgColor)
+	cb.Label.SetColor(s.FgColor)
 }
 
 // recalc recalculates dimensions and position from inside out

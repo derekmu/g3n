@@ -147,7 +147,7 @@ func NewMenuBar() *Menu {
 // NewMenu creates and returns a pointer to a new empty vertical menu
 func NewMenu() *Menu {
 	m := new(Menu)
-	m.Panel.Initialize(m, 0, 0)
+	m.Panel.InitPanel(m, 0, 0)
 	m.styles = &StyleDefault().Menu
 	m.items = make([]*MenuItem, 0)
 	m.Panel.Subscribe(OnKeyDown, m.onKey)
@@ -192,7 +192,7 @@ func (m *Menu) AddMenu(text string, subm *Menu) *MenuItem {
 	mi.submenu.autoOpen = true
 	mi.menu = m
 	if !m.bar {
-		mi.ricon = NewIcon(string(icon.PlayArrow))
+		mi.ricon = NewIconLabel(icon.PlayArrow)
 		mi.Panel.Add(mi.ricon)
 	}
 	mi.Panel.Add(mi.submenu)
@@ -201,12 +201,8 @@ func (m *Menu) AddMenu(text string, subm *Menu) *MenuItem {
 	return mi
 }
 
-// RemoveItem removes the specified menu item from this menu
-func (m *Menu) RemoveItem(mi *MenuItem) {
-}
-
 // onKey process subscribed key events
-func (m *Menu) onKey(evname string, ev interface{}) {
+func (m *Menu) onKey(_ string, ev interface{}) {
 	sel := m.selectedPos()
 	kev := ev.(*core.KeyEvent)
 	switch kev.Key {
@@ -323,7 +319,7 @@ func (m *Menu) onKey(evname string, ev interface{}) {
 }
 
 // onMouse process subscribed mouse events for the menu
-func (m *Menu) onMouse(evname string, ev interface{}) {
+func (m *Menu) onMouse(_ string, _ interface{}) {
 	// Clear menu bar after some time, to give time for menu items
 	// to receive onMouse events.
 	GetManager().SetTimeout(1*time.Millisecond, nil, func(arg interface{}) {
@@ -333,7 +329,7 @@ func (m *Menu) onMouse(evname string, ev interface{}) {
 }
 
 // onResize process menu onResize events
-func (m *Menu) onResize(evname string, ev interface{}) {
+func (m *Menu) onResize(_ string, _ interface{}) {
 	if m.bar {
 		m.recalcBar(false)
 	}
@@ -539,7 +535,7 @@ func (m *Menu) recalcBar(setSize bool) {
 // with the specified text.
 func newMenuItem(text string, styles *MenuItemStyles) *MenuItem {
 	mi := new(MenuItem)
-	mi.Panel.Initialize(mi, 0, 0)
+	mi.Panel.InitPanel(mi, 0, 0)
 	mi.styles = styles
 	if text != "" {
 		mi.label = NewLabel(text)
@@ -562,15 +558,10 @@ func (mi *MenuItem) SetIcon(icon string) *MenuItem {
 		mi.licon = nil
 	}
 	// Sets the new icon
-	mi.licon = NewIcon(icon)
+	mi.licon = NewIconLabel(icon)
 	mi.Panel.Add(mi.licon)
 	mi.update()
 	return mi
-}
-
-// SetImage sets the left image of this menu item
-// If an icon was previously set it is replaced by this image
-func (mi *MenuItem) SetImage(img *Image) {
 }
 
 // SetText sets the text of this menu item
@@ -627,11 +618,6 @@ func (mi *MenuItem) SetShortcut(mods core.ModifierKey, key core.Key) *MenuItem {
 	return mi
 }
 
-// SetSubmenu sets an associated sub menu item for this menu item
-func (mi *MenuItem) SetSubmenu(smi *MenuItem) *MenuItem {
-	return mi
-}
-
 // SetEnabled sets the enabled state of this menu item
 func (mi *MenuItem) SetEnabled(enabled bool) {
 	mi.disabled = !enabled
@@ -668,7 +654,7 @@ func (mi *MenuItem) IdPath() []string {
 }
 
 // onCursor processes subscribed cursor events over the menu item
-func (mi *MenuItem) onCursor(evname string, ev interface{}) {
+func (mi *MenuItem) onCursor(evname string, _ interface{}) {
 	switch evname {
 	case OnCursorEnter:
 		mi.menu.setSelectedItem(mi)
@@ -676,7 +662,7 @@ func (mi *MenuItem) onCursor(evname string, ev interface{}) {
 }
 
 // onMouse processes subscribed mouse events over the menu item
-func (mi *MenuItem) onMouse(evname string, ev interface{}) {
+func (mi *MenuItem) onMouse(evname string, _ interface{}) {
 	switch evname {
 	case OnMouseDown:
 		// MenuBar option
@@ -768,16 +754,16 @@ func (mi *MenuItem) update() {
 func (mi *MenuItem) applyStyle(mis *MenuItemStyle) {
 	mi.Panel.ApplyStyle(&mis.PanelStyle)
 	if mi.licon != nil {
-		mi.licon.SetPaddingsFrom(&mis.IconPaddings)
+		mi.licon.SetPaddingsFrom(mis.IconPaddings)
 	}
 	if mi.label != nil {
-		mi.label.SetColor4(&mis.FgColor)
+		mi.label.SetColor(mis.FgColor)
 	}
 	if mi.shortcut != nil {
-		mi.shortcut.SetPaddingsFrom(&mis.ShortcutPaddings)
+		mi.shortcut.SetPaddingsFrom(mis.ShortcutPaddings)
 	}
 	if mi.ricon != nil {
-		mi.ricon.SetPaddingsFrom(&mis.RiconPaddings)
+		mi.ricon.SetPaddingsFrom(mis.RiconPaddings)
 	}
 }
 

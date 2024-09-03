@@ -8,8 +8,8 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
-	"io/ioutil"
 	"math"
+	"os"
 	"strings"
 
 	"github.com/derekmu/g3n/math32"
@@ -19,7 +19,6 @@ import (
 )
 
 // Font represents a TrueType font face.
-// Attributes must be set prior to drawing.
 type Font struct {
 	ttf            *truetype.Font // The TrueType font
 	face           font.Face      // The font face
@@ -50,17 +49,10 @@ func (a *FontAttributes) newTTOptions(scaleX, scaleY float64) *truetype.Options 
 	}
 }
 
-// Font Hinting types.
-const (
-	HintingNone     = font.HintingNone
-	HintingVertical = font.HintingVertical
-	HintingFull     = font.HintingFull
-)
-
 // NewFont creates and returns a new font object using the specified TrueType font file.
 func NewFont(ttfFile string) (*Font, error) {
 	// Reads font bytes
-	fontBytes, err := ioutil.ReadFile(ttfFile)
+	fontBytes, err := os.ReadFile(ttfFile)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +70,7 @@ func NewFontFromData(fontData []byte) (*Font, error) {
 	f := new(Font)
 	f.ttf = ttf
 
-	// Initialize with default values
+	// InitPanel with default values
 	f.attrib = FontAttributes{}
 	f.attrib.PointSize = 12
 	f.attrib.DPI = 72
@@ -140,7 +132,7 @@ func (f *Font) ScaleY() float64 {
 	return f.scaleY
 }
 
-// SetScale sets the ratio of actual pixel/GL point.
+// SetScaleXY sets the ratio of actual pixel/GL point.
 func (f *Font) SetScaleXY(x, y float64) {
 	if x == f.scaleX && y == f.scaleY {
 		return
@@ -184,8 +176,8 @@ func (f *Font) updateFace() {
 	}
 }
 
-// MeasureText returns the minimum width and height in pixels necessary for an image to contain
-// the specified text. The supplied text string can contain line break escape sequences (\n).
+// MeasureText returns the minimum width and height in pixels necessary for an image to contain the specified text.
+// The supplied text string can contain line breaks.
 func (f *Font) MeasureText(text string) (int, int) {
 	// Create font drawer
 	f.updateFace()
@@ -222,9 +214,8 @@ func (f *Font) Metrics() font.Metrics {
 func (f *Font) DrawText(text string) *image.RGBA {
 	width, height := f.MeasureText(text)
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	draw.Draw(img, img.Bounds(), f.bg, image.ZP, draw.Src)
+	draw.Draw(img, img.Bounds(), f.bg, image.Point{}, draw.Src)
 	f.DrawTextOnImage(text, 0, 0, img)
-
 	return img
 }
 
@@ -255,8 +246,7 @@ type Canvas struct {
 	bgColor *image.Uniform
 }
 
-// NewCanvas creates and returns a pointer to a new canvas with the
-// specified width and height in pixels and background color
+// NewCanvas creates a new Canvas with the specified width, height, and background color.
 func NewCanvas(width, height int, bgColor *math32.Color4) *Canvas {
 	c := new(Canvas)
 	c.RGBA = image.NewRGBA(image.Rect(0, 0, width, height))
@@ -265,23 +255,19 @@ func NewCanvas(width, height int, bgColor *math32.Color4) *Canvas {
 	c.bgColor = image.NewUniform(Color4RGBA(bgColor))
 
 	// Draw image
-	draw.Draw(c.RGBA, c.RGBA.Bounds(), c.bgColor, image.ZP, draw.Src)
+	draw.Draw(c.RGBA, c.RGBA.Bounds(), c.bgColor, image.Point{}, draw.Src)
 	return c
 }
 
-// DrawText draws text at the specified position (in pixels)
-// of this canvas, using the specified font.
-// The supplied text string can contain line break escape sequences (\n).
+// DrawText draws text at the specified position of this canvas, using the specified font.
+// The supplied text string can contain line breaks
 func (c Canvas) DrawText(x, y int, text string, f *Font) {
 	f.DrawTextOnImage(text, x, y, c.RGBA)
 }
 
-// DrawTextCaret draws text at the specified position (in pixels)
-// of this canvas, using the specified font, and also a caret at
-// the specified line and column.
-// The supplied text string can contain line break escape sequences (\n).
-// TODO Implement caret as a gui.Panel in gui.Edit
-func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, line, col, selStart, selEnd int) error {
+// DrawTextCaret draws text and a caret at the specified position, in pixels, of this canvas.
+// The supplied text string can contain line breaks.
+func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, line, col, selStart, selEnd int) {
 	// Creates drawer
 	f.updateFace()
 	d := &font.Drawer{Dst: c.RGBA, Src: f.fg, Face: f.face}
@@ -299,15 +285,15 @@ func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, li
 			width, _ := f.MeasureText(StrPrefix(s, selStart))
 			widthEnd, _ := f.MeasureText(StrPrefix(s, selEnd))
 			// Draw selection caret
-			// TODO This will not work when the selection spans multiple lines
+			// This will not work when the selection spans multiple lines
 			// Currently there is no multiline edit text
 			// Once there is, this needs to change
 			caretH := actualPointSize + 2
 			caretY := int(d.Dot.Y>>6) - actualPointSize + 2
-			color := Color4RGBA(&math32.Color4{0, 0, 1, 0.5}) // Hardcoded to blue, alpha 50%
+			col := Color4RGBA(&math32.Color4{0, 0, 1, 0.5}) // Hardcoded to blue, alpha 50%
 			for w := width; w < widthEnd; w++ {
 				for j := caretY; j < caretY+caretH; j++ {
-					c.RGBA.Set(x+w, j, color)
+					c.RGBA.Set(x+w, j, col)
 				}
 			}
 		}
@@ -318,10 +304,10 @@ func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, li
 			// Draw caret vertical line
 			caretH := actualPointSize + 2
 			caretY := int(d.Dot.Y>>6) - actualPointSize + 2
-			color := Color4RGBA(&math32.Color4{0, 0, 0, 1}) // Hardcoded to black
+			col := Color4RGBA(&math32.Color4{0, 0, 0, 1}) // Hardcoded to black
 			for i := 0; i < int(f.scaleX); i++ {
 				for j := caretY; j < caretY+caretH; j++ {
-					c.RGBA.Set(x+width+i, j, color)
+					c.RGBA.Set(x+width+i, j, col)
 				}
 			}
 		}
@@ -330,33 +316,6 @@ func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, li
 			py += lineGap
 		}
 	}
-
-	// TODO remove ?
-	//	pt := freetype.Pt(font.marginX+x, font.marginY+y+int(font.ctx.PointToFixed(font.attrib.PointSize)>>6))
-	//	for l, s := range lines {
-	//		// Draw string
-	//		_, err := font.ctx.DrawString(s, pt)
-	//		if err != nil {
-	//			return err
-	//		}
-	//		// Checks for caret position
-	//		if l == line && col <= StrCount(s) {
-	//			width, _, err := font.MeasureText(StrPrefix(s, col))
-	//			if err != nil {
-	//				return err
-	//			}
-	//			// Draw caret vertical line
-	//			caretH := int(font.PointSize) + 2
-	//			caretY := int(pt.Y>>6) - int(font.PointSize) + 2
-	//			color := Color4RGBA(&math32.Color4{0, 0, 0, 1})
-	//			for j := caretY; j < caretY+caretH; j++ {
-	//				c.RGBA.Set(x+width, j, color)
-	//			}
-	//		}
-	//		// Increment y coordinate
-	//		pt.Y += font.ctx.PointToFixed(font.PointSize * font.LineSpacing)
-	//	}
-	return nil
 }
 
 // Color4RGBA converts a math32.Color4 to Go's color.RGBA.

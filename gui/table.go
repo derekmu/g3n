@@ -190,12 +190,12 @@ type tableCell struct {
 // specified width, height and columns
 func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	t := new(Table)
-	t.Panel.Initialize(t, width, height)
+	t.Panel.InitPanel(t, width, height)
 	t.styles = &StyleDefault().Table
 	t.rowCursor = -1
 
 	// Initialize table header
-	t.header.Initialize(&t.header, 0, 0)
+	t.header.InitPanel(&t.header, 0, 0)
 	t.header.cmap = make(map[string]*tableColHeader)
 	t.header.cols = make([]*tableColHeader, 0)
 
@@ -212,7 +212,7 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 		}
 		// Creates a column header
 		c := new(tableColHeader)
-		c.Initialize(c, 0, 0)
+		c.InitPanel(c, 0, 0)
 		t.applyHeaderStyle(&c.Panel, false)
 		c.label = NewLabel(cdesc.Header)
 		c.Add(c.label)
@@ -233,10 +233,10 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 		c.resize = cdesc.Resize
 		// Adds optional sort icon
 		if c.sort != TableSortNone {
-			c.ricon = NewIcon(string(tableSortedNoneIcon))
+			c.ricon = NewIconLabel(tableSortedNoneIcon)
 			c.Add(c.ricon)
 			c.ricon.Subscribe(OnMouseDown, func(evname string, ev interface{}) {
-				t.onRicon(evname, c)
+				t.onRicon(c)
 			})
 		}
 		// Sets default format and order
@@ -257,7 +257,7 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 		t.header.Panel.Add(c)
 	}
 	// Creates last header
-	t.header.lastPan.Initialize(&t.header, 0, 0)
+	t.header.lastPan.InitPanel(&t.header, 0, 0)
 	t.applyHeaderStyle(&t.header.lastPan, true)
 	t.header.Panel.Add(&t.header.lastPan)
 
@@ -265,13 +265,13 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	t.Panel.Add(&t.header)
 
 	// Creates resizer panel
-	t.resizerPanel.Initialize(&t.resizerPanel, t.styles.Resizer.Width, 0)
+	t.resizerPanel.InitPanel(&t.resizerPanel, t.styles.Resizer.Width, 0)
 	t.resizerPanel.SetVisible(false)
 	t.applyResizerStyle()
 	t.Panel.Add(&t.resizerPanel)
 
 	// Creates status panel
-	t.statusPanel.Initialize(&t.statusPanel, 0, 0)
+	t.statusPanel.InitPanel(&t.statusPanel, 0, 0)
 	t.statusPanel.SetVisible(false)
 	t.statusLabel = NewLabel("")
 	t.applyStatusStyle()
@@ -660,13 +660,13 @@ func (t *Table) setCell(row int, colid string, value interface{}) {
 func (t *Table) insertRow(row int, values map[string]interface{}) {
 	// Creates tableRow panel
 	trow := new(tableRow)
-	trow.Initialize(trow, 0, 0)
+	trow.InitPanel(trow, 0, 0)
 	trow.cells = make([]*tableCell, 0)
 	for ci := 0; ci < len(t.header.cols); ci++ {
 		// Creates tableRow cell panel
 		cell := new(tableCell)
-		cell.Initialize(cell, 0, 0)
-		cell.label.initialize("", StyleDefault().Font)
+		cell.InitPanel(cell, 0, 0)
+		cell.label.InitLabel("", StyleDefault().Font)
 		cell.Add(&cell.label)
 		trow.cells = append(trow.cells, cell)
 		trow.Panel.Add(cell)
@@ -744,7 +744,7 @@ func (t *Table) removeRow(row int) {
 }
 
 // onCursorPos process subscribed cursor position events
-func (t *Table) onCursorPos(evname string, ev interface{}) {
+func (t *Table) onCursorPos(_ string, ev interface{}) {
 	// Convert mouse window coordinates to table content coordinates
 	cev := ev.(*core.CursorEvent)
 	cx, _ := t.ContentCoords(cev.Xpos, cev.Ypos)
@@ -831,7 +831,7 @@ func (t *Table) onMouse(evname string, ev interface{}) {
 }
 
 // onKeyEvent receives subscribed key events for this table
-func (t *Table) onKey(evname string, ev interface{}) {
+func (t *Table) onKey(_ string, ev interface{}) {
 	kev := ev.(*core.KeyEvent)
 	if kev.Key == core.KeyUp && kev.Mods == 0 {
 		t.selPrev()
@@ -853,13 +853,13 @@ func (t *Table) onKey(evname string, ev interface{}) {
 }
 
 // onResize receives subscribed resize events for this table
-func (t *Table) onResize(evname string, ev interface{}) {
+func (t *Table) onResize(_ string, _ interface{}) {
 	t.recalc()
 	t.recalcStatus()
 }
 
 // onScroll receives subscribed scroll events for this table
-func (t *Table) onScroll(evname string, ev interface{}) {
+func (t *Table) onScroll(_ string, ev interface{}) {
 	sev := ev.(*core.ScrollEvent)
 	if sev.Yoffset > 0 {
 		t.scrollUp(1)
@@ -869,7 +869,7 @@ func (t *Table) onScroll(evname string, ev interface{}) {
 }
 
 // onRicon receives subscribed events for column header right icon
-func (t *Table) onRicon(evname string, c *tableColHeader) {
+func (t *Table) onRicon(c *tableColHeader) {
 	ico := tableSortedNoneIcon
 	var asc bool
 	if c.sorted == tableSortedNone || c.sorted == tableSortedDesc {
@@ -1414,7 +1414,7 @@ func (t *Table) setVScrollBar(state bool) {
 }
 
 // onVScrollBar is called when a vertical scroll bar event is received
-func (t *Table) onVScrollBar(evname string, ev interface{}) {
+func (t *Table) onVScrollBar(_ string, _ interface{}) {
 	// Calculates the new first visible line
 	pos := t.vscroll.Value()
 	maxFirst := t.calcMaxFirst()
@@ -1511,9 +1511,9 @@ func (t *Table) applyStatusStyle() {
 // applyResizerStyle applies the status style
 func (t *Table) applyResizerStyle() {
 	s := t.styles.Resizer
-	t.resizerPanel.SetBordersFrom(&s.Border)
-	t.resizerPanel.SetBordersColor4(&s.BorderColor)
-	t.resizerPanel.SetColor4(&s.BgColor)
+	t.resizerPanel.SetBordersFrom(s.Border)
+	t.resizerPanel.SetBorderColor(s.BorderColor)
+	t.resizerPanel.SetColor(s.BgColor)
 }
 
 // tableSortString is an internal type implementing the sort.Interface

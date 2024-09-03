@@ -10,14 +10,14 @@ import (
 
 /***************************************
 
- ImageLabel
- +--------------------------------+
- |  Image or Icon   Label         |
- |  +-----------+   +----------+  |
- |  |           |   |          |  |
- |  |           |   |          |  |
- |  +-----------+   +----------+  |
- +--------------------------------+
+ImageLabel
++--------------------------------+
+|  Image or Icon   Label         |
+|  +-----------+   +----------+  |
+|  |           |   |          |  |
+|  |           |   |          |  |
+|  +-----------+   +----------+  |
++--------------------------------+
 
 ****************************************/
 
@@ -38,11 +38,11 @@ func NewImageLabel(text string) *ImageLabel {
 	il := new(ImageLabel)
 
 	// Initializes the panel
-	il.Panel.Initialize(il, 0, 0)
+	il.Panel.InitPanel(il, 0, 0)
 	il.Panel.Subscribe(OnResize, func(evname string, ev interface{}) { il.recalc() })
 
 	// Initializes the label
-	il.label.initialize(text, StyleDefault().Font)
+	il.label.InitLabel(text, StyleDefault().Font)
 	il.label.Subscribe(OnResize, func(evname string, ev interface{}) { il.recalc() })
 	il.Panel.Add(&il.label)
 
@@ -68,7 +68,7 @@ func (il *ImageLabel) SetIcon(icon string) {
 		il.image = nil
 	}
 	if il.icon == nil {
-		il.icon = NewIcon(icon)
+		il.icon = NewIconLabel(icon)
 		il.icon.SetFontSize(StyleDefault().Label.PointSize * 1.4)
 		il.Panel.Add(il.icon)
 	}
@@ -120,38 +120,21 @@ func (il *ImageLabel) SetImageFromFile(imgfile string) error {
 }
 
 // SetColor sets the color of the label and icon text
-func (il *ImageLabel) SetColor(color *math32.Color) {
+func (il *ImageLabel) SetColor(color math32.Color4) {
 	il.label.SetColor(color)
 	if il.icon != nil {
 		il.icon.SetColor(color)
 	}
 }
 
-// SetColor4 sets the color4 of the label and icon
-func (il *ImageLabel) SetColor4(color *math32.Color4) {
-	il.label.SetColor4(color)
-	if il.icon != nil {
-		il.icon.SetColor4(color)
-	}
-}
-
 // SetBgColor sets the color of the image label background
 // The color alpha is set to 1.0
-func (il *ImageLabel) SetBgColor(color *math32.Color) {
-	il.Panel.SetColor(color)
+func (il *ImageLabel) SetBgColor(color math32.Color4) {
+	il.Panel.SetContentColor(color)
 	if il.icon != nil {
 		il.icon.SetColor(color)
 	}
 	il.label.SetBgColor(color)
-}
-
-// SetBgColor4 sets the color4 of the image label background
-func (il *ImageLabel) SetBgColor4(color *math32.Color4) {
-	il.Panel.SetColor4(color)
-	if il.icon != nil {
-		il.icon.SetColor4(color)
-	}
-	il.label.SetBgColor4(color)
 }
 
 // SetFontSize sets the size of the image label font size
@@ -166,7 +149,7 @@ func (il *ImageLabel) CopyFields(other *ImageLabel) {
 		il.SetIcon(other.icon.Text())
 	}
 	if other.image != nil {
-		// TODO li.SetImage(other.image.Clone())
+		// li.SetImage(other.image.Clone())
 	}
 	il.recalc()
 }
@@ -175,9 +158,9 @@ func (il *ImageLabel) CopyFields(other *ImageLabel) {
 func (il *ImageLabel) applyStyle(s *ImageLabelStyle) {
 	il.Panel.ApplyStyle(&s.PanelStyle)
 	if il.icon != nil {
-		il.icon.SetColor4(&s.FgColor)
+		il.icon.SetColor(s.FgColor)
 	}
-	il.label.SetColor4(&s.FgColor)
+	il.label.SetColor(s.FgColor)
 }
 
 // recalc recalculates dimensions and positions from inside out

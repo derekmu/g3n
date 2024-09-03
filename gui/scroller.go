@@ -90,13 +90,13 @@ const ScrollModifierKey = core.ModShift
 // target IPanel and ScrollMode.
 func NewScroller(width, height float32, mode ScrollMode, target IPanel) *Scroller {
 	s := new(Scroller)
-	s.initialize(width, height, mode, target)
+	s.InitScroller(width, height, mode, target)
 	return s
 }
 
-// initialize initializes this scroller and can be called by other types which embed a scroller
-func (s *Scroller) initialize(width, height float32, mode ScrollMode, target IPanel) {
-	s.Panel.Initialize(s, width, height)
+// InitScroller initializes this scroller and can be called by other types which embed a scroller
+func (s *Scroller) InitScroller(width, height float32, mode ScrollMode, target IPanel) {
+	s.Panel.InitPanel(s, width, height)
 	s.style = &StyleDefault().Scroller
 	s.target = target
 	s.Panel.Add(s.target)
@@ -245,13 +245,8 @@ func (s *Scroller) HorizontalScrollbarBroadness() float32 {
 	return s.style.HorizontalScrollbar.Broadness
 }
 
-// ScrollTo scrolls the target panel such that the specified target point is centered on the scroller's view area
-func (s *Scroller) ScrollTo(x, y float32) {
-	// TODO
-}
-
 // onScroll receives mouse scroll events when this scroller has the scroll focus (set by OnMouseEnter)
-func (s *Scroller) onScroll(evname string, ev interface{}) {
+func (s *Scroller) onScroll(_ string, ev interface{}) {
 	sev := ev.(*core.ScrollEvent)
 
 	vScrollVisible := (s.vscroll != nil) && s.vscroll.Visible()
@@ -289,7 +284,7 @@ func (s *Scroller) onScroll(evname string, ev interface{}) {
 }
 
 // onResize receives resize events
-func (s *Scroller) onResize(evname string, ev interface{}) {
+func (s *Scroller) onResize(_ string, _ interface{}) {
 	s.Update()
 }
 
@@ -380,7 +375,7 @@ func (s *Scroller) updateScrollbarsVisibility() {
 }
 
 // onScrollEvent is called when the scrollbar value changes
-func (s *Scroller) onScrollBarEvent(evname string, ev interface{}) {
+func (s *Scroller) onScrollBarEvent(_ string, _ interface{}) {
 	s.recalc()
 }
 

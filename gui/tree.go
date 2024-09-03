@@ -49,14 +49,14 @@ type TreeNode struct {
 // NewTree creates and returns a pointer to a new tree widget.
 func NewTree(width, height float32) *Tree {
 	t := new(Tree)
-	t.Initialize(width, height)
+	t.InitTree(width, height)
 	return t
 }
 
-// Initialize initializes the tree with the specified initial width and height
+// InitTree initializes the tree with the specified initial width and height
 // It is normally used when the folder is embedded in another object.
-func (t *Tree) Initialize(width, height float32) {
-	t.List.initialize(true, width, height)
+func (t *Tree) InitTree(width, height float32) {
+	t.List.InitList(true, width, height)
 	t.SetStyles(&StyleDefault().Tree)
 	t.List.Subscribe(OnKeyDown, t.onKey)
 	t.List.Subscribe(OnKeyUp, t.onKey)
@@ -184,14 +184,14 @@ func (t *Tree) onKey(evname string, ev interface{}) {
 // the specified text, tree and parent node
 func newTreeNode(text string, tree *Tree, parNode *TreeNode) *TreeNode {
 	n := new(TreeNode)
-	n.Panel.Initialize(n, 0, 0)
+	n.Panel.InitPanel(n, 0, 0)
 
 	// Initialize node label
-	n.label.initialize(text, StyleDefault().Font)
+	n.label.InitLabel(text, StyleDefault().Font)
 	n.Panel.Add(&n.label)
 
 	// Create node icon
-	n.icon.initialize("", StyleDefault().FontIcon)
+	n.icon.InitLabel("", StyleDefault().FontIcon)
 	n.icon.SetFontSize(StyleDefault().Label.PointSize * 1.3)
 	n.Panel.Add(&n.icon)
 
@@ -337,9 +337,9 @@ func (n *TreeNode) applyStyle(s *TreeNodeStyle) {
 	if n.expanded {
 		icode = 1
 	}
-	n.icon.SetText(string(s.Icons[icode]))
-	n.icon.SetColor4(&s.FgColor)
-	n.label.SetColor4(&s.FgColor)
+	n.icon.SetText(s.Icons[icode])
+	n.icon.SetColor(s.FgColor)
+	n.label.SetColor(s.FgColor)
 }
 
 // update updates this tree node style

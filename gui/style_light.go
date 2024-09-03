@@ -9,6 +9,7 @@ import (
 	"github.com/derekmu/g3n/gui/assets/icon"
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/text"
+	"golang.org/x/image/font"
 )
 
 // NewLightStyle creates and returns a pointer to a new "light" style.
@@ -40,7 +41,7 @@ func NewLightStyle() *Style {
 	s.Label.FontAttributes = text.FontAttributes{}
 	s.Label.FontAttributes.PointSize = 14
 	s.Label.FontAttributes.DPI = 72
-	s.Label.FontAttributes.Hinting = text.HintingNone
+	s.Label.FontAttributes.Hinting = font.HintingNone
 	s.Label.FontAttributes.LineSpacing = 1.0
 	s.Label.BgColor = math32.Color4{0, 0, 0, 0}
 	s.Label.FgColor = math32.Color4{0, 0, 0, 1}
@@ -198,33 +199,18 @@ func NewLightStyle() *Style {
 	s.List.Item.SelHigh.BgColor = bgColor4Sel
 	s.List.Item.SelHigh.FgColor = fgColorSel
 
-	// DropDown styles
-	s.DropDown = DropDownStyles{}
-	s.DropDown.Normal = DropDownStyle{}
-	s.DropDown.Normal.Border = oneBounds
-	s.DropDown.Normal.Padding = RectBounds{0, 0, 0, 2}
-	s.DropDown.Normal.BorderColor = borderColor
-	s.DropDown.Normal.BgColor = bgColor
-	s.DropDown.Normal.FgColor = fgColor
-	s.DropDown.Over = s.DropDown.Normal
-	s.DropDown.Over.BgColor = bgColorOver
-	s.DropDown.Focus = s.DropDown.Over
-	s.DropDown.Disabled = s.DropDown.Normal
-
-	// Folder styles
-	s.Folder = FolderStyles{}
-	s.Folder.Normal = FolderStyle{}
-	s.Folder.Normal.Border = oneBounds
-	s.Folder.Normal.Padding = RectBounds{2, 0, 2, 2}
-	s.Folder.Normal.BorderColor = borderColor
-	s.Folder.Normal.BgColor = bgColor
-	s.Folder.Normal.FgColor = fgColor
-	s.Folder.Normal.Icons = [2]string{icon.ExpandMore, icon.ExpandLess}
-	s.Folder.Over = s.Folder.Normal
-	s.Folder.Over.BgColor = bgColorOver
-	s.Folder.Focus = s.Folder.Over
-	s.Folder.Focus.Padding = twoBounds
-	s.Folder.Disabled = s.Folder.Focus
+	// Dropdown styles
+	s.Dropdown = DropdownStyles{}
+	s.Dropdown.Normal = DropdownStyle{}
+	s.Dropdown.Normal.Border = oneBounds
+	s.Dropdown.Normal.Padding = RectBounds{0, 0, 0, 2}
+	s.Dropdown.Normal.BorderColor = borderColor
+	s.Dropdown.Normal.BgColor = bgColor
+	s.Dropdown.Normal.FgColor = fgColor
+	s.Dropdown.Over = s.Dropdown.Normal
+	s.Dropdown.Over.BgColor = bgColorOver
+	s.Dropdown.Focus = s.Dropdown.Over
+	s.Dropdown.Disabled = s.Dropdown.Normal
 
 	// Tree styles
 	s.Tree = TreeStyles{}
@@ -236,29 +222,6 @@ func NewLightStyle() *Style {
 	s.Tree.Node.Normal.BgColor = bgColor4
 	s.Tree.Node.Normal.FgColor = fgColor
 	s.Tree.Node.Normal.Icons = [2]string{icon.ExpandMore, icon.ExpandLess}
-
-	// ControlFolder styles
-	s.ControlFolder = ControlFolderStyles{}
-	s.ControlFolder.Folder = &FolderStyles{}
-	s.ControlFolder.Folder.Normal = s.Folder.Normal
-	s.ControlFolder.Folder.Normal.BorderColor = math32.Color4{0, 0, 0, 0}
-	s.ControlFolder.Folder.Normal.BgColor = math32.Color4{0, 0.5, 1, 1}
-	s.ControlFolder.Folder.Over = s.ControlFolder.Folder.Normal
-	s.ControlFolder.Folder.Focus = s.ControlFolder.Folder.Normal
-	s.ControlFolder.Folder.Focus.Padding = twoBounds
-	s.ControlFolder.Folder.Disabled = s.ControlFolder.Folder.Focus
-	s.ControlFolder.Tree = &TreeStyles{}
-	s.ControlFolder.Tree.Padlevel = 2.0
-	s.ControlFolder.Tree.List = &ListStyles{}
-	scrollerStylesCopy := *s.List.Scroller
-	s.ControlFolder.Tree.List.Scroller = &scrollerStylesCopy
-	s.ControlFolder.Tree.List.Scroller.Normal.Padding = RectBounds{0, 2, 0, 0}
-	s.ControlFolder.Tree.List.Scroller.Over.Padding = RectBounds{0, 2, 0, 0}
-	s.ControlFolder.Tree.List.Scroller.Focus.Padding = RectBounds{0, 2, 0, 0}
-	s.ControlFolder.Tree.List.Scroller.Disabled.Padding = RectBounds{0, 2, 0, 0}
-	s.ControlFolder.Tree.List.Item = s.List.Item
-	s.ControlFolder.Tree.Node = &TreeNodeStyles{}
-	s.ControlFolder.Tree.Node.Normal = s.Tree.Node.Normal
 
 	// Menu styles
 	s.Menu = MenuStyles{}
@@ -325,21 +288,6 @@ func NewLightStyle() *Style {
 		BorderColor: borderColor,
 		BgColor:     math32.Color4{0.4, 0.4, 0.4, 0.6},
 	}
-
-	// ImageButton styles
-	s.ImageButton = ImageButtonStyles{}
-	s.ImageButton.Normal = ImageButtonStyle{}
-	s.ImageButton.Normal.Border = oneBounds
-	s.ImageButton.Normal.BorderColor = borderColor
-	s.ImageButton.Normal.BgColor = bgColor4
-	s.ImageButton.Normal.FgColor = fgColor
-	s.ImageButton.Over = s.ImageButton.Normal
-	s.ImageButton.Over.BgColor = bgColor4Over
-	s.ImageButton.Focus = s.ImageButton.Over
-	s.ImageButton.Pressed = s.ImageButton.Over
-	s.ImageButton.Pressed.Border = twoBounds
-	s.ImageButton.Disabled = s.ImageButton.Normal
-	s.ImageButton.Disabled.FgColor = fgColorDis
 
 	// TabBar styles
 	s.TabBar = TabBarStyles{

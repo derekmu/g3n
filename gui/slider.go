@@ -68,7 +68,7 @@ func newSlider(horiz bool, width, height float32) *Slider {
 	s.scaleFactor = 1.0
 
 	// Initialize main panel
-	s.Panel.Initialize(s, width, height)
+	s.Panel.InitPanel(s, width, height)
 	s.Panel.Subscribe(OnMouseDown, s.onMouse)
 	s.Panel.Subscribe(OnMouseUp, s.onMouse)
 	s.Panel.Subscribe(OnCursor, s.onCursor)
@@ -81,7 +81,7 @@ func newSlider(horiz bool, width, height float32) *Slider {
 	s.Panel.Subscribe(OnEnable, func(evname string, ev interface{}) { s.update() })
 
 	// Initialize slider panel
-	s.slider.Initialize(&s.slider, 0, 0)
+	s.slider.InitPanel(&s.slider, 0, 0)
 	s.Panel.Add(&s.slider)
 
 	s.recalc()
@@ -218,7 +218,7 @@ func (s *Slider) onCursor(evname string, ev interface{}) {
 }
 
 // onScroll process subscribed scroll events
-func (s *Slider) onScroll(evname string, ev interface{}) {
+func (s *Slider) onScroll(_ string, ev interface{}) {
 	if !s.Enabled() {
 		return
 	}
@@ -230,7 +230,7 @@ func (s *Slider) onScroll(evname string, ev interface{}) {
 }
 
 // onKey process subscribed key events
-func (s *Slider) onKey(evname string, ev interface{}) {
+func (s *Slider) onKey(_ string, ev interface{}) {
 	if !s.Enabled() {
 		return
 	}
@@ -261,7 +261,7 @@ func (s *Slider) onKey(evname string, ev interface{}) {
 }
 
 // onResize process subscribed resize events
-func (s *Slider) onResize(evname string, ev interface{}) {
+func (s *Slider) onResize(_ string, _ interface{}) {
 	s.recalc()
 }
 
@@ -281,7 +281,7 @@ func (s *Slider) update() {
 // applyStyle applies the specified slider style
 func (s *Slider) applyStyle(ss *SliderStyle) {
 	s.Panel.ApplyStyle(&ss.PanelStyle)
-	s.slider.SetColor4(&ss.FgColor)
+	s.slider.SetColor(ss.FgColor)
 }
 
 // recalc recalculates the dimensions and positions of the internal panels.

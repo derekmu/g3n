@@ -54,7 +54,7 @@ func NewHScroller(width, height float32) *ItemScroller {
 // with the specified layout orientation and initial dimensions
 func newScroller(vert bool, width, height float32) *ItemScroller {
 	s := new(ItemScroller)
-	s.initialize(vert, width, height)
+	s.InitScroller(vert, width, height)
 	return s
 }
 
@@ -174,8 +174,8 @@ func (s *ItemScroller) SetFirst(pos int) {
 
 // ScrollDown scrolls the list down one item if possible
 func (s *ItemScroller) ScrollDown() {
-	max := s.maxFirst()
-	if s.first >= max {
+	m := s.maxFirst()
+	if s.first >= m {
 		return
 	}
 	s.first++
@@ -264,11 +264,11 @@ func (s *ItemScroller) SetAutoButtonSize(autoButtonSize bool) {
 	s.autoButtonSize = autoButtonSize
 }
 
-// initialize initializes this scroller and is normally used by other types which contains a scroller
-func (s *ItemScroller) initialize(vert bool, width, height float32) {
+// InitScroller initializes this scroller and is normally used by other types which contains a scroller
+func (s *ItemScroller) InitScroller(vert bool, width, height float32) {
 	s.vert = vert
 	s.autoButtonSize = true
-	s.Panel.Initialize(s, width, height)
+	s.Panel.InitPanel(s, width, height)
 	s.styles = &StyleDefault().ItemScroller
 
 	s.Panel.Subscribe(OnCursorEnter, s.onCursor)
@@ -281,7 +281,7 @@ func (s *ItemScroller) initialize(vert bool, width, height float32) {
 }
 
 // onCursor receives subscribed cursor events over the panel
-func (s *ItemScroller) onCursor(evname string, ev interface{}) {
+func (s *ItemScroller) onCursor(evname string, _ interface{}) {
 	switch evname {
 	case OnCursorEnter:
 		s.cursorOver = true
@@ -293,7 +293,7 @@ func (s *ItemScroller) onCursor(evname string, ev interface{}) {
 }
 
 // onScroll receives mouse scroll events
-func (s *ItemScroller) onScroll(evname string, ev interface{}) {
+func (s *ItemScroller) onScroll(_ string, ev interface{}) {
 	sev := ev.(*core.ScrollEvent)
 	if sev.Yoffset > 0 {
 		s.ScrollUp()
@@ -303,7 +303,7 @@ func (s *ItemScroller) onScroll(evname string, ev interface{}) {
 }
 
 // onResize receives resize events
-func (s *ItemScroller) onResize(evname string, ev interface{}) {
+func (s *ItemScroller) onResize(_ string, _ interface{}) {
 	s.recalc()
 }
 
@@ -567,7 +567,7 @@ func (s *ItemScroller) setHScrollBar(state bool) {
 }
 
 // onScrollEvent is called when the list scrollbar value changes
-func (s *ItemScroller) onScrollBarEvent(evname string, ev interface{}) {
+func (s *ItemScroller) onScrollBarEvent(_ string, _ interface{}) {
 	var pos float64
 	if s.vert {
 		pos = s.vscroll.Value()

@@ -72,19 +72,19 @@ func NewHScrollBar(width, height float32) *ScrollBar {
 // with the specified width, height, orientation and target.
 func newScrollBar(width, height float32, vertical bool) *ScrollBar {
 	sb := new(ScrollBar)
-	sb.initialize(width, height, vertical)
+	sb.InitScrollBar(width, height, vertical)
 	return sb
 }
 
-// initialize initializes this scrollbar
-func (sb *ScrollBar) initialize(width, height float32, vertical bool) {
+// InitScrollBar initializes this scrollbar
+func (sb *ScrollBar) InitScrollBar(width, height float32, vertical bool) {
 	sb.styles = &StyleDefault().ScrollBar
 	sb.vertical = vertical
-	sb.Panel.Initialize(sb, width, height)
+	sb.Panel.InitPanel(sb, width, height)
 	sb.Panel.Subscribe(OnMouseDown, sb.onMouse)
 
 	// Initialize scrollbar button
-	sb.button.Panel.Initialize(&sb.button, 0, 0)
+	sb.button.Panel.InitPanel(&sb.button, 0, 0)
 	sb.button.Panel.Subscribe(OnMouseDown, sb.button.onMouse)
 	sb.button.Panel.Subscribe(OnMouseUp, sb.button.onMouse)
 	sb.button.Panel.Subscribe(OnCursor, sb.button.onCursor)
@@ -141,7 +141,7 @@ func (sb *ScrollBar) SetValue(v float32) {
 }
 
 // onMouse receives subscribed mouse events over the scrollbar outer panel
-func (sb *ScrollBar) onMouse(evname string, ev interface{}) {
+func (sb *ScrollBar) onMouse(_ string, ev interface{}) {
 	e := ev.(*core.MouseEvent)
 	if e.Button != core.MouseButtonLeft {
 		return
@@ -210,7 +210,7 @@ func (button *scrollBarButton) onMouse(evname string, ev interface{}) {
 }
 
 // onCursor receives subscribed cursor events for the scroll bar button
-func (button *scrollBarButton) onCursor(evname string, ev interface{}) {
+func (button *scrollBarButton) onCursor(_ string, ev interface{}) {
 	e := ev.(*core.CursorEvent)
 	if !button.pressed {
 		return
