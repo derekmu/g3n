@@ -24,7 +24,7 @@ func NewImage() *Image {
 // InitImage initializes an image.
 func (i *Image) InitImage() {
 	i.Panel.InitPanel(i, 0, 0)
-	i.resize = false
+	i.resize = true
 }
 
 // SetResize sets whether this image resizes automatically to match its texture size.
