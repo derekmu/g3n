@@ -42,7 +42,7 @@ func (i *Image) GetResize(resize bool) bool {
 func (i *Image) SetTexture(tex *texture.Texture2D) *texture.Texture2D {
 	if i.resize {
 		if tex != nil {
-			i.Panel.SetContentSize(float32(i.tex.Width()), float32(i.tex.Height()))
+			i.Panel.SetContentSize(float32(tex.Width()), float32(tex.Height()))
 		} else {
 			i.Panel.SetContentSize(0, 0)
 		}
