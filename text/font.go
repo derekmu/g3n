@@ -180,7 +180,7 @@ func (f *Font) updateFace() {
 func (f *Font) MeasureText(text string) (int, int) {
 	// Create font drawer
 	f.updateFace()
-	d := &font.Drawer{Dst: nil, Src: f.fg, Face: f.face}
+	d := font.Drawer{Dst: nil, Src: f.fg, Face: f.face}
 
 	// Draw text
 	var width, height int
@@ -221,7 +221,7 @@ func (f *Font) DrawText(text string) *image.RGBA {
 // DrawTextOnImage draws the specified text on the specified image at the specified coordinates.
 func (f *Font) DrawTextOnImage(text string, x, y int, dst *image.RGBA) {
 	f.updateFace()
-	d := &font.Drawer{Dst: dst, Src: f.fg, Face: f.face}
+	d := font.Drawer{Dst: dst, Src: f.fg, Face: f.face}
 
 	// Draw text
 	metrics := f.face.Metrics()
@@ -242,34 +242,34 @@ func (f *Font) DrawTextOnImage(text string, x, y int, dst *image.RGBA) {
 // Canvas is an image to draw on.
 type Canvas struct {
 	RGBA    *image.RGBA
-	bgColor *image.Uniform
+	BgColor math32.Color4
 }
 
 // NewCanvas creates a new Canvas with the specified width, height, and background color.
 func NewCanvas(width, height int, bgColor math32.Color4) *Canvas {
-	c := new(Canvas)
-	c.RGBA = image.NewRGBA(image.Rect(0, 0, width, height))
-
-	// Creates the image.Uniform for the background color
-	c.bgColor = image.NewUniform(bgColor)
-
-	// Draw image
-	draw.Draw(c.RGBA, c.RGBA.Bounds(), c.bgColor, image.Point{}, draw.Src)
-	return c
+	return &Canvas{
+		RGBA:    image.NewRGBA(image.Rect(0, 0, width, height)),
+		BgColor: bgColor,
+	}
 }
 
 // DrawText draws text at the specified position of this canvas, using the specified font.
 // The supplied text string can contain line breaks
-func (c Canvas) DrawText(x, y int, text string, f *Font) {
+func (c *Canvas) DrawText(x, y int, text string, f *Font) {
+	// fill with background color
+	draw.Draw(c.RGBA, c.RGBA.Bounds(), image.NewUniform(c.BgColor), image.Point{}, draw.Src)
 	f.DrawTextOnImage(text, x, y, c.RGBA)
 }
 
 // DrawTextCaret draws text and a caret at the specified position, in pixels, of this canvas.
 // The supplied text string can contain line breaks.
-func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, line, col, selStart, selEnd int) {
+func (c *Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, line, col, selStart, selEnd int) {
 	// Creates drawer
 	f.updateFace()
-	d := &font.Drawer{Dst: c.RGBA, Src: f.fg, Face: f.face}
+	d := font.Drawer{Dst: c.RGBA, Src: f.fg, Face: f.face}
+
+	// fill with background color
+	draw.Draw(c.RGBA, c.RGBA.Bounds(), image.NewUniform(c.BgColor), image.Point{}, draw.Src)
 
 	// Draw text
 	actualPointSize := int(f.attrib.PointSize * f.scaleY)

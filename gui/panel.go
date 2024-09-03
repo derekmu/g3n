@@ -11,6 +11,7 @@ import (
 	"github.com/derekmu/g3n/graphic"
 	"github.com/derekmu/g3n/material"
 	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/texture"
 	"log"
 )
 
@@ -60,12 +61,13 @@ type IPanel interface {
 // The content area can be associated with a texture.
 // It is the building block of most GUI elements.
 type Panel struct {
-	*graphic.Graphic                    // Embedded graphic
-	mat              *material.Material // panel material
-	zLayerDelta      int                // Z-layer relative to parent
+	*graphic.Graphic
+	mat         *material.Material
+	tex         *texture.Texture2D
+	zLayerDelta int // Z-layer relative to parent
 
 	bounded bool // Whether panel is bounded by its parent
-	enabled bool // Whether event should be processed for this panel
+	enabled bool // Whether events should be processed for this panel
 
 	layout       ILayout     // layout for children
 	layoutParams interface{} // layout parameters used by container panel
@@ -75,10 +77,9 @@ type Panel struct {
 	paddingSizes RectBounds // padding sizes in pixel coordinates
 	content      Rect       // content rectangle in pixel coordinates
 
-	// Absolute screen position and external size
-	pospix math32.Vector2
-	width  float32
-	height float32
+	pospix math32.Vector2 // Absolute screen position
+	width  float32        // External size
+	height float32        // External size
 
 	xmin float32 // minimum absolute x this panel can use
 	xmax float32 // maximum absolute x this panel can use
@@ -201,6 +202,18 @@ func (p *Panel) GetPanel() *Panel {
 // Material returns a pointer for the panel's material.
 func (p *Panel) Material() *material.Material {
 	return p.mat
+}
+
+// SetTexture changes the panel's texture.
+// It returns a pointer to the previous texture.
+func (p *Panel) SetTexture(tex *texture.Texture2D) *texture.Texture2D {
+	prevtex := p.tex
+	p.Material().RemoveTexture(prevtex)
+	p.tex = tex
+	if tex != nil {
+		p.Material().AddTexture(p.tex)
+	}
+	return prevtex
 }
 
 // SetTopChild moves the specified panel to be the last child of this panel.

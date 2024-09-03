@@ -388,9 +388,9 @@ func (ed *Edit) CursorInput(s string) {
 // redraw redraws the text showing the caret if specified
 // the selection caret is always shown (when text is selected)
 func (ed *Edit) redraw(caret bool) {
-	line := 0
-	scaleX, _ := GetManager().window.GetScale()
-	ed.Label.setTextCaret(ed.text, editMarginX, int(float64(ed.width)*scaleX), caret, line, ed.col, ed.selStart, ed.selEnd)
+	//line := 0
+	//scaleX, _ := GetManager().window.GetScale()
+	//ed.Label.drawTextCaret(ed.text, editMarginX, int(float64(ed.width)*scaleX), caret, line, ed.col, ed.selStart, ed.selEnd)
 }
 
 // onKey receives subscribed key events
@@ -566,9 +566,9 @@ func (ed *Edit) applyStyle(s *EditStyle) {
 	//ed.Label.SetBgAlpha(s.BgAlpha)
 
 	if !ed.focus && len(ed.text) == 0 && len(ed.placeHolder) > 0 {
-		scaleX, _ := GetManager().window.GetScale()
-		ed.Label.SetColor(s.HolderColor)
-		ed.Label.setTextCaret(ed.placeHolder, editMarginX, int(float64(ed.width)*scaleX), false, -1, ed.col, ed.selStart, ed.selEnd)
+		//scaleX, _ := GetManager().window.GetScale()
+		//ed.Label.SetColor(s.HolderColor)
+		//ed.Label.drawTextCaret(ed.placeHolder, editMarginX, int(float64(ed.width)*scaleX), false, -1, ed.col, ed.selStart, ed.selEnd)
 	} else {
 		ed.Label.SetColor(s.FgColor)
 		ed.redraw(ed.focus)

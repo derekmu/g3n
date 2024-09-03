@@ -9,6 +9,7 @@ package material
 import (
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/texture"
+	"slices"
 )
 
 // Side represents the material's visible side(s).
@@ -62,13 +63,14 @@ type Material struct {
 	shader        string              // Shader name
 	ShaderDefines gls.MaterialDefines // shader defines
 
-	side        Side                 // Face side(s) visibility
-	blending    Blending             // Blending mode
-	useLights   UseLights            // Which light types to consider
-	transparent bool                 // Whether at all transparent
-	wireframe   bool                 // Whether to render only the wireframe
-	lineWidth   float32              // Line width for lines and wireframe
-	textures    []*texture.Texture2D // List of textures
+	side          Side                 // Face side(s) visibility
+	blending      Blending             // Blending mode
+	useLights     UseLights            // Which light types to consider
+	transparent   bool                 // Whether at all transparent
+	wireframe     bool                 // Whether to render only the wireframe
+	lineWidth     float32              // Line width for lines and wireframe
+	textures      []*texture.Texture2D // List of textures
+	samplerCounts map[string]int
 
 	polyOffsetFactor float32 // polygon offset factor
 	polyOffsetUnits  float32 // polygon offset units
@@ -77,9 +79,7 @@ type Material struct {
 	depthTest bool   // Enable depth buffer test
 	depthFunc uint32 // Active depth test function
 
-	// TODO stencil properties
-
-	// Equations used for custom blending (when blending=BlendCustom) // TODO implement methods
+	// Equations used for custom blending (when blending=BlendCustom)
 	blendRGB      uint32 // separate blending equation for RGB
 	blendAlpha    uint32 // separate blending equation for Alpha
 	blendSrcRGB   uint32 // separate blending func source RGB
@@ -109,6 +109,7 @@ func (mat *Material) Init() *Material {
 	mat.polyOffsetFactor = 0
 	mat.polyOffsetUnits = 0
 	mat.textures = make([]*texture.Texture2D, 0)
+	mat.samplerCounts = make(map[string]int)
 	return mat
 }
 
@@ -286,21 +287,21 @@ func (mat *Material) RenderSetup(gs *gls.GLS) {
 
 	// Render textures
 	// Keep track of counts of unique sampler names to correctly index sampler arrays
-	samplerCounts := make(map[string]int)
+	clear(mat.samplerCounts)
 	for slotIdx, tex := range mat.textures {
 		samplerName, _ := tex.GetUniformNames()
-		uniIdx, _ := samplerCounts[samplerName]
+		uniIdx, _ := mat.samplerCounts[samplerName]
 		tex.RenderSetup(gs, slotIdx, uniIdx)
-		samplerCounts[samplerName] = uniIdx + 1
+		mat.samplerCounts[samplerName] = uniIdx + 1
 	}
 }
 
-// AddTexture adds the specified Texture2d to the material
+// AddTexture adds the specified texture to the material
 func (mat *Material) AddTexture(tex *texture.Texture2D) {
 	mat.textures = append(mat.textures, tex)
 }
 
-// RemoveTexture removes the specified Texture2d from the material
+// RemoveTexture removes the specified texture from the material
 func (mat *Material) RemoveTexture(tex *texture.Texture2D) {
 	for pos, curr := range mat.textures {
 		if curr == tex {
@@ -314,12 +315,7 @@ func (mat *Material) RemoveTexture(tex *texture.Texture2D) {
 
 // HasTexture checks if the material contains the specified texture
 func (mat *Material) HasTexture(tex *texture.Texture2D) bool {
-	for _, curr := range mat.textures {
-		if curr == tex {
-			return true
-		}
-	}
-	return false
+	return slices.Index(mat.textures, tex) >= 0
 }
 
 // TextureCount returns the current number of textures

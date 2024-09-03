@@ -9,15 +9,17 @@ import (
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/text"
 	"github.com/derekmu/g3n/texture"
+	"image"
 )
 
 // Label is a text only UI element.
 type Label struct {
-	Panel                    // Embedded Panel
-	font  *text.Font         // TrueType font face
-	tex   *texture.Texture2D // Texture with text
-	style *LabelStyle        // The style of the panel and font attributes
-	text  string             // Text being displayed
+	Image
+	font   *text.Font
+	style  LabelStyle
+	text   string
+	rgba   *image.RGBA
+	canvas *text.Canvas
 }
 
 // LabelStyle contains the styling attributes of a Label.
@@ -47,50 +49,21 @@ func NewLabelWithFont(text string, font *text.Font) *Label {
 // InitLabel initializes this Label.
 func (l *Label) InitLabel(text string, font *text.Font) {
 	l.font = font
-	l.Panel.InitPanel(l, 0, 0)
-	l.Panel.mat.SetTransparent(true)
-	if font != StyleDefault().FontIcon {
-		l.Panel.SetPaddings(RectBounds{2, 0, 2, 0})
-	}
-	styleCopy := StyleDefault().Label
-	l.style = &styleCopy
+	l.Image.InitImage()
+	l.style = StyleDefault().Label
 	l.SetText(text)
 }
 
 // SetText sets and redraws the label text.
 func (l *Label) SetText(text string) {
-	l.text = text
 	// Need at least one character to get dimensions
 	if text == "" {
 		text = " "
 	}
-
-	// Set font properties
-	l.font.SetAttributes(&l.style.FontAttributes)
-	l.font.SetColor(l.style.FgColor)
-
-	scaleX, scaleY := GetManager().window.GetScale()
-	l.font.SetScaleXY(scaleX, scaleY)
-
-	// Create an image with the text
-	textImage := l.font.DrawText(text)
-
-	// Create texture if it doesn't exist yet
-	if l.tex == nil {
-		l.tex = texture.NewTexture2DFromRGBA(textImage)
-		l.tex.SetMagFilter(gls.NEAREST)
-		l.tex.SetMinFilter(gls.NEAREST)
-		l.Panel.Material().AddTexture(l.tex)
-		// Otherwise update texture with new image
-	} else {
-		l.tex.SetFromRGBA(textImage)
+	if text != l.text {
+		l.text = text
+		l.drawText()
 	}
-
-	// Update label panel dimensions
-	width, height := float32(textImage.Rect.Dx()), float32(textImage.Rect.Dy())
-	// since we enlarged the font texture for higher quality, we have to scale it back to its original point size
-	width, height = width/float32(scaleX), height/float32(scaleY)
-	l.Panel.SetContentSize(width, height)
 }
 
 // Text returns the label text.
@@ -99,10 +72,11 @@ func (l *Label) Text() string {
 }
 
 // SetColor sets the text color.
-func (l *Label) SetColor(color math32.Color4) *Label {
-	l.style.FgColor = color
-	l.SetText(l.text)
-	return l
+func (l *Label) SetColor(color math32.Color4) {
+	if l.style.FgColor != color {
+		l.style.FgColor = color
+		l.drawText()
+	}
 }
 
 // Color returns the text color.
@@ -111,11 +85,12 @@ func (l *Label) Color() math32.Color4 {
 }
 
 // SetBgColor sets the background color.
-func (l *Label) SetBgColor(color math32.Color4) *Label {
-	l.style.BgColor = color
-	l.Panel.SetColor(color)
-	l.SetText(l.text)
-	return l
+func (l *Label) SetBgColor(color math32.Color4) {
+	if l.style.BgColor != color {
+		l.style.BgColor = color
+		l.Panel.SetColor(color)
+		l.drawText()
+	}
 }
 
 // BgColor returns the background color.
@@ -125,8 +100,10 @@ func (l *Label) BgColor() math32.Color4 {
 
 // SetFont sets the font.
 func (l *Label) SetFont(f *text.Font) {
-	l.font = f
-	l.SetText(l.text)
+	if l.font != f {
+		l.font = f
+		l.drawText()
+	}
 }
 
 // Font returns the font.
@@ -135,10 +112,11 @@ func (l *Label) Font() *text.Font {
 }
 
 // SetFontSize sets the point size of the font.
-func (l *Label) SetFontSize(size float64) *Label {
-	l.style.PointSize = size
-	l.SetText(l.text)
-	return l
+func (l *Label) SetFontSize(size float64) {
+	if size != l.style.PointSize {
+		l.style.PointSize = size
+		l.drawText()
+	}
 }
 
 // FontSize returns the point size of the font.
@@ -147,10 +125,11 @@ func (l *Label) FontSize() float64 {
 }
 
 // SetFontDPI sets the resolution of the font in dots per inch (DPI).
-func (l *Label) SetFontDPI(dpi float64) *Label {
-	l.style.DPI = dpi
-	l.SetText(l.text)
-	return l
+func (l *Label) SetFontDPI(dpi float64) {
+	if dpi != l.style.DPI {
+		l.style.DPI = dpi
+		l.drawText()
+	}
 }
 
 // FontDPI returns the resolution of the font in dots per inch (DPI).
@@ -159,10 +138,11 @@ func (l *Label) FontDPI() float64 {
 }
 
 // SetLineSpacing sets the spacing between lines.
-func (l *Label) SetLineSpacing(spacing float64) *Label {
-	l.style.LineSpacing = spacing
-	l.SetText(l.text)
-	return l
+func (l *Label) SetLineSpacing(spacing float64) {
+	if spacing != l.style.LineSpacing {
+		l.style.LineSpacing = spacing
+		l.drawText()
+	}
 }
 
 // LineSpacing returns the spacing between lines.
@@ -170,9 +150,7 @@ func (l *Label) LineSpacing() float64 {
 	return l.style.LineSpacing
 }
 
-// setTextCaret sets the label text and draws a caret at the specified line and column.
-// It is normally used by the Edit widget.
-func (l *Label) setTextCaret(msg string, mx, width int, drawCaret bool, line, col, selStart, selEnd int) {
+func (l *Label) drawText() {
 	// Set font properties
 	l.font.SetAttributes(&l.style.FontAttributes)
 	l.font.SetColor(l.style.FgColor)
@@ -180,24 +158,29 @@ func (l *Label) setTextCaret(msg string, mx, width int, drawCaret bool, line, co
 	scaleX, scaleY := GetManager().window.GetScale()
 	l.font.SetScaleXY(scaleX, scaleY)
 
-	// Create canvas and draw text
-	_, height := l.font.MeasureText(msg)
-	canvas := text.NewCanvas(width, height, l.style.BgColor)
-	canvas.DrawTextCaret(mx, 0, msg, l.font, drawCaret, line, col, selStart, selEnd)
-
-	// Creates texture if if doesnt exist.
-	if l.tex == nil {
-		l.tex = texture.NewTexture2DFromRGBA(canvas.RGBA)
-		l.Panel.Material().AddTexture(l.tex)
-		// Otherwise update texture with new image
+	// Create an image with the text
+	width, height := l.font.MeasureText(l.text)
+	if l.canvas == nil || l.rgba.Rect.Dx() < width || l.rgba.Rect.Dy() < height {
+		// Allocate a new canvas if the existing one can't hold the text
+		l.canvas = text.NewCanvas(width, height, l.style.BgColor)
+		// Keep track of the full RGBA
+		l.rgba = l.canvas.RGBA
 	} else {
-		l.tex.SetFromRGBA(canvas.RGBA)
+		l.canvas.BgColor = l.style.BgColor
+		l.canvas.RGBA = l.rgba.SubImage(image.Rect(0, 0, width, height)).(*image.RGBA)
 	}
-	// Set texture filtering parameters for text
-	l.tex.SetMagFilter(gls.NEAREST)
-	l.tex.SetMinFilter(gls.NEAREST)
+	l.canvas.DrawText(0, 0, l.text, l.font)
 
-	// Updates label panel dimensions
-	l.Panel.SetContentSize(float32(width)/float32(scaleX), float32(height)/float32(scaleY))
-	l.text = msg
+	if l.tex == nil {
+		// Create texture if it doesn't exist yet
+		l.tex = texture.NewTexture2DFromRGBA(l.canvas.RGBA)
+		l.tex.SetMagFilter(gls.NEAREST)
+		l.tex.SetMinFilter(gls.NEAREST)
+		l.Panel.Material().AddTexture(l.tex)
+	} else {
+		// Otherwise update texture with new image
+		l.tex.SetFromRGBA(l.canvas.RGBA)
+	}
+
+	l.SetTexture(l.tex)
 }
