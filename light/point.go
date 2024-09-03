@@ -26,10 +26,10 @@ type Point struct {
 }
 
 // NewPoint creates and returns a point light with the specified color and intensity
-func NewPoint(color *math32.Color, intensity float32) *Point {
+func NewPoint(color math32.Color, intensity float32) *Point {
 	lp := new(Point)
 	lp.Node.Init(lp)
-	lp.color = *color
+	lp.color = color
 	lp.intensity = intensity
 
 	// Creates uniform and sets initial values
@@ -42,10 +42,9 @@ func NewPoint(color *math32.Color, intensity float32) *Point {
 }
 
 // SetColor sets the color of this light
-func (lp *Point) SetColor(color *math32.Color) {
-	lp.color = *color
-	lp.udata.color = lp.color
-	lp.udata.color.MultiplyScalar(lp.intensity)
+func (lp *Point) SetColor(color math32.Color) {
+	lp.color = color
+	lp.udata.color = lp.color.MultiplyScalar(lp.intensity)
 }
 
 // Color returns the current color of this light
@@ -56,8 +55,7 @@ func (lp *Point) Color() math32.Color {
 // SetIntensity sets the intensity of this  light
 func (lp *Point) SetIntensity(intensity float32) {
 	lp.intensity = intensity
-	lp.udata.color = lp.color
-	lp.udata.color.MultiplyScalar(lp.intensity)
+	lp.udata.color = lp.color.MultiplyScalar(lp.intensity)
 }
 
 // Intensity returns the current intensity of this light

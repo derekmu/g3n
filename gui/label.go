@@ -67,7 +67,7 @@ func (l *Label) SetText(text string) {
 
 	// Set font properties
 	l.font.SetAttributes(&l.style.FontAttributes)
-	l.font.SetColor(&l.style.FgColor)
+	l.font.SetColor(l.style.FgColor)
 
 	scaleX, scaleY := GetManager().window.GetScale()
 	l.font.SetScaleXY(scaleX, scaleY)
@@ -175,14 +175,14 @@ func (l *Label) LineSpacing() float64 {
 func (l *Label) setTextCaret(msg string, mx, width int, drawCaret bool, line, col, selStart, selEnd int) {
 	// Set font properties
 	l.font.SetAttributes(&l.style.FontAttributes)
-	l.font.SetColor(&l.style.FgColor)
+	l.font.SetColor(l.style.FgColor)
 
 	scaleX, scaleY := GetManager().window.GetScale()
 	l.font.SetScaleXY(scaleX, scaleY)
 
 	// Create canvas and draw text
 	_, height := l.font.MeasureText(msg)
-	canvas := text.NewCanvas(width, height, &l.style.BgColor)
+	canvas := text.NewCanvas(width, height, l.style.BgColor)
 	canvas.DrawTextCaret(mx, 0, msg, l.font, drawCaret, line, col, selStart, selEnd)
 
 	// Creates texture if if doesnt exist.

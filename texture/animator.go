@@ -13,7 +13,7 @@ import (
 // Animator can generate a texture animation based on a texture sheet
 type Animator struct {
 	tex       *Texture2D    // pointer to texture being displayed
-	dispTime  time.Duration // disply duration of each tile (default = 1.0/30.0)
+	dispTime  time.Duration // display duration of each tile (default = 1.0/30.0)
 	maxCycles int           // maximum number of cycles (default = 0 - continuous)
 	cycles    int           // current number of complete cycles
 	columns   int           // number of columns
@@ -59,7 +59,7 @@ func (a *Animator) Cycles() int {
 	return a.cycles
 }
 
-// Restart restart the animator
+// Restart restarts the animator.
 func (a *Animator) Restart() {
 	// Time of the currently displayed image
 	a.tileTime = time.Now()

@@ -24,11 +24,11 @@ type Directional struct {
 
 // NewDirectional creates and returns a pointer of a new directional light
 // the specified color and intensity.
-func NewDirectional(color *math32.Color, intensity float32) *Directional {
+func NewDirectional(color math32.Color, intensity float32) *Directional {
 	ld := new(Directional)
 	ld.Node.Init(ld)
 
-	ld.color = *color
+	ld.color = color
 	ld.intensity = intensity
 	ld.uni.Init("DirLight")
 	ld.SetColor(color)
@@ -36,10 +36,9 @@ func NewDirectional(color *math32.Color, intensity float32) *Directional {
 }
 
 // SetColor sets the color of this light
-func (ld *Directional) SetColor(color *math32.Color) {
-	ld.color = *color
-	ld.udata.color = ld.color
-	ld.udata.color.MultiplyScalar(ld.intensity)
+func (ld *Directional) SetColor(color math32.Color) {
+	ld.color = color
+	ld.udata.color = ld.color.MultiplyScalar(ld.intensity)
 }
 
 // Color returns the current color of this light
@@ -50,8 +49,7 @@ func (ld *Directional) Color() math32.Color {
 // SetIntensity sets the intensity of this light
 func (ld *Directional) SetIntensity(intensity float32) {
 	ld.intensity = intensity
-	ld.udata.color = ld.color
-	ld.udata.color.MultiplyScalar(ld.intensity)
+	ld.udata.color = ld.color.MultiplyScalar(ld.intensity)
 }
 
 // Intensity returns the current intensity of this light

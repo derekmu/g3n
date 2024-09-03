@@ -18,7 +18,7 @@ type Grid struct {
 }
 
 // NewGrid creates and returns a pointer to a new grid helper with the specified size and step.
-func NewGrid(size, step float32, color *math32.Color) *Grid {
+func NewGrid(size, step float32, color math32.Color) *Grid {
 	grid := new(Grid)
 
 	half := size / 2

@@ -23,8 +23,8 @@ func NewLightStyle() *Style {
 	oneBounds := RectBounds{1, 1, 1, 1}
 	twoBounds := RectBounds{2, 2, 2, 2}
 
-	borderColor := math32.Color4Name("DimGray")
-	borderColorDis := math32.Color4Name("LightGray")
+	borderColor := math32.Color4{0.412, 0.412, 0.412, 1}
+	borderColorDis := math32.Color4{0.827, 0.827, 0.827, 1}
 
 	bgColor := math32.Color4{0.85, 0.85, 0.85, 1}
 	bgColor4 := math32.Color4{0, 0, 0, 0}
@@ -161,7 +161,7 @@ func NewLightStyle() *Style {
 	s.Scroller.ScrollbarInterlocking = ScrollbarInterlockingNone
 	s.Scroller.CornerCovered = true
 	s.Scroller.CornerPanel = PanelStyle{}
-	s.Scroller.CornerPanel.BgColor = math32.Color4Name("silver")
+	s.Scroller.CornerPanel.BgColor = math32.Color4{0.753, 0.753, 0.753, 1}
 	s.Scroller.Border = oneBounds
 	s.Scroller.BorderColor = borderColor
 	s.Scroller.BgColor = bgColor

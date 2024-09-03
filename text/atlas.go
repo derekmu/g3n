@@ -20,7 +20,7 @@ type CharInfo struct {
 	X      int // Position X in pixels in the sheet image from left to right
 	Y      int // Position Y in pixels in the sheet image from top to bottom
 	Width  int // Char width in pixels
-	Height int // Char heigh in pixels
+	Height int // Char height in pixels
 	// Normalized position of char in the image
 	OffsetX float32
 	OffsetY float32
@@ -33,7 +33,7 @@ type Atlas struct {
 	Chars   []CharInfo
 	Image   *image.RGBA
 	Height  int // Recommended vertical space between two lines of text
-	Ascent  int // Distance from the top of a line to its base line
+	Ascent  int // Distance from the top of a line to its baseline
 	Descent int // Distance from the bottom of a line to its baseline
 }
 
@@ -95,7 +95,7 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 	height := (nlines * a.Height) + a.Descent
 
 	// Draw atlas image
-	canvas := NewCanvas(maxWidth, height, &math32.Color4{1, 1, 1, 1})
+	canvas := NewCanvas(maxWidth, height, math32.Color4{1, 1, 1, 1})
 	canvas.DrawText(0, 0, lines, font)
 	a.Image = canvas.RGBA
 
@@ -110,7 +110,7 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 		char.RepeatY = float32(char.Height) / fHeight
 	}
 
-	a.SavePNG("atlas.png")
+	_ = a.SavePNG("atlas.png")
 	return a
 }
 
@@ -121,7 +121,9 @@ func (a *Atlas) SavePNG(filename string) error {
 	if err != nil {
 		return err
 	}
-	defer outFile.Close()
+	defer func(outFile *os.File) {
+		_ = outFile.Close()
+	}(outFile)
 
 	b := bufio.NewWriter(outFile)
 	err = png.Encode(b, a.Image)

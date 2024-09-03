@@ -22,7 +22,7 @@ type Normals struct {
 }
 
 // NewNormals creates a normals helper for the specified IGraphic, with the specified size, color, and lineWidth.
-func NewNormals(ig graphic.IGraphic, size float32, color *math32.Color, lineWidth float32) *Normals {
+func NewNormals(ig graphic.IGraphic, size float32, color math32.Color, lineWidth float32) *Normals {
 	// Creates new Normals helper
 	nh := new(Normals)
 	nh.size = size

@@ -29,11 +29,11 @@ type Spot struct {
 	}
 }
 
-// NewSpot creates and returns a spot light with the specified color and intensity
-func NewSpot(color *math32.Color, intensity float32) *Spot {
+// NewSpot creates a new Spot light with the specified color and intensity.
+func NewSpot(color math32.Color, intensity float32) *Spot {
 	l := new(Spot)
 	l.Node.Init(l)
-	l.color = *color
+	l.color = color
 	l.intensity = intensity
 	l.uni.Init("SpotLight")
 	l.SetColor(color)
@@ -45,10 +45,9 @@ func NewSpot(color *math32.Color, intensity float32) *Spot {
 }
 
 // SetColor sets the color of this light
-func (l *Spot) SetColor(color *math32.Color) {
-	l.color = *color
-	l.udata.color = l.color
-	l.udata.color.MultiplyScalar(l.intensity)
+func (l *Spot) SetColor(color math32.Color) {
+	l.color = color
+	l.udata.color = l.color.MultiplyScalar(l.intensity)
 }
 
 // Color returns the current color of this light
@@ -59,8 +58,7 @@ func (l *Spot) Color() math32.Color {
 // SetIntensity sets the intensity of this light
 func (l *Spot) SetIntensity(intensity float32) {
 	l.intensity = intensity
-	l.udata.color = l.color
-	l.udata.color.MultiplyScalar(l.intensity)
+	l.udata.color = l.color.MultiplyScalar(l.intensity)
 }
 
 // Intensity returns the current intensity of this light

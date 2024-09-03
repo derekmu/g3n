@@ -48,8 +48,8 @@ func NewPhysical() *Physical {
 // SetBaseColorFactor sets this material base color.
 // Its default value is {1,1,1,1}.
 // Returns pointer to this updated material.
-func (m *Physical) SetBaseColorFactor(c *math32.Color4) *Physical {
-	m.udata.baseColorFactor = *c
+func (m *Physical) SetBaseColorFactor(c math32.Color4) *Physical {
+	m.udata.baseColorFactor = c
 	return m
 }
 
@@ -72,7 +72,7 @@ func (m *Physical) SetRoughnessFactor(v float32) *Physical {
 // SetEmissiveFactor sets the emissive color of the material.
 // Its default is {1, 1, 1}.
 // Returns pointer to this updated material.
-func (m *Physical) SetEmissiveFactor(c *math32.Color) *Physical {
+func (m *Physical) SetEmissiveFactor(c math32.Color) *Physical {
 	m.udata.emissiveFactor.R = c.R
 	m.udata.emissiveFactor.G = c.G
 	m.udata.emissiveFactor.B = c.B

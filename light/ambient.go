@@ -20,18 +20,18 @@ type Ambient struct {
 
 // NewAmbient returns a pointer to a new ambient color with the specified
 // color and intensity
-func NewAmbient(color *math32.Color, intensity float32) *Ambient {
+func NewAmbient(color math32.Color, intensity float32) *Ambient {
 	la := new(Ambient)
 	la.Node.Init(la)
-	la.color = *color
+	la.color = color
 	la.intensity = intensity
 	la.uni.Init("AmbientLightColor")
 	return la
 }
 
 // SetColor sets the color of this light
-func (la *Ambient) SetColor(color *math32.Color) {
-	la.color = *color
+func (la *Ambient) SetColor(color math32.Color) {
+	la.color = color
 }
 
 // Color returns the current color of this light
@@ -50,9 +50,8 @@ func (la *Ambient) Intensity() float32 {
 }
 
 // RenderSetup is called by the engine before rendering the scene
-func (la *Ambient) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo, idx int) {
-	color := la.color
-	color.MultiplyScalar(la.intensity)
+func (la *Ambient) RenderSetup(gs *gls.GLS, _ *core.RenderInfo, idx int) {
+	color := la.color.MultiplyScalar(la.intensity)
 	location := la.uni.LocationIdx(gs, int32(idx))
 	gs.Uniform3f(location, color.R, color.G, color.B)
 }

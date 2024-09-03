@@ -13,13 +13,13 @@ type Point struct {
 	Standard // Embedded standard material
 }
 
-// NewPoint creates and returns a pointer to a new point material
-func NewPoint(color *math32.Color) *Point {
+// NewPoint creates a new Point material.
+func NewPoint(color math32.Color) *Point {
 	pm := new(Point)
 	pm.Standard.Init("point", color)
 
 	// Sets uniform's initial values
-	pm.udata.emissive = *color
+	pm.udata.emissive = color
 	pm.udata.psize = 1.0
 	pm.udata.protationZ = 0
 	return pm
@@ -27,8 +27,8 @@ func NewPoint(color *math32.Color) *Point {
 
 // SetEmissiveColor sets the material emissive color
 // The default is {0,0,0}
-func (pm *Point) SetEmissiveColor(color *math32.Color) {
-	pm.udata.emissive = *color
+func (pm *Point) SetEmissiveColor(color math32.Color) {
+	pm.udata.emissive = color
 }
 
 // SetSize sets the point size

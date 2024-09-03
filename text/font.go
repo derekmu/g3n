@@ -6,7 +6,6 @@ package text
 
 import (
 	"image"
-	"image/color"
 	"image/draw"
 	"math"
 	"os"
@@ -76,7 +75,7 @@ func NewFontFromData(fontData []byte) (*Font, error) {
 	f.attrib.DPI = 72
 	f.attrib.LineSpacing = 1.0
 	f.attrib.Hinting = font.HintingNone
-	f.SetColor(&math32.Color4{0, 0, 0, 1})
+	f.SetColor(math32.Color4{0, 0, 0, 1})
 
 	// Create font face
 	f.face = truetype.NewFace(f.ttf, f.attrib.newTTOptions(f.scaleX, f.scaleY))
@@ -143,21 +142,21 @@ func (f *Font) SetScaleXY(x, y float64) {
 }
 
 // SetFgColor sets the text color.
-func (f *Font) SetFgColor(color *math32.Color4) {
-	f.fg = image.NewUniform(Color4RGBA(color))
+func (f *Font) SetFgColor(color math32.Color4) {
+	f.fg = image.NewUniform(color)
 }
 
 // SetBgColor sets the background color.
-func (f *Font) SetBgColor(color *math32.Color4) {
-	f.bg = image.NewUniform(Color4RGBA(color))
+func (f *Font) SetBgColor(color math32.Color4) {
+	f.bg = image.NewUniform(color)
 }
 
 // SetColor sets the text color to the specified value and makes the background color transparent.
 // Note that for perfect transparency in the anti-aliased region it's important that the RGB components
 // of the text and background colors match. This method handles that for the user.
-func (f *Font) SetColor(fg *math32.Color4) {
-	f.fg = image.NewUniform(Color4RGBA(fg))
-	f.bg = image.NewUniform(Color4RGBA(&math32.Color4{fg.R, fg.G, fg.B, 0}))
+func (f *Font) SetColor(fg math32.Color4) {
+	f.fg = image.NewUniform(fg)
+	f.bg = image.NewUniform(math32.Color4{fg.R, fg.G, fg.B, 0})
 }
 
 // SetAttributes sets the font attributes.
@@ -247,12 +246,12 @@ type Canvas struct {
 }
 
 // NewCanvas creates a new Canvas with the specified width, height, and background color.
-func NewCanvas(width, height int, bgColor *math32.Color4) *Canvas {
+func NewCanvas(width, height int, bgColor math32.Color4) *Canvas {
 	c := new(Canvas)
 	c.RGBA = image.NewRGBA(image.Rect(0, 0, width, height))
 
 	// Creates the image.Uniform for the background color
-	c.bgColor = image.NewUniform(Color4RGBA(bgColor))
+	c.bgColor = image.NewUniform(bgColor)
 
 	// Draw image
 	draw.Draw(c.RGBA, c.RGBA.Bounds(), c.bgColor, image.Point{}, draw.Src)
@@ -290,10 +289,9 @@ func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, li
 			// Once there is, this needs to change
 			caretH := actualPointSize + 2
 			caretY := int(d.Dot.Y>>6) - actualPointSize + 2
-			col := Color4RGBA(&math32.Color4{0, 0, 1, 0.5}) // Hardcoded to blue, alpha 50%
 			for w := width; w < widthEnd; w++ {
 				for j := caretY; j < caretY+caretH; j++ {
-					c.RGBA.Set(x+w, j, col)
+					c.RGBA.Set(x+w, j, math32.Color4{0, 0, 1, 0.5}) // blue
 				}
 			}
 		}
@@ -304,10 +302,9 @@ func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, li
 			// Draw caret vertical line
 			caretH := actualPointSize + 2
 			caretY := int(d.Dot.Y>>6) - actualPointSize + 2
-			col := Color4RGBA(&math32.Color4{0, 0, 0, 1}) // Hardcoded to black
 			for i := 0; i < int(f.scaleX); i++ {
 				for j := caretY; j < caretY+caretH; j++ {
-					c.RGBA.Set(x+width+i, j, col)
+					c.RGBA.Set(x+width+i, j, math32.Color4{0, 0, 0, 1}) // black
 				}
 			}
 		}
@@ -316,13 +313,4 @@ func (c Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, li
 			py += lineGap
 		}
 	}
-}
-
-// Color4RGBA converts a math32.Color4 to Go's color.RGBA.
-func Color4RGBA(c *math32.Color4) color.RGBA {
-	red := uint8(c.R * 0xFF)
-	green := uint8(c.G * 0xFF)
-	blue := uint8(c.B * 0xFF)
-	alpha := uint8(c.A * 0xFF)
-	return color.RGBA{red, green, blue, alpha}
 }
