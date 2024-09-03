@@ -467,39 +467,6 @@ func (tab *Tab) SetIcon(icon string) *Tab {
 	return tab
 }
 
-// SetImage sets the optional image of the Tab header
-func (tab *Tab) SetImage(imgfile string) error {
-	// Remove previous icon if any
-	if tab.icon != nil {
-		tab.header.Remove(tab.icon)
-		tab.icon.Dispose()
-		tab.icon = nil
-	}
-	// Creates or updates image
-	if tab.image == nil {
-		// Creates image panel from file
-		img, err := NewImage(imgfile)
-		if err != nil {
-			return err
-		}
-		tab.image = img
-		tab.image.SetPaddings(tab.styles.ImagePaddings)
-		tab.header.Add(tab.image)
-	} else {
-		err := tab.image.SetImage(imgfile)
-		if err != nil {
-			return err
-		}
-	}
-	// Scale image so its height is not greater than the Label height
-	if tab.image.Height() > tab.label.Height() {
-		tab.image.SetContentAspectHeight(tab.label.Height())
-	}
-	// Needs to recalculate all Tabs because this Tab width will change
-	tab.tb.recalc()
-	return nil
-}
-
 // SetPinned sets the tab pinned state.
 // A pinned tab cannot be removed by the user because the close icon is not shown.
 func (tab *Tab) SetPinned(pinned bool) {

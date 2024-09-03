@@ -108,17 +108,6 @@ func (il *ImageLabel) SetImage(img *Image) {
 	il.recalc()
 }
 
-// SetImageFromFile sets the image label image from the specified filename
-// If there is currently a selected icon, it is removed
-func (il *ImageLabel) SetImageFromFile(imgfile string) error {
-	img, err := NewImage(imgfile)
-	if err != nil {
-		return err
-	}
-	il.SetImage(img)
-	return nil
-}
-
 // SetColor sets the color of the label and icon text
 func (il *ImageLabel) SetColor(color math32.Color4) {
 	il.label.SetColor(color)

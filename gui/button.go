@@ -71,21 +71,6 @@ func NewButton(text string) *Button {
 	return b
 }
 
-// SetImage sets the button image from the specified filename.
-func (b *Button) SetImage(imgfile string) error {
-	img, err := NewImage(imgfile)
-	if err != nil {
-		return err
-	}
-	if b.image != nil {
-		b.Panel.Remove(b.image)
-	}
-	b.image = img
-	b.Panel.Add(b.image)
-	b.recalc()
-	return nil
-}
-
 // SetStyles set the button styles overriding the default style.
 func (b *Button) SetStyles(bs *ButtonStyles) {
 	b.styles = bs
