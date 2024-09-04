@@ -1,7 +1,6 @@
 package stats
 
 import (
-	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/gui"
 )
 
@@ -17,7 +16,7 @@ type field struct {
 }
 
 // NewStatsTable creates and returns a pointer to a new statistics table panel
-func NewStatsTable(width, height float32, gs *gls.GLS) *StatsTable {
+func NewStatsTable(width, height float32) *StatsTable {
 	// Creates table panel
 	st := new(StatsTable)
 	t, err := gui.NewTable(width, height, []gui.TableColumn{
@@ -68,6 +67,6 @@ func (st *StatsTable) addRow(id, label string) {
 	f := new(field)
 	f.id = id
 	f.row = st.Table.RowCount()
-	st.Table.AddRow(map[string]interface{}{"f": label, "v": 0})
+	st.Table.AddRow(map[string]any{"f": label, "v": 0})
 	st.fields = append(st.fields, f)
 }

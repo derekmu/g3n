@@ -45,7 +45,7 @@ func (b *Button) InitButton(text string) {
 	// Create label
 	b.Label = NewLabel(text)
 	b.Add(b.Label)
-	b.Label.Subscribe(OnResize, func(string, interface{}) { b.recalculateSize() })
+	b.Label.Subscribe(OnResize, func(string, any) { b.recalculateSize() })
 	b.expandToLabel = true
 
 	// subscribe to events
@@ -54,7 +54,7 @@ func (b *Button) InitButton(text string) {
 	b.Subscribe(OnCursorEnter, b.onCursor)
 	b.Subscribe(OnCursorLeave, b.onCursor)
 	b.Subscribe(OnEnable, b.onEnable)
-	b.Subscribe(OnResize, func(name string, ev interface{}) { b.recalculateSize() })
+	b.Subscribe(OnResize, func(name string, ev any) { b.recalculateSize() })
 
 	b.updateTexture()
 }
@@ -71,7 +71,7 @@ func (b *Button) Dispose() {
 }
 
 // onCursor handles cursor enter and leave events.
-func (b *Button) onCursor(evname string, _ interface{}) {
+func (b *Button) onCursor(evname string, _ any) {
 	switch evname {
 	case OnCursorEnter:
 		b.mouseOver = true
@@ -85,7 +85,7 @@ func (b *Button) onCursor(evname string, _ interface{}) {
 }
 
 // onMouse handles mouse down and up events.
-func (b *Button) onMouse(evname string, ev interface{}) {
+func (b *Button) onMouse(evname string, ev any) {
 	if !b.Enabled() {
 		return
 	}
@@ -109,7 +109,7 @@ func (b *Button) onMouse(evname string, ev interface{}) {
 }
 
 // onEnable handles enable and disable events.
-func (b *Button) onEnable(evname string, _ interface{}) {
+func (b *Button) onEnable(evname string, _ any) {
 	switch evname {
 	case OnEnable:
 		// Enabling or disabling a button cancels the click

@@ -15,7 +15,7 @@ type TimerManager struct {
 }
 
 // TimerCallback is the type for timer callback functions
-type TimerCallback func(interface{})
+type TimerCallback func(any)
 
 // Internal structure for each active timer
 type timeout struct {
@@ -23,7 +23,7 @@ type timeout struct {
 	expire time.Time     // expiration time
 	period time.Duration // period time
 	cb     TimerCallback // callback function
-	arg    interface{}   // callback function argument
+	arg    any           // callback function argument
 }
 
 // NewTimerManager creates and returns a new timer manager
@@ -42,13 +42,13 @@ func (tm *TimerManager) Initialize() {
 
 // SetTimeout sets a timeout with the specified duration and callback
 // The function returns the timeout id which can be used to cancel the timeout
-func (tm *TimerManager) SetTimeout(td time.Duration, arg interface{}, cb TimerCallback) int {
+func (tm *TimerManager) SetTimeout(td time.Duration, arg any, cb TimerCallback) int {
 	return tm.setTimer(td, false, arg, cb)
 }
 
 // SetInterval sets a periodic timeout with the specified duration and callback
 // The function returns the timeout id which can be used to cancel the timeout
-func (tm *TimerManager) SetInterval(td time.Duration, arg interface{}, cb TimerCallback) int {
+func (tm *TimerManager) SetInterval(td time.Duration, arg any, cb TimerCallback) int {
 	return tm.setTimer(td, true, arg, cb)
 }
 
@@ -87,7 +87,7 @@ func (tm *TimerManager) ProcessTimers() {
 }
 
 // setTimer sets a new timer with the specified duration
-func (tm *TimerManager) setTimer(td time.Duration, periodic bool, arg interface{}, cb TimerCallback) int {
+func (tm *TimerManager) setTimer(td time.Duration, periodic bool, arg any, cb TimerCallback) int {
 	// Creates timeout entry
 	t := timeout{
 		id:     tm.nextID,

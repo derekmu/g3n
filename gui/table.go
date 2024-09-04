@@ -7,7 +7,6 @@ package gui
 import (
 	"fmt"
 	"github.com/derekmu/g3n/core"
-	"math"
 	"sort"
 	"strconv"
 
@@ -16,31 +15,11 @@ import (
 )
 
 const (
-	// OnTableClick is the event generated when the table is right or left clicked
+	// OnTableClick is the event generated when the table is clicked
 	// Parameter is TableClickEvent
 	OnTableClick = "onTableClick"
 	// OnTableRowCount is the event generated when the table row count changes (no parameters)
 	OnTableRowCount = "onTableRowCount"
-)
-
-// TableSortType is the type used to specify the sort method for a table column
-type TableSortType int
-
-// The various sorting types
-const (
-	TableSortNone TableSortType = iota
-	TableSortString
-	TableSortNumber
-)
-
-// TableSelType is the type used to specify the table row selection
-type TableSelType int
-
-const (
-	// TableSelSingleRow is the single row selection mode (default)
-	TableSelSingleRow TableSelType = iota
-	// TableSelMultiRow is the multiple row selection mode
-	TableSelMultiRow
 )
 
 const (
@@ -59,21 +38,19 @@ const (
 // Table implements a panel which can contains child panels
 // organized in rows and columns.
 type Table struct {
-	Panel                       // Embedded panel
-	header         tableHeader  // table headers
-	rows           []*tableRow  // array of table rows
-	rowCursor      int          // index of row cursor
-	firstRow       int          // index of the first visible row
-	lastRow        int          // index of the last visible row
-	vscroll        *ScrollBar   // vertical scroll bar
-	statusPanel    Panel        // optional bottom status panel
-	statusLabel    *Label       // status label
-	scrollBarEvent bool         // do not update the scrollbar value in recalc() if true
-	resizerPanel   Panel        // resizer panel
-	resizeCol      int          // column being resized
-	resizerX       float32      // initial resizer x coordinate
-	resizing       bool         // dragging the column resizer
-	selType        TableSelType // table selection type
+	Panel                      // Embedded panel
+	header         tableHeader // table headers
+	rows           []*tableRow // array of table rows
+	rowCursor      int         // index of row cursor
+	firstRow       int         // index of the first visible row
+	lastRow        int         // index of the last visible row
+	statusPanel    Panel       // optional bottom status panel
+	statusLabel    *Label      // status label
+	scrollBarEvent bool        // do not update the scrollbar value in recalc() if true
+	resizerPanel   Panel       // resizer panel
+	resizeCol      int         // column being resized
+	resizerX       float32     // initial resizer x coordinate
+	resizing       bool        // dragging the column resizer
 }
 
 // TableColumn describes a table column
@@ -87,17 +64,16 @@ type TableColumn struct {
 	Format     string          // Format string for formatting the columns' cells
 	FormatFunc TableFormatFunc // Format function (overrides Format string)
 	Expand     float32         // Column width expansion factor (0 for no expansion)
-	Sort       TableSortType   // Column sort type
 	Resize     bool            // Allow column to be resized by user
 }
 
 // TableCell describes a table cell.
 // It is used as a parameter for formatting function
 type TableCell struct {
-	Tab   *Table      // Pointer to table
-	Row   int         // Row index
-	Col   string      // Column id
-	Value interface{} // Cell value
+	Tab   *Table // Pointer to table
+	Row   int    // Row index
+	Col   string // Column id
+	Value any    // Cell value
 }
 
 // TableFormatFunc is the type for formatting functions
@@ -110,8 +86,8 @@ type TableClickEvent struct {
 	X               float32 // Table content area X coordinate
 	Y               float32 // Table content area Y coordinate
 	Header          bool    // True if header was clicked
-	Row             int     // Index of table row (may be -1)
-	Col             string  // Id of table column (may be empty)
+	Row             int     // Index of table row (or -1)
+	Col             string  // ID of table column (or empty)
 	ColOrder        int     // Current column exhibition order
 }
 
@@ -127,7 +103,6 @@ type tableHeader struct {
 type tableColHeader struct {
 	Panel                      // header panel
 	label      *Label          // header label
-	ricon      *Label          // header right icon (sort direction)
 	id         string          // column id
 	width      float32         // initial column width
 	minWidth   float32         // minimum width
@@ -135,26 +110,23 @@ type tableColHeader struct {
 	formatFunc TableFormatFunc // column format function
 	align      Align           // column alignment
 	expand     float32         // column expand factor
-	sort       TableSortType   // column sort type
 	resize     bool            // column can be resized by user
 	order      int             // row columns order
-	sorted     int             // current sorted status
 	xl         float32         // left border coordinate in pixels
 	xr         float32         // right border coordinate in pixels
 }
 
 // tableRow is panel which contains an entire table row of cells
 type tableRow struct {
-	Panel                 // embedded panel
-	selected bool         // row selected flag
-	cells    []*tableCell // array of row cells
+	Panel              // embedded panel
+	cells []*tableCell // array of row cells
 }
 
 // tableCell is a panel which contains one cell (a label)
 type tableCell struct {
-	Panel             // embedded panel
-	label Label       // cell label
-	value interface{} // cell current value
+	Panel       // embedded panel
+	label Label // cell label
+	value any   // cell current value
 }
 
 // NewTable creates and returns a pointer to a new Table with the
@@ -174,11 +146,11 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 		cdesc := cols[ci]
 		// Column id must not be empty
 		if cdesc.Id == "" {
-			return nil, fmt.Errorf("Column with empty id")
+			return nil, fmt.Errorf("column with empty id")
 		}
 		// Column id must be unique
 		if t.header.cmap[cdesc.Id] != nil {
-			return nil, fmt.Errorf("Column with duplicate id")
+			return nil, fmt.Errorf("column with duplicate id")
 		}
 		// Creates a column header
 		c := new(tableColHeader)
@@ -198,16 +170,7 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 		c.format = cdesc.Format
 		c.formatFunc = cdesc.FormatFunc
 		c.expand = cdesc.Expand
-		c.sort = cdesc.Sort
 		c.resize = cdesc.Resize
-		// Adds optional sort icon
-		if c.sort != TableSortNone {
-			c.ricon = NewIconLabel(tableSortedNoneIcon)
-			c.Add(c.ricon)
-			c.ricon.Subscribe(OnMouseDown, func(evname string, ev interface{}) {
-				t.onRicon(c)
-			})
-		}
 		// Sets default format and order
 		if c.format == "" {
 			c.format = "%v"
@@ -254,12 +217,6 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	t.Panel.Subscribe(OnResize, t.onResize)
 	t.recalc()
 	return t, nil
-}
-
-// SetSelectionType sets this table selection type
-// Possible values are: TableSelSingleRow|TableSelMultiRow
-func (t *Table) SetSelectionType(sel TableSelType) {
-	t.selType = sel
 }
 
 // ShowHeader shows or hides the table header
@@ -311,7 +268,7 @@ func (t *Table) RowCount() int {
 // Each row is a map keyed by the colum id.
 // The map value currently can be a string or any number type
 // If a row column is not found it is ignored
-func (t *Table) SetRows(values []map[string]interface{}) {
+func (t *Table) SetRows(values []map[string]any) {
 	// Add missing rows
 	if len(values) > len(t.rows) {
 		count := len(values) - len(t.rows)
@@ -336,7 +293,7 @@ func (t *Table) SetRows(values []map[string]interface{}) {
 
 // SetRow sets the value of all the cells of the specified row from
 // the specified map indexed by column id.
-func (t *Table) SetRow(row int, values map[string]interface{}) {
+func (t *Table) SetRow(row int, values map[string]any) {
 	if row < 0 || row >= len(t.rows) {
 		panic(tableErrInvRow)
 	}
@@ -346,7 +303,7 @@ func (t *Table) SetRow(row int, values map[string]interface{}) {
 
 // SetCell sets the value of the cell specified by its row and column id
 // The function panics if the passed row or column id is invalid
-func (t *Table) SetCell(row int, colid string, value interface{}) {
+func (t *Table) SetCell(row int, colid string, value any) {
 	if row < 0 || row >= len(t.rows) {
 		panic(tableErrInvRow)
 	}
@@ -440,12 +397,12 @@ func (t *Table) SetColExpand(colid string, expand float32) {
 }
 
 // AddRow adds a new row at the end of the table with the specified values
-func (t *Table) AddRow(values map[string]interface{}) {
+func (t *Table) AddRow(values map[string]any) {
 	t.InsertRow(len(t.rows), values)
 }
 
 // InsertRow inserts the specified values in a new row at the specified index
-func (t *Table) InsertRow(row int, values map[string]interface{}) {
+func (t *Table) InsertRow(row int, values map[string]any) {
 	// Checks row index
 	if row < 0 || row > len(t.rows) {
 		panic(tableErrInvRow)
@@ -485,21 +442,6 @@ func (t *Table) Clear() {
 	t.Dispatch(OnTableRowCount, nil)
 }
 
-// SelectedRows returns a slice with the indexes of the currently selected rows
-// If no row are selected returns an empty slice
-func (t *Table) SelectedRows() []int {
-	res := make([]int, 0)
-	if t.rowCursor >= 0 {
-		res = append(res, t.rowCursor)
-	}
-	for ri := 0; ri < len(t.rows); ri++ {
-		if t.rows[ri].selected && ri != t.rowCursor {
-			res = append(res, ri)
-		}
-	}
-	return res
-}
-
 // ShowStatus sets the visibility of the status lines at the bottom of the table
 func (t *Table) ShowStatus(show bool) {
 	if t.statusPanel.Visible() == show {
@@ -519,7 +461,7 @@ func (t *Table) SetStatusText(text string) {
 // Rows returns a slice of maps with the contents of the table rows
 // specified by the rows first and last index.
 // To get all the table rows, use Rows(0, -1)
-func (t *Table) Rows(fi, li int) []map[string]interface{} {
+func (t *Table) Rows(fi, li int) []map[string]any {
 	if fi < 0 || fi >= len(t.header.cols) {
 		panic(tableErrInvRow)
 	}
@@ -531,10 +473,10 @@ func (t *Table) Rows(fi, li int) []map[string]interface{} {
 	if li < fi {
 		panic("Last index less than first index")
 	}
-	res := make([]map[string]interface{}, li-li+1)
+	res := make([]map[string]any, li-li+1)
 	for ri := fi; ri <= li; ri++ {
 		trow := t.rows[ri]
-		rmap := make(map[string]interface{})
+		rmap := make(map[string]any)
 		for ci := 0; ci < len(t.header.cols); ci++ {
 			c := t.header.cols[ci]
 			rmap[c.id] = trow.cells[c.order].value
@@ -545,11 +487,11 @@ func (t *Table) Rows(fi, li int) []map[string]interface{} {
 }
 
 // Row returns a map with the current contents of the specified row index
-func (t *Table) Row(ri int) map[string]interface{} {
+func (t *Table) Row(ri int) map[string]any {
 	if ri < 0 || ri > len(t.header.cols) {
 		panic(tableErrInvRow)
 	}
-	res := make(map[string]interface{})
+	res := make(map[string]any)
 	trow := t.rows[ri]
 	for ci := 0; ci < len(t.header.cols); ci++ {
 		c := t.header.cols[ci]
@@ -559,7 +501,7 @@ func (t *Table) Row(ri int) map[string]interface{} {
 }
 
 // Cell returns the current content of the specified cell
-func (t *Table) Cell(col string, ri int) interface{} {
+func (t *Table) Cell(col string, ri int) any {
 	c := t.header.cmap[col]
 	if c == nil {
 		panic(tableErrInvCol)
@@ -594,7 +536,7 @@ func (t *Table) SortColumn(col string, asString bool, asc bool) {
 
 // setRow sets the value of all the cells of the specified row from
 // the specified map indexed by column id.
-func (t *Table) setRow(row int, values map[string]interface{}) {
+func (t *Table) setRow(row int, values map[string]any) {
 	for ci := 0; ci < len(t.header.cols); ci++ {
 		c := t.header.cols[ci]
 		cv, ok := values[c.id]
@@ -606,7 +548,7 @@ func (t *Table) setRow(row int, values map[string]interface{}) {
 }
 
 // setCell sets the value of the cell specified by its row and column id
-func (t *Table) setCell(row int, colid string, value interface{}) {
+func (t *Table) setCell(row int, colid string, value any) {
 	c := t.header.cmap[colid]
 	if c == nil {
 		return
@@ -617,7 +559,7 @@ func (t *Table) setCell(row int, colid string, value interface{}) {
 }
 
 // insertRow is the internal version of InsertRow which does not call recalc()
-func (t *Table) insertRow(row int, values map[string]interface{}) {
+func (t *Table) insertRow(row int, values map[string]any) {
 	// Creates tableRow panel
 	trow := new(tableRow)
 	trow.InitPanel(trow, 0, 0)
@@ -703,7 +645,7 @@ func (t *Table) removeRow(row int) {
 }
 
 // onCursorPos process subscribed cursor position events
-func (t *Table) onCursorPos(_ string, ev interface{}) {
+func (t *Table) onCursorPos(_ string, ev any) {
 	// Convert mouse window coordinates to table content coordinates
 	cev := ev.(*core.CursorEvent)
 	cx, _ := t.ContentCoords(cev.Xpos, cev.Ypos)
@@ -737,7 +679,7 @@ func (t *Table) onCursorPos(_ string, ev interface{}) {
 }
 
 // onMouseEvent process subscribed mouse events
-func (t *Table) onMouse(evname string, ev interface{}) {
+func (t *Table) onMouse(evname string, ev any) {
 	e := ev.(*core.MouseEvent)
 	switch evname {
 	case OnMouseDown:
@@ -762,9 +704,6 @@ func (t *Table) onMouse(evname string, ev interface{}) {
 		// If row is clicked, selects it
 		if tce.Row >= 0 && e.Button == core.MouseButtonLeft {
 			t.rowCursor = tce.Row
-			if t.selType == TableSelMultiRow && e.Mods == core.ModControl {
-				t.toggleRowSel(t.rowCursor)
-			}
 			t.recalc()
 			t.Dispatch(OnChange, nil)
 		}
@@ -789,7 +728,7 @@ func (t *Table) onMouse(evname string, ev interface{}) {
 }
 
 // onKeyEvent receives subscribed key events for this table
-func (t *Table) onKey(_ string, ev interface{}) {
+func (t *Table) onKey(_ string, ev any) {
 	kev := ev.(*core.KeyEvent)
 	if kev.Key == core.KeyUp && kev.Mods == 0 {
 		t.selPrev()
@@ -803,51 +742,23 @@ func (t *Table) onKey(_ string, ev interface{}) {
 		t.firstPage()
 	} else if kev.Key == core.KeyPageDown && kev.Mods == core.ModControl {
 		t.lastPage()
-	} else if kev.Key == core.KeyEnter && kev.Mods == core.ModControl {
-		if t.selType == TableSelMultiRow {
-			t.toggleRowSel(t.rowCursor)
-		}
 	}
 }
 
 // onResize receives subscribed resize events for this table
-func (t *Table) onResize(_ string, _ interface{}) {
+func (t *Table) onResize(_ string, _ any) {
 	t.recalc()
 	t.recalcStatus()
 }
 
 // onScroll receives subscribed scroll events for this table
-func (t *Table) onScroll(_ string, ev interface{}) {
+func (t *Table) onScroll(_ string, ev any) {
 	sev := ev.(*core.ScrollEvent)
 	if sev.Yoffset > 0 {
 		t.scrollUp(1)
 	} else if sev.Yoffset < 0 {
 		t.scrollDown(1)
 	}
-}
-
-// onRicon receives subscribed events for column header right icon
-func (t *Table) onRicon(c *tableColHeader) {
-	ico := tableSortedNoneIcon
-	var asc bool
-	if c.sorted == tableSortedNone || c.sorted == tableSortedDesc {
-		c.sorted = tableSortedAsc
-		ico = tableSortedAscIcon
-		asc = false
-	} else {
-		c.sorted = tableSortedDesc
-		ico = tableSortedDescIcon
-		asc = true
-	}
-
-	var asString bool
-	if c.sort == TableSortString {
-		asString = true
-	} else {
-		asString = false
-	}
-	t.SortColumn(c.id, asString, asc)
-	c.ricon.SetText(string(ico))
 }
 
 // findClick finds where in the table the specified mouse click event
@@ -1007,22 +918,6 @@ func (t *Table) lastPage() {
 	t.Dispatch(OnChange, nil)
 }
 
-// selectRow selects the specified row.
-// Should be used only when multi row selection is enabled
-func (t *Table) selectRow(ri int) {
-	trow := t.rows[ri]
-	trow.selected = true
-	t.Dispatch(OnChange, nil)
-}
-
-// toggleRowSel toogles the specified row selection state
-// Should be used only when multi row selection is enabled
-func (t *Table) toggleRowSel(ri int) {
-	trow := t.rows[ri]
-	trow.selected = !trow.selected
-	t.Dispatch(OnChange, nil)
-}
-
 // setColWidth sets the width of the specified column
 func (t *Table) setColWidth(c *tableColHeader, width float32) {
 	// Sets the column width
@@ -1035,7 +930,7 @@ func (t *Table) setColWidth(c *tableColHeader, width float32) {
 	dw := width - c.Width()
 	c.SetWidth(width)
 
-	// Find the column index and if any column has expand != 0
+	// Find the column with expand != 0
 	hasExpand := false
 	ci := -1
 	for i := 0; i < len(t.header.cols); i++ {
@@ -1050,7 +945,7 @@ func (t *Table) setColWidth(c *tableColHeader, width float32) {
 	if ci >= len(t.header.cols) {
 		panic("Internal: column not found")
 	}
-	// If no column is expandable, nothing more todo
+	// If no column is expandable, nothing more
 	if !hasExpand {
 		t.recalc()
 		return
@@ -1103,9 +998,6 @@ func (t *Table) recalcHeader() {
 	}
 	// Total table width
 	twidth := t.ContentWidth()
-	if t.vscroll != nil && t.vscroll.Visible() {
-		twidth -= t.vscroll.Width()
-	}
 	// Available space for columns: may be negative
 	wspace = twidth - hwidth
 
@@ -1163,14 +1055,6 @@ func (t *Table) recalcHeader() {
 		if !c.Visible() {
 			continue
 		}
-		// Sets the right icon position inside the column header panel
-		if c.ricon != nil {
-			ix := c.ContentWidth() - c.ricon.Width()
-			if ix < 0 {
-				ix = 0
-			}
-			c.ricon.SetPosition(ix, 0)
-		}
 		// Sets the column header panel position
 		c.SetPosition(posx, 0)
 		c.SetVisible(true)
@@ -1217,17 +1101,11 @@ func (t *Table) recalc() {
 	starty, theight := t.rowsHeight()
 
 	// Determines if it is necessary to show the scrollbar or not.
-	scroll := false
 	py := starty
 	for ri := 0; ri < len(t.rows); ri++ {
 		trow := t.rows[ri]
 		py += trow.height
-		if py > starty+theight {
-			scroll = true
-			break
-		}
 	}
-	t.setVScrollBar(scroll)
 	// Recalculates the header
 	t.recalcHeader()
 
@@ -1249,7 +1127,6 @@ func (t *Table) recalc() {
 		if py+trow.Height() <= starty+theight {
 			t.lastRow = ri
 		}
-		//log.Error("ri:%v py:%v theight:%v", ri, py, theight)
 		py += trow.height
 	}
 	// Status panel must be on top of all the row panels
@@ -1335,70 +1212,6 @@ func (t *Table) rowsHeight() (float32, float32) {
 	return start, height
 }
 
-// setVScrollBar sets the visibility state of the vertical scrollbar
-func (t *Table) setVScrollBar(state bool) {
-	// Visible
-	if state {
-		var scrollWidth float32 = 20
-		// Creates scroll bar if necessary
-		if t.vscroll == nil {
-			t.vscroll = NewVScrollBar(0, 0)
-			t.vscroll.SetBorders(RectBounds{0, 0, 0, 1})
-			t.vscroll.Subscribe(OnChange, t.onVScrollBar)
-			t.Panel.Add(t.vscroll)
-		}
-		// Sets the scroll bar size and positions
-		py, height := t.rowsHeight()
-		t.vscroll.SetSize(scrollWidth, height)
-		t.vscroll.SetPositionX(t.ContentWidth() - scrollWidth)
-		t.vscroll.SetPositionY(py)
-		t.vscroll.recalc()
-		t.vscroll.SetVisible(true)
-		if !t.scrollBarEvent {
-			maxFirst := t.calcMaxFirst()
-			t.vscroll.SetValue(float32(t.firstRow) / float32(maxFirst))
-		} else {
-			t.scrollBarEvent = false
-		}
-		// scroll bar must be on top of all table rows
-		t.SetTopChild(t.vscroll)
-		// Not visible
-	} else {
-		if t.vscroll != nil {
-			t.vscroll.SetVisible(false)
-		}
-	}
-}
-
-// onVScrollBar is called when a vertical scroll bar event is received
-func (t *Table) onVScrollBar(_ string, _ interface{}) {
-	// Calculates the new first visible line
-	pos := t.vscroll.Value()
-	maxFirst := t.calcMaxFirst()
-	first := int(math.Floor((float64(maxFirst) * pos) + 0.5))
-
-	// Sets the new selected row
-	sel := t.rowCursor
-	selChange := false
-	if sel < first {
-		t.rowCursor = first
-		selChange = true
-	} else {
-		lines := first - t.firstRow
-		lastRow := t.lastRow + lines
-		if sel > lastRow {
-			t.rowCursor = lastRow
-			selChange = true
-		}
-	}
-	t.scrollBarEvent = true
-	t.firstRow = first
-	t.recalc()
-	if selChange {
-		t.Dispatch(OnChange, nil)
-	}
-}
-
 // calcMaxFirst calculates the maximum index of the first visible row
 // such as the remaining rows fits completely inside the table
 // It is used when scrolling the table vertically
@@ -1467,7 +1280,7 @@ func (ts tableSortNumber) Less(i, j int) bool {
 }
 
 // Try to convert an interface value to a float64 number
-func cv2f64(v interface{}) float64 {
+func cv2f64(v any) float64 {
 	if v == nil {
 		return 0
 	}

@@ -46,7 +46,6 @@ type IPanel interface {
 	Height() float32
 	Enabled() bool
 	SetEnabled(bool)
-	SetLayout(ILayout)
 	InsideBorders(x, y float32) bool
 	SetZLayerDelta(zLayerDelta int)
 	ZLayerDelta() int
@@ -68,9 +67,6 @@ type Panel struct {
 
 	bounded bool // Whether panel is bounded by its parent
 	enabled bool // Whether events should be processed for this panel
-
-	layout       ILayout     // layout for children
-	layoutParams interface{} // layout parameters used by container panel
 
 	marginSizes  RectBounds // external margin sizes in pixel coordinates
 	borderSizes  RectBounds // border sizes in pixel coordinates
@@ -422,19 +418,12 @@ func (p *Panel) Pospix() math32.Vector2 {
 // This overrides the Node method to enforce that IPanels can only have IPanels as children.
 func (p *Panel) Add(ichild IPanel) *Panel {
 	p.Node.Add(ichild)
-	if p.layout != nil {
-		p.layout.Recalc(p)
-	}
 	return p
 }
 
 // Remove removes the specified child from this panel.
 func (p *Panel) Remove(ichild IPanel) bool {
-	res := p.Node.Remove(ichild)
-	if res && p.layout != nil {
-		p.layout.Recalc(p)
-	}
-	return res
+	return p.Node.Remove(ichild)
 }
 
 // Bounded returns the panel's bounded state.
@@ -496,29 +485,6 @@ func (p *Panel) SetEnabled(state bool) {
 // Enabled returns the enabled state of this panel.
 func (p *Panel) Enabled() bool {
 	return p.enabled
-}
-
-// SetLayout sets the panel's layout.
-func (p *Panel) SetLayout(ilayout ILayout) {
-	p.layout = ilayout
-	if p.layout != nil {
-		p.layout.Recalc(p)
-	}
-}
-
-// Layout returns the panel's layout.
-func (p *Panel) Layout() ILayout {
-	return p.layout
-}
-
-// SetLayoutParams sets the panel's layout parameters.
-func (p *Panel) SetLayoutParams(params interface{}) {
-	p.layoutParams = params
-}
-
-// LayoutParams returns the panel's layout parameters.
-func (p *Panel) LayoutParams() interface{} {
-	return p.layoutParams
 }
 
 // ContentCoords converts the specified absolute coordinates to the panel's relative content coordinates.
@@ -707,9 +673,6 @@ func (p *Panel) resize(width, height float32, dispatch bool) {
 	// Update layout and dispatch event
 	if !dispatch {
 		return
-	}
-	if p.layout != nil {
-		p.layout.Recalc(p)
 	}
 	p.Dispatch(OnResize, nil)
 }

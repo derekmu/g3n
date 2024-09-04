@@ -246,7 +246,7 @@ func (gs *GLS) BlendFuncSeparate(srcRGB uint32, dstRGB uint32, srcAlpha uint32, 
 }
 
 // BufferData creates a new data store for the buffer object currently bound to target, deleting any pre-existing data store.
-func (gs *GLS) BufferData(target uint32, size int, data interface{}, usage uint32) {
+func (gs *GLS) BufferData(target uint32, size int, data any, usage uint32) {
 	C.glBufferData(C.GLenum(target), C.GLsizeiptr(size), ptr(data), C.GLenum(usage))
 }
 
@@ -619,7 +619,7 @@ func (gs *GLS) ShaderSource(shader uint32, src string) {
 }
 
 // TexImage2D specifies a two-dimensional texture image.
-func (gs *GLS) TexImage2D(target uint32, level int32, iformat int32, width int32, height int32, format uint32, itype uint32, data interface{}) {
+func (gs *GLS) TexImage2D(target uint32, level int32, iformat int32, width int32, height int32, format uint32, itype uint32, data any) {
 	C.glTexImage2D(C.GLenum(target),
 		C.GLint(level),
 		C.GLint(iformat),
@@ -632,7 +632,7 @@ func (gs *GLS) TexImage2D(target uint32, level int32, iformat int32, width int32
 }
 
 // CompressedTexImage2D specifies a two-dimensional compressed texture image.
-func (gs *GLS) CompressedTexImage2D(target uint32, level uint32, iformat uint32, width int32, height int32, size int32, data interface{}) {
+func (gs *GLS) CompressedTexImage2D(target uint32, level uint32, iformat uint32, width int32, height int32, size int32, data any) {
 	C.glCompressedTexImage2D(C.GLenum(target),
 		C.GLint(level),
 		C.GLenum(iformat),
@@ -787,7 +787,7 @@ func (gs *GLS) UseProgram(prog *Program) {
 //	var data []uint8
 //	...
 //	gl.TexImage2D(gl.TEXTURE_2D, ..., gl.UNSIGNED_BYTE, gl.Ptr(&data[0]))
-func ptr(data interface{}) unsafe.Pointer {
+func ptr(data any) unsafe.Pointer {
 	if data == nil {
 		return unsafe.Pointer(nil)
 	}

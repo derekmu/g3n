@@ -101,7 +101,7 @@ func (gm *Manager) SetCursorFocus(disp core.IDispatcher) {
 
 // onKeyboard is called when char or key events are received.
 // The events are dispatched to the focused IDispatcher or to non-GUI.
-func (gm *Manager) onKeyboard(evname string, ev interface{}) {
+func (gm *Manager) onKeyboard(evname string, ev any) {
 	if gm.keyFocus != nil {
 		if gm.modal == nil {
 			gm.keyFocus.Dispatch(evname, ev)
@@ -116,7 +116,7 @@ func (gm *Manager) onKeyboard(evname string, ev interface{}) {
 // onMouse is called when mouse events are received.
 // OnMouseDown/OnMouseUp are dispatched to gm.target or to non-GUI, while
 // OnMouseDownOut/OnMouseUpOut are dispatched to all non-target panels.
-func (gm *Manager) onMouse(evname string, ev interface{}) {
+func (gm *Manager) onMouse(evname string, ev any) {
 	// To fix #299
 	if gm.cev == nil {
 		mev := ev.(*core.MouseEvent)
@@ -157,7 +157,7 @@ func (gm *Manager) onMouse(evname string, ev interface{}) {
 
 // onScroll is called when scroll events are received.
 // The events are dispatched to the target panel or to non-GUI.
-func (gm *Manager) onScroll(evname string, ev interface{}) {
+func (gm *Manager) onScroll(evname string, ev any) {
 	// Check if gm.scene is nil and if so then there are no IPanels to send events to
 	if gm.scene == nil {
 		gm.Dispatch(evname, ev) // Dispatch event to non-GUI since event was not filtered by any GUI component
@@ -176,7 +176,7 @@ func (gm *Manager) onScroll(evname string, ev interface{}) {
 
 // onCursor is called when (mouse) cursor events are received.
 // Updates the target/click panels and dispatches OnCursor, OnCursorEnter, OnCursorLeave events.
-func (gm *Manager) onCursor(evname string, ev interface{}) {
+func (gm *Manager) onCursor(evname string, ev any) {
 	// If an IDispatcher is capturing cursor events dispatch to it and return
 	if gm.cursorFocus != nil {
 		gm.cursorFocus.Dispatch(evname, ev)
@@ -235,7 +235,7 @@ func (gm *Manager) onCursor(evname string, ev interface{}) {
 // If uptoEx (i.e. excluding) is not nil then the event will not be dispatched to that ancestor nor any higher ancestors.
 // If uptoIn (i.e. including) is not nil then the event will be dispatched to that ancestor but not to any higher ancestors.
 // uptoEx and uptoIn can both be defined.
-func sendAncestry(ipan IPanel, all bool, uptoEx IPanel, uptoIn IPanel, evname string, ev interface{}) {
+func sendAncestry(ipan IPanel, all bool, uptoEx IPanel, uptoIn IPanel, evname string, ev any) {
 	var ok bool
 	for ipan != nil {
 		if uptoEx != nil && ipan == uptoEx {

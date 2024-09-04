@@ -34,7 +34,7 @@ type Texture2D struct {
 	updateParams bool        // texture parameters needs to be sent
 	compressed   bool        // whether the texture is compressed
 	size         int32       // the size of the texture data in bytes
-	data         interface{} // array with texture data
+	data         any         // array with texture data
 	uniUnit      gls.Uniform // Texture unit uniform location cache
 	uniInfo      gls.Uniform // Texture info uniform location cache
 	udata        struct {    // Combined uniform data in 3 vec2:
@@ -92,14 +92,14 @@ func NewTexture2DFromRGBA(rgba *image.RGBA) *Texture2D {
 }
 
 // NewTexture2DFromData creates a new texture from data
-func NewTexture2DFromData(width, height int, format int, formatType, iformat int, data interface{}) *Texture2D {
+func NewTexture2DFromData(width, height int, format int, formatType, iformat int, data any) *Texture2D {
 	t := newTexture2D()
 	t.SetData(width, height, format, formatType, iformat, data)
 	return t
 }
 
 // NewTexture2DFromCompressedData creates a new compressed texture from data
-func NewTexture2DFromCompressedData(width, height int, iformat int32, size int32, data interface{}) *Texture2D {
+func NewTexture2DFromCompressedData(width, height int, iformat int32, size int32, data any) *Texture2D {
 	t := newTexture2D()
 	t.SetCompressedData(width, height, iformat, size, data)
 	return t
@@ -168,7 +168,7 @@ func (t *Texture2D) SetFromRGBA(rgba *image.RGBA) {
 }
 
 // SetData sets the texture data
-func (t *Texture2D) SetData(width, height int, format int, formatType, iformat int, data interface{}) {
+func (t *Texture2D) SetData(width, height int, format int, formatType, iformat int, data any) {
 	t.width = int32(width)
 	t.height = int32(height)
 	t.format = uint32(format)
@@ -180,7 +180,7 @@ func (t *Texture2D) SetData(width, height int, format int, formatType, iformat i
 }
 
 // SetCompressedData sets the compressed texture data
-func (t *Texture2D) SetCompressedData(width, height int, iformat int32, size int32, data interface{}) {
+func (t *Texture2D) SetCompressedData(width, height int, iformat int32, size int32, data any) {
 	t.width = int32(width)
 	t.height = int32(height)
 	t.iformat = iformat

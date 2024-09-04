@@ -7,10 +7,10 @@ package core
 // IDispatcher is the interface for event dispatchers.
 type IDispatcher interface {
 	Subscribe(evname string, cb Callback)
-	SubscribeID(evname string, id interface{}, cb Callback)
-	UnsubscribeID(evname string, id interface{}) int
-	UnsubscribeAllID(id interface{}) int
-	Dispatch(evname string, ev interface{}) int
+	SubscribeID(evname string, id any, cb Callback)
+	UnsubscribeID(evname string, id any) int
+	UnsubscribeAllID(id any) int
+	Dispatch(evname string, ev any) int
 }
 
 // Dispatcher implements an event dispatcher.
@@ -19,11 +19,11 @@ type Dispatcher struct {
 }
 
 // Callback is the type for Dispatcher callback functions.
-type Callback func(string, interface{})
+type Callback func(string, any)
 
 // subscription links a Callback with a user-provided unique id.
 type subscription struct {
-	id interface{}
+	id any
 	cb Callback
 }
 
@@ -48,13 +48,13 @@ func (d *Dispatcher) Subscribe(evname string, cb Callback) {
 
 // SubscribeID subscribes a callback to events with the given name.
 // The user-provided unique id can be used to unsubscribe via UnsubscribeID.
-func (d *Dispatcher) SubscribeID(evname string, id interface{}, cb Callback) {
+func (d *Dispatcher) SubscribeID(evname string, id any, cb Callback) {
 	d.evmap[evname] = append(d.evmap[evname], subscription{id, cb})
 }
 
 // UnsubscribeID removes all subscribed callbacks with the specified unique id from the specified event.
 // Returns the number of subscriptions removed.
-func (d *Dispatcher) UnsubscribeID(evname string, id interface{}) int {
+func (d *Dispatcher) UnsubscribeID(evname string, id any) int {
 	// Get list of subscribers for this event
 	subs := d.evmap[evname]
 	if len(subs) == 0 {
@@ -78,7 +78,7 @@ func (d *Dispatcher) UnsubscribeID(evname string, id interface{}) int {
 
 // UnsubscribeAllID removes all subscribed callbacks with the specified unique id from all events.
 // Returns the number of subscriptions removed.
-func (d *Dispatcher) UnsubscribeAllID(id interface{}) int {
+func (d *Dispatcher) UnsubscribeAllID(id any) int {
 	// Remove all subscribers with the specified id (for all events), counting how many were removed
 	total := 0
 	for evname := range d.evmap {
@@ -89,7 +89,7 @@ func (d *Dispatcher) UnsubscribeAllID(id interface{}) int {
 
 // Dispatch dispatches the specified event to all registered subscribers.
 // The function returns the number of subscribers to which the event was dispatched.
-func (d *Dispatcher) Dispatch(evname string, ev interface{}) int {
+func (d *Dispatcher) Dispatch(evname string, ev any) int {
 	// Get list of subscribers for this event
 	subs := d.evmap[evname]
 	nsubs := len(subs)
