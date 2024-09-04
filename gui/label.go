@@ -169,7 +169,9 @@ func (l *Label) drawText() {
 		l.rgba = l.canvas.RGBA
 	} else {
 		// Reuse part of the already allocated image
-		l.canvas.RGBA = l.rgba.SubImage(image.Rect(0, 0, width, height)).(*image.RGBA)
+		l.canvas.RGBA.Pix = l.rgba.Pix[:4*width*height]
+		l.canvas.RGBA.Stride = 4 * width
+		l.canvas.RGBA.Rect = image.Rect(0, 0, width, height)
 		// Update the color
 		l.canvas.BgColor = l.style.BgColor
 	}
