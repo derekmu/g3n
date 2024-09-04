@@ -56,10 +56,6 @@ func (l *Label) InitLabel(text string, font *text.Font) {
 
 // SetText sets and redraws the label text.
 func (l *Label) SetText(text string) {
-	// Need at least one character to get dimensions
-	if text == "" {
-		text = " "
-	}
 	if text != l.text {
 		l.text = text
 		l.drawText()
@@ -160,7 +156,12 @@ func (l *Label) drawText() {
 	l.font.SetScaleXY(scaleX, scaleY)
 
 	// Create an image with the text
-	width, height := l.font.MeasureText(l.text)
+	txt := l.text
+	// Need at least one character to get dimensions
+	if txt == "" {
+		txt = " "
+	}
+	width, height := l.font.MeasureText(txt)
 	if l.canvas == nil || l.rgba.Rect.Dx() < width || l.rgba.Rect.Dy() < height {
 		// Allocate a new canvas if the existing one can't hold the text
 		l.canvas = text.NewCanvas(width, height, l.style.BgColor)
@@ -172,7 +173,7 @@ func (l *Label) drawText() {
 		// Update the color
 		l.canvas.BgColor = l.style.BgColor
 	}
-	l.canvas.DrawText(0, 0, l.text, l.font)
+	l.canvas.DrawText(0, 0, txt, l.font)
 
 	if l.tex == nil {
 		// Create texture if it doesn't exist yet
@@ -181,7 +182,7 @@ func (l *Label) drawText() {
 		l.tex.SetMinFilter(gls.NEAREST)
 		l.Panel.Material().AddTexture(l.tex)
 	} else {
-		// Otherwise update texture with new image
+		// Otherwise updateTexture texture with new image
 		l.tex.SetFromRGBA(l.canvas.RGBA)
 	}
 

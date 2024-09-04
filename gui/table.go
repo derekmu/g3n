@@ -780,7 +780,6 @@ func (t *Table) onCursorPos(_ string, ev interface{}) {
 // onMouseEvent process subscribed mouse events
 func (t *Table) onMouse(evname string, ev interface{}) {
 	e := ev.(*core.MouseEvent)
-	GetManager().SetKeyFocus(t)
 	switch evname {
 	case OnMouseDown:
 		// If over a resizable column border, shows the resizer panel

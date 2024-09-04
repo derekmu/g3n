@@ -11,7 +11,7 @@ import (
 // Image is a Panel which resizes to match the texture size by default.
 type Image struct {
 	Panel
-	resize bool
+	resizeToTexture bool
 }
 
 // NewImage creates a new Image.
@@ -23,24 +23,24 @@ func NewImage() *Image {
 
 // InitImage initializes an image.
 func (i *Image) InitImage() {
-	i.Panel.InitPanel(i, 0, 0)
-	i.resize = true
+	i.InitPanel(i, 0, 0)
+	i.resizeToTexture = true
 }
 
-// SetResize sets whether this image resizes automatically to match its texture size.
-func (i *Image) SetResize(resize bool) {
-	i.resize = resize
+// SetResizeToTexture sets whether this image resizes automatically to match its texture size.
+func (i *Image) SetResizeToTexture(resize bool) {
+	i.resizeToTexture = resize
 }
 
-// GetResize returns whether this image resizes automatically to match its texture size.
-func (i *Image) GetResize(resize bool) bool {
-	return resize
+// GetResizeToTexture returns whether this image resizes automatically to match its texture size.
+func (i *Image) GetResizeToTexture() bool {
+	return i.resizeToTexture
 }
 
 // SetTexture changes the image's texture and resizes the panel.
 // It returns a pointer to the previous texture.
 func (i *Image) SetTexture(tex *texture.Texture2D) *texture.Texture2D {
-	if i.resize {
+	if i.resizeToTexture {
 		if tex != nil {
 			i.Panel.SetContentSize(float32(tex.Width()), float32(tex.Height()))
 		} else {

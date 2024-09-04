@@ -6,17 +6,8 @@ package gui
 
 import (
 	"github.com/derekmu/g3n/core"
+	"github.com/derekmu/g3n/texture"
 )
-
-// Button is a button UI element.
-type Button struct {
-	Panel                   // Embedded Panel
-	Label     *Label        // Label panel
-	image     *Image        // pointer to button image (may be nil)
-	styles    *ButtonStyles // pointer to current button styles
-	mouseOver bool          // true if mouse is over button
-	pressed   bool          // true if button is pressed
-}
 
 // ButtonStyle contains the styling of a Button.
 type ButtonStyle BasicStyle
@@ -41,166 +32,212 @@ const (
 	// ButtonFocus
 )
 
-// NewButton creates a new Button with the specified text for the button label.
+// Button is a button UI element that extends Image and uses different textures for each ButtonState.
+// There is also a Label for text on top.
+type Button struct {
+	Image
+	Label         *Label
+	expandToLabel bool
+	styles        *ButtonStyles
+	mouseOver     bool
+	pressed       bool
+	textures      [ButtonDisabled + 1]*texture.Texture2D
+}
+
+// NewButton creates a new Button with the specified text the button label.
 func NewButton(text string) *Button {
 	b := new(Button)
-	b.styles = &StyleDefault().Button
-
-	// Initializes the button panel
-	b.Panel.InitPanel(b, 0, 0)
-
-	// Subscribe to panel events
-	b.Subscribe(OnKeyDown, b.onKey)
-	b.Subscribe(OnKeyUp, b.onKey)
-	b.Subscribe(OnMouseUp, b.onMouse)
-	b.Subscribe(OnMouseDown, b.onMouse)
-	b.Subscribe(OnMouseUpOut, b.onMouse)
-	b.Subscribe(OnCursor, b.onCursor)
-	b.Subscribe(OnCursorEnter, b.onCursor)
-	b.Subscribe(OnCursorLeave, b.onCursor)
-	b.Subscribe(OnEnable, func(name string, ev interface{}) { b.update() })
-	b.Subscribe(OnResize, func(name string, ev interface{}) { b.recalc() })
-
-	// Creates label
-	b.Label = NewLabel(text)
-	b.Label.Subscribe(OnResize, func(name string, ev interface{}) { b.recalc() })
-	b.Panel.Add(b.Label)
-
-	b.recalc() // recalc first then update!
-	b.update()
+	b.InitButton(text)
 	return b
 }
 
-// SetStyles set the button styles overriding the default style.
-func (b *Button) SetStyles(bs *ButtonStyles) {
-	b.styles = bs
-	b.update()
+// InitButton initializes the image and subscribes to events.
+func (b *Button) InitButton(text string) {
+	b.InitImage()
+
+	b.styles = &StyleDefault().Button
+
+	// Create label
+	b.Label = NewLabel(text)
+	b.Add(b.Label)
+	b.Label.Subscribe(OnResize, func(string, interface{}) { b.recalculateSize() })
+	b.expandToLabel = true
+
+	// subscribe to events
+	b.Subscribe(OnMouseUp, b.onMouse)
+	b.Subscribe(OnMouseDown, b.onMouse)
+	b.Subscribe(OnCursorEnter, b.onCursor)
+	b.Subscribe(OnCursorLeave, b.onCursor)
+	b.Subscribe(OnEnable, b.onEnable)
+	b.Subscribe(OnEnable, func(name string, ev interface{}) { b.updateStyle() })
+	b.Subscribe(OnResize, func(name string, ev interface{}) { b.recalculateSize() })
+
+	b.updateTexture()
+	b.updateStyle()
 }
 
-// onCursor processes subscribed cursor events.
+// Dispose disposes of the label and all button textures.
+func (b *Button) Dispose() {
+	b.Image.Dispose()
+	b.Label.Dispose()
+	for _, tex := range b.textures {
+		if tex != nil {
+			tex.Dispose()
+		}
+	}
+}
+
+// onCursor handles cursor enter and leave events.
 func (b *Button) onCursor(evname string, _ interface{}) {
 	switch evname {
 	case OnCursorEnter:
 		b.mouseOver = true
-		b.update()
+		b.updateTexture()
+		b.updateStyle()
 	case OnCursorLeave:
 		b.mouseOver = false
-		b.update()
+		// Pressing, dragging out, and releasing cancels the click
+		b.pressed = false
+		b.updateTexture()
+		b.updateStyle()
 	}
 }
 
-// onMouse processes subscribed mouse events.
-func (b *Button) onMouse(evname string, _ interface{}) {
+// onMouse handles mouse down and up events.
+func (b *Button) onMouse(evname string, ev interface{}) {
 	if !b.Enabled() {
 		return
 	}
+	mev := ev.(*core.MouseEvent)
 	switch evname {
 	case OnMouseDown:
-		GetManager().SetKeyFocus(b)
-		b.pressed = true
-		b.update()
-	case OnMouseUpOut:
-		fallthrough
-	case OnMouseUp:
-		if b.pressed && b.mouseOver {
-			b.Dispatch(OnClick, nil)
+		if mev.Button == core.MouseButtonLeft {
+			b.pressed = true
+			b.updateTexture()
+			b.updateStyle()
 		}
-		b.pressed = false
-		b.update()
-	default:
-		return
+	case OnMouseUp:
+		if mev.Button == core.MouseButtonLeft {
+			if b.pressed && b.mouseOver {
+				b.Dispatch(OnClick, nil)
+			}
+			b.pressed = false
+			b.updateTexture()
+			b.updateStyle()
+		}
 	}
 }
 
-// onKey processes subscribed key events.
-func (b *Button) onKey(evname string, ev interface{}) {
-	kev := ev.(*core.KeyEvent)
-	if kev.Key != core.KeyEnter {
-		return
-	}
+// onEnable handles enable and disable events.
+func (b *Button) onEnable(evname string, _ interface{}) {
 	switch evname {
-	case OnKeyDown:
-		b.pressed = true
-		b.update()
-		b.Dispatch(OnClick, nil)
-	case OnKeyUp:
+	case OnEnable:
+		// Enabling or disabling a button cancels the click
 		b.pressed = false
-		b.update()
+		b.updateTexture()
+		b.updateStyle()
 	}
 }
 
-// update updates the button visual state.
-func (b *Button) update() {
+// SetStateTexture changes the texture used by the button in a given state.
+// Any prior texture for the state is disposed.
+func (b *Button) SetStateTexture(state ButtonState, tex *texture.Texture2D) {
+	if b.textures[state] != nil {
+		b.textures[state].Dispose()
+	}
+	b.textures[state] = tex
+	b.updateTexture()
+}
+
+// GetStateTexture returns the texture used by the button in a given state.
+func (b *Button) GetStateTexture(state ButtonState) *texture.Texture2D {
+	return b.textures[state]
+}
+
+// updateTexture changes the texture of the button based on the present button state.
+func (b *Button) updateTexture() {
+	b.SetTexture(b.textures[b.GetButtonState()])
+}
+
+// GetButtonState returns present button state.
+func (b *Button) GetButtonState() ButtonState {
 	if !b.Enabled() {
-		b.applyStyle(&b.styles.Disabled)
-		return
+		return ButtonDisabled
+	} else if b.pressed {
+		return ButtonPressed
+	} else if b.mouseOver {
+		return ButtonOver
+	} else {
+		return ButtonNormal
 	}
-	if b.pressed && b.mouseOver {
-		b.applyStyle(&b.styles.Pressed)
-		return
-	}
-	if b.mouseOver {
-		b.applyStyle(&b.styles.Over)
-		return
-	}
-	b.applyStyle(&b.styles.Normal)
 }
 
-// applyStyle applies the specified button style.
+// SetStyles set the button styles.
+func (b *Button) SetStyles(bs *ButtonStyles) {
+	b.styles = bs
+	b.updateStyle()
+}
+
+// applyStyle applies a button style.
 func (b *Button) applyStyle(bs *ButtonStyle) {
 	b.Panel.ApplyStyle(&bs.PanelStyle)
 	b.Label.SetColor(bs.FgColor)
 }
 
-// recalc recalculates all dimensions and position from inside out.
-func (b *Button) recalc() {
+// updateStyle applies a button style depending on the button state.
+func (b *Button) updateStyle() {
+	switch b.GetButtonState() {
+	case ButtonNormal:
+		b.applyStyle(&b.styles.Normal)
+	case ButtonOver:
+		b.applyStyle(&b.styles.Over)
+	case ButtonPressed:
+		b.applyStyle(&b.styles.Pressed)
+	case ButtonDisabled:
+		b.applyStyle(&b.styles.Disabled)
+	}
+}
+
+// SetExpandToLabel sets whether this button resizes automatically make room for its label.
+func (b *Button) SetExpandToLabel(expand bool) {
+	b.expandToLabel = expand
+}
+
+// GetExpandToLabel returns whether this button resizes automatically make room for its label.
+func (b *Button) GetExpandToLabel() bool {
+	return b.expandToLabel
+}
+
+// recalculateSize recalculates all dimensions and position from inside out.
+func (b *Button) recalculateSize() {
+	if !b.expandToLabel {
+		return
+	}
 	// Current width and height of button content area
-	width := b.Panel.ContentWidth()
-	height := b.Panel.ContentHeight()
+	width := b.ContentWidth()
+	height := b.ContentHeight()
 
-	// Image width
-	imageWidth := float32(0)
-	spacing := float32(4)
-	if b.image != nil {
-		imageWidth = b.image.Width()
-	}
-	if imageWidth == 0 {
-		spacing = 0
-	}
-
-	// Label width
-	labelWidth := spacing + b.Label.Width()
-	// If the label is empty and an image was defined, ignore the label to centralize the image
-	if b.Label.Text() == "" && imageWidth > 0 {
-		labelWidth = 0
+	labelWidth, labelHeight := b.Label.Size()
+	if b.Label.Text() == "" {
+		labelWidth, labelHeight = 0, 0
 	}
 
 	// Sets new content width and height if necessary
-	minWidth := imageWidth + labelWidth
-	minHeight := b.Label.Height()
 	resize := false
-	if width < minWidth {
-		width = minWidth
+	if width < labelWidth {
+		width = labelWidth
 		resize = true
 	}
-	if height < minHeight {
-		height = minHeight
+	if height < labelHeight {
+		height = labelHeight
 		resize = true
 	}
 	if resize {
 		b.SetContentSize(width, height)
 	}
 
-	// Centralize horizontally
-	px := (width - minWidth) / 2
-
-	// Set label position
-	ly := (height - b.Label.Height()) / 2
-	b.Label.SetPosition(px+imageWidth+spacing, ly)
-
-	// Image position
-	if b.image != nil {
-		iy := (height - b.image.height) / 2
-		b.image.SetPosition(px, iy)
-	}
+	// Centralize
+	px := (width - labelWidth) / 2
+	ly := (height - labelHeight) / 2
+	b.Label.SetPosition(px, ly)
 }
