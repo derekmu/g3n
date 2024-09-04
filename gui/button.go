@@ -210,9 +210,6 @@ func (b *Button) GetExpandToLabel() bool {
 
 // recalculateSize recalculates all dimensions and position from inside out.
 func (b *Button) recalculateSize() {
-	if !b.expandToLabel {
-		return
-	}
 	// Current width and height of button content area
 	width := b.ContentWidth()
 	height := b.ContentHeight()
@@ -223,21 +220,23 @@ func (b *Button) recalculateSize() {
 	}
 
 	// Sets new content width and height if necessary
-	resize := false
-	if width < labelWidth {
-		width = labelWidth
-		resize = true
-	}
-	if height < labelHeight {
-		height = labelHeight
-		resize = true
-	}
-	if resize {
-		b.SetContentSize(width, height)
+	if b.expandToLabel {
+		resize := false
+		if width < labelWidth {
+			width = labelWidth
+			resize = true
+		}
+		if height < labelHeight {
+			height = labelHeight
+			resize = true
+		}
+		if resize {
+			b.SetContentSize(width, height)
+		}
 	}
 
-	// Centralize
-	px := (width - labelWidth) / 2
-	ly := (height - labelHeight) / 2
-	b.Label.SetPosition(px, ly)
+	// Centralize or pin to 0, 0
+	lx := max(0, (width-labelWidth)/2)
+	ly := max(0, (height-labelHeight)/2)
+	b.Label.SetPosition(lx, ly)
 }
