@@ -46,6 +46,8 @@ func NewLabelWithFont(txt string, fnt *text.Font) *Label {
 func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.InitImage()
 	l.font = fnt
+	l.color = math32.Color4{1, 1, 1, 1}
+	l.bgColor = math32.Color4{1, 1, 1, 0}
 	l.fontAttributes = text.FontAttributes{
 		PointSize:   14,
 		DPI:         72,
