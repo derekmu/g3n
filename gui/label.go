@@ -18,7 +18,7 @@ type Label struct {
 	font   *text.Font
 	style  LabelStyle
 	text   string
-	rgba   *image.RGBA
+	rgba   image.RGBA
 	canvas *text.Canvas
 }
 
@@ -165,8 +165,8 @@ func (l *Label) drawText() {
 	if l.canvas == nil || l.rgba.Rect.Dx() < width || l.rgba.Rect.Dy() < height {
 		// Allocate a new canvas if the existing one can't hold the text
 		l.canvas = text.NewCanvas(width, height, l.style.BgColor)
-		// Keep track of the full RGBA
-		l.rgba = l.canvas.RGBA
+		// Keep a copy of the RGBA
+		l.rgba = *l.canvas.RGBA
 	} else {
 		// Reuse part of the already allocated image
 		l.canvas.RGBA.Pix = l.rgba.Pix[:4*width*height]
