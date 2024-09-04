@@ -7,41 +7,21 @@ package gui
 import (
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gui/assets/icon"
-	"github.com/derekmu/g3n/math32"
 	"time"
 )
 
 // Menu is the menu GUI element
 type Menu struct {
 	Panel                // embedded panel
-	styles   *MenuStyles // pointer to current styles
 	bar      bool        // true for menu bar
 	items    []*MenuItem // menu items
 	autoOpen bool        // open sub menus when mouse over if true
 	mitem    *MenuItem   // parent menu item for sub menu
 }
 
-// MenuBodyStyle describes the style of the menu body
-type MenuBodyStyle BasicStyle
-
-// MenuBodyStyles describes all styles of the menu body
-type MenuBodyStyles struct {
-	Normal   MenuBodyStyle
-	Over     MenuBodyStyle
-	Focus    MenuBodyStyle
-	Disabled MenuBodyStyle
-}
-
-// MenuStyles describes all styles of the menu body and menu item
-type MenuStyles struct {
-	Body *MenuBodyStyles // Menu body styles
-	Item *MenuItemStyles // Menu item styles
-}
-
 // MenuItem is an option of a Menu
 type MenuItem struct {
 	Panel                     // embedded panel
-	styles   *MenuItemStyles  // pointer to current styles
 	menu     *Menu            // pointer to parent menu
 	licon    *Label           // optional left icon label
 	label    *Label           // optional text label (nil for separators)
@@ -54,23 +34,6 @@ type MenuItem struct {
 	keyCode  core.Key         // shortcut key code
 	disabled bool             // item disabled state
 	selected bool             // selection state
-}
-
-// MenuItemStyle describes the style of a menu item
-type MenuItemStyle struct {
-	PanelStyle
-	FgColor          math32.Color4
-	IconPaddings     RectBounds
-	ShortcutPaddings RectBounds
-	RiconPaddings    RectBounds
-}
-
-// MenuItemStyles describes all the menu item styles
-type MenuItemStyles struct {
-	Normal    MenuItemStyle
-	Over      MenuItemStyle
-	Disabled  MenuItemStyle
-	Separator MenuItemStyle
 }
 
 var mapKeyModifier = map[core.ModifierKey]string{
@@ -148,18 +111,16 @@ func NewMenuBar() *Menu {
 func NewMenu() *Menu {
 	m := new(Menu)
 	m.Panel.InitPanel(m, 0, 0)
-	m.styles = &StyleDefault().Menu
 	m.items = make([]*MenuItem, 0)
 	m.Panel.Subscribe(OnKeyDown, m.onKey)
 	m.Panel.Subscribe(OnResize, m.onResize)
-	m.update()
 	return m
 }
 
 // AddOption creates and adds a new menu item to this menu with the
 // specified text and returns the pointer to the created menu item.
 func (m *Menu) AddOption(text string) *MenuItem {
-	mi := newMenuItem(text, m.styles.Item)
+	mi := newMenuItem(text)
 	m.Panel.Add(mi)
 	m.items = append(m.items, mi)
 	mi.menu = m
@@ -169,7 +130,7 @@ func (m *Menu) AddOption(text string) *MenuItem {
 
 // AddSeparator creates and adds a new separator to the menu
 func (m *Menu) AddSeparator() *MenuItem {
-	mi := newMenuItem("", m.styles.Item)
+	mi := newMenuItem("")
 	m.Panel.Add(mi)
 	m.items = append(m.items, mi)
 	mi.menu = m
@@ -181,7 +142,7 @@ func (m *Menu) AddSeparator() *MenuItem {
 // specified text and sub menu.
 // Returns the pointer to the created menu item.
 func (m *Menu) AddMenu(text string, subm *Menu) *MenuItem {
-	mi := newMenuItem(text, m.styles.Item)
+	mi := newMenuItem(text)
 	mi.zLayerDelta = 1
 	m.Panel.Add(mi)
 	m.items = append(m.items, mi)
@@ -431,16 +392,6 @@ func (m *Menu) prevItem(pos int) int {
 	return res
 }
 
-// update updates the menu visual state
-func (m *Menu) update() {
-	m.applyStyle(&m.styles.Body.Normal)
-}
-
-// applyStyle applies the specified menu body style
-func (m *Menu) applyStyle(mbs *MenuBodyStyle) {
-	m.Panel.ApplyStyle(&mbs.PanelStyle)
-}
-
 // recalc recalculates the positions of this menu internal items
 // and the content width and height of the menu
 func (m *Menu) recalc() {
@@ -533,10 +484,9 @@ func (m *Menu) recalcBar(setSize bool) {
 
 // newMenuItem creates and returns a pointer to a new menu item
 // with the specified text.
-func newMenuItem(text string, styles *MenuItemStyles) *MenuItem {
+func newMenuItem(text string) *MenuItem {
 	mi := new(MenuItem)
 	mi.Panel.InitPanel(mi, 0, 0)
-	mi.styles = styles
 	if text != "" {
 		mi.label = NewLabel(text)
 		mi.Panel.Add(mi.label)
@@ -720,17 +670,14 @@ func (mi *MenuItem) dispatchAll(evname string, ev interface{}) {
 func (mi *MenuItem) update() {
 	// Separator
 	if mi.label == nil {
-		mi.applyStyle(&mi.styles.Separator)
 		return
 	}
 	// Disabled item
 	if mi.disabled {
-		mi.applyStyle(&mi.styles.Disabled)
 		return
 	}
 	// Selected item
 	if mi.selected {
-		mi.applyStyle(&mi.styles.Over)
 		if mi.submenu != nil && mi.menu.autoOpen {
 			mi.menu.SetTopChild(mi)
 			mi.submenu.SetVisible(true)
@@ -746,24 +693,6 @@ func (mi *MenuItem) update() {
 	// hides the sub menu
 	if mi.submenu != nil {
 		mi.submenu.SetVisible(false)
-	}
-	mi.applyStyle(&mi.styles.Normal)
-}
-
-// applyStyle applies the specified menu item style
-func (mi *MenuItem) applyStyle(mis *MenuItemStyle) {
-	mi.Panel.ApplyStyle(&mis.PanelStyle)
-	if mi.licon != nil {
-		mi.licon.SetPaddings(mis.IconPaddings)
-	}
-	if mi.label != nil {
-		mi.label.SetColor(mis.FgColor)
-	}
-	if mi.shortcut != nil {
-		mi.shortcut.SetPaddings(mis.ShortcutPaddings)
-	}
-	if mi.ricon != nil {
-		mi.ricon.SetPaddings(mis.RiconPaddings)
 	}
 }
 

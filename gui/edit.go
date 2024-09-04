@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/text"
 )
 
@@ -28,26 +27,6 @@ type Edit struct {
 	mouseDrag   bool // true when the mouse is moved while left mouse button is down. Used for selecting text via mouse
 	blinkID     int
 	caretOn     bool
-	styles      *EditStyles
-}
-
-// EditStyle contains the styling of an Edit
-type EditStyle struct {
-	Border      RectBounds
-	Paddings    RectBounds
-	BorderColor math32.Color4
-	BgColor     math32.Color4
-	BgAlpha     float32
-	FgColor     math32.Color4
-	HolderColor math32.Color4
-}
-
-// EditStyles contains an EditStyle for each valid GUI state
-type EditStyles struct {
-	Normal   EditStyle
-	Over     EditStyle
-	Focus    EditStyle
-	Disabled EditStyle
 }
 
 const (
@@ -61,7 +40,6 @@ func NewEdit(width int, placeHolder string) *Edit {
 	ed.width = width
 	ed.placeHolder = placeHolder
 
-	ed.styles = &StyleDefault().Edit
 	ed.text = ""
 	ed.MaxLength = 80
 	ed.col = 0
@@ -78,10 +56,8 @@ func NewEdit(width int, placeHolder string) *Edit {
 	ed.Label.Subscribe(OnCursorEnter, ed.onCursor)
 	ed.Label.Subscribe(OnCursorLeave, ed.onCursor)
 	ed.Label.Subscribe(OnCursor, ed.onCursor)
-	ed.Label.Subscribe(OnEnable, func(evname string, ev interface{}) { ed.update() })
 	ed.Subscribe(OnFocusLost, ed.OnFocusLost)
 
-	ed.update()
 	return ed
 }
 
@@ -92,7 +68,6 @@ func (ed *Edit) SetText(newText string) *Edit {
 	ed.col = text.StrCount(ed.text)
 	ed.selStart = ed.col
 	ed.selEnd = ed.col
-	ed.update()
 	return ed
 }
 
@@ -129,17 +104,10 @@ func (ed *Edit) SetFontSize(size float64) *Edit {
 	return ed
 }
 
-// SetStyles set the button styles overriding the default style
-func (ed *Edit) SetStyles(es *EditStyles) {
-	ed.styles = es
-	ed.update()
-}
-
 // LostKeyFocus satisfies the IPanel interface and is called by gui root
 // container when the panel loses the key focus
 func (ed *Edit) OnFocusLost(string, interface{}) {
 	ed.focus = false
-	ed.update()
 	GetManager().ClearTimeout(ed.blinkID)
 }
 
@@ -509,14 +477,12 @@ func (ed *Edit) onCursor(evname string, ev interface{}) {
 	if evname == OnCursorEnter {
 		GetManager().window.SetCursor(core.IBeamCursor)
 		ed.cursorOver = true
-		ed.update()
 		return
 	}
 	if evname == OnCursorLeave {
 		GetManager().window.SetCursor(core.ArrowCursor)
 		ed.cursorOver = false
 		ed.mouseDrag = false
-		ed.update()
 		return
 	}
 	if ed.mouseDrag {
@@ -537,40 +503,4 @@ func (ed *Edit) blink(_ interface{}) {
 		ed.caretOn = false
 	}
 	ed.redraw(ed.caretOn)
-}
-
-// update updates the visual state
-func (ed *Edit) update() {
-	if !ed.Enabled() {
-		ed.applyStyle(&ed.styles.Disabled)
-		return
-	}
-	if ed.cursorOver {
-		ed.applyStyle(&ed.styles.Over)
-		return
-	}
-	if ed.focus {
-		ed.applyStyle(&ed.styles.Focus)
-		return
-	}
-	ed.applyStyle(&ed.styles.Normal)
-}
-
-// applyStyle applies the specified style
-func (ed *Edit) applyStyle(s *EditStyle) {
-	ed.SetBorders(s.Border)
-	ed.SetBorderColor(s.BorderColor)
-	ed.SetPaddings(s.Paddings)
-	ed.Label.SetColor(s.FgColor)
-	ed.Label.SetBgColor(s.BgColor)
-	//ed.Label.SetBgAlpha(s.BgAlpha)
-
-	if !ed.focus && len(ed.text) == 0 && len(ed.placeHolder) > 0 {
-		//scaleX, _ := GetManager().window.GetScale()
-		//ed.Label.SetColor(s.HolderColor)
-		//ed.Label.drawTextCaret(ed.placeHolder, editMarginX, int(float64(ed.width)*scaleX), false, -1, ed.col, ed.selStart, ed.selEnd)
-	} else {
-		ed.Label.SetColor(s.FgColor)
-		ed.redraw(ed.focus)
-	}
 }

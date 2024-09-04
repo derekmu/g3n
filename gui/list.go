@@ -10,13 +10,12 @@ import (
 
 // List represents a list GUI element
 type List struct {
-	ItemScroller             // Embedded scroller
-	styles       *ListStyles // Pointer to styles
-	single       bool        // Single selection flag (default is true)
-	focus        bool        // has keyboard focus
-	dropdown     bool        // this is used as dropdown
-	keyNext      core.Key    // Code of key to select next item
-	keyPrev      core.Key    // Code of key to select previous item
+	ItemScroller          // Embedded scroller
+	single       bool     // Single selection flag (default is true)
+	focus        bool     // has keyboard focus
+	dropdown     bool     // this is used as dropdown
+	keyNext      core.Key // Code of key to select next item
+	keyPrev      core.Key // Code of key to select previous item
 }
 
 // ListItem encapsulates each item inserted into the list
@@ -28,24 +27,6 @@ type ListItem struct {
 	padLeft     float32 // Additional left padding
 	list        *List   // Pointer to list
 }
-
-// ListStyles encapsulates a set of styles for the list and item.
-type ListStyles struct {
-	Scroller *ItemScrollerStyles
-	Item     *ListItemStyles
-}
-
-// ListItemStyles contains one ListItemStyle for each possible item state.
-type ListItemStyles struct {
-	Normal      ListItemStyle
-	Over        ListItemStyle
-	Selected    ListItemStyle
-	Highlighted ListItemStyle
-	SelHigh     ListItemStyle
-}
-
-// ListItemStyle contains the styling of a list item.
-type ListItemStyle BasicStyle
 
 // OnListItemResize is the identifier of the event dispatched when a ListItem's child panel is resized
 const OnListItemResize = "gui.OnListItemResize"
@@ -71,11 +52,9 @@ func newList(vert bool, width, height float32) *List {
 }
 
 func (li *List) InitList(vert bool, width, height float32) {
-	li.styles = &StyleDefault().List
 	li.single = true
 
 	li.ItemScroller.InitScroller(vert, width, height)
-	li.ItemScroller.SetStyles(li.styles.Scroller)
 	li.ItemScroller.adjustItem = true
 	li.ItemScroller.Subscribe(OnKeyDown, li.onKeyEvent)
 	li.ItemScroller.Subscribe(OnKeyRepeat, li.onKeyEvent)
@@ -87,8 +66,6 @@ func (li *List) InitList(vert bool, width, height float32) {
 		li.keyNext = core.KeyRight
 		li.keyPrev = core.KeyLeft
 	}
-
-	li.update()
 }
 
 // SetSingle sets the single/multiple selection flag of the list
@@ -99,13 +76,6 @@ func (li *List) SetSingle(state bool) {
 // Single returns the current state of the single/multiple selection flag
 func (li *List) Single() bool {
 	return li.single
-}
-
-// SetStyles set the listr styles overriding the default style
-func (li *List) SetStyles(s *ListStyles) {
-	li.styles = s
-	li.ItemScroller.SetStyles(li.styles.Scroller)
-	li.update()
 }
 
 // Add add a list item at the end of the list
@@ -185,7 +155,6 @@ func (li *List) SetSelected(item IPanel, state bool) {
 		litem := curr.(*ListItem)
 		if litem.item == item {
 			litem.SetSelected(state)
-			li.update()
 			li.Dispatch(OnChange, nil)
 			return
 		}
@@ -202,7 +171,6 @@ func (li *List) SelectPos(pos int, state bool) {
 		return
 	}
 	litem.SetSelected(state)
-	li.update()
 	li.Dispatch(OnChange, nil)
 }
 
@@ -214,7 +182,6 @@ func (li *List) SetItemPadLeftAt(pos int, pad float32) {
 	}
 	litem := li.items[pos].(*ListItem)
 	litem.padLeft = pad
-	litem.update()
 }
 
 // selNext selects or highlights the next item, if possible
@@ -263,9 +230,6 @@ func (li *List) selNext(sel bool, update bool) *ListItem {
 		}
 	}
 
-	if update {
-		li.update()
-	}
 	if sel && newSel {
 		li.Dispatch(OnChange, nil)
 	}
@@ -315,9 +279,6 @@ func (li *List) selPrev(sel bool, update bool) *ListItem {
 				li.ScrollUp()
 			}
 		}
-	}
-	if update {
-		li.update()
 	}
 	if sel && newSel {
 		li.Dispatch(OnChange, nil)
@@ -412,17 +373,8 @@ func (li *List) setSelection(litem *ListItem, state bool, force bool, dispatch b
 			}
 		}
 	}
-	li.update()
 	if dispatch {
 		li.Dispatch(OnChange, nil)
-	}
-}
-
-// update updates the visual state the list and its items
-func (li *List) update() {
-	// Update the list items styles
-	for _, item := range li.items {
-		item.(*ListItem).update()
 	}
 }
 
@@ -442,7 +394,6 @@ func newListItem(list *List, item IPanel) *ListItem {
 	litem.Subscribe(OnResize, func(evname string, ev interface{}) {
 		item.GetPanel().Dispatch(OnListItemResize, nil)
 	})
-	litem.update()
 	return litem
 }
 
@@ -476,29 +427,4 @@ func (litem *ListItem) SetSelected(state bool) {
 func (litem *ListItem) SetHighlighted(state bool) {
 	litem.highlighted = state
 	//litem.item.SetHighlighted2(state)
-}
-
-// updates the list item visual style accordingly to its current state
-func (litem *ListItem) update() {
-	list := litem.list
-	if litem.selected && !litem.highlighted {
-		litem.applyStyle(&list.styles.Item.Selected)
-		return
-	}
-	if !litem.selected && litem.highlighted {
-		litem.applyStyle(&list.styles.Item.Highlighted)
-		return
-	}
-	if litem.selected && litem.highlighted {
-		litem.applyStyle(&list.styles.Item.SelHigh)
-		return
-	}
-	litem.applyStyle(&list.styles.Item.Normal)
-}
-
-// applyStyle applies the specified style to this ListItem
-func (litem *ListItem) applyStyle(s *ListItemStyle) {
-	styleCopy := s.PanelStyle
-	styleCopy.Padding.Left += litem.padLeft
-	litem.Panel.ApplyStyle(&styleCopy)
 }

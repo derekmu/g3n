@@ -6,35 +6,19 @@ package gui
 
 import (
 	"github.com/derekmu/g3n/core"
-	"github.com/derekmu/g3n/math32"
 )
 
 // Splitter is a GUI element that splits two panels and can be adjusted
 type Splitter struct {
-	Panel                     // Embedded panel
-	P0        Panel           // Left/Top panel
-	P1        Panel           // Right/Bottom panel
-	styles    *SplitterStyles // pointer to current styles
-	spacer    Panel           // spacer panel
-	horiz     bool            // horizontal or vertical splitter
-	pos       float32         // relative position of the center of the spacer panel (0 to 1)
-	posLast   float32         // last position in pixels of the mouse cursor when dragging
-	pressed   bool            // mouse button is pressed and dragging
-	mouseOver bool            // mouse is over the spacer panel
-}
-
-// SplitterStyle contains the styling of a Splitter
-type SplitterStyle struct {
-	SpacerBorderColor math32.Color4
-	SpacerColor       math32.Color4
-	SpacerSize        float32
-}
-
-// SplitterStyles contains a SplitterStyle for each valid GUI state
-type SplitterStyles struct {
-	Normal SplitterStyle
-	Over   SplitterStyle
-	Drag   SplitterStyle
+	Panel             // Embedded panel
+	P0        Panel   // Left/Top panel
+	P1        Panel   // Right/Bottom panel
+	spacer    Panel   // spacer panel
+	horiz     bool    // horizontal or vertical splitter
+	pos       float32 // relative position of the center of the spacer panel (0 to 1)
+	posLast   float32 // last position in pixels of the mouse cursor when dragging
+	pressed   bool    // mouse button is pressed and dragging
+	mouseOver bool    // mouse is over the spacer panel
 }
 
 // NewHSplitter creates and returns a pointer to a new horizontal splitter
@@ -54,7 +38,6 @@ func NewVSplitter(width, height float32) *Splitter {
 func newSplitter(horiz bool, width, height float32) *Splitter {
 	s := new(Splitter)
 	s.horiz = horiz
-	s.styles = &StyleDefault().Splitter
 	s.Panel.InitPanel(s, width, height)
 
 	// Initialize left/top panel
@@ -83,7 +66,6 @@ func newSplitter(horiz bool, width, height float32) *Splitter {
 	s.spacer.Subscribe(OnCursor, s.onCursor)
 	s.spacer.Subscribe(OnCursorEnter, s.onCursor)
 	s.spacer.Subscribe(OnCursorLeave, s.onCursor)
-	s.update()
 	s.recalc()
 	return s
 }
@@ -137,11 +119,9 @@ func (s *Splitter) onCursor(evname string, ev interface{}) {
 			GetManager().window.SetCursor(core.VResizeCursor)
 		}
 		s.mouseOver = true
-		s.update()
 	} else if evname == OnCursorLeave {
 		GetManager().window.SetCursor(core.ArrowCursor)
 		s.mouseOver = false
-		s.update()
 	} else if evname == OnCursor {
 		if !s.pressed {
 			return
@@ -171,30 +151,6 @@ func (s *Splitter) setSplit(pos float32) {
 		s.pos = 1
 	} else {
 		s.pos = pos
-	}
-}
-
-// update updates the splitter visual state
-func (s *Splitter) update() {
-	if s.pressed {
-		s.applyStyle(&s.styles.Drag)
-		return
-	}
-	if s.mouseOver {
-		s.applyStyle(&s.styles.Over)
-		return
-	}
-	s.applyStyle(&s.styles.Normal)
-}
-
-// applyStyle applies the specified splitter style
-func (s *Splitter) applyStyle(ss *SplitterStyle) {
-	s.spacer.SetBorderColor(ss.SpacerBorderColor)
-	s.spacer.SetColor(ss.SpacerColor)
-	if s.horiz {
-		s.spacer.SetWidth(ss.SpacerSize)
-	} else {
-		s.spacer.SetHeight(ss.SpacerSize)
 	}
 }
 

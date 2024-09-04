@@ -24,10 +24,9 @@ import (
 
 // ScrollBar is the scrollbar GUI element.
 type ScrollBar struct {
-	Panel                       // Embedded panel
-	styles     *ScrollBarStyles // styles of the scrollbar
-	vertical   bool             // type of scrollbar
-	button     scrollBarButton  // scrollbar button
+	Panel                      // Embedded panel
+	vertical   bool            // type of scrollbar
+	button     scrollBarButton // scrollbar button
 	cursorOver bool
 }
 
@@ -39,21 +38,6 @@ type scrollBarButton struct {
 	mouseY  float32    // last mouse click y position
 	Size    float32    // button size
 	MinSize float32    // minimum button size
-}
-
-// ScrollBarStyles contains a ScrollBarStyle for each valid GUI state.
-type ScrollBarStyles struct {
-	Normal   ScrollBarStyle
-	Over     ScrollBarStyle
-	Disabled ScrollBarStyle
-}
-
-// ScrollBarStyle contains the styling of a ScrollBar.
-type ScrollBarStyle struct {
-	PanelStyle
-	Button       PanelStyle
-	ButtonLength float32 // This is the default/minimum button length
-	// TODO ScrollSpeed ?
 }
 
 // NewVScrollBar creates and returns a pointer to a new vertical scroll bar
@@ -78,7 +62,6 @@ func newScrollBar(width, height float32, vertical bool) *ScrollBar {
 
 // InitScrollBar initializes this scrollbar
 func (sb *ScrollBar) InitScrollBar(width, height float32, vertical bool) {
-	sb.styles = &StyleDefault().ScrollBar
 	sb.vertical = vertical
 	sb.Panel.InitPanel(sb, width, height)
 	sb.Panel.Subscribe(OnMouseDown, sb.onMouse)
@@ -89,11 +72,10 @@ func (sb *ScrollBar) InitScrollBar(width, height float32, vertical bool) {
 	sb.button.Panel.Subscribe(OnMouseUp, sb.button.onMouse)
 	sb.button.Panel.Subscribe(OnCursor, sb.button.onCursor)
 	sb.button.SetMargins(RectBounds{1, 1, 1, 1})
-	sb.button.Size = sb.styles.Normal.ButtonLength
+	sb.button.Size = 32
 	sb.button.sb = sb
 	sb.Add(&sb.button)
 
-	sb.update()
 	sb.recalc()
 }
 
@@ -165,28 +147,6 @@ func (sb *ScrollBar) recalc() {
 	} else {
 		sb.button.SetSize(sb.button.Size, sb.content.Height)
 	}
-}
-
-// update updates the visual state
-func (sb *ScrollBar) update() {
-	// TODO disabling the scrollbar only affects style, needs to affect behavior
-	if !sb.Enabled() {
-		sb.applyStyle(&sb.styles.Disabled)
-		return
-	}
-	// TODO cursorOver is never set to true for the scrollbar
-	if sb.cursorOver {
-		sb.applyStyle(&sb.styles.Over)
-		return
-	}
-	sb.applyStyle(&sb.styles.Normal)
-}
-
-// update updates border sizes and colors
-func (sb *ScrollBar) applyStyle(sbs *ScrollBarStyle) {
-	sb.Panel.ApplyStyle(&sbs.PanelStyle)
-	sb.button.ApplyStyle(&sbs.Button)
-	sb.button.MinSize = sbs.ButtonLength
 }
 
 // onMouse receives subscribed mouse events for the scroll bar button

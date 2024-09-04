@@ -69,7 +69,7 @@ func (il *ImageLabel) SetIcon(icon string) {
 	}
 	if il.icon == nil {
 		il.icon = NewIconLabel(icon)
-		il.icon.SetFontSize(StyleDefault().Label.PointSize * 1.4)
+		il.icon.SetFontSize(14 * 1.4)
 		il.Panel.Add(il.icon)
 	}
 	il.icon.SetText(icon)

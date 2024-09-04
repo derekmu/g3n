@@ -32,8 +32,7 @@ import (
 
 // Window represents a window GUI element
 type Window struct {
-	Panel       // Embedded Panel
-	styles      *WindowStyles
+	Panel                    // Embedded Panel
 	title       *WindowTitle // internal optional title panel
 	client      Panel        // internal client (content) panel
 	resizable   bool         // Specifies whether the window is resizable
@@ -51,25 +50,10 @@ type Window struct {
 	maxSize math32.Vector2
 }
 
-// WindowStyle contains the styling of a Window
-type WindowStyle struct {
-	PanelStyle
-	TitleStyle WindowTitleStyle
-}
-
-// WindowStyles contains a WindowStyle for each valid GUI state
-type WindowStyles struct {
-	Normal   WindowStyle
-	Over     WindowStyle
-	Focus    WindowStyle
-	Disabled WindowStyle
-}
-
 // NewWindow creates and returns a pointer to a new window with the
 // specified dimensions
 func NewWindow(width, height float32) *Window {
 	w := new(Window)
-	w.styles = &StyleDefault().Window
 
 	w.Panel.InitPanel(w, width, height)
 	w.Panel.Subscribe(OnMouseDown, w.onMouse)
@@ -85,7 +69,6 @@ func NewWindow(width, height float32) *Window {
 	w.dragPadding = 5
 
 	w.recalc()
-	w.update()
 	return w
 }
 
@@ -108,7 +91,6 @@ func (w *Window) SetTitle(text string) {
 	} else {
 		w.title.label.SetText(text)
 	}
-	w.update()
 	w.recalc()
 }
 
@@ -250,27 +232,6 @@ func (w *Window) onCursor(evname string, ev interface{}) {
 	} else if evname == OnCursorLeave {
 		GetManager().window.SetCursor(core.ArrowCursor)
 		w.drag = false
-	}
-}
-
-// update updates the window's visual state.
-func (w *Window) update() {
-	if !w.Enabled() {
-		w.applyStyle(&w.styles.Disabled)
-		return
-	}
-	w.applyStyle(&w.styles.Normal)
-}
-
-// applyStyle applies a window style to the window.
-func (w *Window) applyStyle(s *WindowStyle) {
-	w.SetBorderColor(s.BorderColor)
-	w.SetBorders(s.Border)
-	w.SetPaddings(s.Padding)
-	w.client.SetMargins(s.Margin)
-	w.client.SetColor(s.BgColor)
-	if w.title != nil {
-		w.title.applyStyle(&s.TitleStyle)
 	}
 }
 

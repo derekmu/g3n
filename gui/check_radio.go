@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	checkON  = string(icon.CheckBox)
-	checkOFF = string(icon.CheckBoxOutlineBlank)
-	radioON  = string(icon.RadioButtonChecked)
-	radioOFF = string(icon.RadioButtonUnchecked)
+	checkON  = icon.CheckBox
+	checkOFF = icon.CheckBoxOutlineBlank
+	radioON  = icon.RadioButtonChecked
+	radioOFF = icon.RadioButtonUnchecked
 )
 
 // CheckRadio is a GUI element that can be either a checkbox or a radio button
@@ -21,7 +21,6 @@ type CheckRadio struct {
 	Panel             // Embedded panel
 	Label      *Label // Text label
 	icon       *Label
-	styles     *CheckRadioStyles
 	check      bool
 	group      string // current group name
 	cursorOver bool
@@ -29,17 +28,6 @@ type CheckRadio struct {
 	codeON     string
 	codeOFF    string
 	subroot    bool // indicates root subcription
-}
-
-// CheckRadioStyle contains the styling of a CheckRadio
-type CheckRadioStyle BasicStyle
-
-// CheckRadioStyles contains an CheckRadioStyle for each valid GUI state
-type CheckRadioStyles struct {
-	Normal   CheckRadioStyle
-	Over     CheckRadioStyle
-	Focus    CheckRadioStyle
-	Disabled CheckRadioStyle
 }
 
 // NewCheckBox creates and returns a pointer to a new CheckBox widget
@@ -58,7 +46,6 @@ func NewRadioButton(text string) *CheckRadio {
 // with the specified type and text
 func newCheckRadio(check bool, text string) *CheckRadio {
 	cb := new(CheckRadio)
-	cb.styles = &StyleDefault().CheckRadio
 
 	// Adapts to specified type: CheckBox or RadioButton
 	cb.check = check
@@ -120,12 +107,6 @@ func (cb *CheckRadio) Group() string {
 func (cb *CheckRadio) SetGroup(group string) *CheckRadio {
 	cb.group = group
 	return cb
-}
-
-// SetStyles set the button styles overriding the default style
-func (cb *CheckRadio) SetStyles(bs *CheckRadioStyles) {
-	cb.styles = bs
-	cb.update()
 }
 
 // toggleState toggles the current state of the checkbox/radiobutton
@@ -214,23 +195,6 @@ func (cb *CheckRadio) update() {
 	} else {
 		cb.icon.SetText(cb.codeOFF)
 	}
-
-	if !cb.Enabled() {
-		cb.applyStyle(&cb.styles.Disabled)
-		return
-	}
-	if cb.cursorOver {
-		cb.applyStyle(&cb.styles.Over)
-		return
-	}
-	cb.applyStyle(&cb.styles.Normal)
-}
-
-// setStyle sets the specified checkradio style
-func (cb *CheckRadio) applyStyle(s *CheckRadioStyle) {
-	cb.Panel.ApplyStyle(&s.PanelStyle)
-	cb.icon.SetColor(s.FgColor)
-	cb.Label.SetColor(s.FgColor)
 }
 
 // recalc recalculates dimensions and position from inside out

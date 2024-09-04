@@ -9,18 +9,6 @@ import (
 	"github.com/derekmu/g3n/texture"
 )
 
-// ButtonStyle contains the styling of a Button.
-type ButtonStyle BasicStyle
-
-// ButtonStyles contains one ButtonStyle for each ButtonState.
-type ButtonStyles struct {
-	Normal   ButtonStyle
-	Over     ButtonStyle
-	Focus    ButtonStyle
-	Pressed  ButtonStyle
-	Disabled ButtonStyle
-}
-
 // ButtonState identifies the state of a Button.
 type ButtonState int
 
@@ -38,7 +26,6 @@ type Button struct {
 	Image
 	Label         *Label
 	expandToLabel bool
-	styles        *ButtonStyles
 	mouseOver     bool
 	pressed       bool
 	textures      [ButtonDisabled + 1]*texture.Texture2D
@@ -55,8 +42,6 @@ func NewButton(text string) *Button {
 func (b *Button) InitButton(text string) {
 	b.InitImage()
 
-	b.styles = &StyleDefault().Button
-
 	// Create label
 	b.Label = NewLabel(text)
 	b.Add(b.Label)
@@ -69,11 +54,9 @@ func (b *Button) InitButton(text string) {
 	b.Subscribe(OnCursorEnter, b.onCursor)
 	b.Subscribe(OnCursorLeave, b.onCursor)
 	b.Subscribe(OnEnable, b.onEnable)
-	b.Subscribe(OnEnable, func(name string, ev interface{}) { b.updateStyle() })
 	b.Subscribe(OnResize, func(name string, ev interface{}) { b.recalculateSize() })
 
 	b.updateTexture()
-	b.updateStyle()
 }
 
 // Dispose disposes of the label and all button textures.
@@ -93,13 +76,11 @@ func (b *Button) onCursor(evname string, _ interface{}) {
 	case OnCursorEnter:
 		b.mouseOver = true
 		b.updateTexture()
-		b.updateStyle()
 	case OnCursorLeave:
 		b.mouseOver = false
 		// Pressing, dragging out, and releasing cancels the click
 		b.pressed = false
 		b.updateTexture()
-		b.updateStyle()
 	}
 }
 
@@ -114,16 +95,15 @@ func (b *Button) onMouse(evname string, ev interface{}) {
 		if mev.Button == core.MouseButtonLeft {
 			b.pressed = true
 			b.updateTexture()
-			b.updateStyle()
 		}
 	case OnMouseUp:
 		if mev.Button == core.MouseButtonLeft {
-			if b.pressed && b.mouseOver {
-				b.Dispatch(OnClick, nil)
-			}
+			clicked := b.pressed && b.mouseOver
 			b.pressed = false
 			b.updateTexture()
-			b.updateStyle()
+			if clicked {
+				b.Dispatch(OnClick, nil)
+			}
 		}
 	}
 }
@@ -135,7 +115,6 @@ func (b *Button) onEnable(evname string, _ interface{}) {
 		// Enabling or disabling a button cancels the click
 		b.pressed = false
 		b.updateTexture()
-		b.updateStyle()
 	}
 }
 
@@ -169,32 +148,6 @@ func (b *Button) GetButtonState() ButtonState {
 		return ButtonOver
 	} else {
 		return ButtonNormal
-	}
-}
-
-// SetStyles set the button styles.
-func (b *Button) SetStyles(bs *ButtonStyles) {
-	b.styles = bs
-	b.updateStyle()
-}
-
-// applyStyle applies a button style.
-func (b *Button) applyStyle(bs *ButtonStyle) {
-	b.Panel.ApplyStyle(&bs.PanelStyle)
-	b.Label.SetColor(bs.FgColor)
-}
-
-// updateStyle applies a button style depending on the button state.
-func (b *Button) updateStyle() {
-	switch b.GetButtonState() {
-	case ButtonNormal:
-		b.applyStyle(&b.styles.Normal)
-	case ButtonOver:
-		b.applyStyle(&b.styles.Over)
-	case ButtonPressed:
-		b.applyStyle(&b.styles.Pressed)
-	case ButtonDisabled:
-		b.applyStyle(&b.styles.Disabled)
 	}
 }
 

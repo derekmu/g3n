@@ -60,7 +60,6 @@ const (
 // organized in rows and columns.
 type Table struct {
 	Panel                       // Embedded panel
-	styles         *TableStyles // pointer to current styles
 	header         tableHeader  // table headers
 	rows           []*tableRow  // array of table rows
 	rowCursor      int          // index of row cursor
@@ -103,34 +102,6 @@ type TableCell struct {
 
 // TableFormatFunc is the type for formatting functions
 type TableFormatFunc func(cell TableCell) string
-
-// TableHeaderStyle describes the style of the table header
-type TableHeaderStyle BasicStyle
-
-// TableRowStyle describes the style of the table row
-type TableRowStyle BasicStyle
-
-// TableStatusStyle describes the style of the table status line panel
-type TableStatusStyle BasicStyle
-
-// TableResizerStyle describes the style of the table resizer panel
-type TableResizerStyle struct {
-	Width       float32
-	Border      RectBounds
-	BorderColor math32.Color4
-	BgColor     math32.Color4
-}
-
-// TableStyles describes all styles of the table header and rows
-type TableStyles struct {
-	Header    TableHeaderStyle
-	RowEven   TableRowStyle
-	RowOdd    TableRowStyle
-	RowCursor TableRowStyle
-	RowSel    TableRowStyle
-	Status    TableStatusStyle
-	Resizer   TableResizerStyle
-}
 
 // TableClickEvent describes a mouse click event over a table
 // It contains the original mouse event plus additional information
@@ -191,7 +162,6 @@ type tableCell struct {
 func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	t := new(Table)
 	t.Panel.InitPanel(t, width, height)
-	t.styles = &StyleDefault().Table
 	t.rowCursor = -1
 
 	// Initialize table header
@@ -213,7 +183,6 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 		// Creates a column header
 		c := new(tableColHeader)
 		c.InitPanel(c, 0, 0)
-		t.applyHeaderStyle(&c.Panel, false)
 		c.label = NewLabel(cdesc.Header)
 		c.Add(c.label)
 		c.id = cdesc.Id
@@ -258,23 +227,20 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	}
 	// Creates last header
 	t.header.lastPan.InitPanel(&t.header, 0, 0)
-	t.applyHeaderStyle(&t.header.lastPan, true)
 	t.header.Panel.Add(&t.header.lastPan)
 
 	// Add header panel to the table panel
 	t.Panel.Add(&t.header)
 
 	// Creates resizer panel
-	t.resizerPanel.InitPanel(&t.resizerPanel, t.styles.Resizer.Width, 0)
+	t.resizerPanel.InitPanel(&t.resizerPanel, 4, 0)
 	t.resizerPanel.SetVisible(false)
-	t.applyResizerStyle()
 	t.Panel.Add(&t.resizerPanel)
 
 	// Creates status panel
 	t.statusPanel.InitPanel(&t.statusPanel, 0, 0)
 	t.statusPanel.SetVisible(false)
 	t.statusLabel = NewLabel("")
-	t.applyStatusStyle()
 	t.statusPanel.Add(t.statusLabel)
 	t.Panel.Add(&t.statusPanel)
 
@@ -288,12 +254,6 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	t.Panel.Subscribe(OnResize, t.onResize)
 	t.recalc()
 	return t, nil
-}
-
-// SetStyles set this table styles overriding the default
-func (t *Table) SetStyles(ts *TableStyles) {
-	t.styles = ts
-	t.recalc()
 }
 
 // SetSelectionType sets this table selection type
@@ -677,7 +637,6 @@ func (t *Table) insertRow(row int, values map[string]interface{}) {
 	t.rows = append(t.rows, nil)
 	copy(t.rows[row+1:], t.rows[row:])
 	t.rows[row] = trow
-	t.updateRowStyle(row)
 
 	// Sets the new row values from the specified map
 	if values != nil {
@@ -1286,7 +1245,6 @@ func (t *Table) recalc() {
 		// Set row y position and visible
 		trow.SetPosition(0, py)
 		trow.SetVisible(true)
-		t.updateRowStyle(ri)
 		// Set the last completely visible row index
 		if py+trow.Height() <= starty+theight {
 			t.lastRow = ri
@@ -1463,56 +1421,6 @@ func (t *Table) calcMaxFirst() int {
 		}
 	}
 	return ri + 1
-}
-
-// updateRowStyle applies the correct style for the specified row
-func (t *Table) updateRowStyle(ri int) {
-	row := t.rows[ri]
-	var trs TableRowStyle
-	if ri == t.rowCursor {
-		trs = t.styles.RowCursor
-	} else if row.selected {
-		trs = t.styles.RowSel
-	} else {
-		if ri%2 == 0 {
-			trs = t.styles.RowEven
-		} else {
-			trs = t.styles.RowOdd
-		}
-	}
-	t.applyRowStyle(row, &trs)
-}
-
-// applyHeaderStyle applies style to the specified table header
-// the last header panel does not the right border.
-func (t *Table) applyHeaderStyle(h *Panel, last bool) {
-	styleCopy := t.styles.Header.PanelStyle
-	if last {
-		styleCopy.Border.Right = 0
-	}
-	h.ApplyStyle(&styleCopy)
-}
-
-// applyRowStyle applies the specified style to all cells for the specified table row
-func (t *Table) applyRowStyle(trow *tableRow, trs *TableRowStyle) {
-	for i := 0; i < len(trow.cells); i++ {
-		cell := trow.cells[i]
-		cell.ApplyStyle(&trs.PanelStyle)
-	}
-}
-
-// applyStatusStyle applies the status style
-func (t *Table) applyStatusStyle() {
-	s := t.styles.Status
-	t.statusPanel.ApplyStyle(&s.PanelStyle)
-}
-
-// applyResizerStyle applies the status style
-func (t *Table) applyResizerStyle() {
-	s := t.styles.Resizer
-	t.resizerPanel.SetBorders(s.Border)
-	t.resizerPanel.SetBorderColor(s.BorderColor)
-	t.resizerPanel.SetColor(s.BgColor)
 }
 
 // tableSortString is an internal type implementing the sort.Interface

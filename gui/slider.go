@@ -24,27 +24,15 @@ import (
 
 // Slider is the GUI element for sliders and progress bars
 type Slider struct {
-	Panel                     // Embedded panel
-	slider      Panel         // embedded slider panel
-	label       *Label        // optional label
-	horiz       bool          // orientation
-	styles      *SliderStyles // pointer to styles
-	pos         float32       // current slider position
-	posLast     float32       // last position of the mouse cursor when dragging
-	pressed     bool          // mouse button is pressed and dragging
-	cursorOver  bool          // mouse is over slider
-	scaleFactor float32       // scale factor (default = 1.0)
-}
-
-// SliderStyle contains the styling of a Slider
-type SliderStyle BasicStyle
-
-// SliderStyles contains a SliderStyle for each valid GUI state
-type SliderStyles struct {
-	Normal   SliderStyle
-	Over     SliderStyle
-	Focus    SliderStyle
-	Disabled SliderStyle
+	Panel               // Embedded panel
+	slider      Panel   // embedded slider panel
+	label       *Label  // optional label
+	horiz       bool    // orientation
+	pos         float32 // current slider position
+	posLast     float32 // last position of the mouse cursor when dragging
+	pressed     bool    // mouse button is pressed and dragging
+	cursorOver  bool    // mouse is over slider
+	scaleFactor float32 // scale factor (default = 1.0)
 }
 
 // NewHSlider creates and returns a pointer to a new horizontal slider
@@ -64,7 +52,6 @@ func NewVSlider(width, height float32) *Slider {
 func newSlider(horiz bool, width, height float32) *Slider {
 	s := new(Slider)
 	s.horiz = horiz
-	s.styles = &StyleDefault().Slider
 	s.scaleFactor = 1.0
 
 	// Initialize main panel
@@ -78,21 +65,12 @@ func newSlider(horiz bool, width, height float32) *Slider {
 	s.Panel.Subscribe(OnKeyDown, s.onKey)
 	s.Panel.Subscribe(OnKeyRepeat, s.onKey)
 	s.Panel.Subscribe(OnResize, s.onResize)
-	s.Panel.Subscribe(OnEnable, func(evname string, ev interface{}) { s.update() })
 
 	// Initialize slider panel
 	s.slider.InitPanel(&s.slider, 0, 0)
 	s.Panel.Add(&s.slider)
 
 	s.recalc()
-	s.update()
-	return s
-}
-
-// SetStyles set the slider styles overriding the default style
-func (s *Slider) SetStyles(ss *SliderStyles) *Slider {
-	s.styles = ss
-	s.update()
 	return s
 }
 
@@ -104,7 +82,6 @@ func (s *Slider) SetText(text string) *Slider {
 	} else {
 		s.label.SetText(text)
 	}
-	s.update()
 	s.recalc()
 	return s
 }
@@ -191,11 +168,9 @@ func (s *Slider) onCursor(evname string, ev interface{}) {
 		} else {
 			GetManager().window.SetCursor(core.VResizeCursor)
 		}
-		s.update()
 	} else if evname == OnCursorLeave {
 		s.cursorOver = false
 		GetManager().window.SetCursor(core.ArrowCursor)
-		s.update()
 	} else if evname == OnCursor {
 		if !s.pressed {
 			return
@@ -263,25 +238,6 @@ func (s *Slider) onKey(_ string, ev interface{}) {
 // onResize process subscribed resize events
 func (s *Slider) onResize(_ string, _ interface{}) {
 	s.recalc()
-}
-
-// update updates the slider visual state
-func (s *Slider) update() {
-	if !s.Enabled() {
-		s.applyStyle(&s.styles.Disabled)
-		return
-	}
-	if s.cursorOver || s.pressed {
-		s.applyStyle(&s.styles.Over)
-		return
-	}
-	s.applyStyle(&s.styles.Normal)
-}
-
-// applyStyle applies the specified slider style
-func (s *Slider) applyStyle(ss *SliderStyle) {
-	s.Panel.ApplyStyle(&ss.PanelStyle)
-	s.slider.SetColor(ss.FgColor)
 }
 
 // recalc recalculates the dimensions and positions of the internal panels.

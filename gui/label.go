@@ -9,55 +9,56 @@ import (
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/text"
 	"github.com/derekmu/g3n/texture"
+	"golang.org/x/image/font"
 	"image"
 )
 
 // Label is a text only UI element.
 type Label struct {
 	Image
-	font   *text.Font
-	style  LabelStyle
-	text   string
-	rgba   image.RGBA
-	canvas *text.Canvas
-}
-
-// LabelStyle contains the styling attributes of a Label.
-type LabelStyle struct {
-	PanelStyle
-	text.FontAttributes
-	FgColor math32.Color4
+	font           *text.Font
+	text           string
+	rgba           image.RGBA
+	canvas         *text.Canvas
+	color          math32.Color4
+	bgColor        math32.Color4
+	fontAttributes text.FontAttributes
 }
 
 // NewLabel creates a Label with the specified text using the default font.
-func NewLabel(text string) *Label {
-	return NewLabelWithFont(text, StyleDefault().Font)
+func NewLabel(txt string) *Label {
+	return NewLabelWithFont(txt, StyleDefault().Font)
 }
 
 // NewIconLabel creates a Label with the specified text using the default icon font.
-func NewIconLabel(text string) *Label {
-	return NewLabelWithFont(text, StyleDefault().FontIcon)
+func NewIconLabel(txt string) *Label {
+	return NewLabelWithFont(txt, StyleDefault().FontIcon)
 }
 
 // NewLabelWithFont creates a Label with the specified text using the specified font.
-func NewLabelWithFont(text string, font *text.Font) *Label {
+func NewLabelWithFont(txt string, fnt *text.Font) *Label {
 	l := new(Label)
-	l.InitLabel(text, font)
+	l.InitLabel(txt, fnt)
 	return l
 }
 
 // InitLabel initializes this Label.
-func (l *Label) InitLabel(text string, font *text.Font) {
-	l.font = font
-	l.Image.InitImage()
-	l.style = StyleDefault().Label
-	l.SetText(text)
+func (l *Label) InitLabel(txt string, fnt *text.Font) {
+	l.InitImage()
+	l.font = fnt
+	l.fontAttributes = text.FontAttributes{
+		PointSize:   14,
+		DPI:         72,
+		LineSpacing: 1.0,
+		Hinting:     font.HintingNone,
+	}
+	l.SetText(txt)
 }
 
 // SetText sets and redraws the label text.
-func (l *Label) SetText(text string) {
-	if text != l.text {
-		l.text = text
+func (l *Label) SetText(txt string) {
+	if txt != l.text {
+		l.text = txt
 		l.drawText()
 	}
 }
@@ -69,21 +70,21 @@ func (l *Label) Text() string {
 
 // SetColor sets the text color.
 func (l *Label) SetColor(color math32.Color4) {
-	if l.style.FgColor != color {
-		l.style.FgColor = color
+	if l.color != color {
+		l.color = color
 		l.drawText()
 	}
 }
 
 // Color returns the text color.
 func (l *Label) Color() math32.Color4 {
-	return l.style.FgColor
+	return l.color
 }
 
 // SetBgColor sets the background color.
 func (l *Label) SetBgColor(color math32.Color4) {
-	if l.style.BgColor != color {
-		l.style.BgColor = color
+	if l.bgColor != color {
+		l.bgColor = color
 		l.Panel.SetColor(color)
 		l.drawText()
 	}
@@ -91,7 +92,7 @@ func (l *Label) SetBgColor(color math32.Color4) {
 
 // BgColor returns the background color.
 func (l *Label) BgColor() math32.Color4 {
-	return l.style.BgColor
+	return l.bgColor
 }
 
 // SetFont sets the font.
@@ -109,48 +110,48 @@ func (l *Label) Font() *text.Font {
 
 // SetFontSize sets the point size of the font.
 func (l *Label) SetFontSize(size float64) {
-	if size != l.style.PointSize {
-		l.style.PointSize = size
+	if l.fontAttributes.PointSize != size {
+		l.fontAttributes.PointSize = size
 		l.drawText()
 	}
 }
 
 // FontSize returns the point size of the font.
 func (l *Label) FontSize() float64 {
-	return l.style.PointSize
+	return l.fontAttributes.PointSize
 }
 
 // SetFontDPI sets the resolution of the font in dots per inch (DPI).
 func (l *Label) SetFontDPI(dpi float64) {
-	if dpi != l.style.DPI {
-		l.style.DPI = dpi
+	if l.fontAttributes.DPI != dpi {
+		l.fontAttributes.DPI = dpi
 		l.drawText()
 	}
 }
 
 // FontDPI returns the resolution of the font in dots per inch (DPI).
 func (l *Label) FontDPI() float64 {
-	return l.style.DPI
+	return l.fontAttributes.DPI
 }
 
 // SetLineSpacing sets the spacing between lines.
 func (l *Label) SetLineSpacing(spacing float64) {
-	if spacing != l.style.LineSpacing {
-		l.style.LineSpacing = spacing
+	if l.fontAttributes.LineSpacing != spacing {
+		l.fontAttributes.LineSpacing = spacing
 		l.drawText()
 	}
 }
 
 // LineSpacing returns the spacing between lines.
 func (l *Label) LineSpacing() float64 {
-	return l.style.LineSpacing
+	return l.fontAttributes.LineSpacing
 }
 
 // drawText redraws the label texture.
 func (l *Label) drawText() {
 	// Set font properties
-	l.font.SetAttributes(&l.style.FontAttributes)
-	l.font.SetColor(l.style.FgColor)
+	l.font.SetAttributes(&l.fontAttributes)
+	l.font.SetColor(l.color)
 
 	scaleX, scaleY := GetManager().window.GetScale()
 	l.font.SetScaleXY(scaleX, scaleY)
@@ -164,7 +165,7 @@ func (l *Label) drawText() {
 	width, height := l.font.MeasureText(txt)
 	if l.canvas == nil || l.rgba.Rect.Dx() < width || l.rgba.Rect.Dy() < height {
 		// Allocate a new canvas if the existing one can't hold the text
-		l.canvas = text.NewCanvas(width, height, l.style.BgColor)
+		l.canvas = text.NewCanvas(width, height, l.bgColor)
 		// Keep a copy of the RGBA
 		l.rgba = *l.canvas.RGBA
 	} else {
@@ -173,7 +174,7 @@ func (l *Label) drawText() {
 		l.canvas.RGBA.Stride = 4 * width
 		l.canvas.RGBA.Rect = image.Rect(0, 0, width, height)
 		// Update the color
-		l.canvas.BgColor = l.style.BgColor
+		l.canvas.BgColor = l.bgColor
 	}
 	l.canvas.DrawText(0, 0, txt, l.font)
 

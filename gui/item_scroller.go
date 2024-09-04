@@ -11,31 +11,19 @@ import (
 
 // ItemScroller is the GUI element that allows scrolling of IPanels
 type ItemScroller struct {
-	Panel                              // Embedded panel
-	vert           bool                // vertical/horizontal scroller flag
-	styles         *ItemScrollerStyles // pointer to current styles
-	items          []IPanel            // list of panels in the scroller
-	hscroll        *ScrollBar          // horizontal scroll bar
-	vscroll        *ScrollBar          // vertical scroll bar
-	maxAutoWidth   float32             // maximum auto width (if 0, auto width disabled)
-	maxAutoHeight  float32             // maximum auto height (if 0, auto width disabled)
-	first          int                 // first visible item position
-	adjustItem     bool                // adjust item to width or height
-	focus          bool                // has keyboard focus
-	cursorOver     bool                // mouse is over the list
-	autoButtonSize bool                // scroll button size is adjusted relative to content/view
+	Panel                     // Embedded panel
+	vert           bool       // vertical/horizontal scroller flag
+	items          []IPanel   // list of panels in the scroller
+	hscroll        *ScrollBar // horizontal scroll bar
+	vscroll        *ScrollBar // vertical scroll bar
+	maxAutoWidth   float32    // maximum auto width (if 0, auto width disabled)
+	maxAutoHeight  float32    // maximum auto height (if 0, auto width disabled)
+	first          int        // first visible item position
+	adjustItem     bool       // adjust item to width or height
+	focus          bool       // has keyboard focus
+	cursorOver     bool       // mouse is over the list
+	autoButtonSize bool       // scroll button size is adjusted relative to content/view
 	scrollBarEvent bool
-}
-
-// ItemScrollerStyle contains the styling of a ItemScroller
-type ItemScrollerStyle BasicStyle
-
-// ItemScrollerStyles contains a ItemScrollerStyle for each valid GUI state
-type ItemScrollerStyles struct {
-	Normal   ItemScrollerStyle
-	Over     ItemScrollerStyle
-	Focus    ItemScrollerStyle
-	Disabled ItemScrollerStyle
 }
 
 // NewVScroller creates and returns a pointer to a new vertical scroller panel
@@ -65,7 +53,6 @@ func (s *ItemScroller) Clear() {
 	s.hscroll = nil
 	s.vscroll = nil
 	s.items = s.items[0:0]
-	s.update()
 	s.recalc()
 }
 
@@ -229,26 +216,6 @@ func (s *ItemScroller) ItemVisible(pos int) bool {
 	return false
 }
 
-// SetStyles set the scroller styles overriding the default style
-func (s *ItemScroller) SetStyles(ss *ItemScrollerStyles) {
-	s.styles = ss
-	s.update()
-}
-
-// ApplyStyle applies the specified style to the ItemScroller
-func (s *ItemScroller) ApplyStyle(style int) {
-	switch style {
-	case StyleOver:
-		s.applyStyle(&s.styles.Over)
-	case StyleFocus:
-		s.applyStyle(&s.styles.Focus)
-	case StyleNormal:
-		s.applyStyle(&s.styles.Normal)
-	case StyleDef:
-		s.update()
-	}
-}
-
 // SetAutoWidth sets the maximum automatic width
 func (s *ItemScroller) SetAutoWidth(maxWidth float32) {
 	s.maxAutoWidth = maxWidth
@@ -269,14 +236,12 @@ func (s *ItemScroller) InitScroller(vert bool, width, height float32) {
 	s.vert = vert
 	s.autoButtonSize = true
 	s.Panel.InitPanel(s, width, height)
-	s.styles = &StyleDefault().ItemScroller
 
 	s.Panel.Subscribe(OnCursorEnter, s.onCursor)
 	s.Panel.Subscribe(OnCursorLeave, s.onCursor)
 	s.Panel.Subscribe(OnScroll, s.onScroll)
 	s.Panel.Subscribe(OnResize, s.onResize)
 
-	s.update()
 	s.recalc()
 }
 
@@ -285,10 +250,8 @@ func (s *ItemScroller) onCursor(evname string, _ interface{}) {
 	switch evname {
 	case OnCursorEnter:
 		s.cursorOver = true
-		s.update()
 	case OnCursorLeave:
 		s.cursorOver = false
-		s.update()
 	}
 }
 
@@ -582,22 +545,4 @@ func (s *ItemScroller) onScrollBarEvent(_ string, _ interface{}) {
 	s.scrollBarEvent = true
 	s.first = first
 	s.recalc()
-}
-
-// update updates the visual state the list and its items
-func (s *ItemScroller) update() {
-	if s.cursorOver {
-		s.applyStyle(&s.styles.Over)
-		return
-	}
-	if s.focus {
-		s.applyStyle(&s.styles.Focus)
-		return
-	}
-	s.applyStyle(&s.styles.Normal)
-}
-
-// applyStyle sets the specified style
-func (s *ItemScroller) applyStyle(st *ItemScrollerStyle) {
-	s.Panel.ApplyStyle(&st.PanelStyle)
 }

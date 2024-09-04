@@ -5,50 +5,22 @@
 package gui
 
 import (
-	"github.com/derekmu/g3n/math32"
+	"github.com/derekmu/g3n/gui/assets"
 	"github.com/derekmu/g3n/text"
 )
 
 // Style contains the styles for all GUI elements
 type Style struct {
-	Color        ColorStyle
-	Font         *text.Font
-	FontIcon     *text.Font
-	Label        LabelStyle
-	Button       ButtonStyles
-	CheckRadio   CheckRadioStyles
-	Edit         EditStyles
-	ScrollBar    ScrollBarStyles
-	Slider       SliderStyles
-	Splitter     SplitterStyles
-	Window       WindowStyles
-	ItemScroller ItemScrollerStyles
-	Scroller     ScrollerStyle
-	List         ListStyles
-	Dropdown     DropdownStyles
-	Tree         TreeStyles
-	Menu         MenuStyles
-	Table        TableStyles
-	TabBar       TabBarStyles
+	Font     *text.Font
+	FontIcon *text.Font
 }
 
-// ColorStyle defines the main colors used.
-type ColorStyle struct {
-	BgDark    math32.Color4
-	BgMed     math32.Color4
-	BgNormal  math32.Color4
-	BgOver    math32.Color4
-	Highlight math32.Color4
-	Select    math32.Color4
-	Text      math32.Color4
-	TextDis   math32.Color4
+var defaultStyle = &Style{
+	Font:     assets.NewFreeSansFont(),
+	FontIcon: assets.NewMaterialIconsRegularFont(),
 }
 
-// States that a GUI element can be in
-const (
-	StyleOver = iota + 1
-	StyleFocus
-	StyleDisabled
-	StyleNormal
-	StyleDef
-)
+// StyleDefault returns a pointer to the current default style
+func StyleDefault() *Style {
+	return defaultStyle
+}
