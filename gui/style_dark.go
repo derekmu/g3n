@@ -56,7 +56,7 @@ func NewDarkStyle() *Style {
 	s.Button = ButtonStyles{}
 	s.Button.Normal = ButtonStyle{}
 	s.Button.Normal.Border = oneBounds
-	s.Button.Normal.Padding = RectBounds{2, 4, 2, 4}
+	s.Button.Normal.Padding = RectBounds{}
 	s.Button.Normal.BorderColor = s.Color.BgDark
 	s.Button.Normal.BgColor = s.Color.BgMed
 	s.Button.Normal.FgColor = s.Color.Text
@@ -64,8 +64,8 @@ func NewDarkStyle() *Style {
 	s.Button.Over.BgColor = s.Color.BgOver
 	s.Button.Focus = s.Button.Over
 	s.Button.Pressed = s.Button.Over
-	s.Button.Pressed.Border = RectBounds{2, 2, 2, 2}
-	s.Button.Pressed.Padding = RectBounds{2, 2, 0, 4}
+	s.Button.Pressed.Border = twoBounds
+	s.Button.Pressed.Padding = RectBounds{}
 	s.Button.Disabled = s.Button.Normal
 	s.Button.Disabled.BorderColor = s.Color.TextDis
 	s.Button.Disabled.FgColor = s.Color.TextDis
