@@ -49,8 +49,8 @@ func NewLightStyle() *Style {
 	// Button styles
 	s.Button = ButtonStyles{}
 	s.Button.Normal = ButtonStyle{}
-	s.Button.Normal.Border = oneBounds
-	s.Button.Normal.Padding = RectBounds{}
+	s.Button.Normal.Border = zeroBounds
+	s.Button.Normal.Padding = zeroBounds
 	s.Button.Normal.BorderColor = borderColor
 	s.Button.Normal.BgColor = bgColor
 	s.Button.Normal.FgColor = fgColor
@@ -58,8 +58,8 @@ func NewLightStyle() *Style {
 	s.Button.Over.BgColor = bgColorOver
 	s.Button.Focus = s.Button.Over
 	s.Button.Pressed = s.Button.Over
-	s.Button.Pressed.Border = twoBounds
-	s.Button.Pressed.Padding = RectBounds{}
+	s.Button.Pressed.Border = zeroBounds
+	s.Button.Pressed.Padding = zeroBounds
 	s.Button.Disabled = s.Button.Normal
 	s.Button.Disabled.BorderColor = borderColorDis
 	s.Button.Disabled.FgColor = fgColorDis
