@@ -60,7 +60,7 @@ type TableColumn struct {
 	Width      float32         // Initial column width in pixels
 	Minwidth   float32         // Minimum width in pixels for this column
 	Hidden     bool            // Hidden flag
-	Align      Align           // Cell content alignment: AlignLeft|AlignCenter|AlignRight
+	Align      Align           // Cell content alignment
 	Format     string          // Format string for formatting the columns' cells
 	FormatFunc TableFormatFunc // Format function (overrides Format string)
 	Expand     float32         // Column width expansion factor (0 for no expansion)
@@ -1157,39 +1157,27 @@ func (t *Table) recalcRow(ri int) {
 	px := float32(0)
 	for ci := 0; ci < len(t.header.cols); ci++ {
 		// If column is hidden, ignore
-		c := t.header.cols[ci]
-		cell := trow.cells[c.order]
-		if !c.Visible() {
+		col := t.header.cols[ci]
+		cell := trow.cells[col.order]
+		if !col.Visible() {
 			cell.SetVisible(false)
 			continue
 		}
 		// Sets cell position and size
 		cell.SetPosition(px, 0)
 		cell.SetVisible(true)
-		cell.SetSize(c.Width(), trow.ContentHeight())
+		cell.SetSize(col.Width(), trow.ContentHeight())
 		// Checks for format function
-		if c.formatFunc != nil {
-			text := c.formatFunc(TableCell{t, ri, c.id, cell.value})
+		if col.formatFunc != nil {
+			text := col.formatFunc(TableCell{t, ri, col.id, cell.value})
 			cell.label.SetText(text)
 		}
 		// Sets the cell label alignment inside the cell
-		ccw := cell.ContentWidth()
-		lw := cell.label.Width()
-		space := ccw - lw
-		lx := float32(0)
-		switch c.align {
-		case AlignLeft:
-		case AlignRight:
-			if space > 0 {
-				lx = ccw - lw
-			}
-		case AlignCenter:
-			if space > 0 {
-				lx = space / 2
-			}
+		if col.align != AlignNone {
+			lx, ly := col.align.CalculatePosition(cell.ContentWidth(), cell.ContentHeight(), cell.label.Width(), cell.label.Height())
+			cell.label.SetPosition(lx, ly)
 		}
-		cell.label.SetPosition(lx, 0)
-		px += c.Width()
+		px += col.Width()
 	}
 	trow.SetContentWidth(px)
 }

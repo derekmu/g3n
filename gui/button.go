@@ -24,11 +24,12 @@ const (
 // There is also a Label for text on top.
 type Button struct {
 	Image
-	Label         *Label
-	expandToLabel bool
-	mouseOver     bool
-	pressed       bool
-	textures      [ButtonDisabled + 1]*texture.Texture2D
+	Label          *Label
+	expandToLabel  bool
+	labelAlignment Align
+	mouseOver      bool
+	pressed        bool
+	textures       [ButtonDisabled + 1]*texture.Texture2D
 }
 
 // NewButton creates a new Button with the specified text the button label.
@@ -47,6 +48,7 @@ func (b *Button) InitButton(text string) {
 	b.Add(b.Label)
 	b.Label.Subscribe(OnResize, func(string, any) { b.recalculateSize() })
 	b.expandToLabel = true
+	b.labelAlignment = AlignCenterCenter
 
 	// subscribe to events
 	b.Subscribe(OnMouseUp, b.onMouse)
@@ -161,6 +163,16 @@ func (b *Button) GetExpandToLabel() bool {
 	return b.expandToLabel
 }
 
+// SetLabelAlignment sets how this button aligns its label within its content area.
+func (b *Button) SetLabelAlignment(align Align) {
+	b.labelAlignment = align
+}
+
+// GetLabelAlignment returns how this button aligns its label within its content area.
+func (b *Button) GetLabelAlignment() Align {
+	return b.labelAlignment
+}
+
 // recalculateSize recalculates all dimensions and position from inside out.
 func (b *Button) recalculateSize() {
 	// Current width and height of button content area
@@ -188,8 +200,9 @@ func (b *Button) recalculateSize() {
 		}
 	}
 
-	// Centralize or pin to 0, 0
-	lx := max(0, (width-labelWidth)/2)
-	ly := max(0, (height-labelHeight)/2)
-	b.Label.SetPosition(lx, ly)
+	// Position the label as desired
+	if b.labelAlignment != AlignNone {
+		lx, ly := b.labelAlignment.CalculatePosition(width, height, labelWidth, labelHeight)
+		b.Label.SetPosition(lx, ly)
+	}
 }
