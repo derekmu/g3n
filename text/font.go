@@ -257,7 +257,7 @@ func NewCanvas(width, height int, bgColor math32.Color4) *Canvas {
 // The supplied text string can contain line breaks
 func (c *Canvas) DrawText(x, y int, text string, f *Font) {
 	// fill with background color
-	draw.Draw(c.RGBA, c.RGBA.Bounds(), image.NewUniform(c.BgColor), image.Point{}, draw.Over)
+	draw.Draw(c.RGBA, c.RGBA.Bounds(), image.NewUniform(c.BgColor), image.Point{}, draw.Src)
 	f.DrawTextOnImage(text, x, y, c.RGBA)
 }
 
@@ -269,7 +269,7 @@ func (c *Canvas) DrawTextCaret(x, y int, text string, f *Font, drawCaret bool, l
 	d := font.Drawer{Dst: c.RGBA, Src: f.fg, Face: f.face}
 
 	// fill with background color
-	draw.Draw(c.RGBA, c.RGBA.Bounds(), image.NewUniform(c.BgColor), image.Point{}, draw.Over)
+	draw.Draw(c.RGBA, c.RGBA.Bounds(), image.NewUniform(c.BgColor), image.Point{}, draw.Src)
 
 	// Draw text
 	actualPointSize := int(f.attrib.PointSize * f.scaleY)
