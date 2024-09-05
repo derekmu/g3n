@@ -51,8 +51,10 @@ func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.fontAttributes = text.FontAttributes{
 		PointSize:   14,
 		DPI:         72,
+		ScaleX:      1.0,
+		ScaleY:      1.0,
+		Hinting:     font.HintingFull,
 		LineSpacing: 1.0,
-		Hinting:     font.HintingNone,
 	}
 	l.SetText(txt)
 }
@@ -152,11 +154,11 @@ func (l *Label) LineSpacing() float64 {
 // drawText redraws the label texture.
 func (l *Label) drawText() {
 	// Set font properties
-	l.font.SetAttributes(&l.fontAttributes)
-	l.font.SetColor(l.color)
-
 	scaleX, scaleY := GetManager().window.GetScale()
-	l.font.SetScaleXY(scaleX, scaleY)
+	l.fontAttributes.ScaleX = scaleX
+	l.fontAttributes.ScaleY = scaleY
+	l.font.SetAttributes(l.fontAttributes)
+	l.font.SetColor(l.color)
 
 	// Create an image with the text
 	txt := l.text
