@@ -85,7 +85,7 @@ func NewFontFromData(fontData []byte) (*Font, error) {
 
 // SetPointSize sets the point size of the font.
 func (f *Font) SetPointSize(size float64) {
-	if size == f.attrib.PointSize {
+	if math.Abs(size-f.attrib.PointSize) < 0.00001 {
 		return
 	}
 	f.attrib.PointSize = size
@@ -94,7 +94,7 @@ func (f *Font) SetPointSize(size float64) {
 
 // SetDPI sets the resolution of the font in dots per inches (DPI).
 func (f *Font) SetDPI(dpi float64) {
-	if dpi == f.attrib.DPI {
+	if math.Abs(dpi-f.attrib.DPI) < 0.00001 {
 		return
 	}
 	f.attrib.DPI = dpi
@@ -103,7 +103,7 @@ func (f *Font) SetDPI(dpi float64) {
 
 // SetLineSpacing sets the amount of spacing between lines (in terms of font height).
 func (f *Font) SetLineSpacing(spacing float64) {
-	if spacing == f.attrib.LineSpacing {
+	if math.Abs(spacing-f.attrib.LineSpacing) < 0.00001 {
 		return
 	}
 	f.attrib.LineSpacing = spacing
