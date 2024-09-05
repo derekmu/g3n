@@ -86,6 +86,7 @@ func NewFontFromData(fontData []byte) (*Font, error) {
 		LineSpacing: 1.0,
 	}
 	f.SetColor(math32.Color4{0, 0, 0, 1})
+	f.faceCache = make(map[faceKey]font.Face)
 	return f, nil
 }
 
