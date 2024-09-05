@@ -5,101 +5,67 @@
 package core
 
 // IDispatcher is the interface for event dispatchers.
-type IDispatcher interface {
-	Subscribe(evname string, cb Callback)
-	SubscribeID(evname string, id any, cb Callback)
-	UnsubscribeID(evname string, id any) int
-	UnsubscribeAllID(id any) int
-	Dispatch(evname string, ev any) int
+type IDispatcher[T any] interface {
+	Subscribe(cb Callback[T]) SubscribeID
+	Unsubscribe(id SubscribeID)
+	Dispatch(ev T) int
 }
 
-// Dispatcher implements an event dispatcher.
-type Dispatcher struct {
-	evmap map[string][]subscription // Map of event names to subscription lists
+// SubscribeID identifies a specific subscription to a dispatcher.
+type SubscribeID int32
+
+// SubscribeIDNone is the default SubscribeID, meaning there is no subscription.
+const SubscribeIDNone = SubscribeID(0)
+
+// Callback is a function that will be called when an event is dispatched.
+type Callback[T any] func(T) bool
+
+// subscription holds the SubscribeID and Callback for a subscriber.
+type subscription[T any] struct {
+	id SubscribeID
+	cb Callback[T]
 }
 
-// Callback is the type for Dispatcher callback functions.
-type Callback func(string, any)
+var _ IDispatcher[int] = &Dispatcher[int]{}
 
-// subscription links a Callback with a user-provided unique id.
-type subscription struct {
-	id any
-	cb Callback
+// Dispatcher is an event dispatcher.
+type Dispatcher[T any] struct {
+	subs   []subscription[T]
+	nextId SubscribeID
 }
 
-// NewDispatcher creates and returns a new event dispatcher.
-func NewDispatcher() *Dispatcher {
-	d := new(Dispatcher)
-	d.Initialize()
-	return d
+// Subscribe adds the callback to the list invoked when an event is dispatched.
+// Returns a SubscribeID that can be used to Unsubscribe later.
+func (e *Dispatcher[T]) Subscribe(cb Callback[T]) SubscribeID {
+	e.nextId++
+	e.subs = append(e.subs, subscription[T]{id: e.nextId, cb: cb})
+	return e.nextId
 }
 
-// Initialize initializes the event dispatcher.
-// It is normally used by other types which embed a dispatcher.
-func (d *Dispatcher) Initialize() {
-	d.evmap = make(map[string][]subscription)
-}
-
-// Subscribe subscribes a callback to events with the given name.
-// If it is necessary to unsubscribe later, SubscribeID should be used instead.
-func (d *Dispatcher) Subscribe(evname string, cb Callback) {
-	d.evmap[evname] = append(d.evmap[evname], subscription{nil, cb})
-}
-
-// SubscribeID subscribes a callback to events with the given name.
-// The user-provided unique id can be used to unsubscribe via UnsubscribeID.
-func (d *Dispatcher) SubscribeID(evname string, id any, cb Callback) {
-	d.evmap[evname] = append(d.evmap[evname], subscription{id, cb})
-}
-
-// UnsubscribeID removes all subscribed callbacks with the specified unique id from the specified event.
-// Returns the number of subscriptions removed.
-func (d *Dispatcher) UnsubscribeID(evname string, id any) int {
-	// Get list of subscribers for this event
-	subs := d.evmap[evname]
-	if len(subs) == 0 {
-		return 0
-	}
-
-	// Remove all subscribers of the specified event with the specified id, counting how many were removed
-	rm := 0
-	i := 0
-	for _, s := range subs {
-		if s.id == id {
-			rm++
-		} else {
-			subs[i] = s
-			i++
+// Unsubscribe removes the callback with the given ID from the list invoked when an event is dispatched.
+func (e *Dispatcher[T]) Unsubscribe(id SubscribeID) {
+	for i := 0; i < len(e.subs); i++ {
+		if e.subs[i].id == id {
+			if i == len(e.subs)-1 {
+				e.subs[i].cb = nil
+			} else {
+				e.subs[i] = e.subs[len(e.subs)-1]
+				e.subs[len(e.subs)-1].cb = nil
+			}
+			e.subs = e.subs[:len(e.subs)-1]
+			i--
 		}
 	}
-	d.evmap[evname] = subs[:i]
-	return rm
 }
 
-// UnsubscribeAllID removes all subscribed callbacks with the specified unique id from all events.
-// Returns the number of subscriptions removed.
-func (d *Dispatcher) UnsubscribeAllID(id any) int {
-	// Remove all subscribers with the specified id (for all events), counting how many were removed
-	total := 0
-	for evname := range d.evmap {
-		total += d.UnsubscribeID(evname, id)
+// Dispatch invokes all subscribed callbacks with the given event.
+// Returns the number of subscribers that consumed the event.
+func (e *Dispatcher[T]) Dispatch(ev T) int {
+	count := 0
+	for _, sub := range e.subs {
+		if sub.cb(ev) {
+			count++
+		}
 	}
-	return total
-}
-
-// Dispatch dispatches the specified event to all registered subscribers.
-// The function returns the number of subscribers to which the event was dispatched.
-func (d *Dispatcher) Dispatch(evname string, ev any) int {
-	// Get list of subscribers for this event
-	subs := d.evmap[evname]
-	nsubs := len(subs)
-	if nsubs == 0 {
-		return 0
-	}
-
-	// Dispatch event to all subscribers
-	for _, s := range subs {
-		s.cb(evname, ev)
-	}
-	return nsubs
+	return count
 }

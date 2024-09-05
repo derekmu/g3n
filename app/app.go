@@ -48,7 +48,7 @@ func (a *Application) Run(update func(rend *renderer.Renderer, deltaTime time.Du
 	a.frameStart = time.Now()
 	for {
 		if a.ShouldClose() {
-			a.Dispatch(core.OnExit, nil)
+			a.Dispatch(core.AppExitEvent{})
 			break
 		}
 		now := time.Now()

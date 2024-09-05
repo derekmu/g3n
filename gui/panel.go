@@ -41,6 +41,7 @@ import (
 // IPanel is the interface for all panel types.
 type IPanel interface {
 	graphic.IGraphic
+	core.IDispatcher[core.GuiEvent]
 	GetPanel() *Panel
 	Width() float32
 	Height() float32
@@ -61,6 +62,7 @@ type IPanel interface {
 // It is the building block of most GUI elements.
 type Panel struct {
 	*graphic.Graphic
+	core.Dispatcher[core.GuiEvent]
 	mat         *material.Material
 	tex         *texture.Texture2D
 	zLayerDelta int // Z-layer relative to parent
@@ -479,7 +481,7 @@ func (p *Panel) Intersects(p2 *Panel) bool {
 // A disabled panel does not process events.
 func (p *Panel) SetEnabled(state bool) {
 	p.enabled = state
-	p.Dispatch(OnEnable, nil)
+	p.Dispatch(core.GuiEnableEvent{Enabled: state})
 }
 
 // Enabled returns the enabled state of this panel.
@@ -674,7 +676,7 @@ func (p *Panel) resize(width, height float32, dispatch bool) {
 	if !dispatch {
 		return
 	}
-	p.Dispatch(OnResize, nil)
+	p.Dispatch(core.GuiResizeEvent{})
 }
 
 // RenderSetup is called by the engine before drawing the object.

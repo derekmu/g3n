@@ -22,7 +22,7 @@ var _ gui.IWindow = &window{}
 // window encapsulates a GLFW window.
 type window struct {
 	*glfw.Window
-	core.Dispatcher
+	core.Dispatcher[core.WindowEvent]
 	gls        *gls.GLS
 	fullscreen bool
 	lastX      int
@@ -31,15 +31,6 @@ type window struct {
 	lastHeight int
 	scaleX     float64
 	scaleY     float64
-
-	keyEv    core.KeyEvent
-	charEv   core.CharEvent
-	mouseEv  core.MouseEvent
-	posEv    core.PosEvent
-	sizeEv   core.SizeEvent
-	cursorEv core.CursorEvent
-	scrollEv core.ScrollEvent
-	focusEv  core.FocusEvent
 
 	cursors       map[core.Cursor]*glfw.Cursor
 	lastCursorKey core.Cursor
@@ -52,7 +43,6 @@ func newWindow(width, height int, title string) (*window, error) {
 
 	// Create wrapper window with dispatcher
 	w := new(window)
-	w.Dispatcher.Initialize()
 	var err error
 
 	// Initialize GLFW
@@ -121,72 +111,89 @@ func newWindow(width, height int, title string) (*window, error) {
 
 	// Set up key callback to dispatch event
 	w.SetKeyCallback(func(x *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-		w.keyEv.Key = core.Key(key)
-		w.keyEv.Mods = core.ModifierKey(mods)
-		if action == glfw.Press {
-			w.Dispatch(core.OnKeyDown, &w.keyEv)
-		} else if action == glfw.Release {
-			w.Dispatch(core.OnKeyUp, &w.keyEv)
-		} else if action == glfw.Repeat {
-			w.Dispatch(core.OnKeyRepeat, &w.keyEv)
+		switch action {
+		case glfw.Press:
+			w.Dispatch(core.KeyDownEvent{
+				Key:  core.Key(key),
+				Mods: core.ModifierKey(mods),
+			})
+		case glfw.Release:
+			w.Dispatch(core.KeyUpEvent{
+				Key:  core.Key(key),
+				Mods: core.ModifierKey(mods),
+			})
+		case glfw.Repeat:
+			w.Dispatch(core.KeyRepeatEvent{
+				Key:  core.Key(key),
+				Mods: core.ModifierKey(mods),
+			})
 		}
 	})
 
 	// Set up char callback to dispatch event
 	w.SetCharCallback(func(x *glfw.Window, char rune) {
-		w.charEv.Char = char
-		w.Dispatch(core.OnChar, &w.charEv)
+		w.Dispatch(core.CharEvent{Char: char})
 	})
 
 	// Set up mouse button callback to dispatch event
 	w.SetMouseButtonCallback(func(x *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey) {
 		xpos, ypos := x.GetCursorPos()
-		w.mouseEv.Button = core.MouseButton(button)
-		w.mouseEv.Mods = core.ModifierKey(mods)
-		w.mouseEv.Xpos = float32(xpos) //* float32(w.scaleX)
-		w.mouseEv.Ypos = float32(ypos) //* float32(w.scaleY)
-		if action == glfw.Press {
-			w.Dispatch(core.OnMouseDown, &w.mouseEv)
-		} else if action == glfw.Release {
-			w.Dispatch(core.OnMouseUp, &w.mouseEv)
+		switch action {
+		case glfw.Press:
+			w.Dispatch(core.MouseDownEvent{
+				X:      float32(xpos),
+				Y:      float32(ypos),
+				Button: core.MouseButton(button),
+				Mods:   core.ModifierKey(mods),
+			})
+		case glfw.Release:
+			w.Dispatch(core.MouseUpEvent{
+				X:      float32(xpos),
+				Y:      float32(ypos),
+				Button: core.MouseButton(button),
+				Mods:   core.ModifierKey(mods),
+			})
 		}
 	})
 
 	// Set up window size callback to dispatch event
 	w.SetSizeCallback(func(x *glfw.Window, width int, height int) {
 		fbw, fbh := x.GetFramebufferSize()
-		w.sizeEv.Width = width
-		w.sizeEv.Height = height
 		w.scaleX = float64(fbw) / float64(width)
 		w.scaleY = float64(fbh) / float64(height)
-		w.Dispatch(core.OnWindowSize, &w.sizeEv)
+		w.Dispatch(core.WindowSizeEvent{
+			Width:  width,
+			Height: height,
+		})
 	})
 
 	// Set up window position callback to dispatch event
 	w.SetPosCallback(func(x *glfw.Window, xpos int, ypos int) {
-		w.posEv.Xpos = xpos
-		w.posEv.Ypos = ypos
-		w.Dispatch(core.OnWindowPos, &w.posEv)
+		w.Dispatch(core.WindowPosEvent{
+			X: xpos,
+			Y: ypos,
+		})
 	})
 
 	// Set up window focus callback to dispatch event
 	w.SetFocusCallback(func(x *glfw.Window, focused bool) {
-		w.focusEv.Focused = focused
-		w.Dispatch(core.OnWindowFocus, &w.focusEv)
+		w.Dispatch(core.WindowFocusEvent{Focused: focused})
 	})
 
 	// Set up window cursor position callback to dispatch event
 	w.SetCursorPosCallback(func(x *glfw.Window, xpos float64, ypos float64) {
-		w.cursorEv.Xpos = float32(xpos)
-		w.cursorEv.Ypos = float32(ypos)
-		w.Dispatch(core.OnCursor, &w.cursorEv)
+		w.Dispatch(core.CursorEvent{
+			X: float32(xpos),
+			Y: float32(ypos),
+		})
 	})
 
 	// Set up mouse wheel scroll callback to dispatch event
 	w.SetScrollCallback(func(x *glfw.Window, xoff float64, yoff float64) {
-		w.scrollEv.Xoffset = float32(xoff)
-		w.scrollEv.Yoffset = float32(yoff)
-		w.Dispatch(core.OnScroll, &w.scrollEv)
+		w.Dispatch(core.ScrollEvent{
+			X: float32(xoff),
+			Y: float32(yoff),
+		})
 	})
 
 	return w, nil

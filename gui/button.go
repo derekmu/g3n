@@ -43,20 +43,13 @@ func NewButton(text string) *Button {
 func (b *Button) InitButton(text string) {
 	b.InitImage()
 
-	// Create label
 	b.Label = NewLabel(text)
 	b.Add(b.Label)
-	b.Label.Subscribe(OnResize, func(string, any) { b.recalculateSize() })
+	b.Label.Subscribe(b.onLabelEvent)
 	b.expandToLabel = true
 	b.labelAlignment = AlignCenterCenter
 
-	// subscribe to events
-	b.Subscribe(OnMouseUp, b.onMouse)
-	b.Subscribe(OnMouseDown, b.onMouse)
-	b.Subscribe(OnCursorEnter, b.onCursor)
-	b.Subscribe(OnCursorLeave, b.onCursor)
-	b.Subscribe(OnEnable, b.onEnable)
-	b.Subscribe(OnResize, func(name string, ev any) { b.recalculateSize() })
+	b.Subscribe(b.onGuiEvent)
 
 	b.updateTexture()
 }
@@ -69,54 +62,6 @@ func (b *Button) Dispose() {
 		if tex != nil {
 			tex.Dispose()
 		}
-	}
-}
-
-// onCursor handles cursor enter and leave events.
-func (b *Button) onCursor(evname string, _ any) {
-	switch evname {
-	case OnCursorEnter:
-		b.mouseOver = true
-		b.updateTexture()
-	case OnCursorLeave:
-		b.mouseOver = false
-		// Pressing, dragging out, and releasing cancels the click
-		b.pressed = false
-		b.updateTexture()
-	}
-}
-
-// onMouse handles mouse down and up events.
-func (b *Button) onMouse(evname string, ev any) {
-	if !b.Enabled() {
-		return
-	}
-	mev := ev.(*core.MouseEvent)
-	switch evname {
-	case OnMouseDown:
-		if mev.Button == core.MouseButtonLeft {
-			b.pressed = true
-			b.updateTexture()
-		}
-	case OnMouseUp:
-		if mev.Button == core.MouseButtonLeft {
-			clicked := b.pressed && b.mouseOver
-			b.pressed = false
-			b.updateTexture()
-			if clicked {
-				b.Dispatch(OnClick, nil)
-			}
-		}
-	}
-}
-
-// onEnable handles enable and disable events.
-func (b *Button) onEnable(evname string, _ any) {
-	switch evname {
-	case OnEnable:
-		// Enabling or disabling a button cancels the click
-		b.pressed = false
-		b.updateTexture()
 	}
 }
 
@@ -205,4 +150,55 @@ func (b *Button) recalculateSize() {
 		lx, ly := b.labelAlignment.CalculatePosition(width, height, labelWidth, labelHeight)
 		b.Label.SetPosition(lx, ly)
 	}
+}
+
+func (b *Button) onLabelEvent(event core.GuiEvent) bool {
+	switch event.GuiEventType() {
+	case core.GuiResize:
+		b.recalculateSize()
+	default:
+		return false
+	}
+	return true
+}
+
+func (b *Button) onGuiEvent(event core.GuiEvent) bool {
+	switch ev := event.(type) {
+	case core.MouseUpEvent:
+		if ev.Button == core.MouseButtonLeft {
+			clicked := b.pressed && b.mouseOver
+			b.pressed = false
+			b.updateTexture()
+			if clicked {
+				b.Dispatch(core.GuiClickEvent{
+					X:      ev.X,
+					Y:      ev.Y,
+					Button: ev.Button,
+					Mods:   ev.Mods,
+				})
+			}
+		}
+	case core.MouseDownEvent:
+		if ev.Button == core.MouseButtonLeft {
+			b.pressed = true
+			b.updateTexture()
+		}
+	case core.GuiCursorEnterEvent:
+		b.mouseOver = true
+		b.updateTexture()
+	case core.GuiCursorLeaveEvent:
+		b.mouseOver = false
+		// Pressing, dragging out, and releasing cancels the click
+		b.pressed = false
+		b.updateTexture()
+	case core.GuiEnableEvent:
+		// Enabling or disabling a button cancels the click
+		b.pressed = false
+		b.updateTexture()
+	case core.GuiResizeEvent:
+		b.recalculateSize()
+	default:
+		return false
+	}
+	return true
 }

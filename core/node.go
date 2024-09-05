@@ -14,7 +14,6 @@ import (
 
 // INode is the interface for all node types.
 type INode interface {
-	IDispatcher
 	GetNode() *Node
 	GetINode() INode
 	Visible() bool
@@ -35,14 +34,8 @@ type INode interface {
 	Scale() math32.Vector3
 }
 
-// Node events.
-const (
-	OnDescendant = "core.OnDescendant" // Dispatched when a descendent is added or removed
-)
-
 // Node represents an object in 3D space existing within a hierarchy.
 type Node struct {
-	Dispatcher             // Embedded event dispatcher
 	inode          INode   // The INode associated with this Node
 	parent         INode   // Parent node
 	children       []INode // Children nodes
@@ -76,7 +69,6 @@ func NewNode() *Node {
 // Init initializes the node.
 // Normally called by other types which embed a Node.
 func (n *Node) Init(inode INode) {
-	n.Dispatcher.Initialize()
 	n.inode = inode
 	n.children = make([]INode, 0)
 	n.visible = true
@@ -89,13 +81,6 @@ func (n *Node) Init(inode INode) {
 	n.quaternion.Set(0, 0, 0, 1)
 	n.matrix.Identity()
 	n.matrixWorld.Identity()
-
-	// Subscribe to events
-	n.Subscribe(OnDescendant, func(evname string, ev any) {
-		if n.parent != nil {
-			n.parent.Dispatch(evname, ev)
-		}
-	})
 }
 
 // GetINode returns the INode associated with this Node.
@@ -137,12 +122,9 @@ func (n *Node) Dispose() {
 func (n *Node) Clone() INode {
 	clone := new(Node)
 
-	// TODO clone Dispatcher?
-	clone.Dispatcher.Initialize()
-
 	clone.inode = clone
 	clone.parent = n.parent
-	clone.name = n.name + " (Clone)" // TODO append count?
+	clone.name = n.name + " (Clone)"
 	clone.loaderID = n.loaderID
 	clone.visible = n.visible
 	clone.userData = n.userData
@@ -282,7 +264,6 @@ func (n *Node) Children() []INode {
 func (n *Node) Add(ichild INode) *Node {
 	setParent(n.GetINode(), ichild)
 	n.children = append(n.children, ichild)
-	n.Dispatch(OnDescendant, nil)
 	return n
 }
 
@@ -300,8 +281,6 @@ func (n *Node) AddAt(idx int, ichild INode) *Node {
 	n.children = append(n.children, nil)
 	copy(n.children[idx+1:], n.children[idx:])
 	n.children[idx] = ichild
-
-	n.Dispatch(OnDescendant, nil)
 
 	return n
 }
@@ -385,7 +364,6 @@ func (n *Node) Remove(ichild INode) bool {
 			n.children[len(n.children)-1] = nil
 			n.children = n.children[:len(n.children)-1]
 			ichild.GetNode().parent = nil
-			n.Dispatch(OnDescendant, nil)
 			return true
 		}
 	}
@@ -405,8 +383,6 @@ func (n *Node) RemoveAt(idx int) INode {
 	copy(n.children[idx:], n.children[idx+1:])
 	n.children[len(n.children)-1] = nil
 	n.children = n.children[:len(n.children)-1]
-
-	n.Dispatch(OnDescendant, nil)
 
 	return child
 }

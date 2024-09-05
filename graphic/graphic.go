@@ -181,7 +181,7 @@ func (gr *Graphic) Materials() []GraphicMaterial {
 // GetMaterial returns the material associated with the specified vertex position.
 func (gr *Graphic) GetMaterial(vpos int) material.IMaterial {
 	for _, gmat := range gr.materials {
-		// Case for unimaterial
+		// One material
 		if gmat.count == 0 {
 			return gmat.imat
 		}
@@ -268,7 +268,7 @@ func (grmat *GraphicMaterial) Render(gs *gls.GLS, rinfo *core.RenderInfo) {
 	// Setup the associated material (set states and transfer material uniforms and textures)
 	grmat.imat.RenderSetup(gs)
 
-	// Setup the associated geometry (set VAO and transfer VBOS)
+	// Setup the associated geometry (set VAO and transfer VBOs)
 	gr := grmat.igraphic.GetGraphic()
 	gr.igeom.RenderSetup(gs)
 
@@ -280,14 +280,14 @@ func (grmat *GraphicMaterial) Render(gs *gls.GLS, rinfo *core.RenderInfo) {
 
 	geom := gr.igeom.GetGeometry()
 	indices := geom.Indices()
-	// Indexed geometry
 	if indices.Size() > 0 {
+		// Indexed geometry
 		if count == 0 {
 			count = indices.Size()
 		}
 		gs.DrawElements(gr.mode, int32(count), gls.UNSIGNED_INT, 4*uint32(grmat.start))
-		// Non indexed geometry
 	} else {
+		// Non indexed geometry
 		if count == 0 {
 			count = geom.Items()
 		}

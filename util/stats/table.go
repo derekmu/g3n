@@ -20,8 +20,8 @@ func NewStatsTable(width, height float32) *StatsTable {
 	// Creates table panel
 	st := new(StatsTable)
 	t, err := gui.NewTable(width, height, []gui.TableColumn{
-		{Id: "f", Header: "Stat", Width: 50, Minwidth: 32, Align: gui.AlignLeftCenter, Format: "%s", Resize: true, Expand: 2},
-		{Id: "v", Header: "Value", Width: 50, Minwidth: 32, Align: gui.AlignRightCenter, Format: "%d", Resize: false, Expand: 1},
+		{Id: "f", Header: "Stat", Width: 50, Minwidth: 32, Align: gui.AlignLeftCenter, Format: "%s", Expand: 2},
+		{Id: "v", Header: "Value", Width: 50, Minwidth: 32, Align: gui.AlignRightCenter, Format: "%d", Expand: 1},
 	})
 	if err != nil {
 		panic(err)

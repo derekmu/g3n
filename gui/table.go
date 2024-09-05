@@ -9,48 +9,24 @@ import (
 	"github.com/derekmu/g3n/core"
 	"sort"
 	"strconv"
-
-	"github.com/derekmu/g3n/gui/assets/icon"
-	"github.com/derekmu/g3n/math32"
 )
 
 const (
-	// OnTableClick is the event generated when the table is clicked
-	// Parameter is TableClickEvent
-	OnTableClick = "onTableClick"
-	// OnTableRowCount is the event generated when the table row count changes (no parameters)
-	OnTableRowCount = "onTableRowCount"
-)
-
-const (
-	tableSortedNoneIcon = icon.SwapVert
-	tableSortedAscIcon  = icon.ArrowDownward
-	tableSortedDescIcon = icon.ArrowUpward
-	tableSortedNone     = 0
-	tableSortedAsc      = 1
-	tableSortedDesc     = 2
-	tableResizerPix     = 4
-	tableColMinWidth    = 16
-	tableErrInvRow      = "Invalid row index"
-	tableErrInvCol      = "Invalid column id"
+	tableColMinWidth = 16
+	tableErrInvRow   = "Invalid row index"
+	tableErrInvCol   = "Invalid column id"
 )
 
 // Table implements a panel which can contains child panels
 // organized in rows and columns.
 type Table struct {
-	Panel                      // Embedded panel
-	header         tableHeader // table headers
-	rows           []*tableRow // array of table rows
-	rowCursor      int         // index of row cursor
-	firstRow       int         // index of the first visible row
-	lastRow        int         // index of the last visible row
-	statusPanel    Panel       // optional bottom status panel
-	statusLabel    *Label      // status label
-	scrollBarEvent bool        // do not update the scrollbar value in recalc() if true
-	resizerPanel   Panel       // resizer panel
-	resizeCol      int         // column being resized
-	resizerX       float32     // initial resizer x coordinate
-	resizing       bool        // dragging the column resizer
+	Panel                   // Embedded panel
+	header      tableHeader // table headers
+	rows        []*tableRow // array of table rows
+	firstRow    int         // index of the first visible row
+	lastRow     int         // index of the last visible row
+	statusPanel Panel       // optional bottom status panel
+	statusLabel *Label      // status label
 }
 
 // TableColumn describes a table column
@@ -64,7 +40,6 @@ type TableColumn struct {
 	Format     string          // Format string for formatting the columns' cells
 	FormatFunc TableFormatFunc // Format function (overrides Format string)
 	Expand     float32         // Column width expansion factor (0 for no expansion)
-	Resize     bool            // Allow column to be resized by user
 }
 
 // TableCell describes a table cell.
@@ -78,18 +53,6 @@ type TableCell struct {
 
 // TableFormatFunc is the type for formatting functions
 type TableFormatFunc func(cell TableCell) string
-
-// TableClickEvent describes a mouse click event over a table
-// It contains the original mouse event plus additional information
-type TableClickEvent struct {
-	core.MouseEvent         // Embedded window mouse event
-	X               float32 // Table content area X coordinate
-	Y               float32 // Table content area Y coordinate
-	Header          bool    // True if header was clicked
-	Row             int     // Index of table row (or -1)
-	Col             string  // ID of table column (or empty)
-	ColOrder        int     // Current column exhibition order
-}
 
 // tableHeader is panel which contains the individual header panels for each column
 type tableHeader struct {
@@ -110,7 +73,6 @@ type tableColHeader struct {
 	formatFunc TableFormatFunc // column format function
 	align      Align           // column alignment
 	expand     float32         // column expand factor
-	resize     bool            // column can be resized by user
 	order      int             // row columns order
 	xl         float32         // left border coordinate in pixels
 	xr         float32         // right border coordinate in pixels
@@ -134,7 +96,6 @@ type tableCell struct {
 func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	t := new(Table)
 	t.Panel.InitPanel(t, width, height)
-	t.rowCursor = -1
 
 	// Initialize table header
 	t.header.InitPanel(&t.header, 0, 0)
@@ -170,7 +131,6 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 		c.format = cdesc.Format
 		c.formatFunc = cdesc.FormatFunc
 		c.expand = cdesc.Expand
-		c.resize = cdesc.Resize
 		// Sets default format and order
 		if c.format == "" {
 			c.format = "%v"
@@ -195,11 +155,6 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	// Add header panel to the table panel
 	t.Panel.Add(&t.header)
 
-	// Creates resizer panel
-	t.resizerPanel.InitPanel(&t.resizerPanel, 4, 0)
-	t.resizerPanel.SetVisible(false)
-	t.Panel.Add(&t.resizerPanel)
-
 	// Creates status panel
 	t.statusPanel.InitPanel(&t.statusPanel, 0, 0)
 	t.statusPanel.SetVisible(false)
@@ -208,13 +163,7 @@ func NewTable(width, height float32, cols []TableColumn) (*Table, error) {
 	t.Panel.Add(&t.statusPanel)
 
 	// Subscribe to events
-	t.Panel.Subscribe(OnCursor, t.onCursorPos)
-	t.Panel.Subscribe(OnScroll, t.onScroll)
-	t.Panel.Subscribe(OnMouseUp, t.onMouse)
-	t.Panel.Subscribe(OnMouseDown, t.onMouse)
-	t.Panel.Subscribe(OnKeyDown, t.onKey)
-	t.Panel.Subscribe(OnKeyRepeat, t.onKey)
-	t.Panel.Subscribe(OnResize, t.onResize)
+	t.Panel.Subscribe(t.onGuiEvent)
 	t.recalc()
 	return t, nil
 }
@@ -287,7 +236,6 @@ func (t *Table) SetRows(values []map[string]any) {
 		t.setRow(row, values[row])
 	}
 	t.firstRow = 0
-	t.rowCursor = -1
 	t.recalc()
 }
 
@@ -356,17 +304,6 @@ func (t *Table) SetColOrder(colid string, order int) {
 	t.recalc()
 }
 
-// EnableColResize enable or disables if the specified column can be resized by the
-// user using the mouse.
-func (t *Table) EnableColResize(colid string, enable bool) {
-	// Checks column id
-	c := t.header.cmap[colid]
-	if c == nil {
-		panic(tableErrInvCol)
-	}
-	c.resize = enable
-}
-
 // SetColWidth sets the specified column width and may
 // change the widths of the columns to the right
 func (t *Table) SetColWidth(colid string, width float32) {
@@ -409,7 +346,6 @@ func (t *Table) InsertRow(row int, values map[string]any) {
 	}
 	t.insertRow(row, values)
 	t.recalc()
-	t.Dispatch(OnTableRowCount, nil)
 }
 
 // RemoveRow removes from the specified row from the table
@@ -424,7 +360,6 @@ func (t *Table) RemoveRow(row int) {
 		t.firstRow = maxFirst
 	}
 	t.recalc()
-	t.Dispatch(OnTableRowCount, nil)
 }
 
 // Clear removes all rows from the table
@@ -437,9 +372,7 @@ func (t *Table) Clear() {
 	}
 	t.rows = nil
 	t.firstRow = 0
-	t.rowCursor = -1
 	t.recalc()
-	t.Dispatch(OnTableRowCount, nil)
 }
 
 // ShowStatus sets the visibility of the status lines at the bottom of the table
@@ -587,45 +520,6 @@ func (t *Table) insertRow(row int, values map[string]any) {
 	t.recalcRow(row)
 }
 
-// ScrollDown scrolls the table the specified number of rows down if possible
-func (t *Table) scrollDown(n int) {
-	// Calculates number of rows to scroll down
-	maxFirst := t.calcMaxFirst()
-	maxScroll := maxFirst - t.firstRow
-	if maxScroll <= 0 {
-		return
-	}
-	if n > maxScroll {
-		n = maxScroll
-	}
-
-	t.firstRow += n
-	if t.rowCursor < t.firstRow {
-		t.rowCursor = t.firstRow
-		t.Dispatch(OnChange, nil)
-	}
-	t.recalc()
-	return
-}
-
-// ScrollUp scrolls the table the specified number of rows up if possible
-func (t *Table) scrollUp(n int) {
-	// Calculates number of rows to scroll up
-	if t.firstRow == 0 {
-		return
-	}
-	if n > t.firstRow {
-		n = t.firstRow
-	}
-	t.firstRow -= n
-	lastRow := t.lastRow - n
-	if t.rowCursor > lastRow {
-		t.rowCursor = lastRow
-		t.Dispatch(OnChange, nil)
-	}
-	t.recalc()
-}
-
 // removeRow removes from the table the row specified its index
 func (t *Table) removeRow(row int) {
 	// Get row to be removed
@@ -644,278 +538,10 @@ func (t *Table) removeRow(row int) {
 	trow.Dispose()
 }
 
-// onCursorPos process subscribed cursor position events
-func (t *Table) onCursorPos(_ string, ev any) {
-	// Convert mouse window coordinates to table content coordinates
-	cev := ev.(*core.CursorEvent)
-	cx, _ := t.ContentCoords(cev.Xpos, cev.Ypos)
-
-	// If user is dragging the resizer, updates its position
-	if t.resizing {
-		t.resizerPanel.SetPosition(cx, 0)
-		return
-	}
-
-	// Checks if the mouse cursor is near the border of a resizable column
-	found := false
-	for ci := 0; ci < len(t.header.cols); ci++ {
-		c := t.header.cols[ci]
-		dx := math32.Abs(cx - c.xr)
-		if dx < tableResizerPix {
-			if c.resize {
-				found = true
-				t.resizeCol = ci
-				t.resizerX = c.xr
-				GetManager().window.SetCursor(core.HResizeCursor)
-			}
-			break
-		}
-	}
-	// If column not found but previously was near a resizable column, resets the window cursor.
-	if !found && t.resizeCol >= 0 {
-		GetManager().window.SetCursor(core.ArrowCursor)
-		t.resizeCol = -1
-	}
-}
-
-// onMouseEvent process subscribed mouse events
-func (t *Table) onMouse(evname string, ev any) {
-	e := ev.(*core.MouseEvent)
-	switch evname {
-	case OnMouseDown:
-		// If over a resizable column border, shows the resizer panel
-		if t.resizeCol >= 0 && e.Button == core.MouseButtonLeft {
-			t.resizing = true
-			height := t.ContentHeight()
-			if t.statusPanel.Visible() {
-				height -= t.statusPanel.Height()
-			}
-			px := t.resizerX - t.resizerPanel.Width()/2
-			t.resizerPanel.SetPositionX(px)
-			t.resizerPanel.SetHeight(height)
-			t.resizerPanel.SetVisible(true)
-			t.SetTopChild(&t.resizerPanel)
-			return
-		}
-		// Find click position
-		var tce TableClickEvent
-		tce.MouseEvent = *e
-		t.findClick(&tce)
-		// If row is clicked, selects it
-		if tce.Row >= 0 && e.Button == core.MouseButtonLeft {
-			t.rowCursor = tce.Row
-			t.recalc()
-			t.Dispatch(OnChange, nil)
-		}
-		// Creates and dispatch TableClickEvent for user's context menu
-		t.Dispatch(OnTableClick, tce)
-	case OnMouseUp:
-		// If user was resizing a column, hides the resizer and
-		// sets the new column width if possible
-		if t.resizing {
-			t.resizing = false
-			t.resizerPanel.SetVisible(false)
-			GetManager().window.SetCursor(core.ArrowCursor)
-			// Calculates the new column width
-			cx, _ := t.ContentCoords(e.Xpos, e.Ypos)
-			c := t.header.cols[t.resizeCol]
-			width := cx - c.xl
-			t.setColWidth(c, width)
-		}
-	default:
-		return
-	}
-}
-
-// onKeyEvent receives subscribed key events for this table
-func (t *Table) onKey(_ string, ev any) {
-	kev := ev.(*core.KeyEvent)
-	if kev.Key == core.KeyUp && kev.Mods == 0 {
-		t.selPrev()
-	} else if kev.Key == core.KeyDown && kev.Mods == 0 {
-		t.selNext()
-	} else if kev.Key == core.KeyPageUp && kev.Mods == 0 {
-		t.prevPage()
-	} else if kev.Key == core.KeyPageDown && kev.Mods == 0 {
-		t.nextPage()
-	} else if kev.Key == core.KeyPageUp && kev.Mods == core.ModControl {
-		t.firstPage()
-	} else if kev.Key == core.KeyPageDown && kev.Mods == core.ModControl {
-		t.lastPage()
-	}
-}
-
 // onResize receives subscribed resize events for this table
-func (t *Table) onResize(_ string, _ any) {
+func (t *Table) onResize(_ core.GuiResizeEvent) {
 	t.recalc()
 	t.recalcStatus()
-}
-
-// onScroll receives subscribed scroll events for this table
-func (t *Table) onScroll(_ string, ev any) {
-	sev := ev.(*core.ScrollEvent)
-	if sev.Yoffset > 0 {
-		t.scrollUp(1)
-	} else if sev.Yoffset < 0 {
-		t.scrollDown(1)
-	}
-}
-
-// findClick finds where in the table the specified mouse click event
-// occurred updating the specified TableClickEvent with the click coordinates.
-func (t *Table) findClick(ev *TableClickEvent) {
-	x, y := t.ContentCoords(ev.Xpos, ev.Ypos)
-	ev.X = x
-	ev.Y = y
-	ev.Row = -1
-	// Find column id
-	colx := float32(0)
-	for ci := 0; ci < len(t.header.cols); ci++ {
-		c := t.header.cols[ci]
-		if !c.Visible() {
-			continue
-		}
-		colx += t.header.cols[ci].Width()
-		if x < colx {
-			ev.Col = c.id
-			ev.ColOrder = ci
-			break
-		}
-	}
-	// If column not found the user clicked at the right of rows
-	if ev.Col == "" {
-		return
-	}
-	// Checks if is in header
-	if t.header.Visible() && y < t.header.Height() {
-		ev.Header = true
-	}
-
-	// Find row clicked
-	rowy := float32(0)
-	if t.header.Visible() {
-		rowy = t.header.Height()
-	}
-	theight := t.ContentHeight()
-	for ri := t.firstRow; ri < len(t.rows); ri++ {
-		trow := t.rows[ri]
-		rowy += trow.height
-		if rowy > theight {
-			break
-		}
-		if y < rowy {
-			ev.Row = ri
-			break
-		}
-	}
-}
-
-// selNext selects the next row if possible
-func (t *Table) selNext() {
-	// If selected row is last, nothing to do
-	if t.rowCursor == len(t.rows)-1 {
-		return
-	}
-	// If no selected row, selects first visible row
-	if t.rowCursor < 0 {
-		t.rowCursor = t.firstRow
-		t.recalc()
-		t.Dispatch(OnChange, nil)
-		return
-	}
-	// Selects next row
-	t.rowCursor++
-	t.Dispatch(OnChange, nil)
-
-	// Scroll down if necessary
-	if t.rowCursor > t.lastRow {
-		t.scrollDown(1)
-	} else {
-		t.recalc()
-	}
-}
-
-// selPrev selects the previous row if possible
-func (t *Table) selPrev() {
-	// If selected row is first, nothing to do
-	sel := t.rowCursor
-	if sel == 0 {
-		return
-	}
-	// If no selected row, selects last visible row
-	if sel < 0 {
-		t.rowCursor = t.lastRow
-		t.recalc()
-		t.Dispatch(OnChange, nil)
-		return
-	}
-	// Selects previous row and selects previous
-	prev := sel - 1
-	t.rowCursor = prev
-
-	// Scroll up if necessary
-	if prev < t.firstRow && t.firstRow > 0 {
-		t.scrollUp(1)
-	} else {
-		t.recalc()
-	}
-	t.Dispatch(OnChange, nil)
-}
-
-// nextPage shows the next page of rows and selects its first row
-func (t *Table) nextPage() {
-	if len(t.rows) == 0 {
-		return
-	}
-	if t.lastRow == len(t.rows)-1 {
-		t.rowCursor = t.lastRow
-		t.recalc()
-		t.Dispatch(OnChange, nil)
-		return
-	}
-	plen := t.lastRow - t.firstRow
-	if plen <= 0 {
-		return
-	}
-	t.scrollDown(plen)
-}
-
-// prevPage shows the previous page of rows and selects its last row
-func (t *Table) prevPage() {
-	if t.firstRow == 0 {
-		t.rowCursor = 0
-		t.recalc()
-		t.Dispatch(OnChange, nil)
-		return
-	}
-	plen := t.lastRow - t.firstRow
-	if plen <= 0 {
-		return
-	}
-	t.scrollUp(plen)
-}
-
-// firstPage shows the first page of rows and selects the first row
-func (t *Table) firstPage() {
-	if len(t.rows) == 0 {
-		return
-	}
-	t.firstRow = 0
-	t.rowCursor = 0
-	t.recalc()
-	t.Dispatch(OnChange, nil)
-}
-
-// lastPage shows the last page of rows and selects the last row
-func (t *Table) lastPage() {
-	if len(t.rows) == 0 {
-		return
-	}
-	maxFirst := t.calcMaxFirst()
-	t.firstRow = maxFirst
-	t.rowCursor = len(t.rows) - 1
-	t.recalc()
-	t.Dispatch(OnChange, nil)
 }
 
 // setColWidth sets the width of the specified column
@@ -1222,6 +848,16 @@ func (t *Table) calcMaxFirst() int {
 		}
 	}
 	return ri + 1
+}
+
+func (t *Table) onGuiEvent(ev core.GuiEvent) bool {
+	switch ev := ev.(type) {
+	case core.GuiResizeEvent:
+		t.onResize(ev)
+	default:
+		return false
+	}
+	return true
 }
 
 // tableSortString is an internal type implementing the sort.Interface
