@@ -28,7 +28,7 @@ type Button struct {
 	expandToLabel  bool
 	labelAlignment Align
 	mouseOver      bool
-	pressed        bool
+	pressed        core.MouseState
 	textures       [ButtonDisabled + 1]*texture.Texture2D
 }
 
@@ -89,7 +89,7 @@ func (b *Button) updateTexture() {
 func (b *Button) GetButtonState() ButtonState {
 	if !b.Enabled() {
 		return ButtonDisabled
-	} else if b.pressed {
+	} else if b.pressed != 0 {
 		return ButtonPressed
 	} else if b.mouseOver {
 		return ButtonOver
@@ -165,35 +165,31 @@ func (b *Button) onLabelEvent(event core.GuiEvent) bool {
 func (b *Button) onGuiEvent(event core.GuiEvent) bool {
 	switch ev := event.(type) {
 	case core.MouseUpEvent:
-		if ev.Button == core.MouseButtonLeft {
-			clicked := b.pressed && b.mouseOver
-			b.pressed = false
-			b.updateTexture()
-			if clicked {
-				b.Dispatch(core.GuiClickEvent{
-					X:      ev.X,
-					Y:      ev.Y,
-					Button: ev.Button,
-					Mods:   ev.Mods,
-				})
-			}
+		clicked := b.pressed.IsSet(ev.Button)
+		b.pressed = b.pressed.Unset(ev.Button)
+		b.updateTexture()
+		if clicked {
+			b.Dispatch(core.GuiClickEvent{
+				X:      ev.X,
+				Y:      ev.Y,
+				Button: ev.Button,
+				Mods:   ev.Mods,
+			})
 		}
 	case core.MouseDownEvent:
-		if ev.Button == core.MouseButtonLeft {
-			b.pressed = true
-			b.updateTexture()
-		}
+		b.pressed = b.pressed.Set(ev.Button)
+		b.updateTexture()
 	case core.GuiCursorEnterEvent:
 		b.mouseOver = true
 		b.updateTexture()
 	case core.GuiCursorLeaveEvent:
 		b.mouseOver = false
-		// Pressing, dragging out, and releasing cancels the click
-		b.pressed = false
+		// Pressing, dragging out, and releasing cancels clicks
+		b.pressed = 0
 		b.updateTexture()
 	case core.GuiEnableEvent:
-		// Enabling or disabling a button cancels the click
-		b.pressed = false
+		// Enabling or disabling a button cancels clicks
+		b.pressed = 0
 		b.updateTexture()
 	case core.GuiResizeEvent:
 		b.recalculateSize()

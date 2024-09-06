@@ -1,6 +1,9 @@
 package core
 
-import "github.com/go-gl/glfw/v3.3/glfw"
+import (
+	"fmt"
+	"github.com/go-gl/glfw/v3.3/glfw"
+)
 
 // Key is an enum of GLFW keyboard key codes.
 type Key int
@@ -145,18 +148,76 @@ type MouseButton int
 
 const (
 	MouseButton1      = MouseButton(glfw.MouseButton1)
+	MouseButtonLeft   = MouseButton(glfw.MouseButtonLeft)
 	MouseButton2      = MouseButton(glfw.MouseButton2)
+	MouseButtonRight  = MouseButton(glfw.MouseButtonRight)
 	MouseButton3      = MouseButton(glfw.MouseButton3)
+	MouseButtonMiddle = MouseButton(glfw.MouseButtonMiddle)
 	MouseButton4      = MouseButton(glfw.MouseButton4)
 	MouseButton5      = MouseButton(glfw.MouseButton5)
 	MouseButton6      = MouseButton(glfw.MouseButton6)
 	MouseButton7      = MouseButton(glfw.MouseButton7)
 	MouseButton8      = MouseButton(glfw.MouseButton8)
-	MouseButtonLast   = MouseButton(glfw.MouseButtonLast)
-	MouseButtonLeft   = MouseButton(glfw.MouseButtonLeft)
-	MouseButtonRight  = MouseButton(glfw.MouseButtonRight)
-	MouseButtonMiddle = MouseButton(glfw.MouseButtonMiddle)
 )
+
+func (b MouseButton) GetMouseState() MouseState {
+	// In GLFW:
+	// - left is an alias for 1
+	// - right is an alias for 2
+	// - middle is an alias for 3
+	switch b {
+	case MouseButton1, MouseButtonLeft:
+		return MouseState1
+	case MouseButton2, MouseButtonRight:
+		return MouseState2
+	case MouseButton3, MouseButtonMiddle:
+		return MouseState3
+	case MouseButton4:
+		return MouseState4
+	case MouseButton5:
+		return MouseState5
+	case MouseButton6:
+		return MouseState6
+	case MouseButton7:
+		return MouseState7
+	case MouseButton8:
+		return MouseState8
+	default:
+		panic(fmt.Errorf("invalid MouseButton %v", b))
+	}
+}
+
+// MouseState is a bit field for mouse buttons.
+type MouseState int
+
+const (
+	MouseState1 MouseState = 1 << iota
+	MouseState2
+	MouseState3
+	MouseState4
+	MouseState5
+	MouseState6
+	MouseState7
+	MouseState8
+	MouseStateLeft   = MouseState1
+	MouseStateRight  = MouseState2
+	MouseStateMiddle = MouseState3
+)
+
+// IsSet returns whether the bit corresponding with a MouseButton is set.
+func (s MouseState) IsSet(b MouseButton) bool {
+	return s&b.GetMouseState() != 0
+}
+
+// Set sets the bit corresponding with the MouseButton.
+func (s MouseState) Set(b MouseButton) MouseState {
+	return s | b.GetMouseState()
+}
+
+// Unset unsets the bit corresponding with the MouseButton.
+func (s MouseState) Unset(b MouseButton) MouseState {
+	return s &^ b.GetMouseState()
+}
 
 // Cursor is an enum of mouse cursors supported by G3N.
 // Mouse cursor is the image where the mouse is.
