@@ -125,17 +125,15 @@ func (rc *Raycaster) intersectObject(inode core.INode, intersects *[]Intersect, 
 
 // SetFromCamera sets the specified raycaster with this camera position in world coordinates
 // pointing to the direction defined by the specified coordinates unprojected using this camera.
-func (rc *Raycaster) SetFromCamera(cam *Camera, sx, sy float32) error {
+func (rc *Raycaster) SetFromCamera(cam *Camera, sx, sy float32) {
 	var origin, direction math32.Vector3
 	matrixWorld := cam.MatrixWorld()
 	origin.SetFromMatrixPosition(&matrixWorld)
 	direction.Set(sx, sy, 0.5)
-
-	unproj := cam.Unproject(&direction) // unproj = direction after this point
+	unproj := cam.Unproject(&direction)
 	unproj.Sub(&origin).Normalize()
 	rc.Set(&origin, &direction)
-	cam.ViewMatrix(&rc.ViewMatrix) // Update the view matrix of the raycaster
-	return nil
+	cam.ViewMatrix(&rc.ViewMatrix)
 }
 
 // RaycastSprite checks intersections between the raycaster and the specified sprite
@@ -228,7 +226,7 @@ func (rc *Raycaster) RaycastPoints(p *graphic.Points, intersects *[]Intersect) {
 	// Copy ray and transforms to model coordinates
 	var inverseMatrix math32.Matrix4
 	var ray math32.Ray
-	inverseMatrix.GetInverse(&matrixWorld)
+	_ = inverseMatrix.GetInverse(&matrixWorld)
 	ray.Copy(&rc.Ray).ApplyMatrix4(&inverseMatrix)
 
 	// Checks intersection with all points
@@ -286,7 +284,7 @@ func (rc *Raycaster) RaycastMesh(m *graphic.Mesh, intersects *[]Intersect) {
 	// the geometry, as is much less expensive to transform the
 	// ray to model coordinates than the geometry to world coordinates.
 	var inverseMatrix math32.Matrix4
-	inverseMatrix.GetInverse(&matrixWorld)
+	_ = inverseMatrix.GetInverse(&matrixWorld)
 	var ray math32.Ray
 	ray.Copy(&rc.Ray).ApplyMatrix4(&inverseMatrix)
 	bbox := geom.BoundingBox()
@@ -376,7 +374,7 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 	// ray to model coordinates than the geometry to world coordinates.
 	var inverseMatrix math32.Matrix4
 	var ray math32.Ray
-	inverseMatrix.GetInverse(&matrixWorld)
+	_ = inverseMatrix.GetInverse(&matrixWorld)
 	ray.Copy(&rc.Ray).ApplyMatrix4(&inverseMatrix)
 
 	var vstart math32.Vector3
