@@ -109,7 +109,6 @@ func newWindow(width, height int, title string) (*window, error) {
 	w.cursors[core.DiagResizeTrblCursor] = glfw.CreateCursor(trblImage, 8, 8)
 	w.cursors[core.DiagResizeTlbrCursor] = glfw.CreateCursor(tlbrImage, 8, 8)
 
-	// Set up key callback to dispatch event
 	w.SetKeyCallback(func(x *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 		switch action {
 		case glfw.Press:
@@ -129,13 +128,9 @@ func newWindow(width, height int, title string) (*window, error) {
 			})
 		}
 	})
-
-	// Set up char callback to dispatch event
 	w.SetCharCallback(func(x *glfw.Window, char rune) {
 		w.Dispatch(core.CharEvent{Char: char})
 	})
-
-	// Set up mouse button callback to dispatch event
 	w.SetMouseButtonCallback(func(x *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey) {
 		xpos, ypos := x.GetCursorPos()
 		switch action {
@@ -155,8 +150,23 @@ func newWindow(width, height int, title string) (*window, error) {
 			})
 		}
 	})
-
-	// Set up window size callback to dispatch event
+	w.SetScrollCallback(func(x *glfw.Window, xoff float64, yoff float64) {
+		w.Dispatch(core.ScrollEvent{
+			X: float32(xoff),
+			Y: float32(yoff),
+		})
+	})
+	w.SetCursorPosCallback(func(x *glfw.Window, xpos float64, ypos float64) {
+		w.Dispatch(core.CursorEvent{
+			X: float32(xpos),
+			Y: float32(ypos),
+		})
+	})
+	w.SetCursorEnterCallback(func(x *glfw.Window, entered bool) {
+		w.Dispatch(core.WindowCursorEnterEvent{
+			Entered: entered,
+		})
+	})
 	w.SetSizeCallback(func(x *glfw.Window, width int, height int) {
 		fbw, fbh := x.GetFramebufferSize()
 		w.scaleX = float64(fbw) / float64(width)
@@ -166,34 +176,14 @@ func newWindow(width, height int, title string) (*window, error) {
 			Height: height,
 		})
 	})
-
-	// Set up window position callback to dispatch event
 	w.SetPosCallback(func(x *glfw.Window, xpos int, ypos int) {
 		w.Dispatch(core.WindowPosEvent{
 			X: xpos,
 			Y: ypos,
 		})
 	})
-
-	// Set up window focus callback to dispatch event
 	w.SetFocusCallback(func(x *glfw.Window, focused bool) {
 		w.Dispatch(core.WindowFocusEvent{Focused: focused})
-	})
-
-	// Set up window cursor position callback to dispatch event
-	w.SetCursorPosCallback(func(x *glfw.Window, xpos float64, ypos float64) {
-		w.Dispatch(core.CursorEvent{
-			X: float32(xpos),
-			Y: float32(ypos),
-		})
-	})
-
-	// Set up mouse wheel scroll callback to dispatch event
-	w.SetScrollCallback(func(x *glfw.Window, xoff float64, yoff float64) {
-		w.Dispatch(core.ScrollEvent{
-			X: float32(xoff),
-			Y: float32(yoff),
-		})
 	})
 
 	return w, nil

@@ -18,6 +18,7 @@ const (
 	WindowChar
 
 	WindowCursor
+	WindowCursorEnter
 
 	WindowMouseUp
 	WindowMouseDown
@@ -30,7 +31,7 @@ type WindowEvent interface {
 
 type AppExitEvent struct{}
 
-func (i AppExitEvent) WindowEventType() WindowEventType {
+func (e AppExitEvent) WindowEventType() WindowEventType {
 	return AppExit
 }
 
@@ -38,7 +39,7 @@ type WindowFocusEvent struct {
 	Focused bool
 }
 
-func (i WindowFocusEvent) WindowEventType() WindowEventType {
+func (e WindowFocusEvent) WindowEventType() WindowEventType {
 	return WindowFocus
 }
 
@@ -47,7 +48,7 @@ type WindowPosEvent struct {
 	Y int
 }
 
-func (i WindowPosEvent) WindowEventType() WindowEventType {
+func (e WindowPosEvent) WindowEventType() WindowEventType {
 	return WindowPos
 }
 
@@ -56,8 +57,16 @@ type WindowSizeEvent struct {
 	Height int
 }
 
-func (i WindowSizeEvent) WindowEventType() WindowEventType {
+func (e WindowSizeEvent) WindowEventType() WindowEventType {
 	return WindowSize
+}
+
+type WindowCursorEnterEvent struct {
+	Entered bool
+}
+
+func (e WindowCursorEnterEvent) WindowEventType() WindowEventType {
+	return WindowCursorEnter
 }
 
 type GuiEventType int32
@@ -89,7 +98,7 @@ type GuiEvent interface {
 
 type GuiResizeEvent struct{}
 
-func (i GuiResizeEvent) GuiEventType() GuiEventType {
+func (e GuiResizeEvent) GuiEventType() GuiEventType {
 	return GuiResize
 }
 
@@ -97,19 +106,19 @@ type GuiEnableEvent struct {
 	Enabled bool
 }
 
-func (i GuiEnableEvent) GuiEventType() GuiEventType {
+func (e GuiEnableEvent) GuiEventType() GuiEventType {
 	return GuiEnable
 }
 
 type GuiFocusEvent struct{}
 
-func (i GuiFocusEvent) GuiEventType() GuiEventType {
+func (e GuiFocusEvent) GuiEventType() GuiEventType {
 	return GuiFocus
 }
 
 type GuiFocusLostEvent struct{}
 
-func (i GuiFocusLostEvent) GuiEventType() GuiEventType {
+func (e GuiFocusLostEvent) GuiEventType() GuiEventType {
 	return GuiFocusLost
 }
 
@@ -123,20 +132,20 @@ type KeyUpEvent struct {
 	Mods ModifierKey
 }
 
-func (i KeyUpEvent) WindowEventType() WindowEventType {
+func (e KeyUpEvent) WindowEventType() WindowEventType {
 	return WindowKeyUp
 }
 
-func (i KeyUpEvent) GuiEventType() GuiEventType {
+func (e KeyUpEvent) GuiEventType() GuiEventType {
 	return GuiKeyUp
 }
 
-func (i KeyUpEvent) GetKey() Key {
-	return i.Key
+func (e KeyUpEvent) GetKey() Key {
+	return e.Key
 }
 
-func (i KeyUpEvent) GetMods() ModifierKey {
-	return i.Mods
+func (e KeyUpEvent) GetMods() ModifierKey {
+	return e.Mods
 }
 
 type KeyDownEvent struct {
@@ -144,20 +153,20 @@ type KeyDownEvent struct {
 	Mods ModifierKey
 }
 
-func (i KeyDownEvent) WindowEventType() WindowEventType {
+func (e KeyDownEvent) WindowEventType() WindowEventType {
 	return WindowKeyDown
 }
 
-func (i KeyDownEvent) GuiEventType() GuiEventType {
+func (e KeyDownEvent) GuiEventType() GuiEventType {
 	return GuiKeyDown
 }
 
-func (i KeyDownEvent) GetKey() Key {
-	return i.Key
+func (e KeyDownEvent) GetKey() Key {
+	return e.Key
 }
 
-func (i KeyDownEvent) GetMods() ModifierKey {
-	return i.Mods
+func (e KeyDownEvent) GetMods() ModifierKey {
+	return e.Mods
 }
 
 type KeyRepeatEvent struct {
@@ -165,31 +174,31 @@ type KeyRepeatEvent struct {
 	Mods ModifierKey
 }
 
-func (i KeyRepeatEvent) WindowEventType() WindowEventType {
+func (e KeyRepeatEvent) WindowEventType() WindowEventType {
 	return WindowKeyRepeat
 }
 
-func (i KeyRepeatEvent) GuiEventType() GuiEventType {
+func (e KeyRepeatEvent) GuiEventType() GuiEventType {
 	return GuiKeyRepeat
 }
 
-func (i KeyRepeatEvent) GetKey() Key {
-	return i.Key
+func (e KeyRepeatEvent) GetKey() Key {
+	return e.Key
 }
 
-func (i KeyRepeatEvent) GetMods() ModifierKey {
-	return i.Mods
+func (e KeyRepeatEvent) GetMods() ModifierKey {
+	return e.Mods
 }
 
 type CharEvent struct {
 	Char rune
 }
 
-func (i CharEvent) WindowEventType() WindowEventType {
+func (e CharEvent) WindowEventType() WindowEventType {
 	return WindowChar
 }
 
-func (i CharEvent) GuiEventType() GuiEventType {
+func (e CharEvent) GuiEventType() GuiEventType {
 	return GuiChar
 }
 
@@ -198,23 +207,23 @@ type CursorEvent struct {
 	Y float32
 }
 
-func (i CursorEvent) WindowEventType() WindowEventType {
+func (e CursorEvent) WindowEventType() WindowEventType {
 	return WindowCursor
 }
 
-func (i CursorEvent) GuiEventType() GuiEventType {
+func (e CursorEvent) GuiEventType() GuiEventType {
 	return GuiCursor
 }
 
 type GuiCursorEnterEvent struct{}
 
-func (i GuiCursorEnterEvent) GuiEventType() GuiEventType {
+func (e GuiCursorEnterEvent) GuiEventType() GuiEventType {
 	return GuiCursorEnter
 }
 
 type GuiCursorLeaveEvent struct{}
 
-func (i GuiCursorLeaveEvent) GuiEventType() GuiEventType {
+func (e GuiCursorLeaveEvent) GuiEventType() GuiEventType {
 	return GuiCursorLeave
 }
 
@@ -232,28 +241,28 @@ type MouseUpEvent struct {
 	Mods   ModifierKey
 }
 
-func (i MouseUpEvent) WindowEventType() WindowEventType {
+func (e MouseUpEvent) WindowEventType() WindowEventType {
 	return WindowMouseUp
 }
 
-func (i MouseUpEvent) GuiEventType() GuiEventType {
+func (e MouseUpEvent) GuiEventType() GuiEventType {
 	return GuiMouseUp
 }
 
-func (i MouseUpEvent) GetX() float32 {
-	return i.X
+func (e MouseUpEvent) GetX() float32 {
+	return e.X
 }
 
-func (i MouseUpEvent) GetY() float32 {
-	return i.Y
+func (e MouseUpEvent) GetY() float32 {
+	return e.Y
 }
 
-func (i MouseUpEvent) GetButton() MouseButton {
-	return i.Button
+func (e MouseUpEvent) GetButton() MouseButton {
+	return e.Button
 }
 
-func (i MouseUpEvent) GetMods() ModifierKey {
-	return i.Mods
+func (e MouseUpEvent) GetMods() ModifierKey {
+	return e.Mods
 }
 
 type MouseDownEvent struct {
@@ -263,28 +272,28 @@ type MouseDownEvent struct {
 	Mods   ModifierKey
 }
 
-func (i MouseDownEvent) WindowEventType() WindowEventType {
+func (e MouseDownEvent) WindowEventType() WindowEventType {
 	return WindowMouseDown
 }
 
-func (i MouseDownEvent) GuiEventType() GuiEventType {
+func (e MouseDownEvent) GuiEventType() GuiEventType {
 	return GuiMouseDown
 }
 
-func (i MouseDownEvent) GetX() float32 {
-	return i.X
+func (e MouseDownEvent) GetX() float32 {
+	return e.X
 }
 
-func (i MouseDownEvent) GetY() float32 {
-	return i.Y
+func (e MouseDownEvent) GetY() float32 {
+	return e.Y
 }
 
-func (i MouseDownEvent) GetButton() MouseButton {
-	return i.Button
+func (e MouseDownEvent) GetButton() MouseButton {
+	return e.Button
 }
 
-func (i MouseDownEvent) GetMods() ModifierKey {
-	return i.Mods
+func (e MouseDownEvent) GetMods() ModifierKey {
+	return e.Mods
 }
 
 type ScrollEvent struct {
@@ -292,11 +301,11 @@ type ScrollEvent struct {
 	Y float32
 }
 
-func (i ScrollEvent) WindowEventType() WindowEventType {
+func (e ScrollEvent) WindowEventType() WindowEventType {
 	return WindowScroll
 }
 
-func (i ScrollEvent) GuiEventType() GuiEventType {
+func (e ScrollEvent) GuiEventType() GuiEventType {
 	return GuiScroll
 }
 
@@ -307,22 +316,22 @@ type GuiClickEvent struct {
 	Mods   ModifierKey
 }
 
-func (i GuiClickEvent) GuiEventType() GuiEventType {
+func (e GuiClickEvent) GuiEventType() GuiEventType {
 	return GuiClick
 }
 
-func (i GuiClickEvent) GetX() float32 {
-	return i.X
+func (e GuiClickEvent) GetX() float32 {
+	return e.X
 }
 
-func (i GuiClickEvent) GetY() float32 {
-	return i.Y
+func (e GuiClickEvent) GetY() float32 {
+	return e.Y
 }
 
-func (i GuiClickEvent) GetButton() MouseButton {
-	return i.Button
+func (e GuiClickEvent) GetButton() MouseButton {
+	return e.Button
 }
 
-func (i GuiClickEvent) GetMods() ModifierKey {
-	return i.Mods
+func (e GuiClickEvent) GetMods() ModifierKey {
+	return e.Mods
 }
