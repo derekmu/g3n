@@ -166,11 +166,11 @@ func (b MouseButton) GetMouseState() MouseState {
 	// - right is an alias for 2
 	// - middle is an alias for 3
 	switch b {
-	case MouseButton1, MouseButtonLeft:
+	case MouseButton1:
 		return MouseState1
-	case MouseButton2, MouseButtonRight:
+	case MouseButton2:
 		return MouseState2
-	case MouseButton3, MouseButtonMiddle:
+	case MouseButton3:
 		return MouseState3
 	case MouseButton4:
 		return MouseState4
