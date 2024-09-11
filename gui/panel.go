@@ -43,17 +43,6 @@ type IPanel interface {
 	graphic.IGraphic
 	core.IDispatcher[core.GuiEvent]
 	GetPanel() *Panel
-	Width() float32
-	Height() float32
-	Enabled() bool
-	SetEnabled(bool)
-	InsideBorders(x, y float32) bool
-	SetZLayerDelta(zLayerDelta int)
-	ZLayerDelta() int
-	SetPosition(x, y float32)
-	SetPositionX(x float32)
-	SetPositionY(y float32)
-	SetPositionZ(y float32)
 }
 
 // Panel is 2D rectangular graphic which by default has a quad geometry.
@@ -299,6 +288,11 @@ func (p *Panel) ContentWidth() float32 {
 // ContentHeight returns the height of the content area.
 func (p *Panel) ContentHeight() float32 {
 	return p.content.Height
+}
+
+// ContentArea returns the whole content area.
+func (p *Panel) ContentArea() Rect {
+	return p.content
 }
 
 // SetMargins sets the panel's margin sizes.

@@ -156,7 +156,7 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 	for _, k := range r.zLayerKeys {
 		for _, ipan := range r.zLayers[k] {
 			// Set panel Z
-			ipan.SetPositionZ(panZ)
+			ipan.GetPanel().SetPositionZ(panZ)
 			panZ -= deltaZ
 			// Append the panel's graphic material to lists of graphic materials to be rendered
 			mat := ipan.GetGraphic().Materials()[0]
@@ -204,7 +204,7 @@ func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zL
 	}
 	// If node is an IPanel append it to appropriate list
 	if ipan, ok := inode.(gui.IPanel); ok {
-		zLayer += ipan.ZLayerDelta()
+		zLayer += ipan.GetPanel().ZLayerDelta()
 		if ipan.Renderable() {
 			layer, ok := r.zLayers[zLayer]
 			if !ok {
