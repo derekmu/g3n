@@ -30,20 +30,30 @@ var _ IDispatcher[int] = &Dispatcher[int]{}
 
 // Dispatcher is an event dispatcher.
 type Dispatcher[T any] struct {
-	subs   []subscription[T]
-	nextId SubscribeID
+	subs        []subscription[T]
+	dispatching bool
+	pending     []subscription[T]
+	nextId      SubscribeID
 }
 
 // Subscribe adds the callback to the list invoked when an event is dispatched.
 // Returns a SubscribeID that can be used to Unsubscribe later.
 func (e *Dispatcher[T]) Subscribe(cb Callback[T]) SubscribeID {
 	e.nextId++
-	e.subs = append(e.subs, subscription[T]{id: e.nextId, cb: cb})
+	if e.dispatching {
+		e.pending = append(e.pending, subscription[T]{id: e.nextId, cb: cb})
+	} else {
+		e.subs = append(e.subs, subscription[T]{id: e.nextId, cb: cb})
+	}
 	return e.nextId
 }
 
 // Unsubscribe removes the callback with the given ID from the list invoked when an event is dispatched.
 func (e *Dispatcher[T]) Unsubscribe(id SubscribeID) {
+	if e.dispatching {
+		e.pending = append(e.pending, subscription[T]{id: id})
+		return
+	}
 	for i := 0; i < len(e.subs); i++ {
 		if e.subs[i].id == id {
 			if i == len(e.subs)-1 {
@@ -56,16 +66,28 @@ func (e *Dispatcher[T]) Unsubscribe(id SubscribeID) {
 			i--
 		}
 	}
+
 }
 
 // Dispatch invokes all subscribed callbacks with the given event.
 // Returns the number of subscribers that consumed the event.
 func (e *Dispatcher[T]) Dispatch(ev T) int {
+	e.dispatching = true
 	count := 0
 	for _, sub := range e.subs {
 		if sub.cb(ev) {
 			count++
 		}
 	}
+	e.dispatching = false
+	for i, sub := range e.pending {
+		if sub.cb == nil {
+			e.Unsubscribe(sub.id)
+		} else {
+			e.subs = append(e.subs, sub)
+			e.pending[i].cb = nil
+		}
+	}
+	e.pending = e.pending[:0]
 	return count
 }
