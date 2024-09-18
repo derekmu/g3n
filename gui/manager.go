@@ -32,7 +32,7 @@ type Manager struct {
 	core.TimerManager
 	window      IWindow
 	scene       core.INode
-	target      IPanel
+	mouseTarget IPanel
 	keyFocus    core.IDispatcher[core.GuiEvent]
 	cursorFocus core.IDispatcher[core.GuiEvent]
 }
@@ -86,8 +86,8 @@ func (gm *Manager) onKeyEvent(ev core.GuiEvent) {
 
 // onMouse is called when mouse events are received.
 func (gm *Manager) onMouse(ev core.GuiEvent) {
-	if gm.scene != nil && gm.target != nil {
-		sendAncestry(gm.target, false, nil, ev)
+	if gm.scene != nil && gm.mouseTarget != nil {
+		sendAncestry(gm.mouseTarget, false, nil, ev)
 	} else {
 		gm.Dispatch(ev)
 	}
@@ -95,33 +95,33 @@ func (gm *Manager) onMouse(ev core.GuiEvent) {
 
 // onScroll is called when scroll events are received.
 func (gm *Manager) onScroll(ev core.ScrollEvent) {
-	if gm.scene != nil && gm.target != nil {
-		sendAncestry(gm.target, false, nil, ev)
+	if gm.scene != nil && gm.mouseTarget != nil {
+		sendAncestry(gm.mouseTarget, false, nil, ev)
 	} else {
 		gm.Dispatch(ev)
 	}
 }
 
 func (gm *Manager) updateMouseTarget(x, y float32) {
-	oldTarget := gm.target
-	gm.target = nil
+	oldTarget := gm.mouseTarget
+	gm.mouseTarget = nil
 	// Find IPanel immediately under the cursor and store it in gm.target
 	gm.forEachIPanel(func(ipan IPanel) {
-		if ipan.GetPanel().InsideBorders(x, y) && (gm.target == nil || ipan.Position().Z < gm.target.GetPanel().Position().Z) {
-			gm.target = ipan
+		if ipan.GetPanel().InsideBorders(x, y) && (gm.mouseTarget == nil || ipan.Position().Z < gm.mouseTarget.GetPanel().Position().Z) {
+			gm.mouseTarget = ipan
 		}
 	})
-	if gm.target != oldTarget {
+	if gm.mouseTarget != oldTarget {
 		// Only send events up to the lowest common ancestor of target and oldTarget
 		var commonAnc IPanel
-		if gm.target != nil && oldTarget != nil {
-			commonAnc, _ = gm.target.LowestCommonAncestor(oldTarget).(IPanel)
+		if gm.mouseTarget != nil && oldTarget != nil {
+			commonAnc, _ = gm.mouseTarget.LowestCommonAncestor(oldTarget).(IPanel)
 		}
-		if oldTarget != nil && !oldTarget.IsAncestorOf(gm.target) {
+		if oldTarget != nil && !oldTarget.IsAncestorOf(gm.mouseTarget) {
 			sendAncestry(oldTarget, true, commonAnc, core.GuiCursorLeaveEvent{})
 		}
-		if gm.target != nil && !gm.target.IsAncestorOf(oldTarget) {
-			sendAncestry(gm.target, true, commonAnc, core.GuiCursorEnterEvent{})
+		if gm.mouseTarget != nil && !gm.mouseTarget.IsAncestorOf(oldTarget) {
+			sendAncestry(gm.mouseTarget, true, commonAnc, core.GuiCursorEnterEvent{})
 		}
 	}
 }
@@ -137,8 +137,8 @@ func (gm *Manager) onCursor(ev core.CursorEvent) {
 		return
 	}
 	gm.updateMouseTarget(ev.X, ev.Y)
-	if gm.target != nil {
-		sendAncestry(gm.target, false, nil, ev)
+	if gm.mouseTarget != nil {
+		sendAncestry(gm.mouseTarget, false, nil, ev)
 	} else {
 		gm.Dispatch(ev)
 	}

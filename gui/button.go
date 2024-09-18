@@ -165,26 +165,30 @@ func (b *Button) onLabelEvent(event core.GuiEvent) bool {
 func (b *Button) onGuiEvent(event core.GuiEvent) bool {
 	switch ev := event.(type) {
 	case core.MouseUpEvent:
-		clicked := b.pressed.IsSet(ev.Button)
-		b.pressed = b.pressed.Unset(ev.Button)
-		b.updateTexture()
-		if clicked {
-			b.Dispatch(core.GuiClickEvent{
-				X:      ev.X,
-				Y:      ev.Y,
-				Button: ev.Button,
-				Mods:   ev.Mods,
-			})
+		if b.Enabled() {
+			clicked := b.pressed.IsSet(ev.Button)
+			b.pressed = b.pressed.Unset(ev.Button)
+			b.updateTexture()
+			if clicked {
+				b.Dispatch(core.GuiClickEvent{
+					X:      ev.X,
+					Y:      ev.Y,
+					Button: ev.Button,
+					Mods:   ev.Mods,
+				})
+			}
 		}
 	case core.MouseDownEvent:
-		b.pressed = b.pressed.Set(ev.Button)
-		b.updateTexture()
+		if b.Enabled() {
+			b.pressed = b.pressed.Set(ev.Button)
+			b.updateTexture()
+		}
 	case core.GuiCursorEnterEvent:
 		b.mouseOver = true
 		b.updateTexture()
 	case core.GuiCursorLeaveEvent:
 		b.mouseOver = false
-		// Pressing, dragging out, and releasing cancels clicks
+		// Pressing and dragging out cancels clicks
 		b.pressed = 0
 		b.updateTexture()
 	case core.GuiEnableEvent:
