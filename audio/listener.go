@@ -29,7 +29,7 @@ func (l *Listener) SetVelocity(vx, vy, vz float32) {
 }
 
 // SetVelocityVec sets the velocity of the listener with a vector.
-func (l *Listener) SetVelocityVec(v *math32.Vector3) {
+func (l *Listener) SetVelocityVec(v math32.Vector3) {
 	al.Listener3f(al.Velocity, v.X, v.Y, v.Z)
 }
 

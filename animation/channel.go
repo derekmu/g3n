@@ -118,7 +118,7 @@ func NewPositionChannel(node core.INode) *PositionChannel {
 			pc.interpAction = func(idx int, k float32) {
 				var v math32.Vector3
 				pc.values.GetVector3(idx*3, &v)
-				node.SetPositionVec(&v)
+				node.SetPositionVec(v)
 			}
 		case LINEAR:
 			pc.interpAction = func(idx int, k float32) {
@@ -126,7 +126,7 @@ func NewPositionChannel(node core.INode) *PositionChannel {
 				pc.values.GetVector3(idx*3, &v1)
 				pc.values.GetVector3((idx+1)*3, &v2)
 				v1.Lerp(&v2, k)
-				node.SetPositionVec(&v1)
+				node.SetPositionVec(v1)
 			}
 		case CUBICSPLINE: // TODO
 			pc.interpAction = func(idx int, k float32) {
@@ -134,7 +134,7 @@ func NewPositionChannel(node core.INode) *PositionChannel {
 				pc.values.GetVector3(idx*3, &v1)
 				pc.values.GetVector3((idx+1)*3, &v2)
 				v1.Lerp(&v2, k)
-				node.SetPositionVec(&v1)
+				node.SetPositionVec(v1)
 			}
 		}
 	}
@@ -157,7 +157,7 @@ func NewRotationChannel(node core.INode) *RotationChannel {
 			rc.interpAction = func(idx int, k float32) {
 				var q math32.Vector4
 				rc.values.GetVector4(idx*4, &q)
-				node.SetQuaternionVec(&q)
+				node.SetQuaternionVec(q)
 			}
 		case LINEAR:
 			rc.interpAction = func(idx int, k float32) {
@@ -200,7 +200,7 @@ func NewScaleChannel(node core.INode) *ScaleChannel {
 			sc.interpAction = func(idx int, k float32) {
 				var v math32.Vector3
 				sc.values.GetVector3(idx*3, &v)
-				node.SetScaleVec(&v)
+				node.SetScaleVec(v)
 			}
 		case LINEAR:
 			sc.interpAction = func(idx int, k float32) {
@@ -208,7 +208,7 @@ func NewScaleChannel(node core.INode) *ScaleChannel {
 				sc.values.GetVector3(idx*3, &v1)
 				sc.values.GetVector3((idx+1)*3, &v2)
 				v1.Lerp(&v2, k)
-				node.SetScaleVec(&v1)
+				node.SetScaleVec(v1)
 			}
 		case CUBICSPLINE: // TODO
 			sc.interpAction = func(idx int, k float32) {
@@ -216,7 +216,7 @@ func NewScaleChannel(node core.INode) *ScaleChannel {
 				sc.values.GetVector3(idx*3, &v1)
 				sc.values.GetVector3((idx+1)*3, &v2)
 				v1.Lerp(&v2, k)
-				node.SetScaleVec(&v1)
+				node.SetScaleVec(v1)
 			}
 		}
 	}

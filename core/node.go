@@ -420,8 +420,8 @@ func (n *Node) SetPosition(x, y, z float32) {
 }
 
 // SetPositionVec sets the position based on the specified vector pointer.
-func (n *Node) SetPositionVec(vpos *math32.Vector3) {
-	n.position = *vpos
+func (n *Node) SetPositionVec(vpos math32.Vector3) {
+	n.position = vpos
 	n.matNeedsUpdate = true
 }
 
@@ -480,8 +480,8 @@ func (n *Node) SetRotation(x, y, z float32) {
 }
 
 // SetRotationVec sets the global rotation in Euler angles (radians) based on the specified vector pointer.
-func (n *Node) SetRotationVec(vrot *math32.Vector3) {
-	n.rotation = *vrot
+func (n *Node) SetRotationVec(vrot math32.Vector3) {
+	n.rotation = vrot
 	n.quaternion.SetFromEuler(&n.rotation)
 	n.matNeedsUpdate = true
 }
@@ -563,7 +563,7 @@ func (n *Node) SetQuaternion(x, y, z, w float32) {
 }
 
 // SetQuaternionVec sets the quaternion based on the specified quaternion unit multiples vector.
-func (n *Node) SetQuaternionVec(q *math32.Vector4) {
+func (n *Node) SetQuaternionVec(q math32.Vector4) {
 	n.quaternion.Set(q.X, q.Y, q.Z, q.W)
 	n.rotNeedsUpdate = true
 }
@@ -602,8 +602,8 @@ func (n *Node) SetScale(x, y, z float32) {
 }
 
 // SetScaleVec sets the scale based on the specified vector pointer.
-func (n *Node) SetScaleVec(scale *math32.Vector3) {
-	n.scale = *scale
+func (n *Node) SetScaleVec(scale math32.Vector3) {
+	n.scale = scale
 	n.matNeedsUpdate = true
 }
 
@@ -637,8 +637,8 @@ func (n *Node) SetDirection(x, y, z float32) {
 }
 
 // SetDirectionVec sets the direction based on a vector pointer.
-func (n *Node) SetDirectionVec(vdir *math32.Vector3) {
-	n.direction = *vdir
+func (n *Node) SetDirectionVec(vdir math32.Vector3) {
+	n.direction = vdir
 	n.matNeedsUpdate = true
 }
 

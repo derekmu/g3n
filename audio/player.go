@@ -240,7 +240,7 @@ func (p *Player) SetVelocity(vx, vy, vz float32) {
 
 // SetVelocityVec sets the velocity of this player from the specified vector
 // It is used to calculate Doppler effects
-func (p Player) SetVelocityVec(v *math32.Vector3) {
+func (p Player) SetVelocityVec(v math32.Vector3) {
 	al.Source3f(p.source, al.Velocity, v.X, v.Y, v.Z)
 }
 
