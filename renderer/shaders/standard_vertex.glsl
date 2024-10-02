@@ -10,36 +10,10 @@ uniform mat3 NormalMatrix;
 uniform mat4 MVP;
 
 // Material parameters uniform array
-uniform vec3 Material[6];
-// Macros to access elements inside the Material array
-#define MatAmbientColor     Material[0]
-#define MatDiffuseColor     Material[1]
-#define MatSpecularColor    Material[2]
-#define MatEmissiveColor    Material[3]
-#define MatShininess        Material[4].x
-#define MatOpacity          Material[4].y
-#define MatPointSize        Material[4].z
-#define MatPointRotationZ   Material[5].x
 #if MAT_TEXTURES > 0
-// Texture unit sampler array
-uniform sampler2D MatTexture[MAT_TEXTURES];
-// Texture parameters (3*vec2 per texture)
 uniform vec2 MatTexinfo[3 * MAT_TEXTURES];
 // Macros to access elements inside the MatTexinfo array
-#define MatTexOffset(a)     MatTexinfo[(3 * a)]
-#define MatTexRepeat(a)     MatTexinfo[(3 * a) + 1]
 #define MatTexFlipY(a)      bool(MatTexinfo[(3 * a) + 2].x)
-#define MatTexVisible(a)    bool(MatTexinfo[(3 * a) + 2].y)
-// Alpha compositing (see here: https://ciechanow.ski/alpha-compositing/)
-vec4 Blend(vec4 texMixed, vec4 texColor) {
-    texMixed.rgb *= texMixed.a;
-    texColor.rgb *= texColor.a;
-    texMixed = texColor + texMixed * (1 - texColor.a);
-    if (texMixed.a > 0.0) {
-        texMixed.rgb /= texMixed.a;
-    }
-    return texMixed;
-}
 #endif
 
 #ifdef MORPHTARGETS
@@ -82,22 +56,7 @@ out vec3 Normal;
 out vec2 FragTexcoord;
 
 void main() {
-    // Transform vertex position to camera coordinates
-    Position = ModelViewMatrix * vec4(VertexPosition, 1.0);
-
-    // Transform vertex normal to camera coordinates
-    Normal = normalize(NormalMatrix * VertexNormal);
-
-    vec2 texcoord = VertexTexcoord;
-    #if MAT_TEXTURES > 0
-    // Flip texture coordinate Y if requested.
-    if (MatTexFlipY(0)) {
-        texcoord.y = 1.0 - texcoord.y;
-    }
-    #endif
-    FragTexcoord = texcoord;
     vec3 vPosition = VertexPosition;
-    mat4 finalWorld = mat4(1.0);
 
     #ifdef MORPHTARGETS
     #if MORPHTARGETS > 0
@@ -126,13 +85,37 @@ void main() {
     #endif
     #endif
 
+    mat4 finalWorld = mat4(1.0);
+    mat3 finalNormal = mat3(1.0);
+
     #ifdef TOTAL_BONES
-    mat4 influence = mBones[int(matricesIndices[0])] * matricesWeights[0];
-    influence += mBones[int(matricesIndices[1])] * matricesWeights[1];
-    influence += mBones[int(matricesIndices[2])] * matricesWeights[2];
-    influence += mBones[int(matricesIndices[3])] * matricesWeights[3];
+    mat4 influence = mat4(0.0);
+    mat3 normalInfluence = mat3(0.0);
+    for (int i = 0; i < 4; i++) {
+        mat4 boneMatrix = mBones[int(matricesIndices[i])];
+        float weight = matricesWeights[i];
+        influence += boneMatrix * weight;
+        mat3 boneNormalMatrix = mat3(transpose(inverse(boneMatrix)));
+        normalInfluence += boneNormalMatrix * weight;
+    }
     finalWorld = finalWorld * influence;
+    finalNormal = finalNormal * normalInfluence;
     #endif
+
+    // Transform this vertex position to camera coordinates.
+    Position = ModelViewMatrix * finalWorld * vec4(vPosition, 1.0);
+
+    // Transform this vertex normal to camera coordinates.
+    Normal = normalize(NormalMatrix * finalNormal * VertexNormal);
+
+    vec2 texcoord = VertexTexcoord;
+    #if MAT_TEXTURES > 0
+    // Flip texture coordinate Y if requested.
+    if (MatTexFlipY(0)) {
+        texcoord.y = 1.0 - texcoord.y;
+    }
+    #endif
+    FragTexcoord = texcoord;
 
     // Output projected and transformed vertex position
     gl_Position = MVP * finalWorld * vec4(vPosition, 1.0);
