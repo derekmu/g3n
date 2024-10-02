@@ -55,21 +55,7 @@ out vec3 CamDir;
 out vec2 FragTexcoord;
 
 void main() {
-    // Transform this vertex position to camera coordinates.
-    Position = vec3(ModelViewMatrix * vec4(VertexPosition, 1.0));
-
-    // Transform this vertex normal to camera coordinates.
-    Normal = normalize(NormalMatrix * VertexNormal);
-
-    // Calculate the direction vector from the vertex to the camera
-    // The camera is at 0,0,0
-    CamDir = normalize(-Position.xyz);
-
-    // Output texture coordinates to fragment shader
-    FragTexcoord = VertexTexcoord;
-
     vec3 vPosition = VertexPosition;
-    mat4 finalWorld = mat4(1.0);
 
     #ifdef MORPHTARGETS
     #if MORPHTARGETS > 0
@@ -98,6 +84,8 @@ void main() {
     #endif
     #endif
 
+    mat4 finalWorld = mat4(1.0);
+
     #ifdef BONE_INFLUENCERS
     #if BONE_INFLUENCERS > 0
     mat4 influence = mBones[int(matricesIndices[0])] * matricesWeights[0];
@@ -113,6 +101,19 @@ void main() {
     finalWorld = finalWorld * influence;
     #endif
     #endif
+
+    // Transform this vertex position to camera coordinates.
+    Position = vec3(ModelViewMatrix * finalWorld * vec4(vPosition, 1.0));
+
+    // Transform this vertex normal to camera coordinates.
+    Normal = normalize(NormalMatrix * finalWorld * VertexNormal);
+
+    // Calculate the direction vector from the vertex to the camera
+    // The camera is at 0,0,0
+    CamDir = normalize(-Position.xyz);
+
+    // Output texture coordinates to fragment shader
+    FragTexcoord = VertexTexcoord;
 
     gl_Position = MVP * finalWorld * vec4(vPosition, 1.0);
 }
