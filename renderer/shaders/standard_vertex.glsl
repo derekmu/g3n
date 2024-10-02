@@ -70,12 +70,10 @@ in vec3 MorphPosition7;
 #endif
 #endif
 
-#ifdef BONE_INFLUENCERS
-#if BONE_INFLUENCERS > 0
+#ifdef TOTAL_BONES
 uniform mat4 mBones[TOTAL_BONES];
 in vec4 matricesIndices;
 in vec4 matricesWeights;
-#endif
 #endif
 
 // Output variables for Fragment shader
@@ -128,20 +126,12 @@ void main() {
     #endif
     #endif
 
-    #ifdef BONE_INFLUENCERS
-    #if BONE_INFLUENCERS > 0
+    #ifdef TOTAL_BONES
     mat4 influence = mBones[int(matricesIndices[0])] * matricesWeights[0];
-    #if BONE_INFLUENCERS > 1
     influence += mBones[int(matricesIndices[1])] * matricesWeights[1];
-    #if BONE_INFLUENCERS > 2
     influence += mBones[int(matricesIndices[2])] * matricesWeights[2];
-    #if BONE_INFLUENCERS > 3
     influence += mBones[int(matricesIndices[3])] * matricesWeights[3];
-    #endif
-    #endif
-    #endif
     finalWorld = finalWorld * influence;
-    #endif
     #endif
 
     // Output projected and transformed vertex position

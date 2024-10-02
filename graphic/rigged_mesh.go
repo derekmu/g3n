@@ -11,9 +11,6 @@ import (
 	"log"
 )
 
-// MaxBoneInfluencers is the maximum number of bone influencers per vertex.
-const MaxBoneInfluencers = 4
-
 // RiggedMesh is a Mesh associated with a skeleton.
 type RiggedMesh struct {
 	*Mesh    // Embedded mesh
@@ -27,7 +24,6 @@ func NewRiggedMesh(mesh *Mesh) *RiggedMesh {
 	rm.Mesh = mesh
 	rm.SetIGraphic(rm)
 	rm.mBones.Init("mBones")
-	rm.ShaderDefines.BONE_INFLUENCERS = MaxBoneInfluencers
 	rm.ShaderDefines.TOTAL_BONES = 0
 	return rm
 }

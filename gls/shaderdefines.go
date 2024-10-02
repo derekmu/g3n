@@ -50,13 +50,11 @@ func (d GeometryDefines) AddToMap(defines map[string]string) {
 }
 
 type GraphicDefines struct {
-	BONE_INFLUENCERS int
-	TOTAL_BONES      int
+	TOTAL_BONES int
 }
 
 func (d GraphicDefines) AddToMap(defines map[string]string) {
-	if d.BONE_INFLUENCERS > 0 {
-		defines["BONE_INFLUENCERS"] = strconv.Itoa(d.BONE_INFLUENCERS)
+	if d.TOTAL_BONES > 0 {
 		defines["TOTAL_BONES"] = strconv.Itoa(d.TOTAL_BONES)
 	}
 }

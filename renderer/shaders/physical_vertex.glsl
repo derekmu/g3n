@@ -40,12 +40,10 @@ in vec3 MorphPosition7;
 #endif
 #endif
 
-#ifdef BONE_INFLUENCERS
-#if BONE_INFLUENCERS > 0
+#ifdef TOTAL_BONES
 uniform mat4 mBones[TOTAL_BONES];
 in vec4 matricesIndices;
 in vec4 matricesWeights;
-#endif
 #endif
 
 // Output variables for Fragment shader
@@ -85,28 +83,27 @@ void main() {
     #endif
 
     mat4 finalWorld = mat4(1.0);
+    mat3 finalNormal = mat3(1.0);
 
-    #ifdef BONE_INFLUENCERS
-    #if BONE_INFLUENCERS > 0
-    mat4 influence = mBones[int(matricesIndices[0])] * matricesWeights[0];
-    #if BONE_INFLUENCERS > 1
-    influence += mBones[int(matricesIndices[1])] * matricesWeights[1];
-    #if BONE_INFLUENCERS > 2
-    influence += mBones[int(matricesIndices[2])] * matricesWeights[2];
-    #if BONE_INFLUENCERS > 3
-    influence += mBones[int(matricesIndices[3])] * matricesWeights[3];
-    #endif
-    #endif
-    #endif
+    #ifdef TOTAL_BONES
+    mat4 influence = mat4(0.0);
+    mat3 normalInfluence = mat3(0.0);
+    for (int i = 0; i < 4; i++) {
+        mat4 boneMatrix = mBones[int(matricesIndices[i])];
+        float weight = matricesWeights[i];
+        influence += boneMatrix * weight;
+        mat3 boneNormalMatrix = mat3(transpose(inverse(boneMatrix)));
+        normalInfluence += boneNormalMatrix * weight;
+    }
     finalWorld = finalWorld * influence;
-    #endif
+    finalNormal = finalNormal * normalInfluence;
     #endif
 
     // Transform this vertex position to camera coordinates.
     Position = vec3(ModelViewMatrix * finalWorld * vec4(vPosition, 1.0));
 
     // Transform this vertex normal to camera coordinates.
-    Normal = normalize(NormalMatrix * finalWorld * VertexNormal);
+    Normal = normalize(NormalMatrix * finalNormal * VertexNormal);
 
     // Calculate the direction vector from the vertex to the camera
     // The camera is at 0,0,0
