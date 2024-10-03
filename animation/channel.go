@@ -155,29 +155,25 @@ func NewRotationChannel(node core.INode) *RotationChannel {
 		switch rc.interpType {
 		case STEP:
 			rc.interpAction = func(idx int, k float32) {
-				var q math32.Vector4
-				rc.values.GetVector4(idx*4, &q)
-				node.SetQuaternionVec(q)
+				var q math32.Quaternion
+				rc.values.GetQuaternion(idx*4, &q)
+				node.SetQuaternion(q)
 			}
 		case LINEAR:
 			rc.interpAction = func(idx int, k float32) {
-				var q1, q2 math32.Vector4
-				rc.values.GetVector4(idx*4, &q1)
-				rc.values.GetVector4((idx+1)*4, &q2)
-				quat1 := math32.NewQuaternion(q1.X, q1.Y, q1.Z, q1.W)
-				quat2 := math32.NewQuaternion(q2.X, q2.Y, q2.Z, q2.W)
-				quat1.Slerp(quat2, k)
-				node.SetQuaternionQuat(quat1)
+				var q1, q2 math32.Quaternion
+				rc.values.GetQuaternion(idx*4, &q1)
+				rc.values.GetQuaternion((idx+1)*4, &q2)
+				q1.Slerp(&q2, k)
+				node.SetQuaternion(q1)
 			}
 		case CUBICSPLINE: // TODO
 			rc.interpAction = func(idx int, k float32) {
-				var q1, q2 math32.Vector4
-				rc.values.GetVector4(idx*4, &q1)
-				rc.values.GetVector4((idx+1)*4, &q2)
-				quat1 := math32.NewQuaternion(q1.X, q1.Y, q1.Z, q1.W)
-				quat2 := math32.NewQuaternion(q2.X, q2.Y, q2.Z, q2.W)
-				quat1.Slerp(quat2, k)
-				node.SetQuaternionQuat(quat1)
+				var q1, q2 math32.Quaternion
+				rc.values.GetQuaternion(idx*4, &q1)
+				rc.values.GetQuaternion((idx+1)*4, &q2)
+				q1.Slerp(&q2, k)
+				node.SetQuaternion(q1)
 			}
 		}
 	}

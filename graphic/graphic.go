@@ -280,10 +280,10 @@ func (grmat *GraphicMaterial) Render(gs *gls.GLS, rinfo *core.RenderInfo) {
 
 	geom := gr.igeom.GetGeometry()
 	indices := geom.Indices()
-	if indices.Size() > 0 {
+	if indices.Len() > 0 {
 		// Indexed geometry
 		if count == 0 {
-			count = indices.Size()
+			count = indices.Len()
 		}
 		gs.DrawElements(gr.mode, int32(count), gls.UNSIGNED_INT, 4*uint32(grmat.start))
 	} else {

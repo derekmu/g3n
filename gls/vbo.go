@@ -318,7 +318,7 @@ func (vbo *VBO) OperateOnVectors3(attribType AttribType, cb func(vec *math32.Vec
 	buffer := vbo.Buffer()
 	// Call callback for each vector3, updating the buffer afterward
 	var vec math32.Vector3
-	for i := offset; i < vbo.buffer.Size(); i += stride {
+	for i := offset; i < vbo.buffer.Len(); i += stride {
 		buffer.GetVector3(i, &vec)
 		brk := cb(&vec)
 		buffer.SetVector3(i, &vec)
@@ -338,7 +338,7 @@ func (vbo *VBO) ReadVectors3(attribType AttribType, cb func(vec math32.Vector3) 
 	positions := vbo.Buffer()
 	// Call callback for each vector3
 	var vec math32.Vector3
-	for i := offset; i < positions.Size(); i += stride {
+	for i := offset; i < positions.Len(); i += stride {
 		positions.GetVector3(i, &vec)
 		brk := cb(vec)
 		if brk {
@@ -358,7 +358,7 @@ func (vbo *VBO) ReadTripleVectors3(attribType AttribType, cb func(vec1, vec2, ve
 	loopStride := 3 * stride
 	// Call callback for each vector3 triple
 	var vec1, vec2, vec3 math32.Vector3
-	for i := offset; i < positions.Size(); i += loopStride {
+	for i := offset; i < positions.Len(); i += loopStride {
 		positions.GetVector3(i, &vec1)
 		positions.GetVector3(i+stride, &vec2)
 		positions.GetVector3(i+doubleStride, &vec3)

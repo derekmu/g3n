@@ -177,7 +177,7 @@ func (rc *Raycaster) RaycastSprite(s *graphic.Sprite, intersects *[]Intersect) {
 	var v3 math32.Vector3
 	var point math32.Vector3
 	intersect := false
-	for i := 0; i < indices.Size(); i += 3 {
+	for i := 0; i < indices.Len(); i += 3 {
 		pos := indices[i]
 		buffer.GetVector3(int(pos*5), &v1)
 		v1.ApplyMatrix4(&mv)
@@ -392,8 +392,8 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 	precisionSq := rc.LinePrecision * rc.LinePrecision
 
 	// Checks intersection with individual lines for indexed geometry
-	if indices.Size() > 0 {
-		for i := 0; i < indices.Size()-1; i += step {
+	if indices.Len() > 0 {
+		for i := 0; i < indices.Len()-1; i += step {
 			// Calculates distance from ray to this line segment
 			a := indices[i]
 			b := indices[i+1]
@@ -421,7 +421,7 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 		}
 		// Checks intersection with individual lines for NON indexed geometry
 	} else {
-		for i := 0; i < positions.Size()/3-1; i += step {
+		for i := 0; i < positions.Len()/3-1; i += step {
 			positions.GetVector3(3*i, &vstart)
 			positions.GetVector3(3*i+3, &vend)
 			distSq := ray.DistanceSqToSegment(&vstart, &vend, &interRay, &interSegment)

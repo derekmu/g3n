@@ -94,19 +94,16 @@ func NewRibbon(paths [][]math32.Vector3, close bool) *Geometry {
 
 	l1 := ls[0] - 1 // path1 length
 	l2 := ls[1] - 1 // path2 length
-	min := l2
-	if l1 < l2 {
-		min = l1
-	}
+	minl := min(l2, l1)
 	p := 0
 	i = 0
-	for i <= min && p < len(ls)-1 {
+	for i <= minl && p < len(ls)-1 {
 		t := is[p+1] - is[p]
 
 		indices.Append(uint32(i), uint32(i+t), uint32(i+1))
 		indices.Append(uint32(i+t+1), uint32(i+1), uint32(i+t))
 		i++
-		if i == min {
+		if i == minl {
 			if close {
 				indices.Append(uint32(i), uint32(i+t), uint32(is[p]))
 				indices.Append(uint32(is[p]+t), uint32(is[p]), uint32(i+t))
@@ -119,14 +116,14 @@ func NewRibbon(paths [][]math32.Vector3, close bool) *Geometry {
 			l2 = ls[p+1] - 1
 			i = is[p]
 			if l1 < l2 {
-				min = l1 + i
+				minl = l1 + i
 			} else {
-				min = l2 + i
+				minl = l2 + i
 			}
 		}
 	}
 
-	normals := math32.NewArrayF32(positions.Size(), positions.Size())
+	normals := math32.NewArrayF32(positions.Len(), positions.Len())
 	normals = CalculateNormals(indices, positions, normals)
 
 	c.SetIndices(indices)

@@ -451,7 +451,7 @@ func (n *Node) Position() math32.Vector3 {
 // TranslateOnAxis translates the specified distance on the specified local axis.
 func (n *Node) TranslateOnAxis(axis *math32.Vector3, dist float32) {
 	v := math32.NewVec3().Copy(axis)
-	v.ApplyQuaternion(&n.quaternion)
+	v.ApplyQuaternion(n.quaternion)
 	v.MultiplyScalar(dist)
 	n.position.Add(v)
 	n.matNeedsUpdate = true
@@ -535,48 +535,30 @@ func (n *Node) Rotation() math32.Vector3 {
 }
 
 // RotateOnAxis rotates around the specified local axis the specified angle in radians.
-func (n *Node) RotateOnAxis(axis *math32.Vector3, angle float32) {
-	var rotQuat math32.Quaternion
-	rotQuat.SetFromAxisAngle(axis, angle)
-	n.QuaternionMult(&rotQuat)
+func (n *Node) RotateOnAxis(axis math32.Vector3, angle float32) {
+	rotQuat := math32.QuaternionFromAxisAngle(axis, angle)
+	n.quaternion.Multiply(&rotQuat)
+	n.rotNeedsUpdate = true
 }
 
 // RotateX rotates around the local X axis the specified angle in radians.
 func (n *Node) RotateX(x float32) {
-	n.RotateOnAxis(&math32.Vector3{1, 0, 0}, x)
+	n.RotateOnAxis(math32.Vector3{X: 1}, x)
 }
 
 // RotateY rotates around the local Y axis the specified angle in radians.
 func (n *Node) RotateY(y float32) {
-	n.RotateOnAxis(&math32.Vector3{0, 1, 0}, y)
+	n.RotateOnAxis(math32.Vector3{Y: 1}, y)
 }
 
 // RotateZ rotates around the local Z axis the specified angle in radians.
 func (n *Node) RotateZ(z float32) {
-	n.RotateOnAxis(&math32.Vector3{0, 0, 1}, z)
+	n.RotateOnAxis(math32.Vector3{Z: 1}, z)
 }
 
-// SetQuaternion sets the quaternion based on the specified quaternion unit multiples.
-func (n *Node) SetQuaternion(x, y, z, w float32) {
-	n.quaternion.Set(x, y, z, w)
-	n.rotNeedsUpdate = true
-}
-
-// SetQuaternionVec sets the quaternion based on the specified quaternion unit multiples vector.
-func (n *Node) SetQuaternionVec(q math32.Vector4) {
-	n.quaternion.Set(q.X, q.Y, q.Z, q.W)
-	n.rotNeedsUpdate = true
-}
-
-// SetQuaternionQuat sets the quaternion based on the specified quaternion pointer.
-func (n *Node) SetQuaternionQuat(q *math32.Quaternion) {
-	n.quaternion = *q
-	n.rotNeedsUpdate = true
-}
-
-// QuaternionMult multiplies the current quaternion by the specified quaternion.
-func (n *Node) QuaternionMult(q *math32.Quaternion) {
-	n.quaternion.Multiply(q)
+// SetQuaternion sets the quaternion based on the specified quaternion pointer.
+func (n *Node) SetQuaternion(q math32.Quaternion) {
+	n.quaternion = q
 	n.rotNeedsUpdate = true
 }
 
@@ -698,7 +680,7 @@ func (n *Node) WorldDirection(result *math32.Vector3) {
 	var quaternion math32.Quaternion
 	n.WorldQuaternion(&quaternion)
 	*result = n.direction
-	result.ApplyQuaternion(&quaternion)
+	result.ApplyQuaternion(quaternion)
 }
 
 // MatrixWorld returns a copy of the matrix world of this node.

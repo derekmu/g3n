@@ -263,7 +263,7 @@ func (g *Geometry) ReadFaces(cb func(vA, vB, vC math32.Vector3) bool) {
 	if g.Indexed() {
 		var vA, vB, vC math32.Vector3
 		positions := vbo.Buffer()
-		for i := 0; i < g.indices.Size(); i += 3 {
+		for i := 0; i < g.indices.Len(); i += 3 {
 			// Get face vertices
 			positions.GetVector3(int(g.indices[i])*stride+offset, &vA)
 			positions.GetVector3(int(g.indices[i+1])*stride+offset, &vB)
@@ -282,7 +282,7 @@ func (g *Geometry) ReadFaces(cb func(vA, vB, vC math32.Vector3) bool) {
 
 // Indexed returns whether the geometry is indexed or not.
 func (g *Geometry) Indexed() bool {
-	return g.indices.Size() > 0
+	return g.indices.Len() > 0
 }
 
 // BoundingBox computes the bounding box of the geometry if necessary
@@ -477,7 +477,7 @@ func (g *Geometry) RenderSetup(gs *gls.GLS) {
 		vbo.Transfer(gs)
 	}
 	// Update Indices buffer if necessary
-	if g.indices.Size() > 0 && g.updateIndices {
+	if g.indices.Len() > 0 && g.updateIndices {
 		gs.BindBuffer(gls.ELEMENT_ARRAY_BUFFER, g.handleIndices)
 		gs.BufferData(gls.ELEMENT_ARRAY_BUFFER, g.indices.Bytes(), g.indices.ToUint32(), gls.STATIC_DRAW)
 		g.updateIndices = false

@@ -268,9 +268,9 @@ func (v *Vector3) Clamp(min, max *Vector3) *Vector3 {
 // ClampScalar sets this vector components to be no less than minVal and not greater than maxVal.
 // Returns the pointer to this updated vector.
 func (v *Vector3) ClampScalar(minVal, maxVal float32) *Vector3 {
-	min := NewVector3(minVal, minVal, minVal)
-	max := NewVector3(maxVal, maxVal, maxVal)
-	return v.Clamp(min, max)
+	minv := NewVector3(minVal, minVal, minVal)
+	maxv := NewVector3(maxVal, maxVal, maxVal)
+	return v.Clamp(minv, maxv)
 }
 
 // Floor applies math32.Floor() to each of this vector's components.
@@ -400,9 +400,8 @@ func (v *Vector3) MultiplyVectors(a, b *Vector3) *Vector3 {
 
 // ApplyAxisAngle rotates the vector around axis by angle.
 // Returns the pointer to this updated vector.
-func (v *Vector3) ApplyAxisAngle(axis *Vector3, angle float32) *Vector3 {
-	var quaternion Quaternion
-	v.ApplyQuaternion(quaternion.SetFromAxisAngle(axis, angle))
+func (v *Vector3) ApplyAxisAngle(axis Vector3, angle float32) *Vector3 {
+	v.ApplyQuaternion(QuaternionFromAxisAngle(axis, angle))
 	return v
 }
 
@@ -447,7 +446,7 @@ func (v *Vector3) ApplyProjection(m *Matrix4) *Vector3 {
 // the specified quaternion and then by the quaternion inverse.
 // It basically applies the rotation encoded in the quaternion to this vector.
 // Returns the pointer to this updated vector.
-func (v *Vector3) ApplyQuaternion(q *Quaternion) *Vector3 {
+func (v *Vector3) ApplyQuaternion(q Quaternion) *Vector3 {
 	x := v.X
 	y := v.Y
 	z := v.Z

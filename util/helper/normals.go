@@ -35,7 +35,7 @@ func NewNormals(ig graphic.IGraphic, size float32, color math32.Color, lineWidth
 
 	// Get the number of target vertex positions
 	vertices := nh.targetGeometry.VBO(gls.VertexPosition)
-	n := vertices.Buffer().Size() * 2
+	n := vertices.Buffer().Len() * 2
 
 	// Creates this helper geometry
 	geom := geometry.NewGeometry()
@@ -76,7 +76,7 @@ func (nh *Normals) Update() {
 	positions := posVBO.Buffer()
 
 	// For each target object vertex position:
-	for pos := 0; pos < tPositions.Size(); pos += 3 {
+	for pos := 0; pos < tPositions.Len(); pos += 3 {
 		// Get the target vertex position and apply the current world matrix transform
 		// to get the base for this normal line segment.
 		tPositions.GetVector3(pos, &v1)

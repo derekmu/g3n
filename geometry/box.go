@@ -84,7 +84,7 @@ func NewSegmentedBox(width, height, length float32, widthSegments, heightSegment
 		}
 
 		// Generate the indices for the vertices, normals and uv coordinates
-		gstart := indices.Size()
+		gstart := indices.Len()
 		for iy := 0; iy < gridY; iy++ {
 			for ix := 0; ix < gridX; ix++ {
 				a := ix + gridX1*iy
@@ -94,7 +94,7 @@ func NewSegmentedBox(width, height, length float32, widthSegments, heightSegment
 				indices.Append(uint32(a+offset), uint32(b+offset), uint32(d+offset), uint32(b+offset), uint32(c+offset), uint32(d+offset))
 			}
 		}
-		gcount := indices.Size() - gstart
+		gcount := indices.Len() - gstart
 		box.AddGroup(gstart, gcount, int(materialIndex))
 	}
 

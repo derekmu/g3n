@@ -65,7 +65,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 			vertex.Y = float32(-v*height + heightHalf)
 			vertex.Z = float32(radius * math.Cos(u*thetaLength+thetaStart))
 			positions.AppendVector3(&vertex)
-			verticesRow = append(verticesRow, positions.Size()/3-1)
+			verticesRow = append(verticesRow, positions.Len()/3-1)
 			uvsRow = append(uvsRow, math32.Vector2{float32(u), 1.0 - float32(v)})
 		}
 		vertices = append(vertices, verticesRow)
@@ -76,7 +76,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 	var na, nb math32.Vector3
 
 	// Create preallocated buffers for normals and uvs and buffer for indices
-	npos := positions.Size()
+	npos := positions.Len()
 	normals := math32.NewArrayF32(npos, npos)
 	uvs := math32.NewArrayF32(2*npos/3, 2*npos/3)
 	indices := math32.NewArrayU32(0, 0)
@@ -127,14 +127,14 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 	}
 	// First group is the body of the cylinder
 	// without the caps
-	c.AddGroup(0, indices.Size(), 0)
-	nextGroup := indices.Size()
+	c.AddGroup(0, indices.Len(), 0)
+	nextGroup := indices.Len()
 
 	// Top cap
 	if top && radiusTop > 0 {
 		// Array of vertex indicesOrig to build used to build the faces.
 		indicesOrig := []uint32{}
-		nextidx := positions.Size() / 3
+		nextidx := positions.Len() / 3
 
 		// Appends top segments vertices and builds array of its indicesOrig
 		var uv1, uv2, uv3 math32.Vector2
@@ -188,15 +188,15 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 			indices.Append(uint32(i1), uint32(i2), uint32(i3))
 		}
 		// Second group is optional top cap of the cylinder
-		c.AddGroup(nextGroup, indices.Size()-nextGroup, 1)
-		nextGroup = indices.Size()
+		c.AddGroup(nextGroup, indices.Len()-nextGroup, 1)
+		nextGroup = indices.Len()
 	}
 
 	// Bottom cap
 	if bottom && radiusBottom > 0 {
 		// Array of vertex indicesOrig to build used to build the faces.
 		indicesOrig := []uint32{}
-		nextidx := positions.Size() / 3
+		nextidx := positions.Len() / 3
 
 		// Appends top segments vertices and builds array of its indicesOrig
 		var uv1, uv2, uv3 math32.Vector2
@@ -251,7 +251,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 			indices.Append(uint32(i1), uint32(i2), uint32(i3))
 		}
 		// Third group is optional bottom cap of the cylinder
-		c.AddGroup(nextGroup, indices.Size()-nextGroup, 2)
+		c.AddGroup(nextGroup, indices.Len()-nextGroup, 2)
 	}
 
 	c.SetIndices(indices)
