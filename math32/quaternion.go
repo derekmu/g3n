@@ -244,11 +244,11 @@ func (q *Quaternion) MultiplyQuaternions(a, b *Quaternion) *Quaternion {
 // Slerp sets this quaternion to another quaternion which is the spherically linear interpolation
 // from this quaternion to other using t.
 // Returns pointer to this updated quaternion.
-func (q *Quaternion) Slerp(other *Quaternion, t float32) *Quaternion {
-	if t == 0 {
+func (q *Quaternion) Slerp(other *Quaternion, alpha float32) *Quaternion {
+	if alpha <= 0 {
 		return q
 	}
-	if t == 1 {
+	if alpha >= 1 {
 		return q.Copy(other)
 	}
 
@@ -279,18 +279,18 @@ func (q *Quaternion) Slerp(other *Quaternion, t float32) *Quaternion {
 
 	sqrSinHalfTheta := 1.0 - cosHalfTheta*cosHalfTheta
 	if sqrSinHalfTheta < 0.001 {
-		s := 1 - t
-		q.W = s*w + t*q.W
-		q.X = s*x + t*q.X
-		q.Y = s*y + t*q.Y
-		q.Z = s*z + t*q.Z
+		s := 1 - alpha
+		q.W = s*w + alpha*q.W
+		q.X = s*x + alpha*q.X
+		q.Y = s*y + alpha*q.Y
+		q.Z = s*z + alpha*q.Z
 		return q.Normalize()
 	}
 
 	sinHalfTheta := Sqrt(sqrSinHalfTheta)
 	halfTheta := Atan2(sinHalfTheta, cosHalfTheta)
-	ratioA := Sin((1-t)*halfTheta) / sinHalfTheta
-	ratioB := Sin(t*halfTheta) / sinHalfTheta
+	ratioA := Sin((1-alpha)*halfTheta) / sinHalfTheta
+	ratioB := Sin(alpha*halfTheta) / sinHalfTheta
 
 	q.W = w*ratioA + q.W*ratioB
 	q.X = x*ratioA + q.X*ratioB

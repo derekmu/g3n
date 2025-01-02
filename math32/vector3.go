@@ -360,6 +360,12 @@ func (v *Vector3) SetLength(l float32) *Vector3 {
 // alpha between itself and the corresponding other component.
 // Returns the pointer to this updated vector.
 func (v *Vector3) Lerp(other *Vector3, alpha float32) *Vector3 {
+	if alpha <= 0 {
+		return v
+	}
+	if alpha >= 1 {
+		return v.Copy(other)
+	}
 	v.X += (other.X - v.X) * alpha
 	v.Y += (other.Y - v.Y) * alpha
 	v.Z += (other.Z - v.Z) * alpha
