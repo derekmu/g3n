@@ -10,22 +10,26 @@ import (
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/material"
 	"github.com/derekmu/g3n/math32"
+	"log"
 )
 
 // Mesh is a Graphic with uniforms for the model, view, projection, and normal matrices.
 type Mesh struct {
-	Graphic             // Embedded graphic
-	uniMVm  gls.Uniform // Model view matrix uniform location cache
-	uniMVPm gls.Uniform // Model view projection matrix uniform cache
-	uniNm   gls.Uniform // Normal matrix uniform cache
+	Graphic              // Embedded graphic
+	uniMVm   gls.Uniform // Model view matrix uniform location cache
+	uniMVPm  gls.Uniform // Model view projection matrix uniform cache
+	uniNm    gls.Uniform // Normal matrix uniform cache
+	skeleton *Skeleton
+	uniBones gls.Uniform
 }
 
 // NewMesh creates and returns a pointer to a mesh with the specified geometry and material.
 // If the mesh has multi materials, the material specified here must be nil and the
-// individual materials must be add using "AddMaterial" or AddGroupMaterial".
+// individual materials must be added using "AddMaterial" or AddGroupMaterial".
 func NewMesh(igeom geometry.IGeometry, imat material.IMaterial) *Mesh {
 	m := new(Mesh)
 	m.Init(igeom, imat)
+	m.ShaderDefines.TOTAL_BONES = 0
 	return m
 }
 
@@ -37,6 +41,7 @@ func (m *Mesh) Init(igeom geometry.IGeometry, imat material.IMaterial) {
 	m.uniMVm.Init("ModelViewMatrix")
 	m.uniMVPm.Init("MVP")
 	m.uniNm.Init("NormalMatrix")
+	m.uniBones.Init("mBones")
 
 	// Adds single material if not nil
 	if imat != nil {
@@ -65,11 +70,13 @@ func (m *Mesh) Clone() core.INode {
 	clone := new(Mesh)
 	clone.Graphic = *m.Graphic.Clone().(*Graphic)
 	clone.SetIGraphic(clone)
+	clone.SetSkeleton(m.skeleton)
 
 	// Initialize uniforms
 	clone.uniMVm.Init("ModelViewMatrix")
 	clone.uniMVPm.Init("MVP")
 	clone.uniNm.Init("NormalMatrix")
+	clone.uniBones.Init("mBones")
 
 	return clone
 }
@@ -92,4 +99,35 @@ func (m *Mesh) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 	_ = nm.GetNormalMatrix(mvm)
 	location = m.uniNm.Location(gs)
 	gs.UniformMatrix3fv(location, 1, false, &nm[0])
+
+	if m.skeleton != nil {
+		// Get inverse matrix world
+		var invMat math32.Matrix4
+		node := m.GetNode()
+		nMW := node.MatrixWorld()
+		err := invMat.GetInverse(&nMW)
+		if err != nil {
+			log.Print("Skeleton.BoneMatrices: inverting matrix failed")
+		}
+
+		// Transfer bone matrices
+		boneMatrices := m.skeleton.BoneMatrices(&invMat)
+		location = m.uniBones.Location(gs)
+		gs.UniformMatrix4fv(location, int32(len(boneMatrices)), false, &boneMatrices[0][0])
+	}
+}
+
+// SetSkeleton sets the skeleton used by the mesh.
+func (m *Mesh) SetSkeleton(skeleton *Skeleton) {
+	m.skeleton = skeleton
+	if skeleton != nil {
+		m.ShaderDefines.TOTAL_BONES = len(m.skeleton.Bones())
+	} else {
+		m.ShaderDefines.TOTAL_BONES = 0
+	}
+}
+
+// Skeleton returns the skeleton used by the mesh.
+func (m *Mesh) Skeleton() *Skeleton {
+	return m.skeleton
 }
