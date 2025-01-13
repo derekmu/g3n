@@ -4,15 +4,15 @@
 
 package material
 
-// Basic is a simple material that uses the 'basic' shader
+// Basic is a simple material that uses the 'basic' shader.
 type Basic struct {
-	Material // Embedded material
+	Material
 }
 
-// NewBasic returns a pointer to a new Basic material
+// NewBasic creates a new Basic material.
 func NewBasic() *Basic {
-	mb := new(Basic)
-	mb.Material.Init()
-	mb.SetShader("basic")
-	return mb
+	m := new(Basic)
+	m.InitMaterial()
+	m.SetShader("basic")
+	return m
 }

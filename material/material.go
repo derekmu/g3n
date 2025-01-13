@@ -88,142 +88,142 @@ type Material struct {
 	blendDstAlpha uint32 // separate blending func dest Alpha
 }
 
-// NewMaterial creates and returns a pointer to a new Material.
+// NewMaterial creates a new Material.
 func NewMaterial() *Material {
-	mat := new(Material)
-	return mat.Init()
+	m := new(Material)
+	return m.InitMaterial()
 }
 
-// Init initializes the material.
-func (mat *Material) Init() *Material {
-	mat.refcount = 1
-	mat.useLights = UseLightAll
-	mat.side = SideFront
-	mat.transparent = false
-	mat.wireframe = false
-	mat.depthMask = true
-	mat.depthFunc = gls.LEQUAL
-	mat.depthTest = true
-	mat.blending = BlendNormal
-	mat.lineWidth = 1.0
-	mat.polyOffsetFactor = 0
-	mat.polyOffsetUnits = 0
-	mat.textures = make([]*texture.Texture2D, 0)
-	mat.samplerCounts = make(map[string]int)
-	return mat
+// InitMaterial initializes the material.
+func (m *Material) InitMaterial() *Material {
+	m.refcount = 1
+	m.useLights = UseLightAll
+	m.side = SideFront
+	m.transparent = false
+	m.wireframe = false
+	m.depthMask = true
+	m.depthFunc = gls.LEQUAL
+	m.depthTest = true
+	m.blending = BlendNormal
+	m.lineWidth = 1.0
+	m.polyOffsetFactor = 0
+	m.polyOffsetUnits = 0
+	m.textures = make([]*texture.Texture2D, 0)
+	m.samplerCounts = make(map[string]int)
+	return m
 }
 
 // GetMaterial satisfies the IMaterial interface.
-func (mat *Material) GetMaterial() *Material {
-	return mat
+func (m *Material) GetMaterial() *Material {
+	return m
 }
 
 // Incref increments the reference count for this material
 // and returns a pointer to the material.
 // It should be used when this material is shared by another
 // Graphic object.
-func (mat *Material) Incref() *Material {
-	mat.refcount++
-	return mat
+func (m *Material) Incref() *Material {
+	m.refcount++
+	return m
 }
 
 // Dispose decrements this material reference count and
 // if necessary releases OpenGL resources, C memory
 // and textures associated with this material.
-func (mat *Material) Dispose() {
+func (m *Material) Dispose() {
 	// Only dispose if last
-	if mat.refcount > 1 {
-		mat.refcount--
+	if m.refcount > 1 {
+		m.refcount--
 		return
 	}
 	// Delete textures
-	for i := 0; i < len(mat.textures); i++ {
-		mat.textures[i].Dispose()
+	for i := 0; i < len(m.textures); i++ {
+		m.textures[i].Dispose()
 	}
-	mat.Init()
+	m.InitMaterial()
 }
 
 // SetShader sets the name of the shader program for this material
-func (mat *Material) SetShader(sname string) {
-	mat.shader = sname
+func (m *Material) SetShader(sname string) {
+	m.shader = sname
 }
 
 // Shader returns the current name of the shader program for this material
-func (mat *Material) Shader() string {
-	return mat.shader
+func (m *Material) Shader() string {
+	return m.shader
 }
 
 // SetUseLights sets the material use lights bit mask specifying which
 // light types will be used when rendering the material
 // By default the material will use all lights
-func (mat *Material) SetUseLights(lights UseLights) {
-	mat.useLights = lights
+func (m *Material) SetUseLights(lights UseLights) {
+	m.useLights = lights
 }
 
 // UseLights returns the current use lights bitmask
-func (mat *Material) UseLights() UseLights {
-	return mat.useLights
+func (m *Material) UseLights() UseLights {
+	return m.useLights
 }
 
 // SetSide sets the visible side(s) (SideFront | SideBack | SideDouble)
-func (mat *Material) SetSide(side Side) {
-	mat.side = side
+func (m *Material) SetSide(side Side) {
+	m.side = side
 }
 
 // Side returns the current side visibility for this material
-func (mat *Material) Side() Side {
-	return mat.side
+func (m *Material) Side() Side {
+	return m.side
 }
 
 // SetTransparent sets whether this material is transparent.
-func (mat *Material) SetTransparent(state bool) {
-	mat.transparent = state
+func (m *Material) SetTransparent(state bool) {
+	m.transparent = state
 }
 
 // Transparent returns whether this material has been set as transparent.
-func (mat *Material) Transparent() bool {
-	return mat.transparent
+func (m *Material) Transparent() bool {
+	return m.transparent
 }
 
 // SetWireframe sets whether only the wireframe is rendered.
-func (mat *Material) SetWireframe(state bool) {
-	mat.wireframe = state
+func (m *Material) SetWireframe(state bool) {
+	m.wireframe = state
 }
 
 // Wireframe returns whether only the wireframe is rendered.
-func (mat *Material) Wireframe() bool {
-	return mat.wireframe
+func (m *Material) Wireframe() bool {
+	return m.wireframe
 }
 
-func (mat *Material) SetDepthMask(state bool) {
-	mat.depthMask = state
+func (m *Material) SetDepthMask(state bool) {
+	m.depthMask = state
 }
 
-func (mat *Material) SetDepthTest(state bool) {
-	mat.depthTest = state
+func (m *Material) SetDepthTest(state bool) {
+	m.depthTest = state
 }
 
-func (mat *Material) SetDepthFunc(state uint32) {
-	mat.depthFunc = state
+func (m *Material) SetDepthFunc(state uint32) {
+	m.depthFunc = state
 }
 
-func (mat *Material) SetBlending(blending Blending) {
-	mat.blending = blending
+func (m *Material) SetBlending(blending Blending) {
+	m.blending = blending
 }
 
-func (mat *Material) SetLineWidth(width float32) {
-	mat.lineWidth = width
+func (m *Material) SetLineWidth(width float32) {
+	m.lineWidth = width
 }
 
-func (mat *Material) SetPolygonOffset(factor, units float32) {
-	mat.polyOffsetFactor = factor
-	mat.polyOffsetUnits = units
+func (m *Material) SetPolygonOffset(factor, units float32) {
+	m.polyOffsetFactor = factor
+	m.polyOffsetUnits = units
 }
 
 // RenderSetup is called by the renderer before drawing objects with this material.
-func (mat *Material) RenderSetup(gs *gls.GLS) {
+func (m *Material) RenderSetup(gs *gls.GLS) {
 	// Sets triangle side view mode
-	switch mat.side {
+	switch m.side {
 	case SideFront:
 		gs.Enable(gls.CULL_FACE)
 		gs.FrontFace(gls.CCW)
@@ -235,28 +235,28 @@ func (mat *Material) RenderSetup(gs *gls.GLS) {
 		gs.FrontFace(gls.CCW)
 	}
 
-	if mat.depthTest {
+	if m.depthTest {
 		gs.Enable(gls.DEPTH_TEST)
 	} else {
 		gs.Disable(gls.DEPTH_TEST)
 	}
-	gs.DepthMask(mat.depthMask)
-	gs.DepthFunc(mat.depthFunc)
+	gs.DepthMask(m.depthMask)
+	gs.DepthFunc(m.depthFunc)
 
-	if mat.wireframe {
+	if m.wireframe {
 		gs.PolygonMode(gls.FRONT_AND_BACK, gls.LINE)
 	} else {
 		gs.PolygonMode(gls.FRONT_AND_BACK, gls.FILL)
 	}
 
 	// Set polygon offset if requested
-	gs.PolygonOffset(mat.polyOffsetFactor, mat.polyOffsetUnits)
+	gs.PolygonOffset(m.polyOffsetFactor, m.polyOffsetUnits)
 
 	// Sets line width
-	gs.LineWidth(mat.lineWidth)
+	gs.LineWidth(m.lineWidth)
 
 	// Sets blending
-	switch mat.blending {
+	switch m.blending {
 	case BlendNone:
 		gs.Disable(gls.BLEND)
 	case BlendNormal:
@@ -278,8 +278,8 @@ func (mat *Material) RenderSetup(gs *gls.GLS) {
 		gs.BlendFunc(gls.ZERO, gls.SRC_COLOR)
 		break
 	case BlendCustom:
-		gs.BlendEquationSeparate(mat.blendRGB, mat.blendAlpha)
-		gs.BlendFuncSeparate(mat.blendSrcRGB, mat.blendDstRGB, mat.blendSrcAlpha, mat.blendDstAlpha)
+		gs.BlendEquationSeparate(m.blendRGB, m.blendAlpha)
+		gs.BlendFuncSeparate(m.blendSrcRGB, m.blendDstRGB, m.blendSrcAlpha, m.blendDstAlpha)
 		break
 	default:
 		panic("Invalid blending")
@@ -287,43 +287,43 @@ func (mat *Material) RenderSetup(gs *gls.GLS) {
 
 	// Render textures
 	// Keep track of counts of unique sampler names to correctly index sampler arrays
-	clear(mat.samplerCounts)
-	for slotIdx, tex := range mat.textures {
+	clear(m.samplerCounts)
+	for slotIdx, tex := range m.textures {
 		samplerName, _ := tex.GetUniformNames()
-		uniIdx, _ := mat.samplerCounts[samplerName]
+		uniIdx, _ := m.samplerCounts[samplerName]
 		tex.RenderSetup(gs, slotIdx, uniIdx)
-		mat.samplerCounts[samplerName] = uniIdx + 1
+		m.samplerCounts[samplerName] = uniIdx + 1
 	}
 }
 
 // AddTexture adds the specified texture to the material
-func (mat *Material) AddTexture(tex *texture.Texture2D) {
-	mat.textures = append(mat.textures, tex)
+func (m *Material) AddTexture(tex *texture.Texture2D) {
+	m.textures = append(m.textures, tex)
 }
 
 // RemoveTexture removes the specified texture from the material
-func (mat *Material) RemoveTexture(tex *texture.Texture2D) {
-	for pos, curr := range mat.textures {
+func (m *Material) RemoveTexture(tex *texture.Texture2D) {
+	for pos, curr := range m.textures {
 		if curr == tex {
-			copy(mat.textures[pos:], mat.textures[pos+1:])
-			mat.textures[len(mat.textures)-1] = nil
-			mat.textures = mat.textures[:len(mat.textures)-1]
+			copy(m.textures[pos:], m.textures[pos+1:])
+			m.textures[len(m.textures)-1] = nil
+			m.textures = m.textures[:len(m.textures)-1]
 			break
 		}
 	}
 }
 
 // HasTexture checks if the material contains the specified texture
-func (mat *Material) HasTexture(tex *texture.Texture2D) bool {
-	return slices.Index(mat.textures, tex) >= 0
+func (m *Material) HasTexture(tex *texture.Texture2D) bool {
+	return slices.Index(m.textures, tex) >= 0
 }
 
 // TextureCount returns the current number of textures
-func (mat *Material) TextureCount() int {
-	return len(mat.textures)
+func (m *Material) TextureCount() int {
+	return len(m.textures)
 }
 
 // Textures returns a slice with this material's textures
-func (mat *Material) Textures() []*texture.Texture2D {
-	return mat.textures
+func (m *Material) Textures() []*texture.Texture2D {
+	return m.textures
 }

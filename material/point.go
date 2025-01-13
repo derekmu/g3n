@@ -8,35 +8,40 @@ import (
 	"github.com/derekmu/g3n/math32"
 )
 
-// Point material is normally used for single point sprites
+// Point material is normally used for single point sprites.
 type Point struct {
-	Standard // Embedded standard material
+	Standard
 }
 
 // NewPoint creates a new Point material.
 func NewPoint(color math32.Color) *Point {
-	pm := new(Point)
-	pm.Standard.Init("point", color)
+	m := new(Point)
+	m.InitPoint(color)
+	m.SetShader("point")
+	return m
+}
 
+// InitPoint initializes the material setting the specified color.
+func (m *Point) InitPoint(color math32.Color) {
+	m.InitStandard(color)
 	// Sets uniform's initial values
-	pm.udata.emissive = color
-	pm.udata.psize = 1.0
-	pm.udata.protationZ = 0
-	return pm
+	m.udata.emissive = color
+	m.udata.psize = 1.0
+	m.udata.protationZ = 0
 }
 
-// SetEmissiveColor sets the material emissive color
-// The default is {0,0,0}
-func (pm *Point) SetEmissiveColor(color math32.Color) {
-	pm.udata.emissive = color
+// SetEmissiveColor sets the material's emissive color.
+// The default is {0,0,0}.
+func (m *Point) SetEmissiveColor(color math32.Color) {
+	m.udata.emissive = color
 }
 
-// SetSize sets the point size
-func (pm *Point) SetSize(size float32) {
-	pm.udata.psize = size
+// SetSize sets the point size.
+func (m *Point) SetSize(size float32) {
+	m.udata.psize = size
 }
 
 // SetRotationZ sets the point rotation around the Z axis.
-func (pm *Point) SetRotationZ(rot float32) {
-	pm.udata.protationZ = rot
+func (m *Point) SetRotationZ(rot float32) {
+	m.udata.protationZ = rot
 }
