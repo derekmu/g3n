@@ -18,7 +18,6 @@ type MorphGeometry struct {
 	targets      []*Geometry // The morph target geometries (containing deltas)
 	weights      []float32   // The weights for each morph target
 	uniWeights   gls.Uniform // Texture unit uniform location cache
-	morphGeom    *Geometry   // Cache of the last CPU-morphed geometry
 }
 
 // MaxActiveMorphTargets is the maximum number of active morph targets.
