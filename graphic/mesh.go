@@ -15,12 +15,10 @@ import (
 
 // Mesh is a Graphic with uniforms for the model, view, projection, and normal matrices.
 type Mesh struct {
-	Graphic              // Embedded graphic
-	uniMVm   gls.Uniform // Model view matrix uniform location cache
-	uniMVPm  gls.Uniform // Model view projection matrix uniform cache
-	uniNm    gls.Uniform // Normal matrix uniform cache
-	skeleton *Skeleton
-	uniBones gls.Uniform
+	Graphic
+	uniMatrices gls.Uniform
+	skeleton    *Skeleton
+	uniBones    gls.Uniform
 }
 
 // NewMesh creates and returns a pointer to a mesh with the specified geometry and material.
@@ -38,10 +36,8 @@ func (m *Mesh) Init(igeom geometry.IGeometry, imat material.IMaterial) {
 	m.Graphic.Init(m, igeom, gls.TRIANGLES)
 
 	// Initialize uniforms
-	m.uniMVm.Init("ModelViewMatrix")
-	m.uniMVPm.Init("MVP")
-	m.uniNm.Init("NormalMatrix")
-	m.uniBones.Init("mBones")
+	m.uniMatrices.Init("Matrices")
+	m.uniBones.Init("Bones")
 
 	// Adds single material if not nil
 	if imat != nil {
@@ -73,10 +69,8 @@ func (m *Mesh) Clone() core.INode {
 	clone.SetSkeleton(m.skeleton)
 
 	// Initialize uniforms
-	clone.uniMVm.Init("ModelViewMatrix")
-	clone.uniMVPm.Init("MVP")
-	clone.uniNm.Init("NormalMatrix")
-	clone.uniBones.Init("mBones")
+	clone.uniMatrices.Init("Matrices")
+	clone.uniBones.Init("Bones")
 
 	return clone
 }
@@ -84,21 +78,12 @@ func (m *Mesh) Clone() core.INode {
 // RenderSetup is called by the engine before drawing the mesh geometry.
 // It is responsible for updating the current shader uniforms with the model matrices.
 func (m *Mesh) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
-	// Transfer uniform for model view matrix
-	mvm := m.ModelViewMatrix()
-	location := m.uniMVm.Location(gs)
-	gs.UniformMatrix4fv(location, 1, false, &mvm[0])
-
-	// Transfer uniform for model view projection matrix
-	mvpm := m.ModelViewProjectionMatrix()
-	location = m.uniMVPm.Location(gs)
-	gs.UniformMatrix4fv(location, 1, false, &mvpm[0])
-
 	// Calculates normal matrix and transfer uniform
 	var nm math32.Matrix3
-	_ = nm.GetNormalMatrix(mvm)
-	location = m.uniNm.Location(gs)
-	gs.UniformMatrix3fv(location, 1, false, &nm[0])
+	_ = nm.GetNormalMatrix(&m.mdata.mvm)
+	m.mdata.nm.SetFromMatrix3(&nm)
+	location := m.uniMatrices.Location(gs)
+	gs.UniformMatrix4fv(location, 3, false, &m.mdata.mvm[0])
 
 	if m.skeleton != nil {
 		// Get inverse matrix world

@@ -15,10 +15,8 @@ import (
 
 // Skybox is the Graphic that represents a skybox.
 type Skybox struct {
-	Graphic             // embedded graphic object
-	uniMVm  gls.Uniform // model view matrix uniform location cache
-	uniMVPm gls.Uniform // model view projection matrix uniform cache
-	uniNm   gls.Uniform // normal matrix uniform cache
+	Graphic
+	uniMatrices gls.Uniform
 }
 
 // SkyboxData contains the data necessary to locate the textures for a Skybox in a concise manner.
@@ -30,18 +28,18 @@ type SkyboxData struct {
 
 // NewSkybox creates and returns a pointer to a Skybox with the specified textures.
 func NewSkybox(data SkyboxData) (*Skybox, error) {
-	skybox := new(Skybox)
+	s := new(Skybox)
 
 	geom := geometry.NewCube(1)
-	skybox.Graphic.Init(skybox, geom, gls.TRIANGLES)
-	skybox.Graphic.SetCullable(false)
+	s.Graphic.Init(s, geom, gls.TRIANGLES)
+	s.Graphic.SetCullable(false)
 
 	for i := 0; i < 6; i++ {
 		tex, err := texture.NewTexture2DFromImage(data.DirAndPrefix + data.Suffixes[i] + "." + data.Extension)
 		if err != nil {
 			return nil, err
 		}
-		matFace := material.NewStandard(math32.Color{1, 1, 1})
+		matFace := material.NewStandard(math32.Color{R: 1, G: 1, B: 1})
 		matFace.AddTexture(tex)
 		matFace.SetSide(material.SideBack)
 		matFace.SetUseLights(material.UseLightNone)
@@ -51,43 +49,30 @@ func NewSkybox(data SkyboxData) (*Skybox, error) {
 		// It doesn't matter how small/big the skybox is as long as it's visible by the camera (within near/far planes).
 		matFace.SetDepthMask(false)
 
-		skybox.AddGroupMaterial(skybox, matFace, i)
+		s.AddGroupMaterial(s, matFace, i)
 	}
 
 	// Creates uniforms
-	skybox.uniMVm.Init("ModelViewMatrix")
-	skybox.uniMVPm.Init("MVP")
-	skybox.uniNm.Init("NormalMatrix")
+	s.uniMatrices.Init("Matrices")
 
 	// The skybox should always be rendered last among the opaque objects
-	skybox.SetRenderOrder(100)
+	s.SetRenderOrder(100)
 
-	return skybox, nil
+	return s, nil
 }
 
 // RenderSetup is called by the engine before drawing the skybox geometry.
 // It is responsible for updating the current shader uniforms with the model matrices.
-func (skybox *Skybox) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-	mvm := *skybox.ModelViewMatrix()
-
+func (s *Skybox) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 	// Clear translation
-	mvm[12] = 0
-	mvm[13] = 0
-	mvm[14] = 0
+	s.mdata.mvm[12] = 0
+	s.mdata.mvm[13] = 0
+	s.mdata.mvm[14] = 0
 
-	// Transfer mvp uniform
-	location := skybox.uniMVm.Location(gs)
-	gs.UniformMatrix4fv(location, 1, false, &mvm[0])
-
-	// Calculates model view projection matrix and updates uniform
-	var mvpm math32.Matrix4
-	mvpm.MultiplyMatrices(&rinfo.ProjMatrix, &mvm)
-	location = skybox.uniMVPm.Location(gs)
-	gs.UniformMatrix4fv(location, 1, false, &mvpm[0])
-
-	// Calculates normal matrix and updates uniform
+	// Calculates normal matrix and transfer uniform
 	var nm math32.Matrix3
-	_ = nm.GetNormalMatrix(&mvm)
-	location = skybox.uniNm.Location(gs)
-	gs.UniformMatrix3fv(location, 1, false, &nm[0])
+	_ = nm.GetNormalMatrix(&s.mdata.mvm)
+	s.mdata.nm.SetFromMatrix3(&nm)
+	location := s.uniMatrices.Location(gs)
+	gs.UniformMatrix4fv(location, 3, false, &s.mdata.mvm[0])
 }

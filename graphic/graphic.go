@@ -31,24 +31,24 @@ type IGraphic interface {
 // It is the base type used by other graphics such as lines, line_strip,
 // points and meshes.
 type Graphic struct {
-	core.Node                      // Embedded Node
-	igeom       geometry.IGeometry // Associated IGeometry
-	materials   []GraphicMaterial  // Materials
-	mode        uint32             // OpenGL primitive
-	renderable  bool               // Renderable flag
-	cullable    bool               // Cullable flag
-	renderOrder int                // Render order
-
+	core.Node                        // Embedded Node
+	igeom         geometry.IGeometry // Associated IGeometry
+	materials     []GraphicMaterial  // Materials
+	mode          uint32             // OpenGL primitive
+	renderable    bool               // Renderable flag
+	cullable      bool               // Cullable flag
+	renderOrder   int                // Render order
 	ShaderDefines gls.GraphicDefines // Graphic-specific shader defines
-
-	mm   math32.Matrix4 // Cached Model matrix
-	mvm  math32.Matrix4 // Cached ModelView matrix
-	mvpm math32.Matrix4 // Cached ModelViewProjection matrix
+	mdata         struct {
+		mvm  math32.Matrix4 // ModelViewMatrix
+		mvpm math32.Matrix4 // ModelViewProjectionMatrix
+		nm   math32.Matrix4 // NormalMatrix
+	}
 }
 
 // NewGraphic creates and returns a pointer to a new graphic object with
 // the specified geometry and OpenGL primitive.
-// The created graphic object, though, has not materials.
+// The created graphic object, though, has no materials.
 func NewGraphic(igr IGraphic, igeom geometry.IGeometry, mode uint32) *Graphic {
 	gr := new(Graphic)
 	return gr.Init(igr, igeom, mode)
@@ -223,24 +223,19 @@ func (gr *Graphic) BoundingBox() math32.Box3 {
 
 // CalculateMatrices calculates the model view and model view projection matrices.
 func (gr *Graphic) CalculateMatrices(rinfo *core.RenderInfo) {
-	gr.mm = gr.MatrixWorld()
-	gr.mvm.MultiplyMatrices(&rinfo.ViewMatrix, &gr.mm)
-	gr.mvpm.MultiplyMatrices(&rinfo.ProjMatrix, &gr.mvm)
-}
-
-// ModelMatrix returns the last cached model view matrix for this graphic.
-func (gr *Graphic) ModelMatrix() *math32.Matrix4 {
-	return &gr.mm
+	mm := gr.MatrixWorld()
+	gr.mdata.mvm.MultiplyMatrices(&rinfo.ViewMatrix, &mm)
+	gr.mdata.mvpm.MultiplyMatrices(&rinfo.ProjMatrix, &gr.mdata.mvm)
 }
 
 // ModelViewMatrix returns the last cached model view matrix for this graphic.
 func (gr *Graphic) ModelViewMatrix() *math32.Matrix4 {
-	return &gr.mvm
+	return &gr.mdata.mvm
 }
 
 // ModelViewProjectionMatrix returns the last cached model view projection matrix for this graphic.
 func (gr *Graphic) ModelViewProjectionMatrix() *math32.Matrix4 {
-	return &gr.mvpm
+	return &gr.mdata.mvpm
 }
 
 // GraphicMaterial specifies the material to be used for

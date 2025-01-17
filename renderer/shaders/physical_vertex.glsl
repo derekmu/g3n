@@ -8,9 +8,10 @@ layout (location = 2) in vec3 VertexColor;
 layout (location = 3) in vec2 VertexTexcoord;
 
 // Model uniforms
-uniform mat4 ModelViewMatrix;
-uniform mat3 NormalMatrix;
-uniform mat4 MVP;
+uniform mat4 Matrices[3];
+#define ModelViewMatrix           Matrices[0]
+#define ModelViewProjectionMatrix Matrices[1]
+#define NormalMatrix              mat3(Matrices[2])
 
 #ifdef MORPHTARGETS
 uniform float morphTargetInfluences[8];
@@ -41,7 +42,7 @@ in vec3 MorphPosition7;
 #endif
 
 #ifdef TOTAL_BONES
-uniform mat4 mBones[TOTAL_BONES];
+uniform mat4 Bones[TOTAL_BONES];
 in vec4 matricesIndices;
 in vec4 matricesWeights;
 #endif
@@ -89,11 +90,11 @@ void main() {
     mat4 influence = mat4(0.0);
     mat3 normalInfluence = mat3(0.0);
     for (int i = 0; i < 4; i++) {
-        mat4 boneMatrix = mBones[int(matricesIndices[i])];
+        mat4 bone = Bones[int(matricesIndices[i])];
         float weight = matricesWeights[i];
-        influence += boneMatrix * weight;
-        mat3 boneNormalMatrix = mat3(transpose(inverse(boneMatrix)));
-        normalInfluence += boneNormalMatrix * weight;
+        influence += bone * weight;
+        mat3 boneNormal = mat3(transpose(inverse(bone)));
+        normalInfluence += boneNormal * weight;
     }
     finalWorld = finalWorld * influence;
     finalNormal = finalNormal * normalInfluence;
@@ -112,5 +113,5 @@ void main() {
     // Output texture coordinates to fragment shader
     FragTexcoord = VertexTexcoord;
 
-    gl_Position = MVP * finalWorld * vec4(vPosition, 1.0);
+    gl_Position = ModelViewProjectionMatrix * finalWorld * vec4(vPosition, 1.0);
 }

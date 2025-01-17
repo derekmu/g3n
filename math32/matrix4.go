@@ -40,28 +40,36 @@ func (m *Matrix4) Set(n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34
 	return m
 }
 
+// SetFromMatrix3 sets the matrix elements based on a Matrix4.
+func (m *Matrix4) SetFromMatrix3(src *Matrix3) *Matrix4 {
+	return m.Set(
+		src[0], src[3], src[6], 0,
+		src[1], src[4], src[7], 0,
+		src[2], src[5], src[8], 0,
+		0, 0, 0, 0,
+	)
+}
+
 // Identity sets this matrix as the identity matrix.
 // Returns pointer to this updated matrix.
 func (m *Matrix4) Identity() *Matrix4 {
-	m.Set(
+	return m.Set(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1,
 	)
-	return m
 }
 
 // Zero sets this matrix as the zero matrix.
 // Returns the pointer to this updated matrix.
 func (m *Matrix4) Zero() *Matrix4 {
-	m.Set(
+	return m.Set(
 		0, 0, 0, 0,
 		0, 0, 0, 0,
 		0, 0, 0, 0,
 		0, 0, 0, 0,
 	)
-	return m
 }
 
 // Copy copies src matrix into this one.
@@ -254,7 +262,7 @@ func (m *Matrix4) LookAt(eye, target, up *Vector3) *Matrix4 {
 	return m
 }
 
-// Multiply multiply this matrix by the other matrix
+// Multiply multiplies this matrix by the other matrix
 // Returns pointer to this updated matrix.
 func (m *Matrix4) Multiply(other *Matrix4) *Matrix4 {
 	return m.MultiplyMatrices(m, other)
@@ -363,7 +371,7 @@ func (m *Matrix4) ApplyToVector3Array(array []float32, offset int, length int) [
 	return array
 }
 
-// Determinant calculates and returns the determinat of this matrix.
+// Determinant calculates and returns the determinant of this matrix.
 func (m *Matrix4) Determinant() float32 {
 	n11 := m[0]
 	n12 := m[4]
@@ -728,12 +736,12 @@ func (m *Matrix4) GetRow(i int) *Vector4 {
 	return NewVector4(m[i], m[i*4], m[i+8], m[i+12])
 }
 
-// GetColumn returns the ith column.
+// GetColumnVector3 returns the ith column.
 func (m *Matrix4) GetColumnVector3(i int) *Vector3 {
 	return NewVector3(m[i*4], m[i*4+1], m[i*4+2])
 }
 
-// GetRow returns the ith row.
+// GetRowVector3 returns the ith row.
 func (m *Matrix4) GetRowVector3(i int) *Vector3 {
 	return NewVector3(m[i], m[i*4], m[i+8])
 }
