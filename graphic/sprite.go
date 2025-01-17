@@ -14,8 +14,8 @@ import (
 
 // Sprite is a potentially animated image positioned in space that always faces the camera.
 type Sprite struct {
-	Graphic             // Embedded graphic
-	uniMVPM gls.Uniform // Model view projection matrix uniform location cache
+	Graphic
+	uniMatrices gls.Uniform
 }
 
 // NewSprite creates and returns a pointer to a sprite with the specified dimensions and material
@@ -50,22 +50,17 @@ func NewSprite(width, height float32, imat material.IMaterial) *Sprite {
 	s.Graphic.Init(s, geom, gls.TRIANGLES)
 	s.AddMaterial(s, imat, 0, 0)
 
-	s.uniMVPM.Init("MVP")
+	s.uniMatrices.Init("Matrices")
 	return s
 }
 
 // RenderSetup sets up the rendering of the sprite.
 func (s *Sprite) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
-	// Calculates model view matrix
-	mw := s.MatrixWorld()
-	var mvm math32.Matrix4
-	mvm.MultiplyMatrices(&rinfo.ViewMatrix, &mw)
-
 	// Decomposes model view matrix
 	var position math32.Vector3
 	var quaternion math32.Quaternion
 	var scale math32.Vector3
-	mvm.Decompose(&position, &quaternion, &scale)
+	s.mdata.mvm.Decompose(&position, &quaternion, &scale)
 
 	// Removes any rotation in X and Y axes and compose new model view matrix
 	rotation := s.Rotation()
@@ -81,12 +76,10 @@ func (s *Sprite) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 		rotation.X = math32.Pi
 	}
 	quaternion.SetFromEuler(&rotation)
-	var mvmNew math32.Matrix4
-	mvmNew.Compose(&position, &quaternion, &scale)
+	s.mdata.mvm.Compose(&position, &quaternion, &scale)
 
 	// Calculates final MVP and updates uniform
-	var mvpm math32.Matrix4
-	mvpm.MultiplyMatrices(&rinfo.ProjMatrix, &mvmNew)
-	location := s.uniMVPM.Location(gs)
-	gs.UniformMatrix4fv(location, 1, false, &mvpm[0])
+	s.mdata.mvpm.MultiplyMatrices(&rinfo.ProjMatrix, &s.mdata.mvm)
+	location := s.uniMatrices.Location(gs)
+	gs.UniformMatrix4fv(location, 3, false, &s.mdata.mvm[0])
 }
