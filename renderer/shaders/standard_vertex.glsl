@@ -119,5 +119,5 @@ void main() {
     FragTexcoord = texcoord;
 
     // Output projected and transformed vertex position
-    gl_Position = MVPMatrix * finalWorld * vec4(vPosition, 1.0);
+    gl_Position = ModelViewProjectionMatrix * finalWorld * vec4(vPosition, 1.0);
 }
