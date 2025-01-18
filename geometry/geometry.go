@@ -314,7 +314,7 @@ func (g *Geometry) BoundingSphere() math32.Sphere {
 	// Reset radius, calculate bounding box and copy center
 	g.boundingSphere.Radius = float32(0)
 	box := g.BoundingBox()
-	box.Center(&g.boundingSphere.Center)
+	g.boundingSphere.Center = box.Center()
 	// Find the radius of the bounding sphere
 	maxRadiusSq := float32(0)
 	g.ReadVertices(func(vertex math32.Vector3) bool {
@@ -378,9 +378,8 @@ func (g *Geometry) RotationalInertia(mass float32) math32.Matrix3 {
 	// Reset rotational inertia
 	g.rotInertia.Zero()
 	// For now approximate result based on bounding box
-	b := math32.NewVec3()
 	box := g.BoundingBox()
-	box.Size(b)
+	b := box.Size()
 	multiplier := mass / 12.0
 	x := (b.Y*b.Y + b.Z*b.Z) * multiplier
 	y := (b.X*b.X + b.Z*b.Z) * multiplier

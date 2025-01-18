@@ -30,12 +30,12 @@ func (s *Sphere) Set(center *Vector3, radius float32) *Sphere {
 // SetFromPoints sets this sphere from the specified points array and optional center.
 // Returns pointer to this update sphere.
 func (s *Sphere) SetFromPoints(points []Vector3, optionalCenter *Vector3) *Sphere {
-	box := NewBox3(nil, nil)
+	box := Box3{}
 
 	if optionalCenter != nil {
 		s.Center.Copy(optionalCenter)
 	} else {
-		box.SetFromPoints(points).Center(&s.Center)
+		s.Center = box.SetFromPoints(points).Center()
 	}
 	var maxRadiusSq float32
 	for i := 0; i < len(points); i++ {
@@ -45,7 +45,7 @@ func (s *Sphere) SetFromPoints(points []Vector3, optionalCenter *Vector3) *Spher
 	return s
 }
 
-// Copy copy other sphere to this one.
+// Copy copies other sphere to this one.
 // Returns pointer to this update sphere.
 func (s *Sphere) Copy(other *Sphere) *Sphere {
 	*s = *other
@@ -53,19 +53,13 @@ func (s *Sphere) Copy(other *Sphere) *Sphere {
 }
 
 // Empty checks if this sphere is empty (radius <= 0)
-func (s *Sphere) Empty(sphere *Sphere) bool {
-	if s.Radius <= 0 {
-		return true
-	}
-	return false
+func (s *Sphere) Empty() bool {
+	return s.Radius <= 0
 }
 
 // ContainsPoint returns if this sphere contains the specified point.
 func (s *Sphere) ContainsPoint(point *Vector3) bool {
-	if point.DistanceToSquared(&s.Center) <= (s.Radius * s.Radius) {
-		return true
-	}
-	return false
+	return point.DistanceToSquared(&s.Center) <= (s.Radius * s.Radius)
 }
 
 // DistanceToPoint returns the distance from the sphere surface to the specified point.
@@ -76,28 +70,15 @@ func (s *Sphere) DistanceToPoint(point *Vector3) float32 {
 // IntersectSphere returns if other sphere intersects this one.
 func (s *Sphere) IntersectSphere(other *Sphere) bool {
 	radiusSum := s.Radius + other.Radius
-	if other.Center.DistanceToSquared(&s.Center) <= (radiusSum * radiusSum) {
-		return true
-	}
-	return false
+	return other.Center.DistanceToSquared(&s.Center) <= (radiusSum * radiusSum)
 }
 
 // ClampPoint clamps the specified point inside the sphere.
 // If the specified point is inside the sphere, it is the clamped point.
-// Otherwise the clamped point is the the point in the sphere surface in the
-// nearest of the specified point.
-// The clamped point is stored in optionalTarget, if not nil, and returned.
-func (s *Sphere) ClampPoint(point *Vector3, optionalTarget *Vector3) *Vector3 {
+// Otherwise, the clamped point is the  point in the sphere surface in the nearest to the specified point.
+func (s *Sphere) ClampPoint(point *Vector3) (result Vector3) {
 	deltaLengthSq := s.Center.DistanceToSquared(point)
-
-	var result *Vector3
-	if optionalTarget != nil {
-		result = optionalTarget
-	} else {
-		result = NewVector3(0, 0, 0)
-	}
 	result.Copy(point)
-
 	if deltaLengthSq > (s.Radius * s.Radius) {
 		result.Sub(&s.Center).Normalize()
 		result.MultiplyScalar(s.Radius).Add(&s.Center)
@@ -106,18 +87,10 @@ func (s *Sphere) ClampPoint(point *Vector3, optionalTarget *Vector3) *Vector3 {
 }
 
 // GetBoundingBox calculates a Box3 which bounds this sphere.
-// Update optionalTarget with the calculated Box3, if not nil, and also returns it.
-func (s *Sphere) GetBoundingBox(optionalTarget *Box3) *Box3 {
-	var box *Box3
-	if optionalTarget != nil {
-		box = optionalTarget
-	} else {
-		box = NewBox3(nil, nil)
-	}
-
-	box.Set(&s.Center, &s.Center)
-	box.ExpandByScalar(s.Radius)
-	return box
+func (s *Sphere) GetBoundingBox() (result Box3) {
+	result = Box3{s.Center, s.Center}
+	result.ExpandByScalar(s.Radius)
+	return result
 }
 
 // ApplyMatrix4 applies the specified matrix transform to this sphere.

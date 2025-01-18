@@ -11,30 +11,6 @@ type Box3 struct {
 	Max Vector3
 }
 
-// NewBox3 creates and returns a pointer to a new Box3 defined
-// by its minimum and maximum coordinates.
-func NewBox3(min, max *Vector3) *Box3 {
-	b := new(Box3)
-	b.Set(min, max)
-	return b
-}
-
-// Set sets this bounding box minimum and maximum coordinates.
-// Returns pointer to this updated bounding box.
-func (b *Box3) Set(min, max *Vector3) *Box3 {
-	if min != nil {
-		b.Min = *min
-	} else {
-		b.Min.Set(Infinity, Infinity, Infinity)
-	}
-	if max != nil {
-		b.Max = *max
-	} else {
-		b.Max.Set(-Infinity, -Infinity, -Infinity)
-	}
-	return b
-}
-
 // SetFromPoints set this bounding box from the specified array of points.
 // Returns pointer to this updated bounding box.
 func (b *Box3) SetFromPoints(points []Vector3) *Box3 {
@@ -56,7 +32,7 @@ func (b *Box3) SetFromCenterAndSize(center, size *Vector3) *Box3 {
 	return b
 }
 
-// Copy copy other to this bounding box.
+// Copy copies other to this bounding box.
 // Returns pointer to this updated bounding box.
 func (b *Box3) Copy(other *Box3) *Box3 {
 	b.Min = other.Min
@@ -81,30 +57,17 @@ func (b *Box3) Empty() bool {
 	return (b.Max.X < b.Min.X) || (b.Max.Y < b.Min.Y) || (b.Max.Z < b.Min.Z)
 }
 
-// Center calculates the center point of this bounding box and
-// stores its pointer to optionalTarget, if not nil, and also returns it.
-func (b *Box3) Center(optionalTarget *Vector3) *Vector3 {
-	var result *Vector3
-	if optionalTarget == nil {
-		result = NewVector3(0, 0, 0)
-	} else {
-		result = optionalTarget
-	}
-	return result.AddVectors(&b.Min, &b.Max).MultiplyScalar(0.5)
+// Center calculates the center point of this bounding box.
+func (b *Box3) Center() (result Vector3) {
+	result.AddVectors(&b.Min, &b.Max).MultiplyScalar(0.5)
+	return result
 }
 
-// Size calculates the size of this bounding box: the vector  from
-// its minimum point to its maximum point.
-// Store pointer to the calculated size into optionalTarget, if not nil,
-// and also returns it.
-func (b *Box3) Size(optionalTarget *Vector3) *Vector3 {
-	var result *Vector3
-	if optionalTarget == nil {
-		result = NewVector3(0, 0, 0)
-	} else {
-		result = optionalTarget
-	}
-	return result.SubVectors(&b.Min, &b.Max)
+// Size calculates the size of this bounding box.
+// This is the vector from its minimum point to its maximum point.
+func (b *Box3) Size() (result Vector3) {
+	result.SubVectors(&b.Min, &b.Max)
+	return result
 }
 
 // ExpandByPoint may expand this bounding box to include the specified point.
@@ -164,15 +127,9 @@ func (b *Box3) IsIntersectionBox(other *Box3) bool {
 }
 
 // ClampPoint calculates a new point which is the specified point clamped inside this box.
-// Stores the pointer to this new point into optionaTarget, if not nil, and also returns it.
-func (b *Box3) ClampPoint(point *Vector3, optionalTarget *Vector3) *Vector3 {
-	var result *Vector3
-	if optionalTarget == nil {
-		result = NewVector3(0, 0, 0)
-	} else {
-		result = optionalTarget
-	}
-	return result.Copy(point).Clamp(&b.Min, &b.Max)
+func (b *Box3) ClampPoint(point *Vector3) (result Vector3) {
+	result.Copy(point).Clamp(&b.Min, &b.Max)
+	return result
 }
 
 // DistanceToPoint returns the distance from this box to the specified point.
@@ -184,18 +141,10 @@ func (b *Box3) DistanceToPoint(point *Vector3) float32 {
 
 // GetBoundingSphere creates a bounding sphere to this bounding box.
 // Store its pointer into optionalTarget, if not nil, and also returns it.
-func (b *Box3) GetBoundingSphere(optionalTarget *Sphere) *Sphere {
-	var v1 Vector3
-	var result *Sphere
-	if optionalTarget == nil {
-		result = NewSphere(nil, 0)
-	} else {
-		result = optionalTarget
-	}
-
-	result.Center = *b.Center(nil)
-	result.Radius = b.Size(&v1).Length() * 0.5
-
+func (b *Box3) GetBoundingSphere() (result Sphere) {
+	result.Center = b.Center()
+	size := b.Size()
+	result.Radius = size.Length() * 0.5
 	return result
 }
 
@@ -258,9 +207,4 @@ func (b *Box3) Translate(offset *Vector3) *Box3 {
 // Equals returns if this box is equal to other
 func (b *Box3) Equals(other *Box3) bool {
 	return other.Min.Equals(&b.Min) && other.Max.Equals(&b.Max)
-}
-
-// Clone creates and returns a pointer to copy of this bounding box
-func (b *Box3) Clone() *Box3 {
-	return NewBox3(&b.Min, &b.Max)
 }
