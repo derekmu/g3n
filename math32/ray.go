@@ -6,85 +6,35 @@ package math32
 
 // Ray represents an oriented 3D line segment defined by an origin point and a direction vector.
 type Ray struct {
-	origin    Vector3
-	direction Vector3
+	Origin    Vector3
+	Direction Vector3
 }
 
-// NewRay creates and returns a pointer to a Ray object with
-// the specified origin and direction vectors.
-// If a nil pointer is supplied for any of the parameters,
-// the zero vector will be used.
-func NewRay(origin *Vector3, direction *Vector3) *Ray {
-	ray := new(Ray)
-	if origin != nil {
-		ray.origin = *origin
-	}
-	if direction != nil {
-		ray.direction = *direction
-	}
-	return ray
+// At calculates the point in the ray which is at the specified distance from the origin along its direction.
+func (ray *Ray) At(distance float32) (result Vector3) {
+	result = ray.Direction
+	result.MultiplyScalar(distance)
+	result.Add(&ray.Origin)
+	return result
 }
 
-// Set sets the origin and direction vectors of this Ray.
-func (ray *Ray) Set(origin, direction *Vector3) *Ray {
-	ray.origin = *origin
-	ray.direction = *direction
-	return ray
-}
-
-// Copy copies other ray into this one.
-func (ray *Ray) Copy(other *Ray) *Ray {
-	*ray = *other
-	return ray
-}
-
-// Origin returns a copy of this ray current origin.
-func (ray *Ray) Origin() Vector3 {
-	return ray.origin
-}
-
-// Direction returns a copy of this ray current direction.
-func (ray *Ray) Direction() Vector3 {
-	return ray.direction
-}
-
-// At calculates the point in the ray which is at the specified t distance from the origin
-// along its direction.
-// The calculated point is stored in optionalTarget, if not nil, and also returned.
-func (ray *Ray) At(t float32, optionalTarget *Vector3) *Vector3 {
-	var result *Vector3
-	if optionalTarget != nil {
-		result = optionalTarget
-	} else {
-		result = &Vector3{}
-	}
-	return result.Copy(&ray.direction).MultiplyScalar(t).Add(&ray.origin)
-}
-
-// Recast sets the new origin of the ray at the specified distance t
-// from its origin along its direction.
-func (ray *Ray) Recast(t float32) *Ray {
-	var v1 Vector3
-	ray.origin.Copy(ray.At(t, &v1))
+// Recast sets the new origin of the ray at the specified distance from its origin along its direction.
+func (ray *Ray) Recast(distance float32) *Ray {
+	ray.Origin = ray.At(distance)
 	return ray
 }
 
 // ClosestPointToPoint calculates the point in the ray which is closest to the specified point.
-// The calculated point is stored in optionalTarget, if not nil, and also returned.
-func (ray *Ray) ClosestPointToPoint(point, optionalTarget *Vector3) *Vector3 {
-	var result *Vector3
-	if optionalTarget != nil {
-		result = optionalTarget
-	} else {
-		result = NewVector3(0, 0, 0)
-	}
-	result.SubVectors(point, &ray.origin)
-	directionDistance := result.Dot(&ray.direction)
-
+func (ray *Ray) ClosestPointToPoint(point *Vector3) (result Vector3) {
+	result.SubVectors(point, &ray.Origin)
+	directionDistance := result.Dot(&ray.Direction)
 	if directionDistance < 0 {
-		return result.Copy(&ray.origin)
+		return ray.Origin
 	}
-	return result.Copy(&ray.direction).MultiplyScalar(directionDistance).Add(&ray.origin)
+	result = ray.Direction
+	result.MultiplyScalar(directionDistance)
+	result.Add(&ray.Origin)
+	return result
 }
 
 // DistanceToPoint returns the smallest distance
@@ -93,18 +43,16 @@ func (ray *Ray) DistanceToPoint(point *Vector3) float32 {
 	return Sqrt(ray.DistanceSqToPoint(point))
 }
 
-// DistanceSqToPoint returns the smallest squared distance
-// from the ray direction vector to the specified point.
+// DistanceSqToPoint returns the smallest squared distance from the ray direction vector to the specified point.
 // If the ray was pointed directly at the point this distance would be 0.
 func (ray *Ray) DistanceSqToPoint(point *Vector3) float32 {
 	var v1 Vector3
-
-	directionDistance := v1.SubVectors(point, &ray.origin).Dot(&ray.direction)
+	directionDistance := v1.SubVectors(point, &ray.Origin).Dot(&ray.Direction)
 	// point behind the ray
 	if directionDistance < 0 {
-		return ray.origin.DistanceTo(point)
+		return ray.Origin.DistanceTo(point)
 	}
-	v1.Copy(&ray.direction).MultiplyScalar(directionDistance).Add(&ray.origin)
+	v1.Copy(&ray.Direction).MultiplyScalar(directionDistance).Add(&ray.Origin)
 	return v1.DistanceToSquared(point)
 }
 
@@ -121,11 +69,11 @@ func (ray *Ray) DistanceSqToSegment(v0, v1, optionalPointOnRay, optionalPointOnS
 
 	segCenter.Copy(v0).Add(v1).MultiplyScalar(0.5)
 	segDir.Copy(v1).Sub(v0).Normalize()
-	diff.Copy(&ray.origin).Sub(&segCenter)
+	diff.Copy(&ray.Origin).Sub(&segCenter)
 
 	segExtent := v0.DistanceTo(v1) * 0.5
-	a01 := -ray.direction.Dot(&segDir)
-	b0 := diff.Dot(&ray.direction)
+	a01 := -ray.Direction.Dot(&segDir)
+	b0 := diff.Dot(&ray.Direction)
 	b1 := -diff.Dot(&segDir)
 	c := diff.LengthSq()
 	det := Abs(1 - a01*a01)
@@ -204,7 +152,7 @@ func (ray *Ray) DistanceSqToSegment(v0, v1, optionalPointOnRay, optionalPointOnS
 	}
 
 	if optionalPointOnRay != nil {
-		optionalPointOnRay.Copy(&ray.direction).MultiplyScalar(s0).Add(&ray.origin)
+		optionalPointOnRay.Copy(&ray.Direction).MultiplyScalar(s0).Add(&ray.Origin)
 	}
 
 	if optionalPointOnSegment != nil {
@@ -222,18 +170,16 @@ func (ray *Ray) IsIntersectionSphere(sphere *Sphere) bool {
 }
 
 // IntersectSphere calculates the point which is the intersection of this ray with the specified sphere.
-// The calculated point is stored in optionalTarget, it not nil, and also returned.
-// If no intersection is found the calculated point is set to nil.
-func (ray *Ray) IntersectSphere(sphere *Sphere, optionalTarget *Vector3) *Vector3 {
+func (ray *Ray) IntersectSphere(sphere *Sphere) (Vector3, bool) {
 	var v1 Vector3
 
-	v1.SubVectors(&sphere.Center, &ray.origin)
-	tca := v1.Dot(&ray.direction)
+	v1.SubVectors(&sphere.Center, &ray.Origin)
+	tca := v1.Dot(&ray.Direction)
 	d2 := v1.Dot(&v1) - tca*tca
 	radius2 := sphere.Radius * sphere.Radius
 
 	if d2 > radius2 {
-		return nil
+		return Vector3{}, false
 	}
 
 	thc := Sqrt(radius2 - d2)
@@ -246,48 +192,46 @@ func (ray *Ray) IntersectSphere(sphere *Sphere, optionalTarget *Vector3) *Vector
 
 	// test to see if both t0 and t1 are behind the ray - if so, return null
 	if t0 < 0 && t1 < 0 {
-		return nil
+		return Vector3{}, false
 	}
 
 	// test to see if t0 is behind the ray:
 	// if it is, the ray is inside the sphere, so return the second exit point scaled by t1,
 	// in order to always return an intersect point that is in front of the ray.
 	if t0 < 0 {
-		return ray.At(t1, optionalTarget)
+		return ray.At(t1), true
 	}
 
 	// else t0 is in front of the ray, so return the first collision point scaled by t0
-	return ray.At(t0, optionalTarget)
+	return ray.At(t0), true
 }
 
 // IsIntersectPlane returns if this ray intersects the specified plane.
 func (ray *Ray) IsIntersectPlane(plane *Plane) bool {
-	distToPoint := plane.DistanceToPoint(&ray.origin)
+	distToPoint := plane.DistanceToPoint(&ray.Origin)
 	if distToPoint == 0 {
 		return true
 	}
-
-	denominator := plane.normal.Dot(&ray.direction)
+	denominator := plane.normal.Dot(&ray.Direction)
 	if denominator*distToPoint < 0 {
 		return true
 	}
-
 	// ray origin is behind the plane (and is pointing behind it)
 	return false
 }
 
 // DistanceToPlane returns the distance of this ray origin to its intersection point in the plane.
-// If the ray does not intersects the plane, returns NaN.
+// If the ray does not intersect the plane, returns NaN.
 func (ray *Ray) DistanceToPlane(plane *Plane) float32 {
-	denominator := plane.normal.Dot(&ray.direction)
+	denominator := plane.normal.Dot(&ray.Direction)
 	if denominator == 0 {
 		// line is coplanar, return origin
-		if plane.DistanceToPoint(&ray.origin) == 0 {
+		if plane.DistanceToPoint(&ray.Origin) == 0 {
 			return 0
 		}
 		return NaN()
 	}
-	t := -(ray.origin.Dot(&plane.normal) + plane.constant) / denominator
+	t := -(ray.Origin.Dot(&plane.normal) + plane.constant) / denominator
 	// Return if the ray never intersects the plane
 	if t >= 0 {
 		return t
@@ -296,61 +240,48 @@ func (ray *Ray) DistanceToPlane(plane *Plane) float32 {
 }
 
 // IntersectPlane calculates the point which is the intersection of this ray with the specified plane.
-// The calculated point is stored in optionalTarget, if not nil, and also returned.
-// If no intersection is found the calculated point is set to nil.
-func (ray *Ray) IntersectPlane(plane *Plane, optionalTarget *Vector3) *Vector3 {
+func (ray *Ray) IntersectPlane(plane *Plane) (Vector3, bool) {
 	t := ray.DistanceToPlane(plane)
-
 	if t == NaN() {
-		return nil
+		return Vector3{}, false
 	}
-
-	return ray.At(t, optionalTarget)
-
+	return ray.At(t), true
 }
 
 // IsIntersectionBox returns if this ray intersects the specified box.
 func (ray *Ray) IsIntersectionBox(box *Box3) bool {
-	var v Vector3
-
-	if ray.IntersectBox(box, &v) != nil {
-		return true
-	}
-	return false
+	_, ok := ray.IntersectBox(box)
+	return ok
 }
 
 // IntersectBox calculates the point which is the intersection of this ray with the specified box.
-// The calculated point is stored in optionalTarget, it not nil, and also returned.
-// If no intersection is found the calculated point is set to nil.
-func (ray *Ray) IntersectBox(box *Box3, optionalTarget *Vector3) *Vector3 {
+func (ray *Ray) IntersectBox(box *Box3) (Vector3, bool) {
 	// http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
 
 	var tmin, tmax, tymin, tymax, tzmin, tzmax float32
 
-	invdirx := 1 / ray.direction.X
-	invdiry := 1 / ray.direction.Y
-	invdirz := 1 / ray.direction.Z
-
-	var origin = ray.origin
+	invdirx := 1 / ray.Direction.X
+	invdiry := 1 / ray.Direction.Y
+	invdirz := 1 / ray.Direction.Z
 
 	if invdirx >= 0 {
-		tmin = (box.Min.X - origin.X) * invdirx
-		tmax = (box.Max.X - origin.X) * invdirx
+		tmin = (box.Min.X - ray.Origin.X) * invdirx
+		tmax = (box.Max.X - ray.Origin.X) * invdirx
 	} else {
-		tmin = (box.Max.X - origin.X) * invdirx
-		tmax = (box.Min.X - origin.X) * invdirx
+		tmin = (box.Max.X - ray.Origin.X) * invdirx
+		tmax = (box.Min.X - ray.Origin.X) * invdirx
 	}
 
 	if invdiry >= 0 {
-		tymin = (box.Min.Y - origin.Y) * invdiry
-		tymax = (box.Max.Y - origin.Y) * invdiry
+		tymin = (box.Min.Y - ray.Origin.Y) * invdiry
+		tymax = (box.Max.Y - ray.Origin.Y) * invdiry
 	} else {
-		tymin = (box.Max.Y - origin.Y) * invdiry
-		tymax = (box.Min.Y - origin.Y) * invdiry
+		tymin = (box.Max.Y - ray.Origin.Y) * invdiry
+		tymax = (box.Min.Y - ray.Origin.Y) * invdiry
 	}
 
 	if (tmin > tymax) || (tymin > tmax) {
-		return nil
+		return Vector3{}, false
 	}
 
 	// These lines also handle the case where tmin or tmax is NaN
@@ -365,15 +296,15 @@ func (ray *Ray) IntersectBox(box *Box3, optionalTarget *Vector3) *Vector3 {
 	}
 
 	if invdirz >= 0 {
-		tzmin = (box.Min.Z - origin.Z) * invdirz
-		tzmax = (box.Max.Z - origin.Z) * invdirz
+		tzmin = (box.Min.Z - ray.Origin.Z) * invdirz
+		tzmax = (box.Max.Z - ray.Origin.Z) * invdirz
 	} else {
-		tzmin = (box.Max.Z - origin.Z) * invdirz
-		tzmax = (box.Min.Z - origin.Z) * invdirz
+		tzmin = (box.Max.Z - ray.Origin.Z) * invdirz
+		tzmax = (box.Min.Z - ray.Origin.Z) * invdirz
 	}
 
 	if (tmin > tzmax) || (tzmin > tmax) {
-		return nil
+		return Vector3{}, false
 	}
 
 	if tzmin > tmin || tmin != tmin {
@@ -384,24 +315,19 @@ func (ray *Ray) IntersectBox(box *Box3, optionalTarget *Vector3) *Vector3 {
 		tmax = tzmax
 	}
 
-	//return point closest to the ray (positive side)
-
 	if tmax < 0 {
-		return nil
+		return Vector3{}, false
 	}
 
 	if tmin >= 0 {
-		return ray.At(tmin, optionalTarget)
+		return ray.At(tmin), true
 	}
-	return ray.At(tmax, optionalTarget)
+	return ray.At(tmax), true
 }
 
-// IntersectTriangle returns if this ray intersects the triangle with the face
-// defined by points a, b, c. Returns true if it intersects and sets the point
-// parameter with the intersected point coordinates.
-// If backfaceCulling is false it ignores the intersection if the face is not oriented
-// in the ray direction.
-func (ray *Ray) IntersectTriangle(a, b, c *Vector3, backfaceCulling bool, point *Vector3) bool {
+// IntersectTriangle returns if this ray intersects the triangle with the face defined by points a, b, c.
+// If backfaceCulling is false it ignores the intersection if the face is not oriented in the ray direction.
+func (ray *Ray) IntersectTriangle(a, b, c *Vector3, backfaceCulling bool) (Vector3, bool) {
 	var diff Vector3
 	var edge1 Vector3
 	var edge2 Vector3
@@ -416,38 +342,38 @@ func (ray *Ray) IntersectTriangle(a, b, c *Vector3, backfaceCulling bool, point 
 	//   |Dot(D,N)|*b1 = sign(Dot(D,N))*Dot(D,Cross(Q,E2))
 	//   |Dot(D,N)|*b2 = sign(Dot(D,N))*Dot(D,Cross(E1,Q))
 	//   |Dot(D,N)|*t = -sign(Dot(D,N))*Dot(Q,N)
-	DdN := ray.direction.Dot(&normal)
+	DdN := ray.Direction.Dot(&normal)
 	var sign float32
 
 	if DdN > 0 {
 		if backfaceCulling {
-			return false
+			return Vector3{}, false
 		}
 		sign = 1
 	} else if DdN < 0 {
 		sign = -1
 		DdN = -DdN
 	} else {
-		return false
+		return Vector3{}, false
 	}
 
-	diff.SubVectors(&ray.origin, a)
-	DdQxE2 := sign * ray.direction.Dot(edge2.CrossVectors(&diff, &edge2))
+	diff.SubVectors(&ray.Origin, a)
+	DdQxE2 := sign * ray.Direction.Dot(edge2.CrossVectors(&diff, &edge2))
 
 	// b1 < 0, no intersection
 	if DdQxE2 < 0 {
-		return false
+		return Vector3{}, false
 	}
 
-	DdE1xQ := sign * ray.direction.Dot(edge1.Cross(&diff))
+	DdE1xQ := sign * ray.Direction.Dot(edge1.Cross(&diff))
 	// b2 < 0, no intersection
 	if DdE1xQ < 0 {
-		return false
+		return Vector3{}, false
 	}
 
 	// b1+b2 > 1, no intersection
 	if DdQxE2+DdE1xQ > DdN {
-		return false
+		return Vector3{}, false
 	}
 
 	// Line intersects triangle, check if ray does.
@@ -455,30 +381,19 @@ func (ray *Ray) IntersectTriangle(a, b, c *Vector3, backfaceCulling bool, point 
 
 	// t < 0, no intersection
 	if QdN < 0 {
-		return false
+		return Vector3{}, false
 	}
 
 	// Ray intersects triangle.
-	ray.At(QdN/DdN, point)
-	return true
+	return ray.At(QdN / DdN), true
 }
 
 // ApplyMatrix4 multiplies this ray origin and direction
 // by the specified matrix4, basically transforming this ray coordinates.
 func (ray *Ray) ApplyMatrix4(matrix4 *Matrix4) *Ray {
-	ray.direction.Add(&ray.origin).ApplyMatrix4(matrix4)
-	ray.origin.ApplyMatrix4(matrix4)
-	ray.direction.Sub(&ray.origin)
-	ray.direction.Normalize()
+	ray.Direction.Add(&ray.Origin).ApplyMatrix4(matrix4)
+	ray.Origin.ApplyMatrix4(matrix4)
+	ray.Direction.Sub(&ray.Origin)
+	ray.Direction.Normalize()
 	return ray
-}
-
-// Equals returns if this ray is equal to other
-func (ray *Ray) Equals(other *Ray) bool {
-	return ray.origin.Equals(&other.origin) && ray.direction.Equals(&other.direction)
-}
-
-// Clone creates and returns a pointer to copy of this ray.
-func (ray *Ray) Clone() *Ray {
-	return NewRay(&ray.origin, &ray.direction)
 }

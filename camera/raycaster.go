@@ -15,6 +15,7 @@ import (
 
 // Raycaster represents an empty object that can cast rays and check for ray intersections.
 type Raycaster struct {
+	math32.Ray
 	// The distance from the ray origin to the intersected points
 	// must be greater than the value of this field to be considered.
 	// The default value is 0.0
@@ -35,8 +36,6 @@ type Raycaster struct {
 	// when checking for sprite intersections.
 	// It is set automatically when using camera.SetRaycaster
 	ViewMatrix math32.Matrix4
-	// Embedded ray
-	math32.Ray
 }
 
 // Intersect describes the intersection between a ray and an object
@@ -58,9 +57,12 @@ type Intersect struct {
 
 // NewRaycaster creates and returns a pointer to a new raycaster object
 // with the specified origin and direction.
-func NewRaycaster(origin, direction *math32.Vector3) *Raycaster {
+func NewRaycaster(origin, direction math32.Vector3) *Raycaster {
 	rc := new(Raycaster)
-	rc.Ray.Set(origin, direction)
+	rc.Ray = math32.Ray{
+		Origin:    origin,
+		Direction: direction,
+	}
 	rc.Near = 0
 	rc.Far = math32.Inf(1)
 	rc.LinePrecision = 0.1
@@ -72,9 +74,8 @@ func NewRaycaster(origin, direction *math32.Vector3) *Raycaster {
 // and the specified node. If recursive is true, it also checks
 // the intersection with the node's children.
 // Intersections are returned sorted by distance, closest first.
-func (rc *Raycaster) IntersectObject(inode core.INode, recursive bool) []Intersect {
-	var intersects []Intersect
-	rc.intersectObject(inode, &intersects, recursive)
+func (rc *Raycaster) IntersectObject(inode core.INode, recursive bool, intersects []Intersect) []Intersect {
+	intersects = rc.intersectObject(inode, recursive, intersects)
 	sort.Slice(intersects, func(i, j int) bool {
 		return intersects[i].Distance < intersects[j].Distance
 	})
@@ -85,10 +86,9 @@ func (rc *Raycaster) IntersectObject(inode core.INode, recursive bool) []Interse
 // the specified array of scene nodes. If recursive is true, it also checks
 // the intersection with each nodes' children.
 // Intersections are returned sorted by distance, closest first.
-func (rc *Raycaster) IntersectObjects(inodes []core.INode, recursive bool) []Intersect {
-	var intersects []Intersect
+func (rc *Raycaster) IntersectObjects(inodes []core.INode, recursive bool, intersects []Intersect) []Intersect {
 	for _, inode := range inodes {
-		rc.intersectObject(inode, &intersects, recursive)
+		intersects = rc.intersectObject(inode, recursive, intersects)
 	}
 	sort.Slice(intersects, func(i, j int) bool {
 		return intersects[i].Distance < intersects[j].Distance
@@ -96,52 +96,50 @@ func (rc *Raycaster) IntersectObjects(inodes []core.INode, recursive bool) []Int
 	return intersects
 }
 
-func (rc *Raycaster) intersectObject(inode core.INode, intersects *[]Intersect, recursive bool) {
+func (rc *Raycaster) intersectObject(inode core.INode, recursive bool, intersects []Intersect) []Intersect {
 	node := inode.GetNode()
 	if !node.Visible() {
-		return
+		return intersects
 	}
 
 	switch in := inode.(type) {
 	case *graphic.Sprite:
-		rc.RaycastSprite(in, intersects)
+		intersects = rc.RaycastSprite(in, intersects)
 	case *graphic.Points:
-		rc.RaycastPoints(in, intersects)
+		intersects = rc.RaycastPoints(in, intersects)
 	case *graphic.Mesh:
-		rc.RaycastMesh(in, intersects)
+		intersects = rc.RaycastMesh(in, intersects)
 	case *graphic.Lines:
-		rc.RaycastLines(in, intersects)
+		intersects = rc.RaycastLines(in, intersects)
 	case *graphic.LineStrip:
-		rc.RaycastLineStrip(in, intersects)
+		intersects = rc.RaycastLineStrip(in, intersects)
 	}
 
 	if recursive {
 		for _, child := range node.Children() {
-			rc.intersectObject(child, intersects, true)
+			intersects = rc.intersectObject(child, true, intersects)
 		}
 	}
-	return
+	return intersects
 }
 
 // SetFromCamera sets the specified raycaster with this camera position in world coordinates
 // pointing to the direction defined by the specified coordinates unprojected using this camera.
 func (rc *Raycaster) SetFromCamera(cam *Camera, sx, sy float32) {
-	var origin, direction math32.Vector3
 	matrixWorld := cam.MatrixWorld()
-	origin.SetFromMatrixPosition(&matrixWorld)
-	direction.Set(sx, sy, 0.5)
-	unproj := cam.Unproject(&direction)
-	unproj.Sub(&origin).Normalize()
-	rc.Set(&origin, &direction)
+	rc.Origin.SetFromMatrixPosition(&matrixWorld)
+	rc.Direction.Set(sx, sy, 0.5)
+	unproj := cam.Unproject(&rc.Direction)
+	unproj.Sub(&rc.Origin).Normalize()
 	cam.ViewMatrix(&rc.ViewMatrix)
 }
 
 // RaycastSprite checks intersections between the raycaster and the specified sprite
 // and if any found appends it to the specified intersects array.
-func (rc *Raycaster) RaycastSprite(s *graphic.Sprite, intersects *[]Intersect) {
+func (rc *Raycaster) RaycastSprite(s *graphic.Sprite, intersects []Intersect) []Intersect {
 	// Copy and convert ray to camera coordinates
-	var ray math32.Ray
-	ray.Copy(&rc.Ray).ApplyMatrix4(&rc.ViewMatrix)
+	ray := rc.Ray
+	ray.ApplyMatrix4(&rc.ViewMatrix)
 
 	// Calculates ViewMatrix * MatrixWorld
 	var mv math32.Matrix4
@@ -187,25 +185,23 @@ func (rc *Raycaster) RaycastSprite(s *graphic.Sprite, intersects *[]Intersect) {
 		pos = indices[i+2]
 		buffer.GetVector3(int(pos*5), &v3)
 		v3.ApplyMatrix4(&mv)
-		if ray.IntersectTriangle(&v1, &v2, &v3, false, &point) {
-			intersect = true
+		if point, intersect = ray.IntersectTriangle(&v1, &v2, &v3, false); intersect {
 			break
 		}
 	}
 	if !intersect {
-		return
+		return intersects
 	}
 	// Get distance from intersection point
-	origin := ray.Origin()
-	distance := origin.DistanceTo(&point)
+	distance := ray.Origin.DistanceTo(&point)
 
 	// Checks if distance is between the bounds of the raycaster
 	if distance < rc.Near || distance > rc.Far {
-		return
+		return intersects
 	}
 
 	// Appends intersection to received parameter.
-	*intersects = append(*intersects, Intersect{
+	return append(intersects, Intersect{
 		Distance: distance,
 		Point:    point,
 		Object:   s,
@@ -213,21 +209,21 @@ func (rc *Raycaster) RaycastSprite(s *graphic.Sprite, intersects *[]Intersect) {
 }
 
 // RaycastPoints checks for intersections with a graphic.Points.
-func (rc *Raycaster) RaycastPoints(p *graphic.Points, intersects *[]Intersect) {
+func (rc *Raycaster) RaycastPoints(p *graphic.Points, intersects []Intersect) []Intersect {
 	// Checks intersection with the bounding sphere transformed to world coordinates
 	geom := p.GetGeometry()
 	sphere := geom.BoundingSphere()
 	matrixWorld := p.MatrixWorld()
 	sphere.ApplyMatrix4(&matrixWorld)
 	if !rc.IsIntersectionSphere(&sphere) {
-		return
+		return intersects
 	}
 
 	// Copy ray and transforms to model coordinates
 	var inverseMatrix math32.Matrix4
-	var ray math32.Ray
 	_ = inverseMatrix.GetInverse(&matrixWorld)
-	ray.Copy(&rc.Ray).ApplyMatrix4(&inverseMatrix)
+	ray := rc.Ray
+	ray.ApplyMatrix4(&inverseMatrix)
 
 	// Checks intersection with all points
 	scale := p.Scale()
@@ -242,16 +238,14 @@ func (rc *Raycaster) RaycastPoints(p *graphic.Points, intersects *[]Intersect) {
 		if rayPointDistanceSq >= localThresholdSq {
 			return
 		}
-		var intersectPoint math32.Vector3
-		ray.ClosestPointToPoint(point, &intersectPoint)
+		intersectPoint := ray.ClosestPointToPoint(point)
 		intersectPoint.ApplyMatrix4(&matrixWorld)
-		origin := rc.Ray.Origin()
-		distance := origin.DistanceTo(&intersectPoint)
+		distance := rc.Origin.DistanceTo(&intersectPoint)
 		if distance < rc.Near || distance > rc.Far {
 			return
 		}
 		// Appends intersection of raycaster with this point
-		*intersects = append(*intersects, Intersect{
+		intersects = append(intersects, Intersect{
 			Distance: distance,
 			Point:    intersectPoint,
 			Index:    uint32(index),
@@ -265,56 +259,53 @@ func (rc *Raycaster) RaycastPoints(p *graphic.Points, intersects *[]Intersect) {
 		i++
 		return false
 	})
+	return intersects
 }
 
 // RaycastMesh checks for intersections with a graphic.Mesh.
-func (rc *Raycaster) RaycastMesh(m *graphic.Mesh, intersects *[]Intersect) {
-	// Transform this mesh geometry bounding sphere from model
-	// to world coordinates and checks intersection with raycaster
+func (rc *Raycaster) RaycastMesh(m *graphic.Mesh, intersects []Intersect) []Intersect {
+	// Transform this mesh geometry bounding sphere from model to world coordinates and checks intersection with raycaster
 	geom := m.GetGeometry()
 	sphere := geom.BoundingSphere()
 	matrixWorld := m.MatrixWorld()
 	sphere.ApplyMatrix4(&matrixWorld)
 	if !rc.IsIntersectionSphere(&sphere) {
-		return
+		return intersects
 	}
 
 	// Copy ray and transform to model coordinates
-	// This ray will also be used to check intersects with
-	// the geometry, as is much less expensive to transform the
-	// ray to model coordinates than the geometry to world coordinates.
+	// It is less expensive to transform the ray to model coordinates than the geometry to world coordinates
+	// This ray will also be used to check intersects with the geometry
 	var inverseMatrix math32.Matrix4
 	_ = inverseMatrix.GetInverse(&matrixWorld)
-	var ray math32.Ray
-	ray.Copy(&rc.Ray).ApplyMatrix4(&inverseMatrix)
+	ray := rc.Ray
+	ray.ApplyMatrix4(&inverseMatrix)
 	bbox := geom.BoundingBox()
 	if !ray.IsIntersectionBox(&bbox) {
-		return
+		return intersects
 	}
 
-	// Local function to check the intersection of the ray from the raycaster with
-	// the specified face defined by three points.
-	checkIntersection := func(mat *material.Material, pA, pB, pC, point *math32.Vector3) *Intersect {
+	// Local function to check the intersection of the ray from the raycaster with the specified face defined by three points.
+	checkIntersection := func(side material.Side, pA, pB, pC *math32.Vector3) *Intersect {
+		var point math32.Vector3
 		var intersect bool
-		switch mat.Side() {
+		switch side {
 		case material.SideBack:
-			intersect = ray.IntersectTriangle(pC, pB, pA, true, point)
+			point, intersect = ray.IntersectTriangle(pC, pB, pA, true)
 		case material.SideFront:
-			intersect = ray.IntersectTriangle(pA, pB, pC, true, point)
+			point, intersect = ray.IntersectTriangle(pA, pB, pC, true)
 		case material.SideDouble:
-			intersect = ray.IntersectTriangle(pA, pB, pC, false, point)
+			point, intersect = ray.IntersectTriangle(pA, pB, pC, false)
 		}
 		if !intersect {
 			return nil
 		}
 
 		// Transform intersection point from model to world coordinates
-		var intersectionPointWorld = *point
-		intersectionPointWorld.ApplyMatrix4(&matrixWorld)
+		point.ApplyMatrix4(&matrixWorld)
 
 		// Calculates the distance from the ray origin to intersection point
-		origin := rc.Ray.Origin()
-		distance := origin.DistanceTo(&intersectionPointWorld)
+		distance := rc.Ray.Origin.DistanceTo(&point)
 
 		// Checks if distance is between the bounds of the raycaster
 		if distance < rc.Near || distance > rc.Far {
@@ -323,7 +314,7 @@ func (rc *Raycaster) RaycastMesh(m *graphic.Mesh, intersects *[]Intersect) {
 
 		return &Intersect{
 			Distance: distance,
-			Point:    intersectionPointWorld,
+			Point:    point,
 			Object:   m,
 		}
 	}
@@ -331,30 +322,30 @@ func (rc *Raycaster) RaycastMesh(m *graphic.Mesh, intersects *[]Intersect) {
 	i := 0
 	geom.ReadFaces(func(vA, vB, vC math32.Vector3) bool {
 		// Checks intersection of the ray with this face
-		mat := m.GetMaterial(i).GetMaterial()
-		var point math32.Vector3
-		intersect := checkIntersection(mat, &vA, &vB, &vC, &point)
+		side := m.GetMaterial(i).GetMaterial().Side()
+		intersect := checkIntersection(side, &vA, &vB, &vC)
 		if intersect != nil {
 			intersect.Index = uint32(i)
-			*intersects = append(*intersects, *intersect)
+			intersects = append(intersects, *intersect)
 		}
 		i += 3
 		return false
 	})
+	return intersects
 }
 
 // RaycastLines checks for intersections with a graphic.Lines.
-func (rc *Raycaster) RaycastLines(l *graphic.Lines, intersects *[]Intersect) {
-	lineRaycast(l, rc, intersects, 2)
+func (rc *Raycaster) RaycastLines(l *graphic.Lines, intersects []Intersect) []Intersect {
+	return rc.lineRaycast(l, intersects, 2)
 }
 
 // RaycastLineStrip checks for intersections with a graphic.LineStrip.
-func (rc *Raycaster) RaycastLineStrip(l *graphic.LineStrip, intersects *[]Intersect) {
-	lineRaycast(l, rc, intersects, 1)
+func (rc *Raycaster) RaycastLineStrip(l *graphic.LineStrip, intersects []Intersect) []Intersect {
+	return rc.lineRaycast(l, intersects, 1)
 }
 
 // Internal function used by raycasting for Lines and LineStrip.
-func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, step int) {
+func (rc *Raycaster) lineRaycast(igr graphic.IGraphic, intersects []Intersect, step int) []Intersect {
 	// Get the bounding sphere
 	gr := igr.GetGraphic()
 	geom := igr.GetGeometry()
@@ -365,7 +356,7 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 	matrixWorld := gr.MatrixWorld()
 	sphere.ApplyMatrix4(&matrixWorld)
 	if !rc.IsIntersectionSphere(&sphere) {
-		return
+		return intersects
 	}
 
 	// Copy ray and transform to model coordinates
@@ -373,9 +364,9 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 	// the geometry, as is much less expensive to transform the
 	// ray to model coordinates than the geometry to world coordinates.
 	var inverseMatrix math32.Matrix4
-	var ray math32.Ray
 	_ = inverseMatrix.GetInverse(&matrixWorld)
-	ray.Copy(&rc.Ray).ApplyMatrix4(&inverseMatrix)
+	ray := rc.Ray
+	ray.ApplyMatrix4(&inverseMatrix)
 
 	var vstart math32.Vector3
 	var vend math32.Vector3
@@ -385,7 +376,7 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 	// Get geometry positions and indices buffers
 	vboPos := geom.VBO(gls.VertexPosition)
 	if vboPos == nil {
-		return
+		return intersects
 	}
 	positions := vboPos.Buffer()
 	indices := geom.Indices()
@@ -405,14 +396,13 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 			}
 			// Move back to world coordinates for distance calculation
 			interRay.ApplyMatrix4(&matrixWorld)
-			origin := rc.Ray.Origin()
-			distance := origin.DistanceTo(&interRay)
+			distance := rc.Origin.DistanceTo(&interRay)
 			if distance < rc.Near || distance > rc.Far {
 				continue
 			}
 
 			interSegment.ApplyMatrix4(&matrixWorld)
-			*intersects = append(*intersects, Intersect{
+			intersects = append(intersects, Intersect{
 				Distance: distance,
 				Point:    interSegment,
 				Index:    uint32(i),
@@ -431,14 +421,13 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 
 			// Move back to world coordinates for distance calculation
 			interRay.ApplyMatrix4(&matrixWorld)
-			origin := rc.Ray.Origin()
-			distance := origin.DistanceTo(&interRay)
+			distance := rc.Origin.DistanceTo(&interRay)
 			if distance < rc.Near || distance > rc.Far {
 				continue
 			}
 
 			interSegment.ApplyMatrix4(&matrixWorld)
-			*intersects = append(*intersects, Intersect{
+			intersects = append(intersects, Intersect{
 				Distance: distance,
 				Point:    interSegment,
 				Index:    uint32(i),
@@ -446,4 +435,5 @@ func lineRaycast(igr graphic.IGraphic, rc *Raycaster, intersects *[]Intersect, s
 			})
 		}
 	}
+	return intersects
 }

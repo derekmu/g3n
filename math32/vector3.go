@@ -309,7 +309,7 @@ func (v *Vector3) Negate() *Vector3 {
 	return v
 }
 
-// Dot returns the dot product of this vector with other.
+// Dot returns the dot product of this vector with another.
 // None of the vectors are changed.
 func (v *Vector3) Dot(other *Vector3) float32 {
 	return v.X*other.X + v.Y*other.Y + v.Z*other.Z
@@ -372,7 +372,7 @@ func (v *Vector3) Lerp(other *Vector3, alpha float32) *Vector3 {
 	return v
 }
 
-// Equals returns if this vector is equal to other.
+// Equals returns if this vector is equal to another.
 func (v *Vector3) Equals(other *Vector3) bool {
 	return (other.X == v.X) && (other.Y == v.Y) && (other.Z == v.Z)
 }
@@ -549,11 +549,6 @@ func (v *Vector3) SetFromMatrixColumn(index int, m *Matrix4) *Vector3 {
 	return v
 }
 
-// Clone returns a copy of this vector
-func (v *Vector3) Clone() *Vector3 {
-	return NewVector3(v.X, v.Y, v.Z)
-}
-
 // SetFromRotationMatrix sets this vector components to the Euler angles
 // from the specified pure rotation matrix.
 // Returns the pointer to this updated vector.
@@ -588,9 +583,7 @@ func (v *Vector3) SetFromQuaternion(q *Quaternion) *Vector3 {
 }
 
 // RandomTangents computes and returns two arbitrary tangents to the vector.
-func (v *Vector3) RandomTangents() (*Vector3, *Vector3) {
-	t1 := NewVector3(0, 0, 0)
-	t2 := NewVector3(0, 0, 0)
+func (v *Vector3) RandomTangents() (t1, t2 Vector3) {
 	length := v.Length()
 	if length > 0 {
 		n := NewVector3(v.X/length, v.Y/length, v.Z/length)
@@ -605,16 +598,14 @@ func (v *Vector3) RandomTangents() (*Vector3, *Vector3) {
 			randVec.SetZ(1)
 			t1.CrossVectors(n, randVec)
 		}
-		t2.CrossVectors(n, t1)
+		t2.CrossVectors(n, &t1)
 	} else {
 		t1.SetX(1)
 		t2.SetY(1)
 	}
-
 	return t1, t2
 }
 
-// TODO: implement similar methods for Vector2 and Vector4
 // AlmostEquals returns whether the vector is almost equal to another vector within the specified tolerance.
 func (v *Vector3) AlmostEquals(other *Vector3, tolerance float32) bool {
 	if (Abs(v.X-other.X) < tolerance) &&
@@ -626,6 +617,6 @@ func (v *Vector3) AlmostEquals(other *Vector3, tolerance float32) bool {
 }
 
 // Vector4 returns a new Vector4 based on this vector and the provided w value.
-func (v *Vector3) Vector4(w float32) *Vector4 {
-	return &Vector4{X: v.X, Y: v.Y, Z: v.Z, W: w}
+func (v *Vector3) Vector4(w float32) Vector4 {
+	return Vector4{X: v.X, Y: v.Y, Z: v.Z, W: w}
 }

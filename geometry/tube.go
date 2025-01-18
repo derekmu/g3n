@@ -141,9 +141,11 @@ func NewTube(path []math32.Vector3, radius float32, radialSegments int, close bo
 	normals = make([]math32.Vector3, l)
 	binormals = make([]math32.Vector3, l)
 
-	tangents[0] = *path[1].Clone().Sub(&path[0])
+	tangents[0] = path[1]
+	tangents[0].Sub(&path[0])
 	tangents[0].Normalize()
-	tangents[l-1] = *path[l-1].Clone().Sub(&path[l-2])
+	tangents[l-1] = path[l-1]
+	tangents[l-1].Sub(&path[l-2])
 	tangents[l-1].Normalize()
 
 	var tmpVertex *math32.Vector3
@@ -155,22 +157,29 @@ func NewTube(path []math32.Vector3, radius float32, radialSegments int, close bo
 		tmpVertex = math32.NewVector3(0, 0, 1)
 	}
 
-	normals[0] = *tangents[0].Clone().Cross(tmpVertex)
+	normals[0] = tangents[0]
+	normals[0].Cross(tmpVertex)
 	normals[0].Normalize()
-	binormals[0] = *tangents[0].Clone().Cross(&normals[0])
+	binormals[0] = tangents[0]
+	binormals[0].Cross(&normals[0])
 	binormals[0].Normalize()
 
 	for i := 1; i < l; i++ {
-		prev := *path[i].Clone().Sub(&path[i-1])
+		prev := path[i]
+		prev.Sub(&path[i-1])
 		if i < l-1 {
-			cur := *path[i+1].Clone().Sub(&path[i])
-			tangents[i] = *prev.Clone().Add(&cur)
+			cur := path[i+1]
+			cur.Sub(&path[i])
+			tangents[i] = prev
+			tangents[i].Add(&cur)
 			tangents[i].Normalize()
 
 		}
-		normals[i] = *binormals[i-1].Clone().Cross(&tangents[i])
+		normals[i] = binormals[i-1]
+		normals[i].Cross(&tangents[i])
 		normals[i].Normalize()
-		binormals[i] = *tangents[i].Clone().Cross(&normals[i])
+		binormals[i] = tangents[i]
+		binormals[i].Cross(&normals[i])
 		binormals[i].Normalize()
 	}
 

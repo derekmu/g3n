@@ -22,39 +22,36 @@ func (c *Curve) SetLength() {
 	points := c.points
 	l := float32(0.0)
 	for i := 1; i < len(points); i++ {
-		p0 := points[i].Clone()
-		p1 := points[i-1].Clone()
-		l += (p0.Sub(p1)).Length()
+		p0 := points[i]
+		p0.Sub(&points[i-1])
+		l += p0.Length()
 	}
 	c.length = l
 }
 
-// Continue combines two curves
-// creates and returns a pointer to a new curve
-// combined curves are unaffected
+// Continue combines two curves creates and returns a pointer to a new curve.
+// The points of the other curve will be set such that the last and first points of the curves are the same.
 func (c *Curve) Continue(other *Curve) *Curve {
-	last := c.points[len(c.points)-1].Clone()
-	first := other.points[0].Clone()
-
-	var continued, otherpoints []Vector3
-	for i := 0; i < len(c.points); i++ {
-		continued = append(continued, *c.points[i].Clone())
-	}
-	for i := 1; i < len(other.points); i++ {
-		otherpoints = append(otherpoints, *other.points[i].Clone())
-	}
-	for i := 0; i < len(otherpoints); i++ {
-		continued = append(continued, *otherpoints[i].Sub(first).Add(last))
-	}
 	newC := new(Curve)
-	newC.points = continued
+	newC.points = make([]Vector3, 0, len(c.points)+len(other.points)-1)
+	for _, point := range c.points {
+		newC.points = append(newC.points, point)
+	}
+	offset := c.points[len(c.points)-1]
+	offset.Sub(&other.points[0])
+	for i, point := range other.points {
+		// skip the first point because it would be offset to be directly on the previous point
+		if i == 0 {
+			continue
+		}
+		point.Add(&offset)
+		newC.points = append(newC.points, point)
+	}
 	newC.SetLength()
 	return newC
 }
 
-// NewBezierQuadratic creates and returns a pointer to a new curve
-// Uses Vector3 pointers origin, control, and destination to calculate with
-// int npoints as the desired number of points along the curve
+// NewBezierQuadratic creates and returns a pointer to a new curve.
 func NewBezierQuadratic(origin, control, destination *Vector3, npoints int) *Curve {
 	c := new(Curve)
 
@@ -83,9 +80,7 @@ func NewBezierQuadratic(origin, control, destination *Vector3, npoints int) *Cur
 	return c
 }
 
-// NewBezierCubic creates and returns a pointer to a new curve
-// Uses Vector3 pointers origin, control1, control2, and destination to calculate with
-// int npoints as the desired number of points along the curve
+// NewBezierCubic creates and returns a pointer to a new curve.
 func NewBezierCubic(origin, control1, control2, destination *Vector3, npoints int) *Curve {
 	c := new(Curve)
 
@@ -114,9 +109,7 @@ func NewBezierCubic(origin, control1, control2, destination *Vector3, npoints in
 	return c
 }
 
-// NewHermiteSpline creates and returns a pointer to a new curve
-// Uses Vector3 pointers origin, tangent1, destination, and tangent2 to calculate with
-// int npoints as the desired number of points along the curve
+// NewHermiteSpline creates and returns a pointer to a new curve.
 func NewHermiteSpline(origin, tangent1, destination, tangent2 *Vector3, npoints int) *Curve {
 	c := new(Curve)
 
@@ -145,12 +138,10 @@ func NewHermiteSpline(origin, tangent1, destination, tangent2 *Vector3, npoints 
 }
 
 // NewCatmullRomSpline creates and returns a pointer to a new curve
-// Uses array of Vector3 pointers with int npoints as the desired number of points between supplied points
-// Use Boolean closed with true to close the start and end points
-func NewCatmullRomSpline(points []*Vector3, npoints int, closed bool) *Curve {
+func NewCatmullRomSpline(points []Vector3, npoints int, closed bool) *Curve {
 	c := new(Curve)
 
-	var equation = func(t float32, v0, v1, v2, v3 *Vector3) *Vector3 {
+	var equation = func(t float32, v0, v1, v2, v3 *Vector3) Vector3 {
 		t2 := t * t
 		t3 := t * t2
 		x := 0.5 * ((((2.0 * v1.X) + ((-v0.X + v2.X) * t)) +
@@ -162,7 +153,7 @@ func NewCatmullRomSpline(points []*Vector3, npoints int, closed bool) *Curve {
 		z := 0.5 * ((((2.0 * v1.Z) + ((-v0.Z + v2.Z) * t)) +
 			(((((2.0 * v0.Z) - (5.0 * v1.Z)) + (4.0 * v2.Z)) - v3.Z) * t2)) +
 			((((-v0.Z + (3.0 * v1.Z)) - (3.0 * v2.Z)) + v3.Z) * t3))
-		return NewVector3(x, y, z)
+		return Vector3{x, y, z}
 	}
 
 	step := float32(1.0) / float32(npoints)
@@ -173,28 +164,29 @@ func NewCatmullRomSpline(points []*Vector3, npoints int, closed bool) *Curve {
 		for i := 0; i < count; i++ {
 			t = 0.0
 			for n := 0; n < npoints; n++ {
-				vect := equation(t, points[i%count], points[(i+1)%count], points[(i+2)%count], points[(i+3)%count])
-				catmull = append(catmull, *vect)
+				vect := equation(t, &points[i%count], &points[(i+1)%count], &points[(i+2)%count], &points[(i+3)%count])
+				catmull = append(catmull, vect)
 				t += step
 			}
 		}
 		catmull = append(catmull, catmull[0])
 	} else {
-		total := []*Vector3{points[0].Clone()}
+		total := make([]Vector3, 0, len(points)+2)
+		total = append(total, points[0])
 		total = append(total, points...)
-		total = append(total, points[len(points)-1].Clone())
+		total = append(total, points[len(points)-1])
 		var i int
 		for i = 0; i < len(total)-3; i++ {
 			t = 0
 			for n := 0; n < npoints; n++ {
-				vect := equation(t, total[i], total[i+1], total[i+2], total[i+3])
-				catmull = append(catmull, *vect)
+				vect := equation(t, &total[i], &total[i+1], &total[i+2], &total[i+3])
+				catmull = append(catmull, vect)
 				t += step
 			}
 		}
 		i--
-		vect := equation(t, total[i], total[i+1], total[i+2], total[i+3])
-		catmull = append(catmull, *vect)
+		vect := equation(t, &total[i], &total[i+1], &total[i+2], &total[i+3])
+		catmull = append(catmull, vect)
 	}
 	c.points = catmull
 	c.SetLength()
