@@ -255,74 +255,64 @@ func (ray *Ray) IsIntersectionBox(box *Box3) bool {
 }
 
 // IntersectBox calculates the point which is the intersection of this ray with the specified box.
-func (ray *Ray) IntersectBox(box *Box3) (Vector3, bool) {
-	// http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
-
-	var tmin, tmax, tymin, tymax, tzmin, tzmax float32
-
-	invdirx := 1 / ray.Direction.X
-	invdiry := 1 / ray.Direction.Y
-	invdirz := 1 / ray.Direction.Z
-
-	if invdirx >= 0 {
-		tmin = (box.Min.X - ray.Origin.X) * invdirx
-		tmax = (box.Max.X - ray.Origin.X) * invdirx
-	} else {
-		tmin = (box.Max.X - ray.Origin.X) * invdirx
-		tmax = (box.Min.X - ray.Origin.X) * invdirx
+func (ray *Ray) IntersectBox(b *Box3) (Vector3, bool) {
+	// Calculate intersection parameters for the X-axis by finding the distance
+	// (t) at which the ray intersects the minimum and maximum X planes of the box
+	tMin := (b.Min.X - ray.Origin.X) / ray.Direction.X
+	tMax := (b.Max.X - ray.Origin.X) / ray.Direction.X
+	// Ensure tMin is the smaller of the two values
+	if tMin > tMax {
+		tMin, tMax = tMax, tMin
 	}
 
-	if invdiry >= 0 {
-		tymin = (box.Min.Y - ray.Origin.Y) * invdiry
-		tymax = (box.Max.Y - ray.Origin.Y) * invdiry
-	} else {
-		tymin = (box.Max.Y - ray.Origin.Y) * invdiry
-		tymax = (box.Min.Y - ray.Origin.Y) * invdiry
+	// Repeat the process for the Y-axis
+	tyMin := (b.Min.Y - ray.Origin.Y) / ray.Direction.Y
+	tyMax := (b.Max.Y - ray.Origin.Y) / ray.Direction.Y
+	// Ensure tyMin is the smaller of the two values
+	if tyMin > tyMax {
+		tyMin, tyMax = tyMax, tyMin
 	}
 
-	if (tmin > tymax) || (tymin > tmax) {
+	// Check if the ray's X and Y distances overlap
+	if (tMin > tyMax) || (tyMin > tMax) {
 		return Vector3{}, false
 	}
-
-	// These lines also handle the case where tmin or tmax is NaN
-	// (result of 0 * Infinity). x !== x returns true if x is NaN
-
-	if tymin > tmin || tmin != tmin {
-		tmin = tymin
+	// Update tMin and tMax to include the Y-axis range
+	// Compare tMin to handle NaN from X axis
+	if tyMin > tMin || tMin != tMin {
+		tMin = tyMin
+	}
+	if tyMax < tMax || tMax != tMax {
+		tMax = tyMax
 	}
 
-	if tymax < tmax || tmax != tmax {
-		tmax = tymax
+	// Repeat the process for the Z-axis
+	tzMin := (b.Min.Z - ray.Origin.Z) / ray.Direction.Z
+	tzMax := (b.Max.Z - ray.Origin.Z) / ray.Direction.Z
+	// Ensure tzMin is the smaller of the two values.
+	if tzMin > tzMax {
+		tzMin, tzMax = tzMax, tzMin
 	}
 
-	if invdirz >= 0 {
-		tzmin = (box.Min.Z - ray.Origin.Z) * invdirz
-		tzmax = (box.Max.Z - ray.Origin.Z) * invdirz
-	} else {
-		tzmin = (box.Max.Z - ray.Origin.Z) * invdirz
-		tzmax = (box.Min.Z - ray.Origin.Z) * invdirz
-	}
-
-	if (tmin > tzmax) || (tzmin > tmax) {
+	// Check if the ray's X, Y, and Z distances overlap
+	if (tMin > tzMax) || (tzMin > tMax) {
 		return Vector3{}, false
 	}
-
-	if tzmin > tmin || tmin != tmin {
-		tmin = tzmin
+	// Update tMin and tMax based on Z-axis range
+	// Compare tMin to handle NaN from X and Y axes
+	if tzMin > tMin || tMin != tMin {
+		tMin = tzMin
+	}
+	if tzMax < tMax || tMax != tMax {
+		tMax = tzMax
 	}
 
-	if tzmax < tmax || tmax != tmax {
-		tmax = tzmax
+	// The ray intersects the box
+	// Pick the closest intersection
+	if tMin >= 0 {
+		return ray.At(tMin), true
 	}
-
-	if tmax < 0 {
-		return Vector3{}, false
-	}
-
-	if tmin >= 0 {
-		return ray.At(tmin), true
-	}
-	return ray.At(tmax), true
+	return ray.At(tMax), true
 }
 
 // IntersectTriangle returns if this ray intersects the triangle with the face defined by points a, b, c.

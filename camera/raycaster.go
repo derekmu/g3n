@@ -131,8 +131,8 @@ func (rc *Raycaster) SetFromCamera(cam *Camera, sx, sy float32) {
 	matrixWorld := cam.MatrixWorld()
 	rc.Origin.SetFromMatrixPosition(&matrixWorld)
 	rc.Direction.Set(sx, sy, 0.5)
-	unproj := cam.Unproject(&rc.Direction)
-	unproj.Sub(&rc.Origin).Normalize()
+	cam.Unproject(&rc.Direction)
+	rc.Direction.Sub(&rc.Origin).Normalize()
 	cam.ViewMatrix(&rc.ViewMatrix)
 }
 
