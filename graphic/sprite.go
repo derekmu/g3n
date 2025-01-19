@@ -50,7 +50,7 @@ func NewSprite(width, height float32, imat material.IMaterial) *Sprite {
 	s.Graphic.Init(s, geom, gls.TRIANGLES)
 	s.AddMaterial(s, imat, 0, 0)
 
-	s.uniMatrices.Init("Matrices")
+	s.uniMatrices.Init("uMatrices")
 	return s
 }
 
@@ -80,6 +80,5 @@ func (s *Sprite) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 
 	// Calculates final MVP and updates uniform
 	s.mdata.mvpm.MultiplyMatrices(&rinfo.ProjMatrix, &s.mdata.mvm)
-	location := s.uniMatrices.Location(gs)
-	gs.UniformMatrix4fv(location, 3, false, &s.mdata.mvm[0])
+	gs.UniformMatrix4fv(s.uniMatrices.Location(gs), 3, false, &s.mdata.mvm[0])
 }

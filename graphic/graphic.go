@@ -92,28 +92,6 @@ func (gr *Graphic) Dispose() {
 	}
 }
 
-// Clone clones the graphic and satisfies the INode interface.
-// It should be called by Clone() implementations of IGraphic.
-// Note that the topmost implementation calling this method needs
-// to call clone.SetIGraphic(igraphic) after calling this method.
-func (gr *Graphic) Clone() core.INode {
-	clone := new(Graphic)
-	clone.Node = *gr.Node.Clone().(*core.Node)
-	clone.igeom = gr.igeom
-	clone.mode = gr.mode
-	clone.renderable = gr.renderable
-	clone.cullable = gr.cullable
-	clone.renderOrder = gr.renderOrder
-	clone.ShaderDefines = gr.ShaderDefines
-	clone.materials = make([]GraphicMaterial, len(gr.materials))
-
-	for i, grmat := range gr.materials {
-		clone.materials[i] = grmat
-	}
-
-	return clone
-}
-
 // SetRenderable satisfies the IGraphic interface and
 // sets the renderable state of this Graphic (default = true).
 func (gr *Graphic) SetRenderable(state bool) {

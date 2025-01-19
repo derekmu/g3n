@@ -1,26 +1,25 @@
 precision highp float;
 
 // Material parameters uniform array
-uniform vec3 Material[6];
-// Macros to access elements inside the Material array
-#define MatAmbientColor     Material[0]
-#define MatDiffuseColor     Material[1]
-#define MatSpecularColor    Material[2]
-#define MatEmissiveColor    Material[3]
-#define MatShininess        Material[4].x
-#define MatOpacity          Material[4].y
-#define MatPointSize        Material[4].z
-#define MatPointRotationZ   Material[5].x
+uniform vec3 uMaterial[6];
+#define uMatAmbientColor     uMaterial[0]
+#define uMatDiffuseColor     uMaterial[1]
+#define uMatSpecularColor    uMaterial[2]
+#define uMatEmissiveColor    uMaterial[3]
+#define uMatShininess        uMaterial[4].x
+#define uMatOpacity          uMaterial[4].y
+#define uMatPointSize        uMaterial[4].z
+#define uMatPointRotationZ   uMaterial[5].x
+
 #if MAT_TEXTURES > 0
 // Texture unit sampler array
-uniform sampler2D MatTexture[MAT_TEXTURES];
+uniform sampler2D uMatTexture[MAT_TEXTURES];
 // Texture parameters (3*vec2 per texture)
-uniform vec2 MatTexinfo[3 * MAT_TEXTURES];
-// Macros to access elements inside the MatTexinfo array
-#define MatTexOffset(a)     MatTexinfo[(3 * a)]
-#define MatTexRepeat(a)     MatTexinfo[(3 * a) + 1]
-#define MatTexFlipY(a)      bool(MatTexinfo[(3 * a) + 2].x)
-#define MatTexVisible(a)    bool(MatTexinfo[(3 * a) + 2].y)
+uniform vec2 uMatTexInfo[3 * MAT_TEXTURES];
+#define uMatTexOffset(a)     uMatTexInfo[(3 * a)]
+#define uMatTexRepeat(a)     uMatTexInfo[(3 * a) + 1]
+#define uMatTexFlipY(a)      bool(uMatTexInfo[(3 * a) + 2].x)
+#define uMatTexVisible(a)    bool(uMatTexInfo[(3 * a) + 2].y)
 // Alpha compositing (see here: https://ciechanow.ski/alpha-compositing/)
 vec4 Blend(vec4 texMixed, vec4 texColor) {
     texMixed.rgb *= texMixed.a;
@@ -46,8 +45,8 @@ void main() {
     #if MAT_TEXTURES > 0
     vec2 pointCoord = Rotation * gl_PointCoord - vec2(0.5) + vec2(0.5);
     bool firstTex = true;
-    if (MatTexVisible(0)) {
-        vec4 texColor = texture(MatTexture[0], pointCoord * MatTexRepeat(0) + MatTexOffset(0));
+    if (uMatTexVisible(0)) {
+        vec4 texColor = texture(uMatTexture[0], pointCoord * uMatTexRepeat(0) + uMatTexOffset(0));
         if (firstTex) {
             texMixed = texColor;
             firstTex = false;
@@ -56,8 +55,8 @@ void main() {
         }
     }
     #if MAT_TEXTURES > 1
-    if (MatTexVisible(1)) {
-        vec4 texColor = texture(MatTexture[1], pointCoord * MatTexRepeat(1) + MatTexOffset(1));
+    if (uMatTexVisible(1)) {
+        vec4 texColor = texture(uMatTexture[1], pointCoord * uMatTexRepeat(1) + uMatTexOffset(1));
         if (firstTex) {
             texMixed = texColor;
             firstTex = false;
@@ -66,8 +65,8 @@ void main() {
         }
     }
     #if MAT_TEXTURES > 2
-    if (MatTexVisible(2)) {
-        vec4 texColor = texture(MatTexture[2], pointCoord * MatTexRepeat(2) + MatTexOffset(2));
+    if (uMatTexVisible(2)) {
+        vec4 texColor = texture(uMatTexture[2], pointCoord * uMatTexRepeat(2) + uMatTexOffset(2));
         if (firstTex) {
             texMixed = texColor;
             firstTex = false;
@@ -80,5 +79,5 @@ void main() {
     #endif
 
     // Generates final color
-    FragColor = min(vec4(Color, MatOpacity) * texMixed, vec4(1));
+    FragColor = min(vec4(Color, uMatOpacity) * texMixed, vec4(1));
 }

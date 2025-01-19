@@ -27,7 +27,6 @@ type INode interface {
 	UpdateMatrixWorld()
 	BoundingBox() math32.Box3
 	Render(gs *gls.GLS)
-	Clone() INode
 	Dispose()
 	Position() math32.Vector3
 	Rotation() math32.Vector3
@@ -116,39 +115,6 @@ func (n *Node) Dispose() {
 	for _, child := range n.children {
 		child.Dispose()
 	}
-}
-
-// Clone clones the Node and satisfies the INode interface.
-func (n *Node) Clone() INode {
-	clone := new(Node)
-
-	clone.inode = clone
-	clone.parent = n.parent
-	clone.name = n.name + " (Clone)"
-	clone.loaderID = n.loaderID
-	clone.visible = n.visible
-	clone.userData = n.userData
-
-	// Update matrix world and rotation if necessary
-	n.UpdateMatrixWorld()
-	n.Rotation()
-
-	// Clone spatial properties
-	clone.position = n.position
-	clone.scale = n.scale
-	clone.direction = n.direction
-	clone.rotation = n.rotation
-	clone.quaternion = n.quaternion
-	clone.matrix = n.matrix
-	clone.matrixWorld = n.matrixWorld
-	clone.children = make([]INode, 0)
-
-	// Clone children recursively
-	for _, child := range n.children {
-		clone.Add(child.Clone())
-	}
-
-	return clone
 }
 
 // Parent returns the parent.

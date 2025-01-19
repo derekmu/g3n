@@ -154,25 +154,8 @@ func (p *Panel) InitPanel(ipan IPanel, width, height float32) {
 	p.AddMaterial(p, p.mat, 0, 0)
 
 	// Initialize uniforms location caches
-	p.uniMatrix.Init("ModelMatrix")
-	p.uniPanel.Init("Panel")
-
-	// Set defaults
-	p.udata.borderColor = math32.Color4{0, 0, 0, 1}
-	p.bounded = true
-	p.enabled = true
-	p.resize(width, height, true)
-}
-
-// InitializeGraphic initializes this panel with an alternative graphic.
-func (p *Panel) InitializeGraphic(width, height float32, gr *graphic.Graphic) {
-	p.Graphic = gr
-	p.width = width
-	p.height = height
-
-	// Initializes uniforms location caches
-	p.uniMatrix.Init("ModelMatrix")
-	p.uniPanel.Init("Panel")
+	p.uniMatrix.Init("uModelMatrix")
+	p.uniPanel.Init("uPanel")
 
 	// Set defaults
 	p.udata.borderColor = math32.Color4{0, 0, 0, 1}

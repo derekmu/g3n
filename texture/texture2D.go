@@ -60,8 +60,8 @@ func newTexture2D() *Texture2D {
 	t.updateParams = true
 
 	// Initialize Uniform elements
-	t.uniUnit.Init("MatTexture")
-	t.uniInfo.Init("MatTexinfo")
+	t.uniUnit.Init("uMatTexture")
+	t.uniInfo.Init("uMatTexInfo")
 	t.SetOffset(0, 0)
 	t.SetRepeat(1, 1)
 	t.SetFlipY(true)

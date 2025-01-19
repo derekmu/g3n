@@ -35,7 +35,7 @@ func NewSpot(color math32.Color, intensity float32) *Spot {
 	l.Node.Init(l)
 	l.color = color
 	l.intensity = intensity
-	l.uni.Init("SpotLight")
+	l.uni.Init("uSpotLight")
 	l.SetColor(color)
 	l.SetAngularDecay(15.0)
 	l.SetCutoffAngle(45.0)

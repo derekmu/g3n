@@ -11,19 +11,7 @@
 // [4] "An Inexpensive BRDF Model for Physically based Rendering" by Christophe Schlick
 //     https://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
 
-//#extension GL_EXT_shader_texture_lod: enable
-//#extension GL_OES_standard_derivatives : enable
-
 precision highp float;
-
-//uniform vec3 u_LightDirection;
-//uniform vec3 u_LightColor;
-
-//#ifdef USE_IBL
-//uniform samplerCube u_DiffuseEnvSampler;
-//uniform samplerCube u_SpecularEnvSampler;
-//uniform sampler2D u_brdfLUT;
-//#endif
 
 #ifdef HAS_BASECOLORMAP
 uniform sampler2D uBaseColorSampler;
@@ -33,7 +21,6 @@ uniform sampler2D uMetallicRoughnessSampler;
 #endif
 #ifdef HAS_NORMALMAP
 uniform sampler2D uNormalSampler;
-//uniform float uNormalScale;
 #endif
 #ifdef HAS_EMISSIVEMAP
 uniform sampler2D uEmissiveSampler;
@@ -44,45 +31,44 @@ uniform float uOcclusionStrength;
 #endif
 
 // Material parameters uniform array
-uniform vec4 Material[3];
-// Macros to access elements inside the Material array
-#define uBaseColor          Material[0]
-#define uEmissiveColor      Material[1]
-#define uMetallicFactor     Material[2].x
-#define uRoughnessFactor    Material[2].y
+uniform vec4 uMaterial[3];
+#define uBaseColor          uMaterial[0]
+#define uEmissiveColor      uMaterial[1]
+#define uMetallicFactor     uMaterial[2].x
+#define uRoughnessFactor    uMaterial[2].y
 
 // Lights uniforms
 #if AMB_LIGHTS > 0
 // Ambient lights color uniform
-uniform vec3 AmbientLightColor[AMB_LIGHTS];
+uniform vec3 uAmbientLightColor[AMB_LIGHTS];
 #endif
+
 #if DIR_LIGHTS > 0
 // Directional lights uniform array. Each directional light uses 2 elements
-uniform vec3 DirLight[2 * DIR_LIGHTS];
-// Macros to access elements inside the DirectionalLight uniform array
-#define DirLightColor(a)    DirLight[2 * a]
-#define DirLightPosition(a) DirLight[2 * a + 1]
+uniform vec3 uDirLight[2 * DIR_LIGHTS];
+#define uDirLightColor(a)    uDirLight[2 * a]
+#define uDirLightPosition(a) uDirLight[2 * a + 1]
 #endif
+
 #if POINT_LIGHTS > 0
 // Point lights uniform array. Each point light uses 3 elements
-uniform vec3 PointLight[3 * POINT_LIGHTS];
-// Macros to access elements inside the PointLight uniform array
-#define PointLightColor(a)          PointLight[3 * a]
-#define PointLightPosition(a)       PointLight[3 * a + 1]
-#define PointLightLinearDecay(a)    PointLight[3 * a + 2].x
-#define PointLightQuadraticDecay(a) PointLight[3 * a + 2].y
+uniform vec3 uPointLight[3 * POINT_LIGHTS];
+#define uPointLightColor(a)          uPointLight[3 * a]
+#define uPointLightPosition(a)       uPointLight[3 * a + 1]
+#define uPointLightLinearDecay(a)    uPointLight[3 * a + 2].x
+#define uPointLightQuadraticDecay(a) uPointLight[3 * a + 2].y
 #endif
+
 #if SPOT_LIGHTS > 0
 // Spot lights uniforms. Each spot light uses 5 elements
-uniform vec3 SpotLight[5 * SPOT_LIGHTS];
-// Macros to access elements inside the PointLight uniform array
-#define SpotLightColor(a)           SpotLight[5 * a]
-#define SpotLightPosition(a)        SpotLight[5 * a + 1]
-#define SpotLightDirection(a)       SpotLight[5 * a + 2]
-#define SpotLightAngularDecay(a)    SpotLight[5 * a + 3].x
-#define SpotLightCutoffAngle(a)     SpotLight[5 * a + 3].y
-#define SpotLightLinearDecay(a)     SpotLight[5 * a + 3].z
-#define SpotLightQuadraticDecay(a)  SpotLight[5 * a + 4].x
+uniform vec3 uSpotLight[5 * SPOT_LIGHTS];
+#define uSpotLightColor(a)           uSpotLight[5 * a]
+#define uSpotLightPosition(a)        uSpotLight[5 * a + 1]
+#define uSpotLightDirection(a)       uSpotLight[5 * a + 2]
+#define uSpotLightAngularDecay(a)    uSpotLight[5 * a + 3].x
+#define uSpotLightCutoffAngle(a)     uSpotLight[5 * a + 3].y
+#define uSpotLightLinearDecay(a)     uSpotLight[5 * a + 3].z
+#define uSpotLightQuadraticDecay(a)  uSpotLight[5 * a + 4].x
 #endif
 
 // Inputs from vertex shader
@@ -121,17 +107,9 @@ const float M_PI = 3.141592653589793;
 const float c_MinRoughness = 0.04;
 
 vec4 SRGBtoLINEAR(vec4 srgbIn) {
-    //#ifdef MANUAL_SRGB
-    //    #ifdef SRGB_FAST_APPROXIMATION
-    //        vec3 linOut = pow(srgbIn.xyz,vec3(2.2));
-    //    #else //SRGB_FAST_APPROXIMATION
     vec3 bLess = step(vec3(0.04045), srgbIn.xyz);
     vec3 linOut = mix(srgbIn.xyz / vec3(12.92), pow((srgbIn.xyz + vec3(0.055)) / vec3(1.055), vec3(2.4)), bLess);
-    //    #endif //SRGB_FAST_APPROXIMATION
     return vec4(linOut, srgbIn.w);
-    //#else //MANUAL_SRGB
-    //    return srgbIn;
-    //#endif //MANUAL_SRGB
 }
 
 // Find the normal for this fragment, pulling either from a predefined normal map
@@ -139,25 +117,15 @@ vec4 SRGBtoLINEAR(vec4 srgbIn) {
 vec3 getNormal()
 {
     // Retrieve the tangent space matrix
-    //#ifndef HAS_TANGENTS
     vec3 pos_dx = dFdx(Position);
     vec3 pos_dy = dFdy(Position);
     vec3 tex_dx = dFdx(vec3(FragTexcoord, 0.0));
     vec3 tex_dy = dFdy(vec3(FragTexcoord, 0.0));
     vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
-
-    //#ifdef HAS_NORMALS
     vec3 ng = normalize(Normal);
-    //#else
-    //    vec3 ng = cross(pos_dx, pos_dy);
-    //#endif
-
     t = normalize(t - ng * dot(ng, t));
     vec3 b = normalize(cross(ng, t));
     mat3 tbn = mat3(t, b, ng);
-    //#else // HAS_TANGENTS
-    //    mat3 tbn = v_TBN;
-    //#endif
 
     #ifdef HAS_NORMALMAP
     float uNormalScale = 1.0;
@@ -169,33 +137,6 @@ vec3 getNormal()
     #endif
 
     return n;
-}
-
-// Calculation of the lighting contribution from an optional Image Based Light source.
-// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
-// See our README.md on Environment Maps [3] for additional discussion.
-vec3 getIBLContribution(PBRInfo pbrInputs, PBRLightInfo pbrLight, vec3 n, vec3 reflection)
-{
-    float mipCount = 9.0;// resolution of 512x512
-    float lod = (pbrInputs.perceptualRoughness * mipCount);
-    // retrieve a scale and bias to F0. See [1], Figure 3
-    vec3 brdf = vec3(0.5, 0.5, 0.5);//SRGBtoLINEAR(texture(u_brdfLUT, vec2(pbrLight.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;
-    vec3 diffuseLight = vec3(0.5, 0.5, 0.5);//SRGBtoLINEAR(textureCube(u_DiffuseEnvSampler, n)).rgb;
-
-    //#ifdef USE_TEX_LOD
-    //    vec3 specularLight = SRGBtoLINEAR(textureCubeLodEXT(u_SpecularEnvSampler, reflection, lod)).rgb;
-    //#else
-    vec3 specularLight = vec3(0.5, 0.5, 0.5);//SRGBtoLINEAR(textureCube(u_SpecularEnvSampler, reflection)).rgb;
-    //#endif
-
-    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;
-    vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);
-
-    // For presentation, this allows us to disable IBL terms
-    //    diffuse *= u_ScaleIBLAmbient.x;
-    //    specular *= u_ScaleIBLAmbient.y;
-
-    return diffuse + specular;
 }
 
 // Basic Lambertian diffuse
@@ -222,7 +163,6 @@ float geometricOcclusion(PBRInfo pbrInputs, PBRLightInfo pbrLight)
     float NdotL = pbrLight.NdotL;
     float NdotV = pbrLight.NdotV;
     float r = pbrInputs.alphaRoughness;
-
     float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));
     float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));
     return attenuationL * attenuationV;
@@ -323,13 +263,12 @@ void main() {
     specularColor
     );
 
-    //    vec3 normal = getNormal();
     vec3 color = vec3(0.0);
 
     #if AMB_LIGHTS > 0
     // Ambient lights
     for (int i = 0; i < AMB_LIGHTS; i++) {
-        color += AmbientLightColor[i] * pbrInputs.diffuseColor;
+        color += uAmbientLightColor[i] * pbrInputs.diffuseColor;
     }
     #endif
 
@@ -338,9 +277,9 @@ void main() {
     for (int i = 0; i < DIR_LIGHTS; i++) {
         // Diffuse reflection
         // DirLightPosition is the direction of the current light
-        vec3 lightDirection = normalize(DirLightPosition(i));
+        vec3 lightDirection = normalize(uDirLightPosition(i));
         // PBR
-        color += pbrModel(pbrInputs, DirLightColor(i), lightDirection);
+        color += pbrModel(pbrInputs, uDirLightColor(i), lightDirection);
     }
     #endif
 
@@ -349,14 +288,14 @@ void main() {
     for (int i = 0; i < POINT_LIGHTS; i++) {
         // Common calculations
         // Calculates the direction and distance from the current vertex to this point light.
-        vec3 lightDirection = PointLightPosition(i) - vec3(Position);
+        vec3 lightDirection = uPointLightPosition(i) - vec3(Position);
         float lightDistance = length(lightDirection);
         // Normalizes the lightDirection
         lightDirection = lightDirection / lightDistance;
         // Calculates the attenuation due to the distance of the light
-        float attenuation = 1.0 / (1.0 + PointLightLinearDecay(i) * lightDistance +
-        PointLightQuadraticDecay(i) * lightDistance * lightDistance);
-        vec3 attenuatedColor = PointLightColor(i) * attenuation;
+        float attenuation = 1.0 / (1.0 + uPointLightLinearDecay(i) * lightDistance +
+        uPointLightQuadraticDecay(i) * lightDistance * lightDistance);
+        vec3 attenuatedColor = uPointLightColor(i) * attenuation;
         // PBR
         color += pbrModel(pbrInputs, attenuatedColor, lightDirection);
     }
@@ -365,33 +304,28 @@ void main() {
     #if SPOT_LIGHTS > 0
     for (int i = 0; i < SPOT_LIGHTS; i++) {
         // Calculates the direction and distance from the current vertex to this spot light.
-        vec3 lightDirection = SpotLightPosition(i) - vec3(Position);
+        vec3 lightDirection = uSpotLightPosition(i) - vec3(Position);
         float lightDistance = length(lightDirection);
         lightDirection = lightDirection / lightDistance;
 
         // Calculates the attenuation due to the distance of the light
-        float attenuation = 1.0 / (1.0 + SpotLightLinearDecay(i) * lightDistance +
-        SpotLightQuadraticDecay(i) * lightDistance * lightDistance);
+        float attenuation = 1.0 / (1.0 + uSpotLightLinearDecay(i) * lightDistance +
+        uSpotLightQuadraticDecay(i) * lightDistance * lightDistance);
 
         // Calculates the angle between the vertex direction and spot direction
         // If this angle is greater than the cutoff the spotlight will not contribute
         // to the final color.
-        float angle = acos(dot(-lightDirection, SpotLightDirection(i)));
-        float cutoff = radians(clamp(SpotLightCutoffAngle(i), 0.0, 90.0));
+        float angle = acos(dot(-lightDirection, uSpotLightDirection(i)));
+        float cutoff = radians(clamp(uSpotLightCutoffAngle(i), 0.0, 90.0));
 
         if (angle < cutoff) {
-            float spotFactor = pow(dot(-lightDirection, SpotLightDirection(i)), SpotLightAngularDecay(i));
-            vec3 attenuatedColor = SpotLightColor(i) * attenuation * spotFactor;
+            float spotFactor = pow(dot(-lightDirection, uSpotLightDirection(i)), uSpotLightAngularDecay(i));
+            vec3 attenuatedColor = uSpotLightColor(i) * attenuation * spotFactor;
             // PBR
             color += pbrModel(pbrInputs, attenuatedColor, lightDirection);
         }
     }
     #endif
-
-    // Calculate lighting contribution from image based lighting source (IBL)
-    //#ifdef USE_IBL
-    //    color += getIBLContribution(pbrInputs, n, reflection);
-    //#endif
 
     // Apply optional PBR terms for additional (optional) shading
     #ifdef HAS_OCCLUSIONMAP
@@ -406,33 +340,25 @@ void main() {
     #endif
     color += emissive;
 
+    // Alternative colors for testing:
     // Base Color
     //    FragColor = baseColor;
-
     // Normal
-    //    FragColor = vec4(n, 1.0);
-
+    //    FragColor = vec4(getNormal(), 1.0);
     // Emissive Color
     //    FragColor = vec4(emissive, 1.0);
-
     // F
     //    color = F;
-
     // G
     //    color = vec3(G);
-
     // D
     //    color = vec3(D);
-
     // Specular
     //    color = specContrib;
-
     // Diffuse
     //    color = diffuseContrib;
-
     // Roughness
     //    color = vec3(perceptualRoughness);
-
     // Metallic
     //    color = vec3(metallic);
 

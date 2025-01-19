@@ -53,7 +53,7 @@ func NewSkybox(data SkyboxData) (*Skybox, error) {
 	}
 
 	// Creates uniforms
-	s.uniMatrices.Init("Matrices")
+	s.uniMatrices.Init("uMatrices")
 
 	// The skybox should always be rendered last among the opaque objects
 	s.SetRenderOrder(100)
@@ -73,6 +73,5 @@ func (s *Skybox) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 	var nm math32.Matrix3
 	_ = nm.GetNormalMatrix(&s.mdata.mvm)
 	s.mdata.nm.SetFromMatrix3(&nm)
-	location := s.uniMatrices.Location(gs)
-	gs.UniformMatrix4fv(location, 3, false, &s.mdata.mvm[0])
+	gs.UniformMatrix4fv(s.uniMatrices.Location(gs), 3, false, &s.mdata.mvm[0])
 }

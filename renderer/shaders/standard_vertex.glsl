@@ -5,20 +5,19 @@ layout (location = 2) in vec3 VertexColor;
 layout (location = 3) in vec2 VertexTexcoord;
 
 // Model uniforms
-uniform mat4 Matrices[3];
-#define ModelViewMatrix           Matrices[0]
-#define ModelViewProjectionMatrix Matrices[1]
-#define NormalMatrix              mat3(Matrices[2])
+uniform mat4 uMatrices[3];
+#define uModelViewMatrix           uMatrices[0]
+#define uModelViewProjectionMatrix uMatrices[1]
+#define uNormalMatrix              mat3(uMatrices[2])
 
 // Material parameters uniform array
 #if MAT_TEXTURES > 0
-uniform vec2 MatTexinfo[3 * MAT_TEXTURES];
-// Macros to access elements inside the MatTexinfo array
-#define MatTexFlipY(a)      bool(MatTexinfo[(3 * a) + 2].x)
+uniform vec2 uMatTexInfo[3 * MAT_TEXTURES];
+#define uMatTexFlipY(a)      bool(uMatTexInfo[(3 * a) + 2].x)
 #endif
 
 #ifdef MORPHTARGETS
-uniform float morphTargetInfluences[8];
+uniform float uMorphWeights[8];
 #if MORPHTARGETS > 0
 in vec3 MorphPosition0;
 #if MORPHTARGETS > 1
@@ -61,21 +60,21 @@ void main() {
 
     #ifdef MORPHTARGETS
     #if MORPHTARGETS > 0
-    vPosition += MorphPosition0 * morphTargetInfluences[0];
+    vPosition += MorphPosition0 * uMorphWeights[0];
     #if MORPHTARGETS > 1
-    vPosition += MorphPosition1 * morphTargetInfluences[1];
+    vPosition += MorphPosition1 * uMorphWeights[1];
     #if MORPHTARGETS > 2
-    vPosition += MorphPosition2 * morphTargetInfluences[2];
+    vPosition += MorphPosition2 * uMorphWeights[2];
     #if MORPHTARGETS > 3
-    vPosition += MorphPosition3 * morphTargetInfluences[3];
+    vPosition += MorphPosition3 * uMorphWeights[3];
     #if MORPHTARGETS > 4
-    vPosition += MorphPosition4 * morphTargetInfluences[4];
+    vPosition += MorphPosition4 * uMorphWeights[4];
     #if MORPHTARGETS > 5
-    vPosition += MorphPosition5 * morphTargetInfluences[5];
+    vPosition += MorphPosition5 * uMorphWeights[5];
     #if MORPHTARGETS > 6
-    vPosition += MorphPosition6 * morphTargetInfluences[6];
+    vPosition += MorphPosition6 * uMorphWeights[6];
     #if MORPHTARGETS > 7
-    vPosition += MorphPosition7 * morphTargetInfluences[7];
+    vPosition += MorphPosition7 * uMorphWeights[7];
     #endif
     #endif
     #endif
@@ -104,20 +103,20 @@ void main() {
     #endif
 
     // Transform this vertex position to camera coordinates.
-    Position = ModelViewMatrix * finalWorld * vec4(vPosition, 1.0);
+    Position = uModelViewMatrix * finalWorld * vec4(vPosition, 1.0);
 
     // Transform this vertex normal to camera coordinates.
-    Normal = normalize(NormalMatrix * finalNormal * VertexNormal);
+    Normal = normalize(uNormalMatrix * finalNormal * VertexNormal);
 
     vec2 texcoord = VertexTexcoord;
     #if MAT_TEXTURES > 0
     // Flip texture coordinate Y if requested.
-    if (MatTexFlipY(0)) {
+    if (uMatTexFlipY(0)) {
         texcoord.y = 1.0 - texcoord.y;
     }
     #endif
     FragTexcoord = texcoord;
 
     // Output projected and transformed vertex position
-    gl_Position = ModelViewProjectionMatrix * finalWorld * vec4(vPosition, 1.0);
+    gl_Position = uModelViewProjectionMatrix * finalWorld * vec4(vPosition, 1.0);
 }

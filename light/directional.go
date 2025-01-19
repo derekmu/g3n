@@ -30,7 +30,7 @@ func NewDirectional(color math32.Color, intensity float32) *Directional {
 
 	ld.color = color
 	ld.intensity = intensity
-	ld.uni.Init("DirLight")
+	ld.uni.Init("uDirLight")
 	ld.SetColor(color)
 	return ld
 }

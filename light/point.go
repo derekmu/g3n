@@ -33,7 +33,7 @@ func NewPoint(color math32.Color, intensity float32) *Point {
 	lp.intensity = intensity
 
 	// Creates uniform and sets initial values
-	lp.uni.Init("PointLight")
+	lp.uni.Init("uPointLight")
 	lp.SetColor(color)
 	lp.SetIntensity(intensity)
 	lp.SetLinearDecay(1.0)

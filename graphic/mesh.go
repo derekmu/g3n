@@ -34,12 +34,8 @@ func NewMesh(igeom geometry.IGeometry, imat material.IMaterial) *Mesh {
 // Init initializes the Mesh and its uniforms.
 func (m *Mesh) Init(igeom geometry.IGeometry, imat material.IMaterial) {
 	m.Graphic.Init(m, igeom, gls.TRIANGLES)
-
-	// Initialize uniforms
-	m.uniMatrices.Init("Matrices")
-	m.uniBones.Init("Bones")
-
-	// Adds single material if not nil
+	m.uniMatrices.Init("uMatrices")
+	m.uniBones.Init("uBones")
 	if imat != nil {
 		m.AddMaterial(imat, 0, 0)
 	}
@@ -61,20 +57,6 @@ func (m *Mesh) AddGroupMaterial(imat material.IMaterial, gindex int) {
 	m.Graphic.AddGroupMaterial(m, imat, gindex)
 }
 
-// Clone clones the mesh and satisfies the INode interface.
-func (m *Mesh) Clone() core.INode {
-	clone := new(Mesh)
-	clone.Graphic = *m.Graphic.Clone().(*Graphic)
-	clone.SetIGraphic(clone)
-	clone.SetSkeleton(m.skeleton)
-
-	// Initialize uniforms
-	clone.uniMatrices.Init("Matrices")
-	clone.uniBones.Init("Bones")
-
-	return clone
-}
-
 // RenderSetup is called by the engine before drawing the mesh geometry.
 // It is responsible for updating the current shader uniforms with the model matrices.
 func (m *Mesh) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
@@ -82,8 +64,7 @@ func (m *Mesh) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 	var nm math32.Matrix3
 	_ = nm.GetNormalMatrix(&m.mdata.mvm)
 	m.mdata.nm.SetFromMatrix3(&nm)
-	location := m.uniMatrices.Location(gs)
-	gs.UniformMatrix4fv(location, 3, false, &m.mdata.mvm[0])
+	gs.UniformMatrix4fv(m.uniMatrices.Location(gs), 3, false, &m.mdata.mvm[0])
 
 	if m.skeleton != nil {
 		// Get inverse matrix world
@@ -97,8 +78,7 @@ func (m *Mesh) RenderSetup(gs *gls.GLS, _ *core.RenderInfo) {
 
 		// Transfer bone matrices
 		boneMatrices := m.skeleton.BoneMatrices(&invMat)
-		location = m.uniBones.Location(gs)
-		gs.UniformMatrix4fv(location, int32(len(boneMatrices)), false, &boneMatrices[0][0])
+		gs.UniformMatrix4fv(m.uniBones.Location(gs), int32(len(boneMatrices)), false, &boneMatrices[0][0])
 	}
 }
 

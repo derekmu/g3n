@@ -25,7 +25,7 @@ func NewAmbient(color math32.Color, intensity float32) *Ambient {
 	la.Node.Init(la)
 	la.color = color
 	la.intensity = intensity
-	la.uni.Init("AmbientLightColor")
+	la.uni.Init("uAmbientLightColor")
 	return la
 }
 
