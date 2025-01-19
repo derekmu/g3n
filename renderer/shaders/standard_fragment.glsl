@@ -179,7 +179,7 @@ void main() {
     #if MAT_TEXTURES > 0
     bool firstTex = true;
     if (uMatTexVisible(0)) {
-        vec4 texColor = texture(MatTexture[0], FragTexcoord * uMatTexRepeat(0) + uMatTexOffset(0));
+        vec4 texColor = texture(uMatTexture[0], FragTexcoord * uMatTexRepeat(0) + uMatTexOffset(0));
         if (firstTex) {
             texMixed = texColor;
             firstTex = false;
@@ -189,7 +189,7 @@ void main() {
     }
     #if MAT_TEXTURES > 1
     if (uMatTexVisible(1)) {
-        vec4 texColor = texture(MatTexture[1], FragTexcoord * uMatTexRepeat(1) + uMatTexOffset(1));
+        vec4 texColor = texture(uMatTexture[1], FragTexcoord * uMatTexRepeat(1) + uMatTexOffset(1));
         if (firstTex) {
             texMixed = texColor;
             firstTex = false;
@@ -199,7 +199,7 @@ void main() {
     }
     #if MAT_TEXTURES > 2
     if (uMatTexVisible(2)) {
-        vec4 texColor = texture(MatTexture[2], FragTexcoord * uMatTexRepeat(2) + uMatTexOffset(2));
+        vec4 texColor = texture(uMatTexture[2], FragTexcoord * uMatTexRepeat(2) + uMatTexOffset(2));
         if (firstTex) {
             texMixed = texColor;
             firstTex = false;
