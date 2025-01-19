@@ -51,7 +51,7 @@ func NewBlinnPhong(color math32.Color) *Standard {
 func (m *Standard) InitStandard(color math32.Color) {
 	m.InitMaterial()
 	// Creates uniforms and set initial values
-	m.uni.Init("Material")
+	m.uni.Init("uMaterial")
 	m.SetColor(color)
 	m.SetSpecularColor(math32.Color{0.5, 0.5, 0.5})
 	m.SetEmissiveColor(math32.Color{0, 0, 0})

@@ -42,7 +42,7 @@ func NewPhysical() *Physical {
 func (m *Physical) InitPhysical() {
 	m.InitMaterial()
 	// Creates uniform and set default values
-	m.uni.Init("Material")
+	m.uni.Init("uMaterial")
 	m.udata.baseColorFactor = math32.Color4{1, 1, 1, 1}
 	m.udata.emissiveFactor = math32.Color4{0, 0, 0, 1}
 	m.udata.metallicFactor = 1
