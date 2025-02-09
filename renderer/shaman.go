@@ -29,72 +29,53 @@ type ShaderSpecs struct {
 
 // Shaman is the shader manager
 type Shaman struct {
-	gs       *gls.GLS                       // Reference to OpenGL state
-	includes map[string]string              // include files sources
-	shadersm map[string]string              // maps shader name to its template
-	proginfo map[string]shaders.ProgramInfo // maps name of the program to ProgramInfo
-	programs map[ShaderSpecs]*gls.Program   // compiled programs with specs
-	specs    ShaderSpecs                    // Current shader specs
-}
-
-// NewShaman creates and returns a pointer to a new shader manager
-func NewShaman(gs *gls.GLS) *Shaman {
-	sm := new(Shaman)
-	sm.Init(gs)
-	return sm
+	gs           *gls.GLS
+	shaderSource map[string]string              // maps shader name to its template
+	programInfo  map[string]shaders.ProgramInfo // maps name of the program to ProgramInfo
+	programs     map[ShaderSpecs]*gls.Program   // compiled programs
+	specs        ShaderSpecs                    // current shader specs
+	program      *gls.Program                   // current program
+	frameNumber  int
 }
 
 // Init initializes the shader manager
 func (sm *Shaman) Init(gs *gls.GLS) {
 	sm.gs = gs
-	sm.includes = make(map[string]string)
-	sm.shadersm = make(map[string]string)
-	sm.proginfo = make(map[string]shaders.ProgramInfo)
+	sm.shaderSource = make(map[string]string)
+	sm.programInfo = make(map[string]shaders.ProgramInfo)
 	sm.programs = make(map[ShaderSpecs]*gls.Program)
 }
 
-// AddDefaultShaders adds to this shader manager all default
-// include chunks, shaders and programs statically registered.
+// AddDefaultShaders adds to this shader manager all default include chunks, shaders and programs statically registered.
 func (sm *Shaman) AddDefaultShaders() error {
 	for _, name := range shaders.Shaders() {
 		sm.AddShader(name, shaders.ShaderSource(name))
 	}
-
 	for _, name := range shaders.Programs() {
-		sm.proginfo[name] = shaders.GetProgramInfo(name)
+		sm.programInfo[name] = shaders.GetProgramInfo(name)
 	}
 	return nil
 }
 
-// AddChunk adds a shader chunk with the specified name and source code
-func (sm *Shaman) AddChunk(name, source string) {
-	sm.includes[name] = source
-}
-
-// AddShader adds a shader program with the specified name and source code
+// AddShader adds a shader program with the specified name and source code.
 func (sm *Shaman) AddShader(name, source string) {
-	sm.shadersm[name] = source
+	sm.shaderSource[name] = source
 }
 
-// AddProgram adds a program with the specified name and associated vertex
-// and fragment shaders names (previously registered)
-func (sm *Shaman) AddProgram(name, vertexName, fragName string, others ...string) {
-	geomName := ""
-	if len(others) > 0 {
-		geomName = others[0]
-	}
-	sm.proginfo[name] = shaders.ProgramInfo{
-		Vertex:   vertexName,
-		Fragment: fragName,
-		Geometry: geomName,
+// AddProgram adds a program with the specified name and associated vertex, fragment, and geometry shader names.
+//
+// The geometry shader is optional. An empty string means no geometry shader should be used.
+func (sm *Shaman) AddProgram(name, vertex, fragment, geometry string) {
+	sm.programInfo[name] = shaders.ProgramInfo{
+		Vertex:   vertex,
+		Fragment: fragment,
+		Geometry: geometry,
 	}
 }
 
-// SetProgram sets the shader program to satisfy the specified specs.
-// Returns an indication if the current shader has changed and a possible error
-// when creating a new shader program.
-// Receives a copy of the specs because it changes the fields which specify the
-// number of lights depending on the UseLights flags.
+// SetProgram sets the shader program to satisfy the specs.
+//
+// Returns whether this is the first time this program was activated this frame and an error if one occurred.
 func (sm *Shaman) SetProgram(specs ShaderSpecs) (bool, error) {
 	// Checks material use lights bit mask
 	if (specs.UseLights & material.UseLightAmbient) == 0 {
@@ -109,40 +90,34 @@ func (sm *Shaman) SetProgram(specs ShaderSpecs) (bool, error) {
 	if (specs.UseLights & material.UseLightSpot) == 0 {
 		specs.SpotLightsMax = 0
 	}
-
-	// If current shader specs are the same as the specified specs, nothing to do.
-	if sm.specs == specs {
-		return false, nil
-	}
-
-	// Search for compiled program with the specified specs
-	if program, ok := sm.programs[specs]; ok {
-		sm.gs.UseProgram(program)
+	// If current shader specs are the same as the specs, nothing to do.
+	if sm.specs != specs {
+		var program *gls.Program
+		var ok bool
+		// Search for compiled program with the specs
+		if program, ok = sm.programs[specs]; !ok {
+			var err error
+			// Generate a new program with the specs
+			program, err = sm.genProgram(&specs)
+			if err != nil {
+				return false, err
+			}
+			sm.programs[specs] = program
+		}
 		sm.specs = specs
-		return true, nil
+		sm.program = program
+		sm.gs.UseProgram(program)
 	}
-
-	// Generates new program with the specified specs
-	program, err := sm.GenProgram(&specs)
-	if err != nil {
-		return false, err
-	}
-
-	// Save specs as current specs, adds new program to the list and activates the program
-	sm.specs = specs
-	sm.programs[specs] = program
-	sm.gs.UseProgram(program)
-	return true, nil
+	return sm.program.SetFrameNumber(sm.frameNumber), nil
 }
 
-// GenProgram generates shader program from the specified specs
-func (sm *Shaman) GenProgram(specs *ShaderSpecs) (*gls.Program, error) {
+// genProgram generates shader program from the specified specs
+func (sm *Shaman) genProgram(specs *ShaderSpecs) (*gls.Program, error) {
 	// Get info for the specified shader program
-	progInfo, ok := sm.proginfo[specs.Name]
+	progInfo, ok := sm.programInfo[specs.Name]
 	if !ok {
-		return nil, fmt.Errorf("Program:%s not found", specs.Name)
+		return nil, fmt.Errorf("program %s not found", specs.Name)
 	}
-
 	// Sets the defines map
 	defines := map[string]string{
 		"AMB_LIGHTS":   strconv.Itoa(specs.AmbientLightsMax),
@@ -155,30 +130,29 @@ func (sm *Shaman) GenProgram(specs *ShaderSpecs) (*gls.Program, error) {
 	specs.GeometryDefines.AddToMap(defines)
 	specs.GraphicDefines.AddToMap(defines)
 
-	vertexSource, ok := sm.shadersm[progInfo.Vertex]
+	vertexSource, ok := sm.shaderSource[progInfo.Vertex]
 	if !ok {
-		return nil, fmt.Errorf("Vertex shader:%s not found", progInfo.Vertex)
+		return nil, fmt.Errorf("vertex shader %s not found", progInfo.Vertex)
 	}
 	vertexSource = sm.preprocess(vertexSource, defines)
 
-	fragSource, ok := sm.shadersm[progInfo.Fragment]
+	fragSource, ok := sm.shaderSource[progInfo.Fragment]
 	if !ok {
-		return nil, fmt.Errorf("Fragment shader:%s not found", progInfo.Fragment)
+		return nil, fmt.Errorf("fragment shader %s not found", progInfo.Fragment)
 	}
 	fragSource = sm.preprocess(fragSource, defines)
 
-	// Checks for optional geometry shader compiled template
 	var geomSource = ""
 	if progInfo.Geometry != "" {
-		geomSource, ok = sm.shadersm[progInfo.Geometry]
+		geomSource, ok = sm.shaderSource[progInfo.Geometry]
 		if !ok {
-			return nil, fmt.Errorf("Geometry shader:%s not found", progInfo.Geometry)
+			return nil, fmt.Errorf("geometry shader %s not found", progInfo.Geometry)
 		}
 		geomSource = sm.preprocess(geomSource, defines)
 	}
 
 	// Creates shader program
-	prog := sm.gs.NewProgram()
+	prog := sm.gs.NewProgram(specs.Name)
 	prog.AddShader(gls.VERTEX_SHADER, vertexSource)
 	prog.AddShader(gls.FRAGMENT_SHADER, fragSource)
 	if progInfo.Geometry != "" {
@@ -188,7 +162,6 @@ func (sm *Shaman) GenProgram(specs *ShaderSpecs) (*gls.Program, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return prog, nil
 }
 
@@ -203,4 +176,8 @@ func (sm *Shaman) preprocess(source string, defines map[string]string) string {
 		}
 	}
 	return prefix + source
+}
+
+func (sm *Shaman) NewFrame() {
+	sm.frameNumber++
 }

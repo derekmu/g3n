@@ -18,11 +18,12 @@ import (
 // It must have Vertex and Fragment shaders.
 // It can also have a Geometry shader.
 type Program struct {
-	gs         *GLS             // Reference to OpenGL state
-	ShowSource bool             // Show source code in error messages
-	handle     uint32           // OpenGL program handle
-	shaders    []shaderInfo     // List of shaders for this program
-	uniforms   map[string]int32 // List of uniforms
+	gs          *GLS // Reference to OpenGL state
+	name        string
+	handle      uint32           // OpenGL program handle
+	shaders     []shaderInfo     // List of shaders for this program
+	uniforms    map[string]int32 // List of uniforms
+	frameNumber int
 }
 
 // shaderInfo contains OpenGL-related shader information.
@@ -41,13 +42,14 @@ var shaderNames = map[uint32]string{
 
 // NewProgram creates and returns a new empty shader program object.
 // Use this type methods to add shaders and build the final program.
-func (gs *GLS) NewProgram() *Program {
-	prog := new(Program)
-	prog.gs = gs
+func (gs *GLS) NewProgram(name string) *Program {
+	prog := &Program{
+		gs:       gs,
+		name:     name,
+		shaders:  make([]shaderInfo, 0),
+		uniforms: make(map[string]int32),
+	}
 	gs.stats.Shaders++
-	prog.shaders = make([]shaderInfo, 0)
-	prog.uniforms = make(map[string]int32)
-	prog.ShowSource = true
 	return prog
 }
 
@@ -104,9 +106,7 @@ func (prog *Program) Build() error {
 			prog.gs.DeleteProgram(prog.handle)
 			prog.handle = 0
 			msg := fmt.Sprintf("error compiling %s: %s", shaderNames[sinfo.stype], err)
-			if prog.ShowSource {
-				msg += FormatSource(sinfo.source)
-			}
+			msg += FormatSource(sinfo.source)
 			return errors.New(msg)
 		}
 		sinfo.handle = shader
@@ -149,10 +149,22 @@ func (prog *Program) GetUniformLocation(name string) int32 {
 	// Cache result
 	prog.uniforms[name] = loc
 	if loc < 0 {
-		log.Printf("Program.GetUniformLocation(%s): NOT FOUND", name)
+		log.Printf("Uniform location %s not found for program %s", name, prog.name)
 	}
 
 	return loc
+}
+
+// SetFrameNumber sets the frame number for this program to the provided value.
+//
+// Returns whether the frame number changed.
+func (prog *Program) SetFrameNumber(frameNumber int) bool {
+	if prog.frameNumber != frameNumber {
+		prog.frameNumber = frameNumber
+		return true
+	} else {
+		return false
+	}
 }
 
 // CompileShader creates and compiles an OpenGL shader of the specified type, with

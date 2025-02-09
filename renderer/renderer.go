@@ -111,6 +111,9 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 	r.zLayerKeys = r.zLayerKeys[0:1]
 	r.zLayerKeys[0] = 0
 
+	// Advance the frame
+	r.Shaman.NewFrame()
+
 	// Prepare for frustum culling
 	var proj math32.Matrix4
 	proj.MultiplyMatrices(&r.rinfo.ProjMatrix, &r.rinfo.ViewMatrix)
@@ -296,35 +299,38 @@ func (r *Renderer) renderGraphicMaterial(grmat *graphic.GraphicMaterial) error {
 	r.specs.GraphicDefines = gr.ShaderDefines
 
 	// Set active program and apply shader specs
-	_, err := r.Shaman.SetProgram(r.specs)
+	update, err := r.Shaman.SetProgram(r.specs)
 	if err != nil {
 		return err
 	}
 
-	// Set up lights (transfer lights' uniforms)
-	if r.specs.UseLights != material.UseLightNone {
-		if r.specs.UseLights&material.UseLightAmbient != 0 {
-			for idx, l := range r.ambLights {
-				l.RenderSetup(r.gs, &r.rinfo, idx)
-				r.stats.Lights++
+	// only update lights the first time each frame for each program
+	if update {
+		// Set up lights (transfer lights' uniforms)
+		if r.specs.UseLights != material.UseLightNone {
+			if r.specs.UseLights&material.UseLightAmbient != 0 {
+				for idx, l := range r.ambLights {
+					l.RenderSetup(r.gs, &r.rinfo, idx)
+					r.stats.Lights++
+				}
 			}
-		}
-		if r.specs.UseLights&material.UseLightDirectional != 0 {
-			for idx, l := range r.dirLights {
-				l.RenderSetup(r.gs, &r.rinfo, idx)
-				r.stats.Lights++
+			if r.specs.UseLights&material.UseLightDirectional != 0 {
+				for idx, l := range r.dirLights {
+					l.RenderSetup(r.gs, &r.rinfo, idx)
+					r.stats.Lights++
+				}
 			}
-		}
-		if r.specs.UseLights&material.UseLightPoint != 0 {
-			for idx, l := range r.pointLights {
-				l.RenderSetup(r.gs, &r.rinfo, idx)
-				r.stats.Lights++
+			if r.specs.UseLights&material.UseLightPoint != 0 {
+				for idx, l := range r.pointLights {
+					l.RenderSetup(r.gs, &r.rinfo, idx)
+					r.stats.Lights++
+				}
 			}
-		}
-		if r.specs.UseLights&material.UseLightSpot != 0 {
-			for idx, l := range r.spotLights {
-				l.RenderSetup(r.gs, &r.rinfo, idx)
-				r.stats.Lights++
+			if r.specs.UseLights&material.UseLightSpot != 0 {
+				for idx, l := range r.spotLights {
+					l.RenderSetup(r.gs, &r.rinfo, idx)
+					r.stats.Lights++
+				}
 			}
 		}
 	}
