@@ -31,6 +31,7 @@ type INode interface {
 	Position() math32.Vector3
 	Rotation() math32.Vector3
 	Scale() math32.Vector3
+	Renderable() bool
 }
 
 // Node represents an object in 3D space existing within a hierarchy.
@@ -41,6 +42,7 @@ type Node struct {
 	name           string  // Optional node name
 	loaderID       string  // ID used by loader
 	visible        bool    // Whether the node is visible
+	renderable     bool    // Whether the node is renderable
 	matNeedsUpdate bool    // Whether the local matrix needs to be updated because position or scale has changed
 	rotNeedsUpdate bool    // Whether the euler rotation and local matrix need to be updated because the quaternion has changed
 	userData       any     // Generic user data
@@ -54,7 +56,7 @@ type Node struct {
 
 	// Local transform matrix stores position/rotation/scale relative to parent
 	matrix math32.Matrix4
-	// World transform matrix stores position/rotation/scale relative to highest ancestor (generally the scene)
+	// World transform matrix stores position/rotation/scale relative to the highest ancestor (generally the scene)
 	matrixWorld math32.Matrix4
 }
 
@@ -71,6 +73,7 @@ func (n *Node) Init(inode INode) {
 	n.inode = inode
 	n.children = make([]INode, 0)
 	n.visible = true
+	n.renderable = true
 
 	// Initialize spatial properties
 	n.position.Set(0, 0, 0)
@@ -149,12 +152,21 @@ func (n *Node) LoaderID() string {
 // SetVisible sets the visibility of the node.
 func (n *Node) SetVisible(state bool) {
 	n.visible = state
-	n.matNeedsUpdate = true
 }
 
 // Visible returns the visibility of the node.
 func (n *Node) Visible() bool {
 	return n.visible
+}
+
+// SetRenderable sets whether the node should be rendered.
+func (n *Node) SetRenderable(state bool) {
+	n.renderable = state
+}
+
+// Renderable returns whether the node should be rendered.
+func (n *Node) Renderable() bool {
+	return n.renderable
 }
 
 // SetChanged sets the matNeedsUpdate flag of the node.

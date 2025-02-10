@@ -6,6 +6,8 @@
 package renderer
 
 import (
+	"cmp"
+	"slices"
 	"sort"
 
 	"github.com/derekmu/g3n/camera"
@@ -111,7 +113,7 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 	r.zLayerKeys = r.zLayerKeys[0:1]
 	r.zLayerKeys[0] = 0
 
-	// Advance the frame
+	// Advance the frame, for shaders to do once-per-frame processing
 	r.Shaman.NewFrame()
 
 	// Prepare for frustum culling
@@ -155,11 +157,11 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 
 	// Iterate over all panels from back to front, setting Z and adding graphic materials to grmatsTransp/grmatsOpaque
 	const deltaZ = 0.00001
-	panZ := float32(-1 + float32(r.stats.Panels)*deltaZ)
+	panZ := -1 + float32(r.stats.Panels)*deltaZ
 	for _, k := range r.zLayerKeys {
 		for _, ipan := range r.zLayers[k] {
 			// Set panel Z
-			ipan.GetPanel().SetPositionZ(panZ)
+			ipan.SetPositionZ(panZ)
 			panZ -= deltaZ
 			// Append the panel's graphic material to lists of graphic materials to be rendered
 			mat := ipan.GetGraphic().Materials()[0]
@@ -187,7 +189,7 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 		}
 	}
 
-	// Render other nodes (audio players, etc)
+	// Render other nodes (audio players, etc.)
 	for _, inode := range r.others {
 		inode.Render(r.gs)
 	}
@@ -205,58 +207,43 @@ func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zL
 	if !inode.Visible() {
 		return
 	}
-	// If node is an IPanel append it to appropriate list
-	if ipan, ok := inode.(gui.IPanel); ok {
-		zLayer += ipan.GetPanel().ZLayerDelta()
-		if ipan.Renderable() {
+	// Ignore non-renderable nodes, but still process their children
+	if inode.Renderable() {
+		switch node := inode.(type) {
+		case gui.IPanel:
+			zLayer += node.ZLayerDelta()
 			layer, ok := r.zLayers[zLayer]
 			if !ok {
 				r.zLayerKeys = append(r.zLayerKeys, zLayer)
 			}
-			r.zLayers[zLayer] = append(layer, ipan)
+			r.zLayers[zLayer] = append(layer, node)
 			r.stats.Panels++
-		}
-		// Check if node is an IGraphic
-	} else if igr, ok := inode.(graphic.IGraphic); ok {
-		if igr.Renderable() {
-			gr := igr.GetGraphic()
-			// Frustum culling
-			if igr.Cullable() {
+		case graphic.IGraphic:
+			gr := node.GetGraphic()
+			if node.Cullable() {
 				mw := gr.MatrixWorld()
-				bb := igr.GetGeometry().BoundingBox()
+				bb := node.GetGeometry().BoundingBox()
 				bb.ApplyMatrix4(&mw)
 				if frustum.IntersectsBox(&bb) {
-					// Append graphic to list of graphics to be rendered
 					r.graphics = append(r.graphics, gr)
 				}
 			} else {
-				// Append graphic to list of graphics to be rendered
 				r.graphics = append(r.graphics, gr)
 			}
-		}
-		// Node is not a Graphic
-	} else {
-		// Check if node is a Light
-		if il, ok := inode.(light.ILight); ok {
-			switch l := il.(type) {
-			case *light.Ambient:
-				r.ambLights = append(r.ambLights, l)
-			case *light.Directional:
-				r.dirLights = append(r.dirLights, l)
-			case *light.Point:
-				r.pointLights = append(r.pointLights, l)
-			case *light.Spot:
-				r.spotLights = append(r.spotLights, l)
-			default:
-				panic("Invalid light type")
-			}
-			// Other nodes
-		} else {
+		case *light.Ambient:
+			r.ambLights = append(r.ambLights, node)
+		case *light.Directional:
+			r.dirLights = append(r.dirLights, node)
+		case *light.Point:
+			r.pointLights = append(r.pointLights, node)
+		case *light.Spot:
+			r.spotLights = append(r.spotLights, node)
+		default:
 			r.others = append(r.others, inode)
 			r.stats.Others++
 		}
 	}
-	// Classify children
+	// Process children
 	for _, ichild := range inode.Children() {
 		r.classifyAndCull(ichild, frustum, zLayer)
 	}
@@ -265,14 +252,14 @@ func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zL
 // zSort sorts a list of graphic materials based on the user-specified render order
 // then based on their Z position relative to the camera, back to front.
 func zSort(grmats []*graphic.GraphicMaterial) {
-	sort.Slice(grmats, func(i, j int) bool {
-		gr1 := grmats[i].IGraphic().GetGraphic()
-		gr2 := grmats[j].IGraphic().GetGraphic()
+	slices.SortFunc(grmats, func(a, b *graphic.GraphicMaterial) int {
+		gr1 := a.IGraphic().GetGraphic()
+		gr2 := b.IGraphic().GetGraphic()
 		// Check for user-supplied render order
 		rO1 := gr1.RenderOrder()
 		rO2 := gr2.RenderOrder()
 		if rO1 != rO2 {
-			return rO1 < rO2
+			return cmp.Compare(rO1, rO2)
 		}
 		mvm1 := gr1.ModelViewMatrix()
 		mvm2 := gr2.ModelViewMatrix()
@@ -280,7 +267,7 @@ func zSort(grmats []*graphic.GraphicMaterial) {
 		g2pos := gr2.Position()
 		g1pos.ApplyMatrix4(mvm1)
 		g2pos.ApplyMatrix4(mvm2)
-		return g1pos.Z < g2pos.Z
+		return cmp.Compare(g1pos.Z, g2pos.Z)
 	})
 }
 

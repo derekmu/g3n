@@ -107,7 +107,7 @@ func (gm *Manager) updateMouseTarget(x, y float32) {
 	gm.mouseTarget = nil
 	// Find IPanel immediately under the cursor and store it in gm.target
 	gm.forEachIPanel(func(ipan IPanel) {
-		if ipan.GetPanel().InsideBorders(x, y) && (gm.mouseTarget == nil || ipan.Position().Z < gm.mouseTarget.GetPanel().Position().Z) {
+		if ipan.InsideBorders(x, y) && (gm.mouseTarget == nil || ipan.Position().Z < gm.mouseTarget.Position().Z) {
 			gm.mouseTarget = ipan
 		}
 	})
@@ -170,7 +170,7 @@ func traverseIPanel(ipan IPanel, f func(ipan IPanel)) {
 	if !ipan.Visible() {
 		return
 	}
-	if ipan.GetPanel().Enabled() {
+	if ipan.Enabled() {
 		f(ipan)
 	}
 	for _, child := range ipan.Children() {

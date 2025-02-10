@@ -20,3 +20,13 @@ type Rect struct {
 	Width  float32
 	Height float32
 }
+
+func (r Rect) Clip(clip Rect) Rect {
+	clipped := Rect{
+		X: max(r.X, clip.X),
+		Y: max(r.Y, clip.Y),
+	}
+	clipped.Width = max(0, min(r.X+r.Width, clip.X+clip.Width)-clipped.X)
+	clipped.Height = max(0, min(r.Y+r.Height, clip.Y+clip.Height)-clipped.Y)
+	return clipped
+}

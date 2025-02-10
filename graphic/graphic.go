@@ -28,14 +28,12 @@ type IGraphic interface {
 
 // Graphic is a Node which has a visible representation in the scene.
 // It has an associated geometry and one or more materials.
-// It is the base type used by other graphics such as lines, line_strip,
-// points and meshes.
+// It is the base type used by other graphics such as lines, line strips, points, and meshes.
 type Graphic struct {
 	core.Node                        // Embedded Node
 	igeom         geometry.IGeometry // Associated IGeometry
 	materials     []GraphicMaterial  // Materials
 	mode          uint32             // OpenGL primitive
-	renderable    bool               // Renderable flag
 	cullable      bool               // Cullable flag
 	renderOrder   int                // Render order
 	ShaderDefines gls.GraphicDefines // Graphic-specific shader defines
@@ -61,7 +59,6 @@ func (gr *Graphic) Init(igr IGraphic, igeom geometry.IGeometry, mode uint32) *Gr
 	gr.igeom = igeom
 	gr.mode = mode
 	gr.materials = make([]GraphicMaterial, 0)
-	gr.renderable = true
 	gr.cullable = true
 	return gr
 }
@@ -90,18 +87,6 @@ func (gr *Graphic) Dispose() {
 	for i := 0; i < len(gr.materials); i++ {
 		gr.materials[i].imat.Dispose()
 	}
-}
-
-// SetRenderable satisfies the IGraphic interface and
-// sets the renderable state of this Graphic (default = true).
-func (gr *Graphic) SetRenderable(state bool) {
-	gr.renderable = state
-}
-
-// Renderable satisfies the IGraphic interface and
-// returns the renderable state of this graphic.
-func (gr *Graphic) Renderable() bool {
-	return gr.renderable
 }
 
 // SetCullable satisfies the IGraphic interface and

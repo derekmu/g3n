@@ -400,7 +400,7 @@ func (t *Table) Rows(fi, li int) []map[string]any {
 	}
 	if li < 0 {
 		li = len(t.rows) - 1
-	} else if li < 0 || li >= len(t.rows) {
+	} else if li >= len(t.rows) {
 		panic(tableErrInvRow)
 	}
 	if li < fi {
@@ -730,7 +730,7 @@ func (t *Table) recalc() {
 	py := starty
 	for ri := 0; ri < len(t.rows); ri++ {
 		trow := t.rows[ri]
-		py += trow.height
+		py += trow.Height()
 	}
 	// Recalculates the header
 	t.recalcHeader()
@@ -753,7 +753,7 @@ func (t *Table) recalc() {
 		if py+trow.Height() <= starty+theight {
 			t.lastRow = ri
 		}
-		py += trow.height
+		py += trow.Height()
 	}
 	// Status panel must be on top of all the row panels
 	t.SetTopChild(&t.statusPanel)
@@ -838,7 +838,7 @@ func (t *Table) calcMaxFirst() int {
 	height := float32(0)
 	for {
 		trow := t.rows[ri]
-		height += trow.height
+		height += trow.Height()
 		if height > total {
 			break
 		}
