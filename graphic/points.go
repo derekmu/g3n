@@ -20,7 +20,7 @@ type Points struct {
 // NewPoints creates Points object with the specified geometry and material.
 func NewPoints(igeom geometry.IGeometry, imat material.IMaterial) *Points {
 	p := new(Points)
-	p.Graphic.Init(p, igeom, gls.POINTS)
+	p.InitGraphic(p, igeom, gls.POINTS)
 	if imat != nil {
 		p.AddMaterial(p, imat, 0, 0)
 	}

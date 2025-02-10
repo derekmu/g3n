@@ -63,13 +63,13 @@ type Node struct {
 // NewNode returns a pointer to a new Node.
 func NewNode() *Node {
 	n := new(Node)
-	n.Init(n)
+	n.InitNode(n)
 	return n
 }
 
-// Init initializes the node.
+// InitNode initializes the node.
 // Normally called by other types which embed a Node.
-func (n *Node) Init(inode INode) {
+func (n *Node) InitNode(inode INode) {
 	n.inode = inode
 	n.children = make([]INode, 0)
 	n.visible = true

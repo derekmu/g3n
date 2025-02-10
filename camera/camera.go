@@ -56,7 +56,7 @@ func New(aspect float32) *Camera {
 // NewPerspective creates and returns a new perspective camera with the specified parameters.
 func NewPerspective(aspect, near, far, fov float32, axis Axis) *Camera {
 	c := new(Camera)
-	c.Node.Init(c)
+	c.InitNode(c)
 	c.SetDirection(0, 0, -1)
 	c.aspect = aspect
 	c.near = near
@@ -72,7 +72,7 @@ func NewPerspective(aspect, near, far, fov float32, axis Axis) *Camera {
 // NewOrthographic creates and returns a new orthographic camera with the specified parameters.
 func NewOrthographic(aspect, near, far, size float32, axis Axis) *Camera {
 	c := new(Camera)
-	c.Node.Init(c)
+	c.InitNode(c)
 	c.SetDirection(0, 0, -1)
 	c.aspect = aspect
 	c.near = near

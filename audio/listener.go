@@ -19,7 +19,7 @@ type Listener struct {
 // NewListener creates a Listener object.
 func NewListener() *Listener {
 	l := new(Listener)
-	l.Node.Init(l)
+	l.InitNode(l)
 	return l
 }
 

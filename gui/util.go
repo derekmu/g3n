@@ -30,3 +30,14 @@ func (r Rect) Clip(clip Rect) Rect {
 	clipped.Height = max(0, min(r.Y+r.Height, clip.Y+clip.Height)-clipped.Y)
 	return clipped
 }
+
+// Contains returns whether this rect contains a point.
+func (r Rect) Contains(x, y float32) bool {
+	return x >= r.X && y >= r.Y && x < (r.X+r.Width) && y < (r.Y+r.Height)
+}
+
+// Intersects returns whether this Rect intersects with another Rect.
+func (r Rect) Intersects(r2 Rect) bool {
+	return r.X+r.Width > r2.X && r2.X+r2.Width > r.X &&
+		r.Y+r.Height > r2.Y && r2.Y+r2.Height > r.Y
+}

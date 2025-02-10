@@ -28,7 +28,7 @@ type Point struct {
 // NewPoint creates and returns a point light with the specified color and intensity
 func NewPoint(color math32.Color, intensity float32) *Point {
 	lp := new(Point)
-	lp.Node.Init(lp)
+	lp.InitNode(lp)
 	lp.color = color
 	lp.intensity = intensity
 

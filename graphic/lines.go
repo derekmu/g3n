@@ -26,7 +26,7 @@ func NewLines(igeom geometry.IGeometry, imat material.IMaterial) *Lines {
 
 // Init initializes the Lines object and adds the specified material.
 func (l *Lines) Init(igeom geometry.IGeometry, imat material.IMaterial) {
-	l.Graphic.Init(l, igeom, gls.LINES)
+	l.InitGraphic(l, igeom, gls.LINES)
 	l.AddMaterial(l, imat, 0, 0)
 	l.uniMatrices.Init("uMatrices")
 }

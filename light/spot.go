@@ -32,7 +32,7 @@ type Spot struct {
 // NewSpot creates a new Spot light with the specified color and intensity.
 func NewSpot(color math32.Color, intensity float32) *Spot {
 	l := new(Spot)
-	l.Node.Init(l)
+	l.InitNode(l)
 	l.color = color
 	l.intensity = intensity
 	l.uni.Init("uSpotLight")

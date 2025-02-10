@@ -33,7 +33,7 @@ func NewMesh(igeom geometry.IGeometry, imat material.IMaterial) *Mesh {
 
 // Init initializes the Mesh and its uniforms.
 func (m *Mesh) Init(igeom geometry.IGeometry, imat material.IMaterial) {
-	m.Graphic.Init(m, igeom, gls.TRIANGLES)
+	m.InitGraphic(m, igeom, gls.TRIANGLES)
 	m.uniMatrices.Init("uMatrices")
 	m.uniBones.Init("uBones")
 	if imat != nil {

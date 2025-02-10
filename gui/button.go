@@ -124,7 +124,7 @@ func (b *Button) recalculateSize() {
 	width := b.ContentWidth()
 	height := b.ContentHeight()
 
-	labelWidth, labelHeight := b.Label.Size()
+	labelWidth, labelHeight := b.Label.Width(), b.Label.Height()
 	if b.Label.Text() == "" {
 		labelWidth, labelHeight = 0, 0
 	}

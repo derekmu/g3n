@@ -26,7 +26,7 @@ type Directional struct {
 // the specified color and intensity.
 func NewDirectional(color math32.Color, intensity float32) *Directional {
 	ld := new(Directional)
-	ld.Node.Init(ld)
+	ld.InitNode(ld)
 
 	ld.color = color
 	ld.intensity = intensity

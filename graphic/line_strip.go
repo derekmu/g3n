@@ -20,7 +20,7 @@ type LineStrip struct {
 // NewLineStrip creates LineStrip graphic with the specified geometry and material.
 func NewLineStrip(igeom geometry.IGeometry, imat material.IMaterial) *LineStrip {
 	l := new(LineStrip)
-	l.Graphic.Init(l, igeom, gls.LINE_STRIP)
+	l.InitGraphic(l, igeom, gls.LINE_STRIP)
 	l.AddMaterial(l, imat, 0, 0)
 	l.uniMatrices.Init("uMatrices")
 	return l

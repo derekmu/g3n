@@ -47,7 +47,7 @@ func NewSprite(width, height float32, imat material.IMaterial) *Sprite {
 			AddAttrib(gls.VertexTexcoord),
 	)
 
-	s.Graphic.Init(s, geom, gls.TRIANGLES)
+	s.InitGraphic(s, geom, gls.TRIANGLES)
 	s.AddMaterial(s, imat, 0, 0)
 
 	s.uniMatrices.Init("uMatrices")
