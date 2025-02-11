@@ -106,9 +106,15 @@ func (gm *Manager) updateMouseTarget(x, y float32) {
 	oldTarget := gm.mouseTarget
 	gm.mouseTarget = nil
 	// Find IPanel immediately under the cursor and store it in gm.target
-	gm.forEachIPanel(func(ipan IPanel) {
-		if ipan.HandlesMouse(x, y) && (gm.mouseTarget == nil || ipan.Position().Z < gm.mouseTarget.Position().Z) {
-			gm.mouseTarget = ipan
+	gm.forEachIPanel(func(ipan IPanel) bool {
+		if ipan.ContainsMouse(x, y) {
+			if gm.mouseTarget == nil || ipan.Position().Z < gm.mouseTarget.Position().Z {
+				gm.mouseTarget = ipan
+			}
+			return true
+		} else {
+			// don't process children if the parent doesn't contain the mouse location
+			return false
 		}
 	})
 	if gm.mouseTarget != oldTarget {
@@ -166,12 +172,12 @@ func sendAncestry(ipan IPanel, all bool, upToExclude IPanel, ev core.GuiEvent) {
 }
 
 // traverseIPanel traverses the descendants of the provided IPanel, executing the specified function for each IPanel.
-func traverseIPanel(ipan IPanel, f func(ipan IPanel)) {
+func traverseIPanel(ipan IPanel, f func(ipan IPanel) bool) {
 	if !ipan.Visible() {
 		return
 	}
-	if ipan.Enabled() {
-		f(ipan)
+	if ipan.Enabled() && !f(ipan) {
+		return
 	}
 	for _, child := range ipan.Children() {
 		traverseIPanel(child.(IPanel), f)
@@ -179,7 +185,7 @@ func traverseIPanel(ipan IPanel, f func(ipan IPanel)) {
 }
 
 // traverseINode traverses the descendants of the specified INode, executing the specified function for each IPanel.
-func traverseINode(inode core.INode, f func(ipan IPanel)) {
+func traverseINode(inode core.INode, f func(ipan IPanel) bool) {
 	if ipan, ok := inode.(IPanel); ok {
 		traverseIPanel(ipan, f)
 	} else {
@@ -190,7 +196,7 @@ func traverseINode(inode core.INode, f func(ipan IPanel)) {
 }
 
 // forEachIPanel executes the specified function for each enabled and visible IPanel in the scene.
-func (gm *Manager) forEachIPanel(f func(ipan IPanel)) {
+func (gm *Manager) forEachIPanel(f func(ipan IPanel) bool) {
 	traverseINode(gm.scene, f)
 }
 

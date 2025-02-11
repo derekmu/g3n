@@ -49,7 +49,7 @@ type IPanel interface {
 	SetPositionZ(z float32)
 	ZLayerDelta() int
 	Enabled() bool
-	HandlesMouse(x, y float32) bool
+	ContainsMouse(x, y float32) bool
 
 	Width() float32
 	Height() float32
@@ -174,8 +174,8 @@ func (p *Panel) SetEnabled(state bool) {
 	p.Dispatch(core.GuiEnableEvent{Enabled: state})
 }
 
-func (p *Panel) HandlesMouse(x, y float32) bool {
-	return p.panelArea.Contains(x, y)
+func (p *Panel) ContainsMouse(x, y float32) bool {
+	return p.clipArea.Contains(x, y)
 }
 
 // Paddings is the panel's padding sizes.
