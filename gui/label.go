@@ -182,16 +182,13 @@ func (l *Label) drawText() {
 	}
 	l.canvas.DrawText(0, 0, txt, l.font)
 
-	if l.texture == nil {
-		// Create texture if it doesn't exist yet
-		l.texture = texture.NewTexture2DFromRGBA(l.canvas.RGBA)
-		l.texture.SetMagFilter(gls.NEAREST)
-		l.texture.SetMinFilter(gls.NEAREST)
+	tex := l.texture
+	if tex == nil {
+		tex = texture.NewTexture2DFromRGBA(l.canvas.RGBA)
+		tex.SetMagFilter(gls.NEAREST)
+		tex.SetMinFilter(gls.NEAREST)
 	} else {
-		// Otherwise updateTexture texture with new image
-		l.texture.SetFromRGBA(l.canvas.RGBA)
+		tex.SetFromRGBA(l.canvas.RGBA)
 	}
-
-	// Change the image texture
-	l.SetTexture(l.texture)
+	l.SetTexture(tex)
 }
