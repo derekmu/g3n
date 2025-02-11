@@ -17,7 +17,9 @@ const (
 	ButtonOver
 	ButtonPressed
 	ButtonDisabled
-	// ButtonFocus
+	ButtonStateMin   = ButtonNormal
+	ButtonStateMax   = ButtonDisabled
+	ButtonStateCount = ButtonStateMax - ButtonStateMin + 1
 )
 
 // Button is a button UI element that extends Image and uses different textures for each ButtonState.
@@ -29,7 +31,7 @@ type Button struct {
 	labelAlignment Align
 	mouseOver      bool
 	pressed        core.MouseState
-	textures       [ButtonDisabled + 1]*texture.Texture2D
+	textures       [ButtonStateCount]*texture.Texture2D
 }
 
 // NewButton creates a new Button with the specified text the button label.
