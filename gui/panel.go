@@ -38,6 +38,7 @@ func init() {
 		AddAttrib(gls.VertexPosition).
 		AddAttrib(gls.VertexTexcoord),
 	)
+	geom.SetPermanent(true)
 	panelQuadGeometry = geom
 }
 
@@ -101,7 +102,7 @@ func (p *Panel) InitPanel(ipan IPanel, width, height float32) {
 	p.material.SetTransparent(true)
 
 	// Initialize graphic
-	p.InitGraphic(ipan, panelQuadGeometry.Incref(), gls.TRIANGLES)
+	p.InitGraphic(ipan, panelQuadGeometry, gls.TRIANGLES)
 	p.AddMaterial(p, p.material, 0, 0)
 
 	// Initialize uniforms location caches
@@ -140,15 +141,13 @@ func (p *Panel) Material() *material.Material {
 }
 
 // SetTexture changes the panel's texture.
-// It returns a pointer to the previous texture.
-func (p *Panel) SetTexture(tex *texture.Texture2D) *texture.Texture2D {
-	prevtex := p.texture
-	p.Material().RemoveTexture(prevtex)
+func (p *Panel) SetTexture(tex *texture.Texture2D) {
+	ptex := p.texture
+	p.Material().RemoveTexture(ptex)
 	p.texture = tex
 	if tex != nil {
 		p.Material().AddTexture(p.texture)
 	}
-	return prevtex
 }
 
 // ZLayerDelta returns the Z-layer of this panel relative to its parent.

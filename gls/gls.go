@@ -619,7 +619,7 @@ func (gs *GLS) ShaderSource(shader uint32, src string) {
 }
 
 // TexImage2D specifies a two-dimensional texture image.
-func (gs *GLS) TexImage2D(target uint32, level int32, iformat int32, width int32, height int32, format uint32, itype uint32, data any) {
+func (gs *GLS) TexImage2D(target uint32, level int32, iformat int32, width int32, height int32, format uint32, itype uint32, data []uint8) {
 	C.glTexImage2D(C.GLenum(target),
 		C.GLint(level),
 		C.GLint(iformat),
@@ -628,18 +628,6 @@ func (gs *GLS) TexImage2D(target uint32, level int32, iformat int32, width int32
 		C.GLint(0),
 		C.GLenum(format),
 		C.GLenum(itype),
-		ptr(data))
-}
-
-// CompressedTexImage2D specifies a two-dimensional compressed texture image.
-func (gs *GLS) CompressedTexImage2D(target uint32, level uint32, iformat uint32, width int32, height int32, size int32, data any) {
-	C.glCompressedTexImage2D(C.GLenum(target),
-		C.GLint(level),
-		C.GLenum(iformat),
-		C.GLsizei(width),
-		C.GLsizei(height),
-		C.GLint(0),
-		C.GLsizei(size),
 		ptr(data))
 }
 

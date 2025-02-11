@@ -48,9 +48,10 @@ type Graphic struct {
 // with the specified geometry and OpenGL mode.
 func (gr *Graphic) InitGraphic(igr IGraphic, igeom geometry.IGeometry, mode uint32) *Graphic {
 	gr.InitNode(igr)
+	igeom.Incref()
 	gr.igeom = igeom
 	gr.mode = mode
-	gr.materials = make([]GraphicMaterial, 0)
+	gr.materials = nil
 	gr.cullable = true
 	return gr
 }
@@ -75,10 +76,22 @@ func (gr *Graphic) IGeometry() geometry.IGeometry {
 
 // Dispose overrides the embedded Node Dispose method.
 func (gr *Graphic) Dispose() {
-	gr.igeom.Dispose()
-	for i := 0; i < len(gr.materials); i++ {
-		gr.materials[i].imat.Dispose()
+	if gr.igeom.Decref() {
+		gr.igeom.Dispose()
 	}
+	gr.igeom = nil
+	gr.ClearMaterials()
+}
+
+// ClearMaterials removes all the materials from this Graphic.
+func (gr *Graphic) ClearMaterials() {
+	for _, mat := range gr.materials {
+		if mat.imat.Decref() {
+			mat.imat.Dispose()
+		}
+	}
+	clear(gr.materials)
+	gr.materials = nil
 }
 
 // SetCullable satisfies the IGraphic interface and
@@ -115,6 +128,7 @@ func (gr *Graphic) AddMaterial(igr IGraphic, imat material.IMaterial, start, cou
 		count:    count,
 		igraphic: igr,
 	}
+	imat.Incref()
 	gr.materials = append(gr.materials, gmat)
 }
 
@@ -145,11 +159,6 @@ func (gr *Graphic) GetMaterial(vpos int) material.IMaterial {
 		}
 	}
 	return nil
-}
-
-// ClearMaterials removes all the materials from this Graphic.
-func (gr *Graphic) ClearMaterials() {
-	gr.materials = gr.materials[0:0]
 }
 
 // SetIGraphic sets the IGraphic on all this Graphic's GraphicMaterials.
@@ -193,9 +202,7 @@ func (gr *Graphic) ModelViewProjectionMatrix() *math32.Matrix4 {
 	return &gr.mdata.mvpm
 }
 
-// GraphicMaterial specifies the material to be used for
-// a subset of vertices from the Graphic geometry
-// A Graphic object has at least one GraphicMaterial.
+// GraphicMaterial specifies the material to be used for a subset of vertices from a Graphic's geometry.
 type GraphicMaterial struct {
 	imat     material.IMaterial // Associated material
 	start    int                // Index of first element in the geometry
@@ -215,29 +222,20 @@ func (grmat *GraphicMaterial) IGraphic() IGraphic {
 
 // Render is called by the renderer to render this graphic material.
 func (grmat *GraphicMaterial) Render(gs *gls.GLS, rinfo *core.RenderInfo) {
-	// Setup the associated material (set states and transfer material uniforms and textures)
 	grmat.imat.RenderSetup(gs)
-
-	// Setup the associated geometry (set VAO and transfer VBOs)
 	gr := grmat.igraphic.GetGraphic()
 	gr.igeom.RenderSetup(gs)
-
-	// Setup current graphic (transfer matrices)
 	grmat.igraphic.RenderSetup(gs, rinfo)
 
-	// Get the number of vertices for the current material
 	count := grmat.count
-
 	geom := gr.igeom.GetGeometry()
 	indices := geom.Indices()
 	if indices.Len() > 0 {
-		// Indexed geometry
 		if count == 0 {
 			count = indices.Len()
 		}
 		gs.DrawElements(gr.mode, int32(count), gls.UNSIGNED_INT, 4*uint32(grmat.start))
 	} else {
-		// Non indexed geometry
 		if count == 0 {
 			count = geom.Items()
 		}

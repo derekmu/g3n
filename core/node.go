@@ -71,7 +71,7 @@ func NewNode() *Node {
 // Normally called by other types which embed a Node.
 func (n *Node) InitNode(inode INode) {
 	n.inode = inode
-	n.children = make([]INode, 0)
+	n.children = nil
 	n.visible = true
 	n.renderable = true
 
@@ -348,23 +348,6 @@ func (n *Node) Remove(ichild INode) bool {
 	return false
 }
 
-// RemoveAt removes the child at the specified index.
-func (n *Node) RemoveAt(idx int) INode {
-	// Validate position
-	if idx < 0 || idx >= len(n.children) {
-		panic("Node.RemoveAt: invalid position")
-	}
-
-	child := n.children[idx]
-
-	// Remove child from children list
-	copy(n.children[idx:], n.children[idx+1:])
-	n.children[len(n.children)-1] = nil
-	n.children = n.children[:len(n.children)-1]
-
-	return child
-}
-
 // RemoveAll removes all children.
 func (n *Node) RemoveAll(recurs bool) {
 	for pos, ichild := range n.children {
@@ -374,11 +357,11 @@ func (n *Node) RemoveAll(recurs bool) {
 			ichild.GetNode().RemoveAll(recurs)
 		}
 	}
-	n.children = n.children[0:0]
+	n.children = n.children[:0]
 }
 
 // DisposeChildren removes and disposes of all children.
-// If 'recurs' is true, call DisposeChildren on each child recursively.
+// If recurs is true, calls DisposeChildren on each child.
 func (n *Node) DisposeChildren(recurs bool) {
 	for pos, ichild := range n.children {
 		n.children[pos] = nil
@@ -388,7 +371,7 @@ func (n *Node) DisposeChildren(recurs bool) {
 		}
 		ichild.Dispose()
 	}
-	n.children = n.children[0:0]
+	n.children = n.children[:0]
 }
 
 // SetPosition sets the position.
@@ -427,27 +410,26 @@ func (n *Node) Position() math32.Vector3 {
 }
 
 // TranslateOnAxis translates the specified distance on the specified local axis.
-func (n *Node) TranslateOnAxis(axis *math32.Vector3, dist float32) {
-	v := math32.NewVec3().Copy(axis)
-	v.ApplyQuaternion(n.quaternion)
-	v.MultiplyScalar(dist)
-	n.position.Add(v)
+func (n *Node) TranslateOnAxis(axis math32.Vector3, dist float32) {
+	axis.ApplyQuaternion(n.quaternion)
+	axis.MultiplyScalar(dist)
+	n.position.Add(&axis)
 	n.matNeedsUpdate = true
 }
 
 // TranslateX translates the specified distance on the local X axis.
 func (n *Node) TranslateX(dist float32) {
-	n.TranslateOnAxis(&math32.Vector3{1, 0, 0}, dist)
+	n.TranslateOnAxis(math32.Vector3{X: 1}, dist)
 }
 
 // TranslateY translates the specified distance on the local Y axis.
 func (n *Node) TranslateY(dist float32) {
-	n.TranslateOnAxis(&math32.Vector3{0, 1, 0}, dist)
+	n.TranslateOnAxis(math32.Vector3{Y: 1}, dist)
 }
 
 // TranslateZ translates the specified distance on the local Z axis.
 func (n *Node) TranslateZ(dist float32) {
-	n.TranslateOnAxis(&math32.Vector3{0, 0, 1}, dist)
+	n.TranslateOnAxis(math32.Vector3{Z: 1}, dist)
 }
 
 // SetRotation sets the global rotation in Euler angles (radians).

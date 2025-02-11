@@ -38,8 +38,7 @@ func (i *Image) GetResizeToTexture() bool {
 }
 
 // SetTexture changes the image's texture and resizes the panel.
-// It returns a pointer to the previous texture.
-func (i *Image) SetTexture(tex *texture.Texture2D) *texture.Texture2D {
+func (i *Image) SetTexture(tex *texture.Texture2D) {
 	if i.resizeToTexture {
 		if tex != nil {
 			i.Panel.SetContentSize(float32(tex.Width()), float32(tex.Height()))
@@ -47,5 +46,5 @@ func (i *Image) SetTexture(tex *texture.Texture2D) *texture.Texture2D {
 			i.Panel.SetContentSize(0, 0)
 		}
 	}
-	return i.Panel.SetTexture(tex)
+	i.Panel.SetTexture(tex)
 }

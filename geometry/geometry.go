@@ -6,6 +6,7 @@
 package geometry
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/math32"
 	"math"
@@ -14,6 +15,7 @@ import (
 
 // IGeometry is the interface for all geometries.
 type IGeometry interface {
+	core.IRefCount
 	GetGeometry() *Geometry
 	RenderSetup(gs *gls.GLS)
 	Dispose()
@@ -21,8 +23,8 @@ type IGeometry interface {
 
 // Geometry encapsulates a three-dimensional vertex-based geometry.
 type Geometry struct {
+	core.RefCount
 	gs            *gls.GLS            // Reference to OpenGL state (valid after first RenderSetup)
-	refcount      int                 // Current number of references
 	groups        []Group             // Array geometry groups
 	vbos          []*gls.VBO          // Array of VBOs
 	handleVAO     uint32              // Handle to OpenGL VAO
@@ -55,15 +57,14 @@ type Group struct {
 // NewGeometry creates and returns a pointer to a new Geometry.
 func NewGeometry() *Geometry {
 	g := new(Geometry)
-	g.Init()
+	g.InitGeometry()
 	return g
 }
 
-// Init initializes the geometry.
-func (g *Geometry) Init() {
-	g.refcount = 1
-	g.vbos = make([]*gls.VBO, 0)
-	g.groups = make([]Group, 0)
+// InitGeometry initializes the geometry.
+func (g *Geometry) InitGeometry() {
+	g.vbos = nil
+	g.groups = nil
 	g.gs = nil
 	g.handleVAO = 0
 	g.handleIndices = 0
@@ -429,34 +430,16 @@ func (g *Geometry) ApplyMatrix(m *math32.Matrix4) {
 	})
 }
 
-// Incref increments the reference count for this geometry
-// and returns a pointer to the geometry.
-// It should be used when this geometry is shared by another
-// Graphic object.
-func (g *Geometry) Incref() *Geometry {
-	g.refcount++
-	return g
-}
-
-// Dispose decrements this geometry reference count and
-// if possible releases OpenGL resources, C memory
-// and VBOs associated with this geometry.
+// Dispose releases OpenGL resources associated with this geometry.
 func (g *Geometry) Dispose() {
-	// Only dispose if last
-	if g.refcount > 1 {
-		g.refcount--
-		return
-	}
-	// Delete VAO and indices buffer
 	if g.gs != nil {
 		g.gs.DeleteVertexArrays(g.handleVAO)
 		g.gs.DeleteBuffers(g.handleIndices)
 	}
-	// Delete VBOs
 	for i := 0; i < len(g.vbos); i++ {
 		g.vbos[i].Dispose()
 	}
-	g.Init()
+	g.InitGeometry()
 }
 
 // RenderSetup is called by the renderer before drawing the geometry.

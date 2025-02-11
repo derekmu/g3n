@@ -26,6 +26,7 @@ const MaxActiveMorphTargets = 8
 // NewMorphGeometry creates and returns a pointer to a new MorphGeometry.
 func NewMorphGeometry(baseGeometry *Geometry) *MorphGeometry {
 	mg := new(MorphGeometry)
+	mg.baseGeometry.Incref()
 	mg.baseGeometry = baseGeometry
 
 	mg.targets = make([]*Geometry, 0)
@@ -57,12 +58,12 @@ func (mg *MorphGeometry) Weights() []float32 {
 // AddMorphTargets add multiple morph targets to the morph geometry.
 // Morph target deltas are calculated internally and the morph target geometries are altered to hold the deltas instead.
 func (mg *MorphGeometry) AddMorphTargets(morphTargets ...*Geometry) {
-	for i := range morphTargets {
+	for _, target := range morphTargets {
 		mg.weights = append(mg.weights, 0)
 		// Calculate deltas for VertexPosition
 		vertexIdx := 0
 		baseVertices := mg.baseGeometry.VBO(gls.VertexPosition).Buffer()
-		morphTargets[i].OperateOnVertices(func(vertex *math32.Vector3) bool {
+		target.OperateOnVertices(func(vertex *math32.Vector3) bool {
 			var baseVertex math32.Vector3
 			baseVertices.GetVector3(vertexIdx*3, &baseVertex)
 			vertex.Sub(&baseVertex)
@@ -75,7 +76,7 @@ func (mg *MorphGeometry) AddMorphTargets(morphTargets ...*Geometry) {
 		baseNormalsVBO := mg.baseGeometry.VBO(gls.VertexNormal)
 		if baseNormalsVBO != nil {
 			baseNormals := baseNormalsVBO.Buffer()
-			morphTargets[i].OperateOnVertexNormals(func(normal *math32.Vector3) bool {
+			target.OperateOnVertexNormals(func(normal *math32.Vector3) bool {
 				var baseNormal math32.Vector3
 				baseNormals.GetVector3(normalIdx*3, &baseNormal)
 				normal.Sub(&baseNormal)
@@ -84,6 +85,7 @@ func (mg *MorphGeometry) AddMorphTargets(morphTargets ...*Geometry) {
 			})
 		}
 		// TODO Calculate deltas for VertexTangents
+		target.Incref()
 	}
 	mg.targets = append(mg.targets, morphTargets...)
 
@@ -97,8 +99,9 @@ func (mg *MorphGeometry) AddMorphTargets(morphTargets ...*Geometry) {
 
 // AddMorphTargetDeltas add multiple morph target deltas to the morph geometry.
 func (mg *MorphGeometry) AddMorphTargetDeltas(morphTargetDeltas ...*Geometry) {
-	for range morphTargetDeltas {
+	for _, target := range morphTargetDeltas {
 		mg.weights = append(mg.weights, 0)
+		target.Incref()
 	}
 	mg.targets = append(mg.targets, morphTargetDeltas...)
 
@@ -145,13 +148,19 @@ func (mg *MorphGeometry) SetIndices(indices math32.ArrayU32) {
 	}
 }
 
-// Dispose releases, if possible, OpenGL resources, C memory
-// and VBOs associated with the base geometry and morph targets.
+// Dispose releases OpenGL resources associated with the base geometry and morph targets.
 func (mg *MorphGeometry) Dispose() {
-	mg.baseGeometry.Dispose()
-	for i := range mg.targets {
-		mg.targets[i].Dispose()
+	if mg.baseGeometry.Decref() {
+		mg.baseGeometry.Dispose()
 	}
+	mg.baseGeometry = nil
+	for _, target := range mg.targets {
+		if target.Decref() {
+			target.Dispose()
+		}
+	}
+	clear(mg.targets)
+	mg.targets = nil
 }
 
 // UpdateTargetAttributes updates the attribute names of the specified morph targets in order.

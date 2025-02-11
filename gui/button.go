@@ -58,18 +58,22 @@ func (b *Button) InitButton(text string) {
 func (b *Button) Dispose() {
 	b.Image.Dispose()
 	b.Label.Dispose()
-	for _, tex := range b.textures {
-		if tex != nil {
+	for i, tex := range b.textures {
+		if tex != nil && tex.Decref() {
 			tex.Dispose()
 		}
+		b.textures[i] = nil
 	}
 }
 
 // SetStateTexture changes the texture used by the button in a given state.
-// Any prior texture for the state is disposed.
 func (b *Button) SetStateTexture(state ButtonState, tex *texture.Texture2D) {
-	if b.textures[state] != nil {
-		b.textures[state].Dispose()
+	ptex := b.textures[state]
+	if ptex != nil && ptex.Decref() {
+		ptex.Dispose()
+	}
+	if tex != nil {
+		tex.Incref()
 	}
 	b.textures[state] = tex
 	b.updateTexture()

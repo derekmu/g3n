@@ -7,6 +7,7 @@
 package material
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/texture"
 	"slices"
@@ -50,6 +51,7 @@ const (
 
 // IMaterial is the interface for all materials.
 type IMaterial interface {
+	core.IRefCount
 	GetMaterial() *Material
 	RenderSetup(gs *gls.GLS)
 	Dispose()
@@ -57,7 +59,7 @@ type IMaterial interface {
 
 // Material is the base material.
 type Material struct {
-	refcount int // Current number of references
+	core.RefCount
 
 	// Shader specification
 	shader        string              // Shader name
@@ -96,7 +98,6 @@ func NewMaterial() *Material {
 
 // InitMaterial initializes the material.
 func (m *Material) InitMaterial() *Material {
-	m.refcount = 1
 	m.useLights = UseLightAll
 	m.side = SideFront
 	m.transparent = false
@@ -108,7 +109,7 @@ func (m *Material) InitMaterial() *Material {
 	m.lineWidth = 1.0
 	m.polyOffsetFactor = 0
 	m.polyOffsetUnits = 0
-	m.textures = make([]*texture.Texture2D, 0)
+	m.textures = nil
 	m.samplerCounts = make(map[string]int)
 	return m
 }
@@ -118,28 +119,14 @@ func (m *Material) GetMaterial() *Material {
 	return m
 }
 
-// Incref increments the reference count for this material
-// and returns a pointer to the material.
-// It should be used when this material is shared by another
-// Graphic object.
-func (m *Material) Incref() *Material {
-	m.refcount++
-	return m
-}
-
-// Dispose decrements this material reference count and
-// if necessary releases OpenGL resources, C memory
-// and textures associated with this material.
+// Dispose releases OpenGL resources associated with this material.
 func (m *Material) Dispose() {
-	// Only dispose if last
-	if m.refcount > 1 {
-		m.refcount--
-		return
+	for _, tex := range m.textures {
+		if tex.Decref() {
+			tex.Dispose()
+		}
 	}
-	// Delete textures
-	for i := 0; i < len(m.textures); i++ {
-		m.textures[i].Dispose()
-	}
+	clear(m.textures)
 	m.InitMaterial()
 }
 
@@ -298,19 +285,21 @@ func (m *Material) RenderSetup(gs *gls.GLS) {
 
 // AddTexture adds the specified texture to the material
 func (m *Material) AddTexture(tex *texture.Texture2D) {
+	tex.Incref()
 	m.textures = append(m.textures, tex)
 }
 
 // RemoveTexture removes the specified texture from the material
 func (m *Material) RemoveTexture(tex *texture.Texture2D) {
-	for pos, curr := range m.textures {
-		if curr == tex {
-			copy(m.textures[pos:], m.textures[pos+1:])
-			m.textures[len(m.textures)-1] = nil
-			m.textures = m.textures[:len(m.textures)-1]
-			break
+	m.textures = slices.DeleteFunc(m.textures, func(d *texture.Texture2D) bool {
+		if d == tex {
+			if tex.Decref() {
+				tex.Dispose()
+			}
+			return true
 		}
-	}
+		return false
+	})
 }
 
 // HasTexture checks if the material contains the specified texture

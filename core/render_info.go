@@ -10,6 +10,6 @@ import (
 
 // RenderInfo is passed into Render/RenderSetup calls
 type RenderInfo struct {
-	ViewMatrix math32.Matrix4 // Current camera view matrix
-	ProjMatrix math32.Matrix4 // Current camera projection matrix
+	ViewMatrix math32.Matrix4
+	ProjMatrix math32.Matrix4
 }
