@@ -142,11 +142,13 @@ func (p *Panel) Material() *material.Material {
 
 // SetTexture changes the panel's texture.
 func (p *Panel) SetTexture(tex *texture.Texture2D) {
-	ptex := p.texture
-	p.Material().RemoveTexture(ptex)
-	p.texture = tex
-	if tex != nil {
-		p.Material().AddTexture(p.texture)
+	if tex != p.texture {
+		ptex := p.texture
+		p.Material().RemoveTexture(ptex)
+		p.texture = tex
+		if tex != nil {
+			p.Material().AddTexture(p.texture)
+		}
 	}
 }
 

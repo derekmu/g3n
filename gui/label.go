@@ -187,7 +187,6 @@ func (l *Label) drawText() {
 		l.texture = texture.NewTexture2DFromRGBA(l.canvas.RGBA)
 		l.texture.SetMagFilter(gls.NEAREST)
 		l.texture.SetMinFilter(gls.NEAREST)
-		l.Panel.Material().AddTexture(l.texture)
 	} else {
 		// Otherwise updateTexture texture with new image
 		l.texture.SetFromRGBA(l.canvas.RGBA)
