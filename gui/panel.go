@@ -405,8 +405,8 @@ func (p *Panel) resize(width, height float32) {
 	height = math32.Round(height)
 	contentWidth := max(0, width-p.paddings.Left-p.paddings.Right)
 	contentHeight := max(0, height-p.paddings.Top-p.paddings.Bottom)
-	panelWidth := p.paddings.Left + p.contentArea.Width + p.paddings.Right
-	panelHeight := p.paddings.Top + p.contentArea.Height + p.paddings.Bottom
+	panelWidth := p.paddings.Left + contentWidth + p.paddings.Right
+	panelHeight := p.paddings.Top + contentHeight + p.paddings.Bottom
 	if contentWidth != p.contentArea.Width || contentHeight != p.contentArea.Height ||
 		panelWidth != p.panelArea.Width || panelHeight != p.panelArea.Height {
 		p.contentArea.Width = contentWidth
