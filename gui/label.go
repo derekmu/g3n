@@ -15,7 +15,7 @@ import (
 
 // Label is a text only UI element.
 type Label struct {
-	Image
+	Panel
 	font           *text.Font
 	text           string
 	rgba           image.RGBA
@@ -44,7 +44,8 @@ func NewLabelWithFont(txt string, fnt *text.Font) *Label {
 
 // InitLabel initializes this Label.
 func (l *Label) InitLabel(txt string, fnt *text.Font) {
-	l.InitImage()
+	l.InitPanel(l, 0, 0)
+	l.SetResizeToTexture(true)
 	l.font = fnt
 	l.color = math32.Color4{1, 1, 1, 1}
 	l.bgColor = math32.Color4{1, 1, 1, 0}

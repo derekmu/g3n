@@ -67,10 +67,11 @@ var _ IPanel = &Panel{}
 type Panel struct {
 	graphic.Graphic
 	core.Dispatcher[core.GuiEvent]
-	material    *material.Material
-	texture     *texture.Texture2D
-	zLayerDelta int
-	enabled     bool
+	material        *material.Material
+	texture         *texture.Texture2D
+	zLayerDelta     int
+	enabled         bool
+	resizeToTexture bool
 
 	paddings    RectBounds
 	panelArea   Rect
@@ -111,6 +112,7 @@ func (p *Panel) InitPanel(ipan IPanel, width, height float32) {
 
 	// Set defaults
 	p.enabled = true
+	p.resizeToTexture = false
 	p.resize(width, height)
 }
 
@@ -143,6 +145,13 @@ func (p *Panel) Material() *material.Material {
 // SetTexture changes the panel's texture.
 func (p *Panel) SetTexture(tex *texture.Texture2D) {
 	if tex != p.texture {
+		if p.resizeToTexture {
+			if tex != nil {
+				p.SetContentSize(float32(tex.Width()), float32(tex.Height()))
+			} else {
+				p.SetContentSize(0, 0)
+			}
+		}
 		if p.texture != nil {
 			p.Material().RemoveTexture(p.texture)
 		}
@@ -172,6 +181,16 @@ func (p *Panel) Enabled() bool {
 func (p *Panel) SetEnabled(state bool) {
 	p.enabled = state
 	p.Dispatch(core.GuiEnableEvent{Enabled: state})
+}
+
+// SetResizeToTexture sets whether this panel resizes automatically to match its texture size.
+func (p *Panel) SetResizeToTexture(resize bool) {
+	p.resizeToTexture = resize
+}
+
+// GetResizeToTexture returns whether this panel resizes automatically to match its texture size.
+func (p *Panel) GetResizeToTexture() bool {
+	return p.resizeToTexture
 }
 
 func (p *Panel) ContainsMouse(x, y float32) bool {
@@ -384,18 +403,17 @@ func (p *Panel) updateBounds(parent IPanel) {
 func (p *Panel) resize(width, height float32) {
 	width = math32.Round(width)
 	height = math32.Round(height)
-	// Update content area
-	p.contentArea.Width = width - p.paddings.Left - p.paddings.Right
-	if p.contentArea.Width < 0 {
-		p.contentArea.Width = 0
+	contentWidth := max(0, width-p.paddings.Left-p.paddings.Right)
+	contentHeight := max(0, height-p.paddings.Top-p.paddings.Bottom)
+	panelWidth := p.paddings.Left + p.contentArea.Width + p.paddings.Right
+	panelHeight := p.paddings.Top + p.contentArea.Height + p.paddings.Bottom
+	if contentWidth != p.contentArea.Width || contentHeight != p.contentArea.Height ||
+		panelWidth != p.panelArea.Width || panelHeight != p.panelArea.Height {
+		p.contentArea.Width = contentWidth
+		p.contentArea.Height = contentHeight
+		p.panelArea.Width = panelWidth
+		p.panelArea.Height = panelHeight
+		p.SetChanged(true)
+		p.Dispatch(core.GuiResizeEvent{})
 	}
-	p.contentArea.Height = height - p.paddings.Top - p.paddings.Bottom
-	if p.contentArea.Height < 0 {
-		p.contentArea.Height = 0
-	}
-	// Set final panel dimensions
-	p.panelArea.Width = p.paddings.Left + p.contentArea.Width + p.paddings.Right
-	p.panelArea.Height = p.paddings.Top + p.contentArea.Height + p.paddings.Bottom
-	p.SetChanged(true)
-	p.Dispatch(core.GuiResizeEvent{})
 }
