@@ -97,7 +97,7 @@ func (n *Node) GetNode() *Node {
 }
 
 // BoundingBox satisfies the INode interface.
-// Computes union of own bounding box with those of all descendents.
+// Computes union of own bounding box with those of all descendants.
 func (n *Node) BoundingBox() math32.Box3 {
 	bbox := math32.Box3{
 		Min: math32.Vector3{X: math.MaxFloat32, Y: math.MaxFloat32, Z: math.MaxFloat32},

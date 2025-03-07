@@ -200,7 +200,7 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 	return nil
 }
 
-// classifyAndCull classifies the provided INode and all of its descendents.
+// classifyAndCull classifies the provided INode and all of its descendants.
 // It ignores (culls) renderable IGraphics which are fully outside the specified frustum.
 func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zLayer int) {
 	// Ignore invisible nodes and their descendants
@@ -241,6 +241,12 @@ func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zL
 		default:
 			r.others = append(r.others, inode)
 			r.stats.Others++
+		}
+	} else {
+		switch node := inode.(type) {
+		case gui.IPanel:
+			// non-renderable panels still affect z layers
+			zLayer += node.ZLayerDelta()
 		}
 	}
 	// Process children
