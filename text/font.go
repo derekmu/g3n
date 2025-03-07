@@ -5,20 +5,20 @@
 package text
 
 import (
+	"golang.org/x/image/font/opentype"
 	"image"
 	"image/draw"
 	"math"
 	"strings"
 
 	"github.com/derekmu/g3n/math32"
-	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
 )
 
-// Font represents a TrueType font face.
+// Font represents a font face.
 type Font struct {
-	ttf       *truetype.Font
+	ttf       *opentype.Font
 	face      font.Face
 	attrib    FontAttributes
 	fg        image.Uniform
@@ -43,7 +43,7 @@ type FontAttributes struct {
 	LineSpacing    float64
 }
 
-// newTrueTypeOptions returns a key object for these font attributes.
+// newFaceOptions returns a key object for these font attributes.
 func (a *FontAttributes) makeFaceKey() faceKey {
 	// Since float64s are finicky to compare, convert to int64s while keeping a few decimal places of accuracy
 	// Line spacing doesn't pertain to the font face, so isn't included in the key
@@ -56,13 +56,13 @@ func (a *FontAttributes) makeFaceKey() faceKey {
 	}
 }
 
-// newTrueTypeOptions returns true type font options with these font attributes.
-func (a *FontAttributes) newTrueTypeOptions() *truetype.Options {
+// newFaceOptions returns true type font options with these font attributes.
+func (a *FontAttributes) newFaceOptions() *opentype.FaceOptions {
 	dpi := a.DPI
 	if a.ScaleX != 0 && a.ScaleY != 0 {
 		dpi *= math.Sqrt(a.ScaleX * a.ScaleY)
 	}
-	return &truetype.Options{
+	return &opentype.FaceOptions{
 		Size:    a.PointSize,
 		DPI:     dpi,
 		Hinting: a.Hinting,
@@ -71,7 +71,7 @@ func (a *FontAttributes) newTrueTypeOptions() *truetype.Options {
 
 // NewFontFromData creates and returns a new font object from the specified TTF data.
 func NewFontFromData(fontData []byte) (*Font, error) {
-	ttf, err := truetype.Parse(fontData)
+	ttf, err := opentype.Parse(fontData)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func NewFontFromData(fontData []byte) (*Font, error) {
 		Hinting:     font.HintingFull,
 		LineSpacing: 1.0,
 	}
-	f.SetColor(math32.Color4{0, 0, 0, 1})
+	f.SetColor(math32.Color4{A: 1})
 	f.faceCache = make(map[faceKey]font.Face)
 	return f, nil
 }
@@ -136,7 +136,7 @@ func (f *Font) SetBgColor(color math32.Color4) {
 // of the text and background colors match. This method handles that for the user.
 func (f *Font) SetColor(fg math32.Color4) {
 	f.fg.C = fg
-	f.bg.C = math32.Color4{fg.R, fg.G, fg.B, 0}
+	f.bg.C = math32.Color4{R: fg.R, G: fg.G, B: fg.B}
 }
 
 // updateFace updates the font face if parameters have changed.
@@ -145,8 +145,11 @@ func (f *Font) updateFace() {
 	var ok bool
 	f.face, ok = f.faceCache[key]
 	if !ok {
-		f.face = truetype.NewFace(f.ttf, f.attrib.newTrueTypeOptions())
-		f.faceCache[key] = f.face
+		face, err := opentype.NewFace(f.ttf, f.attrib.newFaceOptions())
+		if err != nil {
+		}
+		f.face = face
+		f.faceCache[key] = face
 	}
 }
 
