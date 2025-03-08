@@ -29,10 +29,6 @@ const (
 	intTrue     = 1
 )
 
-const (
-	FloatSize = int32(unsafe.Sizeof(float32(0)))
-)
-
 // Stats contains counters of WebGL resources being used and cumulative numbers of some WebGL calls for performance evaluation.
 type Stats struct {
 	Shaders    int    // Current number of shader programs
@@ -796,7 +792,9 @@ func ptr(data any) unsafe.Pointer {
 	case reflect.Uintptr:
 		addr = unsafe.Pointer(v.Pointer())
 	case reflect.Slice:
-		addr = unsafe.Pointer(v.Index(0).UnsafeAddr())
+		if v.Len() > 0 {
+			addr = unsafe.Pointer(v.Index(0).UnsafeAddr())
+		}
 	default:
 		panic(fmt.Errorf("unsupported type %s; must be a slice or pointer to a singular scalar value or the first element of an array or slice", v.Type()))
 	}
