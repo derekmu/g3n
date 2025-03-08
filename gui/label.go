@@ -50,12 +50,9 @@ func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.color = math32.Color4{1, 1, 1, 1}
 	l.bgColor = math32.Color4{1, 1, 1, 0}
 	l.fontAttributes = text.FontAttributes{
-		PointSize:   14,
-		DPI:         72,
-		ScaleX:      1.0,
-		ScaleY:      1.0,
-		Hinting:     font.HintingFull,
-		LineSpacing: 1.0,
+		PointSize: 14,
+		DPI:       72,
+		Hinting:   font.HintingFull,
 	}
 	l.SetText(txt)
 }
@@ -114,7 +111,7 @@ func (l *Label) Font() *text.Font {
 }
 
 // SetFontSize sets the point size of the font.
-func (l *Label) SetFontSize(size float64) {
+func (l *Label) SetFontSize(size int32) {
 	if l.fontAttributes.PointSize != size {
 		l.fontAttributes.PointSize = size
 		l.drawText()
@@ -122,12 +119,12 @@ func (l *Label) SetFontSize(size float64) {
 }
 
 // FontSize returns the point size of the font.
-func (l *Label) FontSize() float64 {
+func (l *Label) FontSize() int32 {
 	return l.fontAttributes.PointSize
 }
 
 // SetFontDPI sets the resolution of the font in dots per inch (DPI).
-func (l *Label) SetFontDPI(dpi float64) {
+func (l *Label) SetFontDPI(dpi int32) {
 	if l.fontAttributes.DPI != dpi {
 		l.fontAttributes.DPI = dpi
 		l.drawText()
@@ -135,29 +132,13 @@ func (l *Label) SetFontDPI(dpi float64) {
 }
 
 // FontDPI returns the resolution of the font in dots per inch (DPI).
-func (l *Label) FontDPI() float64 {
+func (l *Label) FontDPI() int32 {
 	return l.fontAttributes.DPI
-}
-
-// SetLineSpacing sets the spacing between lines.
-func (l *Label) SetLineSpacing(spacing float64) {
-	if l.fontAttributes.LineSpacing != spacing {
-		l.fontAttributes.LineSpacing = spacing
-		l.drawText()
-	}
-}
-
-// LineSpacing returns the spacing between lines.
-func (l *Label) LineSpacing() float64 {
-	return l.fontAttributes.LineSpacing
 }
 
 // drawText redraws the label texture.
 func (l *Label) drawText() {
 	// Set font properties
-	scaleX, scaleY := GetManager().window.GetScale()
-	l.fontAttributes.ScaleX = scaleX
-	l.fontAttributes.ScaleY = scaleY
 	l.font.SetAttributes(l.fontAttributes)
 	l.font.SetColor(l.color)
 
