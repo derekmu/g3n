@@ -417,3 +417,45 @@ func (p *Panel) resize(width, height float32) {
 		p.Dispatch(core.GuiResizeEvent{})
 	}
 }
+
+// AddLabel adds a new Label to this panel.
+// The panel will dynamically resize to fit the label if the expand parameter is true.
+// The position of the label within the panel is determined by the align parameter.
+func (p *Panel) AddLabel(text string, expand bool, align Align) *Label {
+	label := NewLabel(text)
+	p.Add(label)
+	handleResize := func(event core.GuiEvent) bool {
+		switch event.GuiEventType() {
+		case core.GuiResize:
+			width, height := p.ContentWidth(), p.ContentHeight()
+			labelWidth, labelHeight := label.Width(), label.Height()
+			// Sets new content width and height if necessary
+			if expand {
+				resize := false
+				if width < labelWidth {
+					width = labelWidth
+					resize = true
+				}
+				if height < labelHeight {
+					height = labelHeight
+					resize = true
+				}
+				if resize {
+					p.SetContentSize(width, height)
+				}
+			}
+			// Position the label as desired
+			if align != AlignNone {
+				lx, ly := align.CalculatePosition(width, height, labelWidth, labelHeight)
+				label.SetPosition(lx, ly)
+			}
+		default:
+			return false
+		}
+		return true
+	}
+	label.Subscribe(handleResize)
+	p.Subscribe(handleResize)
+	handleResize(core.GuiResizeEvent{})
+	return label
+}
