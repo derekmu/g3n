@@ -141,9 +141,6 @@ func (b *Button) AddLabel(text string, expand bool, align Align) *Label {
 		case core.GuiResize:
 			width, height := b.ContentWidth(), b.ContentHeight()
 			labelWidth, labelHeight := label.Width(), label.Height()
-			if label.Text() == "" {
-				labelWidth, labelHeight = 0, 0
-			}
 			// Sets new content width and height if necessary
 			if expand {
 				resize := false

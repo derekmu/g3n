@@ -143,12 +143,7 @@ func (l *Label) drawText() {
 	l.font.SetColor(l.color)
 
 	// Create an image with the text
-	txt := l.text
-	// Need at least one character to get dimensions
-	if txt == "" {
-		txt = " "
-	}
-	width, height := l.font.MeasureText(txt)
+	width, height := l.font.MeasureText(l.text)
 	if l.canvas == nil || l.rgba.Rect.Dx() < width || l.rgba.Rect.Dy() < height {
 		// Allocate a new canvas if the existing one can't hold the text
 		l.canvas = text.NewCanvas(width, height, l.bgColor)
@@ -162,7 +157,7 @@ func (l *Label) drawText() {
 		// Update the color
 		l.canvas.BgColor = l.bgColor
 	}
-	l.canvas.DrawText(0, 0, txt, l.font)
+	l.canvas.DrawText(0, 0, l.text, l.font)
 
 	tex := l.texture
 	if tex == nil {
