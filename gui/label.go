@@ -21,7 +21,6 @@ type Label struct {
 	rgba           image.RGBA
 	canvas         *text.Canvas
 	color          math32.Color4
-	bgColor        math32.Color4
 	fontAttributes text.FontAttributes
 }
 
@@ -48,7 +47,6 @@ func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.SetResizeToTexture(true)
 	l.font = fnt
 	l.color = math32.Color4{1, 1, 1, 1}
-	l.bgColor = math32.Color4{1, 1, 1, 0}
 	l.fontAttributes = text.FontAttributes{
 		PointSize: 14,
 		DPI:       72,
@@ -81,20 +79,6 @@ func (l *Label) SetColor(color math32.Color4) {
 // Color returns the text color.
 func (l *Label) Color() math32.Color4 {
 	return l.color
-}
-
-// SetBgColor sets the background color.
-func (l *Label) SetBgColor(color math32.Color4) {
-	if l.bgColor != color {
-		l.bgColor = color
-		l.Panel.SetColor(color)
-		l.drawText()
-	}
-}
-
-// BgColor returns the background color.
-func (l *Label) BgColor() math32.Color4 {
-	return l.bgColor
 }
 
 // SetFont sets the font.
@@ -141,12 +125,15 @@ func (l *Label) drawText() {
 	// Set font properties
 	l.font.SetAttributes(l.fontAttributes)
 	l.font.SetColor(l.color)
+	// set the background
+	bgColor := l.color
+	bgColor.A = 0
 
 	// Create an image with the text
 	width, height := l.font.MeasureText(l.text)
 	if l.canvas == nil || l.rgba.Rect.Dx() < width || l.rgba.Rect.Dy() < height {
 		// Allocate a new canvas if the existing one can't hold the text
-		l.canvas = text.NewCanvas(width, height, l.bgColor)
+		l.canvas = text.NewCanvas(width, height, bgColor)
 		// Keep a copy of the RGBA
 		l.rgba = *l.canvas.RGBA
 	} else {
@@ -155,7 +142,7 @@ func (l *Label) drawText() {
 		l.canvas.RGBA.Stride = 4 * width
 		l.canvas.RGBA.Rect = image.Rect(0, 0, width, height)
 		// Update the color
-		l.canvas.BgColor = l.bgColor
+		l.canvas.BgColor = bgColor
 	}
 	l.canvas.DrawText(0, 0, l.text, l.font)
 
