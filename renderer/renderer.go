@@ -163,12 +163,14 @@ func (r *Renderer) Render(scene core.INode, cam camera.ICamera) error {
 			// Set panel Z
 			ipan.SetPositionZ(panZ)
 			panZ -= deltaZ
-			// Append the panel's graphic material to lists of graphic materials to be rendered
-			mat := ipan.GetGraphic().Materials()[0]
-			if mat.IMaterial().GetMaterial().Transparent() {
-				r.grmatsTransp = append(r.grmatsTransp, &mat)
-			} else {
-				r.grmatsOpaque = append(r.grmatsOpaque, &mat)
+			if ipan.Renderable() {
+				// Append the panel's graphic material to lists of graphic materials to be rendered
+				mat := ipan.GetGraphic().Materials()[0]
+				if mat.IMaterial().GetMaterial().Transparent() {
+					r.grmatsTransp = append(r.grmatsTransp, &mat)
+				} else {
+					r.grmatsOpaque = append(r.grmatsOpaque, &mat)
+				}
 			}
 		}
 	}
@@ -207,18 +209,18 @@ func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zL
 	if !inode.Visible() {
 		return
 	}
-	// Ignore non-renderable nodes, but still process their children
-	if inode.Renderable() {
-		switch node := inode.(type) {
-		case gui.IPanel:
-			zLayer += node.ZLayerDelta()
-			layer, ok := r.zLayers[zLayer]
-			if !ok {
-				r.zLayerKeys = append(r.zLayerKeys, zLayer)
-			}
-			r.zLayers[zLayer] = append(layer, node)
-			r.stats.Panels++
-		case graphic.IGraphic:
+	switch node := inode.(type) {
+	case gui.IPanel:
+		// non-renderable panels still affect z layers and need to have their z position updated for mouse events
+		zLayer += node.ZLayerDelta()
+		layer, ok := r.zLayers[zLayer]
+		if !ok {
+			r.zLayerKeys = append(r.zLayerKeys, zLayer)
+		}
+		r.zLayers[zLayer] = append(layer, node)
+		r.stats.Panels++
+	case graphic.IGraphic:
+		if node.Renderable() {
 			gr := node.GetGraphic()
 			if node.Cullable() {
 				mw := gr.MatrixWorld()
@@ -230,23 +232,27 @@ func (r *Renderer) classifyAndCull(inode core.INode, frustum *math32.Frustum, zL
 			} else {
 				r.graphics = append(r.graphics, gr)
 			}
-		case *light.Ambient:
+		}
+	case *light.Ambient:
+		if node.Renderable() {
 			r.ambLights = append(r.ambLights, node)
-		case *light.Directional:
+		}
+	case *light.Directional:
+		if node.Renderable() {
 			r.dirLights = append(r.dirLights, node)
-		case *light.Point:
+		}
+	case *light.Point:
+		if node.Renderable() {
 			r.pointLights = append(r.pointLights, node)
-		case *light.Spot:
+		}
+	case *light.Spot:
+		if node.Renderable() {
 			r.spotLights = append(r.spotLights, node)
-		default:
+		}
+	default:
+		if node.Renderable() {
 			r.others = append(r.others, inode)
 			r.stats.Others++
-		}
-	} else {
-		switch node := inode.(type) {
-		case gui.IPanel:
-			// non-renderable panels still affect z layers
-			zLayer += node.ZLayerDelta()
 		}
 	}
 	// Process children
