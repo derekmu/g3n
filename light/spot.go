@@ -109,19 +109,16 @@ func (l *Spot) QuadraticDecay() float32 {
 // RenderSetup is called by the engine before rendering the scene
 func (l *Spot) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo, idx int) {
 	// Calculates and updates light position uniform in camera coordinates
-	var pos math32.Vector3
-	l.WorldPosition(&pos)
-	var pos4 math32.Vector4
-	pos4.SetVector3(&pos, 1.0)
+	pos := l.WorldPosition()
+	pos4 := math32.Vector4{X: pos.X, Y: pos.Y, Z: pos.Z, W: 1.0}
 	pos4.ApplyMatrix4(&rinfo.ViewMatrix)
 	l.udata.position.X = pos4.X
 	l.udata.position.Y = pos4.Y
 	l.udata.position.Z = pos4.Z
 
 	// Calculates and updates light direction uniform in camera coordinates
-	var dir math32.Vector3
-	l.WorldDirection(&dir)
-	pos4.SetVector3(&dir, 0.0)
+	dir := l.WorldDirection()
+	pos4.SetVector3(dir, 0.0)
 	pos4.ApplyMatrix4(&rinfo.ViewMatrix)
 	l.udata.direction.X = pos4.X
 	l.udata.direction.Y = pos4.Y

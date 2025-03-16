@@ -530,15 +530,6 @@ func (v *Vector3) AngleTo(other *Vector3) float32 {
 	return Acos(Clamp(theta, -1, 1))
 }
 
-// SetFromMatrixPosition set this vector from the translation coordinates
-// in the specified transformation matrix.
-func (v *Vector3) SetFromMatrixPosition(m *Matrix4) *Vector3 {
-	v.X = m[12]
-	v.Y = m[13]
-	v.Z = m[14]
-	return v
-}
-
 // SetFromMatrixColumn set this vector with the column at index of the m matrix.
 // Returns the pointer to this updated vector.
 func (v *Vector3) SetFromMatrixColumn(index int, m *Matrix4) *Vector3 {
@@ -572,14 +563,12 @@ func (v *Vector3) SetFromRotationMatrix(m *Matrix4) *Vector3 {
 	return v
 }
 
-// SetFromQuaternion sets this vector components to the Euler angles
-// from the specified quaternion
+// SetFromQuaternion sets this vector components to the Euler angles from the specified quaternion.
 // Returns the pointer to this updated vector.
-func (v *Vector3) SetFromQuaternion(q *Quaternion) *Vector3 {
-	matrix := NewMatrix4()
-	matrix.MakeRotationFromQuaternion(q)
-	v.SetFromRotationMatrix(matrix)
-	return v
+func (v *Vector3) SetFromQuaternion(q Quaternion) *Vector3 {
+	var matrix Matrix4
+	matrix.SetRotationFromQuaternion(q)
+	return v.SetFromRotationMatrix(&matrix)
 }
 
 // RandomTangents computes and returns two arbitrary tangents to the vector.

@@ -172,9 +172,9 @@ func (m *Matrix4) MakeRotationFromEuler(euler *Vector3) *Matrix4 {
 	return m
 }
 
-// MakeRotationFromQuaternion sets this matrix as a rotation matrix from the specified quaternion.
+// SetRotationFromQuaternion sets this matrix as a rotation matrix from the specified quaternion.
 // Returns pointer to this updated matrix.
-func (m *Matrix4) MakeRotationFromQuaternion(q *Quaternion) *Matrix4 {
+func (m *Matrix4) SetRotationFromQuaternion(q Quaternion) *Matrix4 {
 	x := q.X
 	y := q.Y
 	z := q.Z
@@ -222,17 +222,17 @@ func (m *Matrix4) MakeRotationFromQuaternion(q *Quaternion) *Matrix4 {
 // LookAt sets this matrix as view transform matrix with origin at eye,
 // looking at target and using the up vector.
 // Returns pointer to this updated matrix.
-func (m *Matrix4) LookAt(eye, target, up *Vector3) *Matrix4 {
+func (m *Matrix4) LookAt(eye, target, up Vector3) *Matrix4 {
 	var x, y, z Vector3
 
-	z.SubVectors(eye, target)
+	z.SubVectors(&eye, &target)
 	if z.LengthSq() == 0 {
 		// Eye and target are in the same position
 		z.Z = 1
 	}
 	z.Normalize()
 
-	x.CrossVectors(up, &z)
+	x.CrossVectors(&up, &z)
 	if x.LengthSq() == 0 {
 		// Up and Z are parallel
 		if Abs(up.Z) == 1 {
@@ -241,7 +241,7 @@ func (m *Matrix4) LookAt(eye, target, up *Vector3) *Matrix4 {
 			z.Z += 0.0001
 		}
 		z.Normalize()
-		x.CrossVectors(up, &z)
+		x.CrossVectors(&up, &z)
 	}
 	x.Normalize()
 
@@ -411,11 +411,20 @@ func (m *Matrix4) Transpose() *Matrix4 {
 
 // SetPosition sets this transformation matrix position fields from the specified vector v.
 // Returns pointer to this updated matrix.
-func (m *Matrix4) SetPosition(v *Vector3) *Matrix4 {
+func (m *Matrix4) SetPosition(v Vector3) *Matrix4 {
 	m[12] = v.X
 	m[13] = v.Y
 	m[14] = v.Z
 	return m
+}
+
+// GetPosition returns the matrix position fields as a vector.
+func (m *Matrix4) GetPosition() Vector3 {
+	return Vector3{
+		X: m[12],
+		Y: m[13],
+		Z: m[14],
+	}
 }
 
 // GetInverse sets this matrix to the inverse of the src matrix.
@@ -473,11 +482,11 @@ func (m *Matrix4) GetInverse(src *Matrix4) error {
 	return nil
 }
 
-// Scale multiply the first column of this matrix by the vector X component,
+// SetScale multiply the first column of this matrix by the vector X component,
 // the second column by the vector Y component and the third column by
 // the vector Z component. The matrix fourth column is unchanged.
 // Returns pointer to this updated matrix.
-func (m *Matrix4) Scale(v *Vector3) *Matrix4 {
+func (m *Matrix4) SetScale(v Vector3) *Matrix4 {
 	m[0] *= v.X
 	m[4] *= v.Y
 	m[8] *= v.Z
@@ -591,26 +600,17 @@ func (m *Matrix4) MakeScale(x, y, z float32) *Matrix4 {
 // Compose sets this matrix to a transformation matrix for the specified position,
 // rotation specified by the quaternion and scale.
 // Returns pointer to this updated matrix.
-func (m *Matrix4) Compose(position *Vector3, quaternion *Quaternion, scale *Vector3) *Matrix4 {
-	m.MakeRotationFromQuaternion(quaternion)
-	m.Scale(scale)
+func (m *Matrix4) Compose(position Vector3, quaternion Quaternion, scale Vector3) *Matrix4 {
+	m.SetRotationFromQuaternion(quaternion)
+	m.SetScale(scale)
 	m.SetPosition(position)
 	return m
 }
 
-// Decompose updates the position vector, quaternion and scale from this transformation matrix.
-// Returns pointer to this unchanged matrix.
-func (m *Matrix4) Decompose(position *Vector3, quaternion *Quaternion, scale *Vector3) *Matrix4 {
-	var vector Vector3
-	var matrix = *m
-
-	position.X = m[12]
-	position.Y = m[13]
-	position.Z = m[14]
-
-	scale.X = vector.Set(m[0], m[1], m[2]).Length()
-	scale.Y = vector.Set(m[4], m[5], m[6]).Length()
-	scale.Z = vector.Set(m[8], m[9], m[10]).Length()
+// Decompose returns the position, quaternion,and scale from this transformation matrix.
+func (m *Matrix4) Decompose() (position Vector3, quaternion Quaternion, scale Vector3) {
+	position = m.GetPosition()
+	scale = m.GetScale()
 
 	// If determinant is negative, we need to invert one scale
 	det := m.Determinant()
@@ -618,11 +618,12 @@ func (m *Matrix4) Decompose(position *Vector3, quaternion *Quaternion, scale *Ve
 		scale.X = -scale.X
 	}
 
-	// Scale the rotation part
+	// SetScale the rotation part
 	invSX := 1 / scale.X
 	invSY := 1 / scale.Y
 	invSZ := 1 / scale.Z
 
+	var matrix = *m
 	matrix[0] *= invSX
 	matrix[1] *= invSX
 	matrix[2] *= invSX
@@ -636,8 +637,7 @@ func (m *Matrix4) Decompose(position *Vector3, quaternion *Quaternion, scale *Ve
 	matrix[10] *= invSZ
 
 	quaternion.SetFromRotationMatrix(&matrix)
-
-	return m
+	return
 }
 
 // MakeFrustum sets this matrix to a projection frustum matrix bounded by the specified planes.
@@ -744,4 +744,14 @@ func (m *Matrix4) GetColumnVector3(i int) *Vector3 {
 // GetRowVector3 returns the ith row.
 func (m *Matrix4) GetRowVector3(i int) *Vector3 {
 	return NewVector3(m[i], m[i*4], m[i+8])
+}
+
+// GetScale returns the scale of the matrix.
+func (m *Matrix4) GetScale() Vector3 {
+	var vector Vector3
+	return Vector3{
+		X: vector.Set(m[0], m[1], m[2]).Length(),
+		Y: vector.Set(m[4], m[5], m[6]).Length(),
+		Z: vector.Set(m[8], m[9], m[10]).Length(),
+	}
 }

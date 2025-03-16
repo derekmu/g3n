@@ -58,16 +58,14 @@ func (l *Listener) Gain() float32 {
 // Updates the position and orientation of the listener.
 func (l *Listener) Render(_ *gls.GLS) {
 	// Sets the listener source world position
-	var wpos math32.Vector3
-	l.WorldPosition(&wpos)
+	wpos := l.WorldPosition()
 	al.Listener3f(al.Position, wpos.X, wpos.Y, wpos.Z)
 
 	// Get listener current world direction
-	var vdir math32.Vector3
-	l.WorldDirection(&vdir)
+	vdir := l.WorldDirection()
 
 	// Assumes initial UP vector and recalculates current up vector
-	vup := math32.Vector3{0, 1, 0}
+	vup := math32.Vector3{Y: 1}
 	var vright math32.Vector3
 	vright.CrossVectors(&vdir, &vup)
 	vup.CrossVectors(&vright, &vdir)

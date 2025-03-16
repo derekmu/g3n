@@ -33,7 +33,7 @@ func (v *Vector4) Set(x, y, z, w float32) *Vector4 {
 }
 
 // SetVector3 sets this vector from another Vector3 and W
-func (v *Vector4) SetVector3(other *Vector3, w float32) *Vector4 {
+func (v *Vector4) SetVector3(other Vector3, w float32) *Vector4 {
 	v.X = other.X
 	v.Y = other.Y
 	v.Z = other.Z

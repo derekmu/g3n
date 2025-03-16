@@ -266,13 +266,12 @@ func (p *Player) SetRolloffFactor(rfactor float32) {
 // update the audio source position and direction
 func (p *Player) Render(_ *gls.GLS) {
 	// Sets the player source world position
-	var wpos math32.Vector3
-	p.WorldPosition(&wpos)
+	wpos := p.WorldPosition()
 	al.Source3f(p.source, al.Position, wpos.X, wpos.Y, wpos.Z)
 
 	// Sets the player source world direction
-	var wdir math32.Vector3
-	p.WorldDirection(&wdir)
+	wdir := p.WorldDirection()
+
 	al.Source3f(p.source, al.Direction, wdir.X, wdir.Y, wdir.Z)
 }
 

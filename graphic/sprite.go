@@ -57,10 +57,7 @@ func NewSprite(width, height float32, imat material.IMaterial) *Sprite {
 // RenderSetup sets up the rendering of the sprite.
 func (s *Sprite) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 	// Decomposes model view matrix
-	var position math32.Vector3
-	var quaternion math32.Quaternion
-	var scale math32.Vector3
-	s.mdata.mvm.Decompose(&position, &quaternion, &scale)
+	position, quaternion, scale := s.mdata.mvm.Decompose()
 
 	// Removes any rotation in X and Y axes and compose new model view matrix
 	rotation := s.Rotation()
@@ -75,8 +72,8 @@ func (s *Sprite) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 	} else {
 		rotation.X = math32.Pi
 	}
-	quaternion.SetFromEuler(&rotation)
-	s.mdata.mvm.Compose(&position, &quaternion, &scale)
+	quaternion.SetFromEuler(rotation)
+	s.mdata.mvm.Compose(position, quaternion, scale)
 
 	// Calculates final MVP and updates uniform
 	s.mdata.mvpm.MultiplyMatrices(&rinfo.ProjMatrix, &s.mdata.mvm)

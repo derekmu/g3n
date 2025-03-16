@@ -435,60 +435,60 @@ func (n *Node) TranslateZ(dist float32) {
 // SetRotation sets the global rotation in Euler angles (radians).
 func (n *Node) SetRotation(x, y, z float32) {
 	n.rotation.Set(x, y, z)
-	n.quaternion.SetFromEuler(&n.rotation)
+	n.quaternion.SetFromEuler(n.rotation)
 	n.matNeedsUpdate = true
 }
 
 // SetRotationVec sets the global rotation in Euler angles (radians) based on the specified vector pointer.
 func (n *Node) SetRotationVec(vrot math32.Vector3) {
 	n.rotation = vrot
-	n.quaternion.SetFromEuler(&n.rotation)
+	n.quaternion.SetFromEuler(n.rotation)
 	n.matNeedsUpdate = true
 }
 
 // SetRotationQuat sets the global rotation based on the specified quaternion pointer.
-func (n *Node) SetRotationQuat(quat *math32.Quaternion) {
-	n.quaternion = *quat
+func (n *Node) SetRotationQuat(quat math32.Quaternion) {
+	n.quaternion = quat
 	n.rotNeedsUpdate = true
 }
 
 // SetRotationX sets the global X rotation to the specified angle in radians.
 func (n *Node) SetRotationX(x float32) {
 	if n.rotNeedsUpdate {
-		n.rotation.SetFromQuaternion(&n.quaternion)
+		n.rotation.SetFromQuaternion(n.quaternion)
 		n.rotNeedsUpdate = false
 	}
 	n.rotation.X = x
-	n.quaternion.SetFromEuler(&n.rotation)
+	n.quaternion.SetFromEuler(n.rotation)
 	n.matNeedsUpdate = true
 }
 
 // SetRotationY sets the global Y rotation to the specified angle in radians.
 func (n *Node) SetRotationY(y float32) {
 	if n.rotNeedsUpdate {
-		n.rotation.SetFromQuaternion(&n.quaternion)
+		n.rotation.SetFromQuaternion(n.quaternion)
 		n.rotNeedsUpdate = false
 	}
 	n.rotation.Y = y
-	n.quaternion.SetFromEuler(&n.rotation)
+	n.quaternion.SetFromEuler(n.rotation)
 	n.matNeedsUpdate = true
 }
 
 // SetRotationZ sets the global Z rotation to the specified angle in radians.
 func (n *Node) SetRotationZ(z float32) {
 	if n.rotNeedsUpdate {
-		n.rotation.SetFromQuaternion(&n.quaternion)
+		n.rotation.SetFromQuaternion(n.quaternion)
 		n.rotNeedsUpdate = false
 	}
 	n.rotation.Z = z
-	n.quaternion.SetFromEuler(&n.rotation)
+	n.quaternion.SetFromEuler(n.rotation)
 	n.matNeedsUpdate = true
 }
 
 // Rotation returns the current global rotation in Euler angles (radians).
 func (n *Node) Rotation() math32.Vector3 {
 	if n.rotNeedsUpdate {
-		n.rotation.SetFromQuaternion(&n.quaternion)
+		n.rotation.SetFromQuaternion(n.quaternion)
 		n.rotNeedsUpdate = false
 	}
 	return n.rotation
@@ -528,11 +528,10 @@ func (n *Node) Quaternion() math32.Quaternion {
 }
 
 // LookAt rotates the node to look at the specified target position, using the specified up vector.
-func (n *Node) LookAt(target, up *math32.Vector3) {
-	var worldPos math32.Vector3
-	n.WorldPosition(&worldPos)
+func (n *Node) LookAt(target, up math32.Vector3) {
+	worldPos := n.WorldPosition()
 	var rotMat math32.Matrix4
-	rotMat.LookAt(&worldPos, target, up)
+	rotMat.LookAt(worldPos, target, up)
 	n.quaternion.SetFromRotationMatrix(&rotMat)
 	n.rotNeedsUpdate = true
 }
@@ -592,7 +591,7 @@ func (n *Node) Direction() math32.Vector3 {
 // SetMatrix sets the local transformation matrix.
 func (n *Node) SetMatrix(m *math32.Matrix4) {
 	n.matrix = *m
-	n.matrix.Decompose(&n.position, &n.quaternion, &n.scale)
+	n.position, n.quaternion, n.scale = n.matrix.Decompose()
 	n.rotNeedsUpdate = true
 }
 
@@ -601,46 +600,38 @@ func (n *Node) Matrix() math32.Matrix4 {
 	return n.matrix
 }
 
-// WorldPosition updates the world matrix and sets
-// the specified vector to the current world position of this node.
-func (n *Node) WorldPosition(result *math32.Vector3) {
+// WorldPosition updates the world matrix and returns the current world position of this node.
+func (n *Node) WorldPosition() math32.Vector3 {
 	n.UpdateMatrixWorld()
-	result.SetFromMatrixPosition(&n.matrixWorld)
+	return n.matrixWorld.GetPosition()
 }
 
-// WorldQuaternion updates the world matrix and sets
-// the specified quaternion to the current world quaternion of this node.
-func (n *Node) WorldQuaternion(result *math32.Quaternion) {
-	var position math32.Vector3
-	var scale math32.Vector3
+// WorldQuaternion updates the world matrix and returns the current world quaternion of this node.
+func (n *Node) WorldQuaternion() math32.Quaternion {
 	n.UpdateMatrixWorld()
-	n.matrixWorld.Decompose(&position, result, &scale)
+	_, quat, _ := n.matrixWorld.Decompose()
+	return quat
 }
 
-// WorldRotation updates the world matrix and sets
-// the specified vector to the current world rotation of this node in Euler angles.
-func (n *Node) WorldRotation(result *math32.Vector3) {
-	var quaternion math32.Quaternion
-	n.WorldQuaternion(&quaternion)
-	result.SetFromQuaternion(&quaternion)
+// WorldRotation updates the world matrix returns the current world rotation of this node in Euler angles.
+func (n *Node) WorldRotation() math32.Vector3 {
+	var result math32.Vector3
+	result.SetFromQuaternion(n.WorldQuaternion())
+	return result
 }
 
-// WorldScale updates the world matrix and sets
-// the specified vector to the current world scale of this node.
-func (n *Node) WorldScale(result *math32.Vector3) {
-	var position math32.Vector3
-	var quaternion math32.Quaternion
+// WorldScale updates the world matrix and returns the current world scale of this node.
+func (n *Node) WorldScale() math32.Vector3 {
 	n.UpdateMatrixWorld()
-	n.matrixWorld.Decompose(&position, &quaternion, result)
+	return n.matrixWorld.GetScale()
 }
 
-// WorldDirection updates the world matrix and sets
-// the specified vector to the current world direction of this node.
-func (n *Node) WorldDirection(result *math32.Vector3) {
-	var quaternion math32.Quaternion
-	n.WorldQuaternion(&quaternion)
-	*result = n.direction
-	result.ApplyQuaternion(quaternion)
+// WorldDirection updates the world matrix and returns the current world direction of this node.
+func (n *Node) WorldDirection() math32.Vector3 {
+	quaternion := n.WorldQuaternion()
+	dir := n.direction
+	dir.ApplyQuaternion(quaternion)
+	return dir
 }
 
 // MatrixWorld returns a copy of the matrix world of this node.
@@ -654,7 +645,7 @@ func (n *Node) UpdateMatrix() bool {
 	if !n.matNeedsUpdate && !n.rotNeedsUpdate {
 		return false
 	}
-	n.matrix.Compose(&n.position, &n.quaternion, &n.scale)
+	n.matrix.Compose(n.position, n.quaternion, n.scale)
 	n.matNeedsUpdate = false
 	return true
 }

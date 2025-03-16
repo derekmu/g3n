@@ -44,7 +44,7 @@ func (q *Quaternion) Copy(other *Quaternion) *Quaternion {
 // SetFromEuler sets this quaternion from the specified vector with euler angles for each axis.
 // It is assumed that the Euler angles are in XYZ order.
 // Returns pointer to this updated quaternion.
-func (q *Quaternion) SetFromEuler(euler *Vector3) *Quaternion {
+func (q *Quaternion) SetFromEuler(euler Vector3) *Quaternion {
 	c1 := Cos(euler.X / 2)
 	c2 := Cos(euler.Y / 2)
 	c3 := Cos(euler.Z / 2)

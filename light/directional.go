@@ -60,9 +60,8 @@ func (ld *Directional) Intensity() float32 {
 // RenderSetup is called by the engine before rendering the scene
 func (ld *Directional) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo, idx int) {
 	// Calculates light position in camera coordinates and updates uniform
-	var pos math32.Vector3
-	ld.WorldPosition(&pos)
-	pos4 := math32.Vector4{pos.X, pos.Y, pos.Z, 0.0}
+	pos := ld.WorldPosition()
+	pos4 := math32.Vector4{X: pos.X, Y: pos.Y, Z: pos.Z}
 	pos4.ApplyMatrix4(&rinfo.ViewMatrix)
 	ld.udata.position.X = pos4.X
 	ld.udata.position.Y = pos4.Y

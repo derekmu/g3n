@@ -86,9 +86,8 @@ func (lp *Point) QuadraticDecay() float32 {
 // RenderSetup is called by the engine before rendering the scene
 func (lp *Point) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo, idx int) {
 	// Calculates light position in camera coordinates and updates uniform
-	var pos math32.Vector3
-	lp.WorldPosition(&pos)
-	pos4 := math32.Vector4{pos.X, pos.Y, pos.Z, 1.0}
+	pos := lp.WorldPosition()
+	pos4 := math32.Vector4{X: pos.X, Y: pos.Y, Z: pos.Z, W: 1.0}
 	pos4.ApplyMatrix4(&rinfo.ViewMatrix)
 	lp.udata.position.X = pos4.X
 	lp.udata.position.Y = pos4.Y

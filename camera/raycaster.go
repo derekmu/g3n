@@ -129,7 +129,7 @@ func (rc *Raycaster) intersectObject(inode core.INode, recursive bool, intersect
 // pointing to the direction defined by the specified coordinates unprojected using this camera.
 func (rc *Raycaster) SetFromCamera(cam *Camera, sx, sy float32) {
 	matrixWorld := cam.MatrixWorld()
-	rc.Origin.SetFromMatrixPosition(&matrixWorld)
+	rc.Origin = matrixWorld.GetPosition()
 	rc.Direction.Set(sx, sy, 0.5)
 	cam.Unproject(&rc.Direction)
 	rc.Direction.Sub(&rc.Origin).Normalize()
@@ -149,18 +149,15 @@ func (rc *Raycaster) RaycastSprite(s *graphic.Sprite) (Intersection, bool) {
 	mv.MultiplyMatrices(&rc.ViewMatrix, &matrixWorld)
 
 	// Decompose transformation matrix in its components
-	var position math32.Vector3
-	var quaternion math32.Quaternion
-	var scale math32.Vector3
-	mv.Decompose(&position, &quaternion, &scale)
+	position, quaternion, scale := mv.Decompose()
 
 	// Remove any rotation in X and Y axis and
 	// compose new transformation matrix
 	rotation := s.Rotation()
 	rotation.X = 0
 	rotation.Y = 0
-	quaternion.SetFromEuler(&rotation)
-	mv.Compose(&position, &quaternion, &scale)
+	quaternion.SetFromEuler(rotation)
+	mv.Compose(position, quaternion, scale)
 
 	// Get buffer with vertices and uvs
 	geom := s.GetGeometry()
