@@ -193,13 +193,13 @@ func (gr *Graphic) CalculateMatrices(rinfo *core.RenderInfo) {
 }
 
 // ModelViewMatrix returns the last cached model view matrix for this graphic.
-func (gr *Graphic) ModelViewMatrix() *math32.Matrix4 {
-	return &gr.mdata.mvm
+func (gr *Graphic) ModelViewMatrix() math32.Matrix4 {
+	return gr.mdata.mvm
 }
 
 // ModelViewProjectionMatrix returns the last cached model view projection matrix for this graphic.
-func (gr *Graphic) ModelViewProjectionMatrix() *math32.Matrix4 {
-	return &gr.mdata.mvpm
+func (gr *Graphic) ModelViewProjectionMatrix() math32.Matrix4 {
+	return gr.mdata.mvpm
 }
 
 // GraphicMaterial specifies the material to be used for a subset of vertices from a Graphic's geometry.

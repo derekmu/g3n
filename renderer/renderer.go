@@ -275,11 +275,7 @@ func zSort(grmats []*graphic.GraphicMaterial) {
 		}
 		mvm1 := gr1.ModelViewMatrix()
 		mvm2 := gr2.ModelViewMatrix()
-		g1pos := gr1.Position()
-		g2pos := gr2.Position()
-		g1pos.ApplyMatrix4(mvm1)
-		g2pos.ApplyMatrix4(mvm2)
-		return cmp.Compare(g1pos.Z, g2pos.Z)
+		return cmp.Compare(mvm1[14], mvm2[14])
 	})
 }
 
