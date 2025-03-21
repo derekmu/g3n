@@ -29,11 +29,6 @@ func NewLabel(txt string) *Label {
 	return NewLabelWithFont(txt, StyleDefault().Font)
 }
 
-// NewIconLabel creates a Label with the specified text using the default icon font.
-func NewIconLabel(txt string) *Label {
-	return NewLabelWithFont(txt, StyleDefault().FontIcon)
-}
-
 // NewLabelWithFont creates a Label with the specified text using the specified font.
 func NewLabelWithFont(txt string, fnt *text.Font) *Label {
 	l := new(Label)
@@ -46,7 +41,7 @@ func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.InitPanel(l, 0, 0)
 	l.SetResizeToTexture(true)
 	l.font = fnt
-	l.color = math32.Color4{1, 1, 1, 1}
+	l.color = math32.Color4{R: 1, G: 1, B: 1, A: 1}
 	l.fontAttributes = text.FontAttributes{
 		PointSize: 14,
 		DPI:       72,
@@ -118,6 +113,17 @@ func (l *Label) SetFontDPI(dpi int32) {
 // FontDPI returns the resolution of the font in dots per inch (DPI).
 func (l *Label) FontDPI() int32 {
 	return l.fontAttributes.DPI
+}
+
+// SetTextColor updates both the text and color and redraws the label.
+//
+// This reduces redraws compared to changing the text and color separately.
+func (l *Label) SetTextColor(txt string, color math32.Color4) {
+	if txt != l.text || l.color != color {
+		l.text = txt
+		l.color = color
+		l.drawText()
+	}
 }
 
 // drawText redraws the label texture.

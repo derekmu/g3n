@@ -11,16 +11,19 @@ import (
 
 // Style contains the styles for all GUI elements
 type Style struct {
-	Font     *text.Font
-	FontIcon *text.Font
+	Font *text.Font
 }
 
-var defaultStyle = &Style{
-	Font:     assets.NewFreeSansFont(),
-	FontIcon: assets.NewMaterialIconsRegularFont(),
+var defaultStyle = Style{
+	Font: assets.NewFreeSansFont(),
 }
 
-// StyleDefault returns a pointer to the current default style
-func StyleDefault() *Style {
+// StyleDefault returns the current default style.
+func StyleDefault() Style {
 	return defaultStyle
+}
+
+// SetStyleDefault sets the current default style.
+func SetStyleDefault(style Style) {
+	defaultStyle = style
 }
