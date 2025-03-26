@@ -1,10 +1,10 @@
 #ifdef TOTAL_BONES
-uniform mat4 Bones[TOTAL_BONES];
+uniform mat4 uBones[TOTAL_BONES];
 in vec4 matricesIndices;
 in vec4 matricesWeights;
 #endif
 
-void bones(inout mat4 finalWorld, inout mat3 finalNormal){
+void bones(inout mat4 finalWorld, inout mat3 finalNormal) {
     #ifdef TOTAL_BONES
     mat4 influence = mat4(0.0);
     mat3 normalInfluence = mat3(0.0);
