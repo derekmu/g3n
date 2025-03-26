@@ -25,7 +25,11 @@ func main() {
 
 	geom := geometry.NewPlane(10, 10)
 
-	meshGreen := graphic.NewMesh(geom, material.NewStandard(math32.Color{G: 1}))
+	greenMat := material.NewPhysical()
+	greenMat.SetBaseColorFactor(math32.Color4{G: 0.5, A: 1})
+	greenMat.SetMetallicFactor(0.5)
+	greenMat.SetRoughnessFactor(0.5)
+	meshGreen := graphic.NewMesh(geom, greenMat)
 	meshGreen.SetName("GREEN")
 	meshGreen.RotateOnAxis(math32.Vector3{X: 1}, -math32.Pi/2)
 	meshGreen.SetPositionY(-10.1)
@@ -63,6 +67,7 @@ func main() {
 		switch ev := ev.(type) {
 		case core.WindowSizeEvent:
 			ap.Gls().Viewport(0, 0, int32(ev.Width), int32(ev.Height))
+
 			cam.SetAspect(float32(ev.Width) / float32(ev.Height))
 		default:
 			return false

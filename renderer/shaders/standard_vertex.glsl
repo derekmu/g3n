@@ -15,14 +15,14 @@ uniform mat4 uMatrices[3];
 #define uModelViewProjectionMatrix uMatrices[1]
 #define uNormalMatrix              mat3(uMatrices[2])
 
-#include <morph>
-#include <bones>
-
-// Material parameters uniform array
+// Texture parameters
 #if MAT_TEXTURES > 0
 uniform vec2 uMatTexInfo[3 * MAT_TEXTURES];
 #define uMatTexFlipY(a)      bool(uMatTexInfo[(3 * a) + 2].x)
 #endif
+
+#include <morph>
+#include <bones>
 
 void main() {
     vec3 vPosition = VertexPosition;

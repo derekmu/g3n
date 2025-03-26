@@ -8,7 +8,7 @@ in vec2 FragTexcoord;
 // Output variables
 out vec4 FragColor;
 
-// Material parameters uniform array
+// Material parameters
 uniform vec3 uMaterial[6];
 #define uMatAmbientColor     uMaterial[0]
 #define uMatDiffuseColor     uMaterial[1]
@@ -19,18 +19,14 @@ uniform vec3 uMaterial[6];
 #define uMatPointSize        uMaterial[4].z
 #define uMatPointRotationZ   uMaterial[5].x
 
-#include <lights>
-
+// Texture parameters
 #if MAT_TEXTURES > 0
-// Texture unit sampler array
 uniform sampler2D uMatTexture[MAT_TEXTURES];
-// Texture parameters (3*vec2 per texture)
 uniform vec2 uMatTexInfo[3 * MAT_TEXTURES];
 #define uMatTexOffset(a)     uMatTexInfo[(3 * a)]
 #define uMatTexRepeat(a)     uMatTexInfo[(3 * a) + 1]
 #define uMatTexFlipY(a)      bool(uMatTexInfo[(3 * a) + 2].x)
 #define uMatTexVisible(a)    bool(uMatTexInfo[(3 * a) + 2].y)
-
 // Alpha compositing (see here: https://ciechanow.ski/alpha-compositing/)
 vec4 Blend(vec4 texMixed, vec4 texColor) {
     texMixed.rgb *= texMixed.a;
@@ -42,6 +38,8 @@ vec4 Blend(vec4 texMixed, vec4 texColor) {
     return texMixed;
 }
 #endif
+
+#include <lights>
 
 void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 matDiffuse, out vec3 ambdiff, out vec3 spec) {
     vec3 ambientTotal = vec3(0.0);

@@ -19,7 +19,7 @@ uniform vec4 uMaterial[3];
 #include <pbr>
 
 void main() {
-    vec3 color = pbr(uBaseColor, uEmissiveColor, uRoughnessFactor, uMetallicFactor);
+    vec4 color = pbr(uBaseColor, uEmissiveColor, uRoughnessFactor, uMetallicFactor);
 
-    FragColor = vec4(pow(color, vec3(1.0 / 2.2)), baseColor.a);
+    FragColor = vec4(pow(color.rgb, vec3(1.0 / 2.2)), color.a);
 }

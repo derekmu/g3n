@@ -24,6 +24,8 @@ type Physical struct {
 		emissiveFactor  math32.Color4
 		metallicFactor  float32
 		roughnessFactor float32
+		_               float32
+		_               float32
 	}
 }
 

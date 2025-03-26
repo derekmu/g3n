@@ -13,7 +13,7 @@ uniform mat4 uMatrices[3];
 #define uModelViewMatrix           uMatrices[0]
 #define uModelViewProjectionMatrix uMatrices[1]
 
-// Material parameters uniform array
+// Material parameters
 uniform vec3 uMaterial[6];
 #define uMatAmbientColor     uMaterial[0]
 #define uMatDiffuseColor     uMaterial[1]
@@ -24,10 +24,9 @@ uniform vec3 uMaterial[6];
 #define uMatPointSize        uMaterial[4].z
 #define uMatPointRotationZ   uMaterial[5].x
 
+// Texture parameters
 #if MAT_TEXTURES > 0
-// Texture unit sampler array
 uniform sampler2D uMatTexture[MAT_TEXTURES];
-// Texture parameters (3*vec2 per texture)
 uniform vec2 uMatTexInfo[3 * MAT_TEXTURES];
 #define uMatTexOffset(a)     uMatTexInfo[(3 * a)]
 #define uMatTexRepeat(a)     uMatTexInfo[(3 * a) + 1]

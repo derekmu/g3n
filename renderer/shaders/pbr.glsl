@@ -75,9 +75,8 @@ vec3 getNormal() {
     mat3 tbn = mat3(t, b, ng);
 
     #ifdef HAS_NORMALMAP
-    float uNormalScale = 1.0;
     vec3 n = texture(uNormalSampler, FragTexcoord).rgb;
-    n = normalize(tbn * ((2.0 * n - 1.0) * vec3(uNormalScale, uNormalScale, 1.0)));
+    n = normalize(tbn * ((2.0 * n - 1.0) * vec3(1.0, 1.0, 1.0)));
     #else
     // The tbn matrix is linearly interpolated, so we need to re-normalize
     vec3 n = normalize(tbn[2].xyz);
@@ -156,11 +155,13 @@ vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
     return color;
 }
 
+vec4 pbr(vec4 pBaseColor, vec4 pEmissiveColor, float pRoughnessFactor, float pMetallicFactor) {
+    float perceptualRoughness = pRoughnessFactor;
+    float metallic = pMetallicFactor;
 
-vec3 pbr(vec4 pBaseColor, vec4 pEmissiveColor, float perceptualRoughness, float metallic) {
     #ifdef HAS_METALROUGHNESSMAP
     // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
-    // This layout reserves the 'r' channel for occlusion map data.
+    // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
     vec4 mrSample = texture(uMetallicRoughnessSampler, FragTexcoord);
     perceptualRoughness = mrSample.g * perceptualRoughness;
     metallic = mrSample.b * metallic;
@@ -174,16 +175,16 @@ vec3 pbr(vec4 pBaseColor, vec4 pEmissiveColor, float perceptualRoughness, float 
 
     // The albedo may be defined from a base texture or a flat color
     #ifdef HAS_BASECOLORMAP
-    vec4 baseColor = SRGBtoLINEAR(texture(uBaseColorSampler, FragTexcoord)) * baseColor;
+    vec4 baseColor = SRGBtoLINEAR(texture(uBaseColorSampler, FragTexcoord)) * pBaseColor;
     #else
-    vec4 baseColor = baseColor;
+    vec4 baseColor = pBaseColor;
     #endif
 
     vec3 f0 = vec3(0.04);
     vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);
     diffuseColor *= 1.0 - metallic;
 
-    vec3 specularColor = mix(f0, baseColor.rgb, uMetallicFactor);
+    vec3 specularColor = mix(f0, baseColor.rgb, pMetallicFactor);
 
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
 
@@ -290,5 +291,5 @@ vec3 pbr(vec4 pBaseColor, vec4 pEmissiveColor, float perceptualRoughness, float 
     // Metallic
     //    color = vec3(metallic);
 
-    return color;
+    return vec4(color, baseColor.a);
 }

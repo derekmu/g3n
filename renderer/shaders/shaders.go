@@ -94,7 +94,7 @@ func expandShaderSource(shaderName string, shaderSource string) string {
 			if matches := includeRegex.FindStringSubmatch(line); matches != nil {
 				includeName := matches[1]
 				if _, ok := includesFound[includeName]; ok {
-					log.Panicf("circular include %s in shader %s", includeName, shaderName)
+					log.Panicf("duplicate include %s in shader %s", includeName, shaderName)
 				} else {
 					includesFound[includeName] = true
 				}
