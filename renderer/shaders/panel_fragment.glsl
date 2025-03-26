@@ -1,5 +1,11 @@
 precision highp float;
 
+// Input variables
+in vec2 FragTexcoord;
+
+// Output variables
+out vec4 FragColor;
+
 // Texture uniforms
 uniform sampler2D uMatTexture;
 uniform vec2 uMatTexInfo[3];
@@ -8,15 +14,9 @@ uniform vec2 uMatTexInfo[3];
 
 // Panel uniform
 uniform vec4 uPanel[8];
-#define uBounds          uPanel[0] // bounds in texture coordinates
-#define uColor           uPanel[1] // panel color
-#define uTextureValid    bool(uPanel[2].x) // texture valid flag
-
-// Inputs from vertex shader
-in vec2 FragTexcoord;
-
-// Output
-out vec4 FragColor;
+#define uBounds          uPanel[0]// bounds in texture coordinates
+#define uColor           uPanel[1]// panel color
+#define uTextureValid    bool(uPanel[2].x)// texture valid flag
 
 void main() {
     // Discard fragment outside of received bounds

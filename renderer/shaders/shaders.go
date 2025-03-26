@@ -5,74 +5,113 @@
 // Package shaders contains the several shaders used by the engine
 package shaders
 
-// ProgramInfo contains information for a registered shader program
+import (
+	"iter"
+	"log"
+	"maps"
+	"regexp"
+	"strings"
+)
+
+var includeMap = map[string]string{}
+var shaderMap = map[string]string{}
+var programMap = map[string]ProgramInfo{}
+
+// ProgramInfo contains information for a registered shader program.
 type ProgramInfo struct {
 	Vertex   string // Vertex shader name
 	Fragment string // Fragment shader name
 	Geometry string // Geometry shader name (optional)
 }
 
-// AddShader add a shader to default shaders registry.
-// The specified name can be used when adding programs to the registry
+// AddInclude adds a shader include to the registry.
+//
+// Panics if the include name is already registered.
+func AddInclude(name string, source string) {
+	if _, ok := includeMap[name]; ok {
+		log.Panicf("shader include already added %s", name)
+	}
+	includeMap[name] = source
+}
+
+// AddShader add a shader to registry.
+//
+// Panics if the shader name is already registered.
 func AddShader(name string, source string) {
-	if len(name) == 0 || len(source) == 0 {
-		panic("Invalid shader name and/or source")
+	if _, ok := shaderMap[name]; ok {
+		log.Panicf("shader already added %s", name)
 	}
 	shaderMap[name] = source
 }
 
-// AddProgram adds a shader program to the default registry of programs.
-// Currently up to 3 shaders: vertex, fragment and geometry (optional) can be specified.
-func AddProgram(name string, vertex string, frag string, others ...string) {
-	if len(name) == 0 || len(vertex) == 0 || len(frag) == 0 {
-		panic("Program and/or shader name empty")
+// AddProgram adds a program to the registry.
+//
+// Vertex and fragment shaders are required.
+// Geometry shader is optional, an empty string means it won't be used.
+//
+// Panics if the program name is already registered or if any of the shaders aren't registered.
+func AddProgram(name string, vertex string, fragment string, geometry string) {
+	if _, ok := programMap[name]; ok {
+		log.Panicf("program already added %s", name)
 	}
-	if shaderMap[vertex] == "" {
-		panic("Invalid vertex shader name")
+	if _, ok := shaderMap[vertex]; !ok {
+		log.Panicf("shader %s not found for program %s", vertex, name)
 	}
-	if shaderMap[frag] == "" {
-		panic("Invalid vertex shader name")
+	if _, ok := shaderMap[fragment]; !ok {
+		log.Panicf("shader %s missing for program %s", fragment, name)
 	}
-	var geom = ""
-	if len(others) > 0 {
-		geom = others[0]
-		if shaderMap[geom] == "" {
-			panic("Invalid geometry shader name")
+	if geometry != "" {
+		if _, ok := shaderMap[geometry]; !ok {
+			log.Panicf("shader %s missing for program %s", geometry, name)
 		}
 	}
 	programMap[name] = ProgramInfo{
 		Vertex:   vertex,
-		Fragment: frag,
-		Geometry: geom,
+		Fragment: fragment,
+		Geometry: geometry,
 	}
 }
 
-// Shaders returns list with the names of all shaders currently in the default shaders registry.
-func Shaders() []string {
-	list := make([]string, 0)
-	for name := range shaderMap {
-		list = append(list, name)
+// Shaders returns an iterator of all the shaders and their expanded source code.
+func Shaders() iter.Seq2[string, string] {
+	return func(yield func(string, string) bool) {
+		for name, source := range shaderMap {
+			if !yield(name, expandShaderSource(name, source)) {
+				return
+			}
+		}
 	}
-	return list
 }
 
-// ShaderSource returns the source code of the specified shader in the default shaders registry.
-// If the name is not found an empty string is returned
-func ShaderSource(name string) string {
-	return shaderMap[name]
-}
-
-// Programs returns list with the names of all programs currently in the default shaders registry.
-func Programs() []string {
-	list := make([]string, 0)
-	for name := range programMap {
-		list = append(list, name)
+func expandShaderSource(shaderName string, shaderSource string) string {
+	includesFound := map[string]bool{}
+	includeRegex := regexp.MustCompile(`\s*#include\s+<([^>]*)>`)
+	expanded := true
+	for expanded {
+		expanded = false
+		lines := strings.Split(shaderSource, "\n")
+		for i, line := range lines {
+			if matches := includeRegex.FindStringSubmatch(line); matches != nil {
+				includeName := matches[1]
+				if _, ok := includesFound[includeName]; ok {
+					log.Panicf("circular include %s in shader %s", includeName, shaderName)
+				} else {
+					includesFound[includeName] = true
+				}
+				if includeSource, ok := includeMap[includeName]; ok {
+					lines[i] = includeSource
+					expanded = true
+				} else {
+					log.Panicf("include %s missing in shader %s", includeName, shaderName)
+				}
+			}
+		}
+		shaderSource = strings.Join(lines, "\n")
 	}
-	return list
+	return shaderSource
 }
 
-// GetProgramInfo returns ProgramInfo struct for the specified program name
-// in the default shaders registry
-func GetProgramInfo(name string) ProgramInfo {
-	return programMap[name]
+// Programs returns an iterator of all the registered program names and their shaders.
+func Programs() iter.Seq2[string, ProgramInfo] {
+	return maps.All(programMap)
 }

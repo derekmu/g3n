@@ -4,6 +4,10 @@ layout (location = 1) in vec3 VertexNormal;
 layout (location = 2) in vec3 VertexColor;
 layout (location = 3) in vec2 VertexTexcoord;
 
+// Output variables
+out vec3 Color;
+flat out mat2 Rotation;
+
 // Model uniforms
 uniform mat4 uMatrices[3];
 #define uModelViewMatrix           uMatrices[0]
@@ -40,10 +44,6 @@ vec4 Blend(vec4 texMixed, vec4 texColor) {
     return texMixed;
 }
 #endif
-
-// Outputs for fragment shader
-out vec3 Color;
-flat out mat2 Rotation;
 
 void main() {
     // Rotation matrix for fragment shader

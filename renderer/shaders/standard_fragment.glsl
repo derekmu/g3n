@@ -1,43 +1,12 @@
 precision highp float;
 
-// Inputs from vertex shader
-in vec4 Position;// Fragment position in camera coordinates
-in vec3 Normal;// Fragment normal in camera coordinates
-in vec2 FragTexcoord;// Fragment texture coordinates
+// Input variables
+in vec4 Position;
+in vec3 Normal;
+in vec2 FragTexcoord;
 
-// Lights uniforms
-#if AMB_LIGHTS > 0
-// Ambient lights color uniform
-uniform vec3 uAmbientLightColor[AMB_LIGHTS];
-#endif
-
-#if DIR_LIGHTS > 0
-// Directional lights uniform array. Each directional light uses 2 elements
-uniform vec3 uDirLight[2 * DIR_LIGHTS];
-#define uDirLightColor(a)    uDirLight[2 * a]
-#define uDirLightPosition(a) uDirLight[2 * a + 1]
-#endif
-
-#if POINT_LIGHTS > 0
-// Point lights uniform array. Each point light uses 3 elements
-uniform vec3 uPointLight[3 * POINT_LIGHTS];
-#define uPointLightColor(a)          uPointLight[3 * a]
-#define uPointLightPosition(a)       uPointLight[3 * a + 1]
-#define uPointLightLinearDecay(a)    uPointLight[3 * a + 2].x
-#define uPointLightQuadraticDecay(a) uPointLight[3 * a + 2].y
-#endif
-
-#if SPOT_LIGHTS > 0
-// Spot lights uniforms. Each spot light uses 5 elements
-uniform vec3 uSpotLight[5 * SPOT_LIGHTS];
-#define uSpotLightColor(a)           uSpotLight[5 * a]
-#define uSpotLightPosition(a)        uSpotLight[5 * a + 1]
-#define uSpotLightDirection(a)       uSpotLight[5 * a + 2]
-#define uSpotLightAngularDecay(a)    uSpotLight[5 * a + 3].x
-#define uSpotLightCutoffAngle(a)     uSpotLight[5 * a + 3].y
-#define uSpotLightLinearDecay(a)     uSpotLight[5 * a + 3].z
-#define uSpotLightQuadraticDecay(a)  uSpotLight[5 * a + 4].x
-#endif
+// Output variables
+out vec4 FragColor;
 
 // Material parameters uniform array
 uniform vec3 uMaterial[6];
@@ -50,6 +19,8 @@ uniform vec3 uMaterial[6];
 #define uMatPointSize        uMaterial[4].z
 #define uMatPointRotationZ   uMaterial[5].x
 
+#include <lights>
+
 #if MAT_TEXTURES > 0
 // Texture unit sampler array
 uniform sampler2D uMatTexture[MAT_TEXTURES];
@@ -59,6 +30,7 @@ uniform vec2 uMatTexInfo[3 * MAT_TEXTURES];
 #define uMatTexRepeat(a)     uMatTexInfo[(3 * a) + 1]
 #define uMatTexFlipY(a)      bool(uMatTexInfo[(3 * a) + 2].x)
 #define uMatTexVisible(a)    bool(uMatTexInfo[(3 * a) + 2].y)
+
 // Alpha compositing (see here: https://ciechanow.ski/alpha-compositing/)
 vec4 Blend(vec4 texMixed, vec4 texColor) {
     texMixed.rgb *= texMixed.a;
@@ -93,8 +65,8 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
     noLights = false;
     // Directional lights
     for (int i = 0; i < DIR_LIGHTS; ++i) {
-        vec3 lightDirection = normalize(uDirLightPosition(i)); // Vector from fragment to light source
-        float dotNormal = dot(lightDirection, normal); // Dot product between light direction and fragment normal
+        vec3 lightDirection = normalize(uDirLightPosition(i));// Vector from fragment to light source
+        float dotNormal = dot(lightDirection, normal);// Dot product between light direction and fragment normal
         if (dotNormal > EPS) {
             // If the fragment is lit
             diffuseTotal += uDirLightColor(i) * matDiffuse * dotNormal;
@@ -112,10 +84,10 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
     noLights = false;
     // Point lights
     for (int i = 0; i < POINT_LIGHTS; ++i) {
-        vec3 lightDirection = uPointLightPosition(i) - vec3(position); // Vector from fragment to light source
-        float lightDistance = length(lightDirection); // Distance from fragment to light source
-        lightDirection = lightDirection / lightDistance; // Normalize lightDirection
-        float dotNormal = dot(lightDirection, normal);  // Dot product between light direction and fragment normal
+        vec3 lightDirection = uPointLightPosition(i) - vec3(position);// Vector from fragment to light source
+        float lightDistance = length(lightDirection);// Distance from fragment to light source
+        lightDirection = lightDirection / lightDistance;// Normalize lightDirection
+        float dotNormal = dot(lightDirection, normal);// Dot product between light direction and fragment normal
         if (dotNormal > EPS) {
             // If the fragment is lit
             float attenuation = 1.0 / (1.0 + lightDistance * (uPointLightLinearDecay(i) + uPointLightQuadraticDecay(i) * lightDistance));
@@ -136,15 +108,15 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
     noLights = false;
     for (int i = 0; i < SPOT_LIGHTS; ++i) {
         // Calculates the direction and distance from the current vertex to this spot light.
-        vec3 lightDirection = uSpotLightPosition(i) - vec3(position); // Vector from fragment to light source
-        float lightDistance = length(lightDirection); // Distance from fragment to light source
-        lightDirection = lightDirection / lightDistance; // Normalize lightDirection
+        vec3 lightDirection = uSpotLightPosition(i) - vec3(position);// Vector from fragment to light source
+        float lightDistance = length(lightDirection);// Distance from fragment to light source
+        lightDirection = lightDirection / lightDistance;// Normalize lightDirection
         float angleDot = dot(-lightDirection, uSpotLightDirection(i));
         float angle = acos(angleDot);
         float cutoff = radians(clamp(uSpotLightCutoffAngle(i), 0.0, 90.0));
         if (angle < cutoff) {
             // Check if fragment is inside spotlight beam
-            float dotNormal = dot(lightDirection, normal); // Dot product between light direction and fragment normal
+            float dotNormal = dot(lightDirection, normal);// Dot product between light direction and fragment normal
             if (dotNormal > EPS) {
                 // If the fragment is lit
                 float attenuation = 1.0 / (1.0 + lightDistance * (uSpotLightLinearDecay(i) + uSpotLightQuadraticDecay(i) * lightDistance));
@@ -169,9 +141,6 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
     ambdiff = ambientTotal + uMatEmissiveColor + diffuseTotal;
     spec = specularTotal;
 }
-
-// Final fragment color
-out vec4 FragColor;
 
 void main() {
     // Compute final texture color

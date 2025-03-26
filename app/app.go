@@ -34,10 +34,7 @@ func NewApplication(width, height int, title string) *Application {
 	}
 	app.window = win
 	app.renderer = renderer.NewRenderer(win.Gls())
-	err = app.renderer.AddDefaultShaders()
-	if err != nil {
-		panic(fmt.Errorf("AddDefaultShaders:%v", err))
-	}
+	app.renderer.AddShaders()
 	gui.InitManager(win)
 	return app
 }

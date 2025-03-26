@@ -2,6 +2,18 @@ package shaders
 
 import _ "embed"
 
+//go:embed lights.glsl
+var lightsSource string
+
+//go:embed pbr.glsl
+var pbrSource string
+
+//go:embed bones.glsl
+var bonesSource string
+
+//go:embed morph.glsl
+var morphSource string
+
 //go:embed basic_vertex.glsl
 var basicVertexSource string
 
@@ -32,25 +44,24 @@ var pointVertexSource string
 //go:embed point_fragment.glsl
 var pointFragmentSource string
 
-// Maps shader name with its source code
-var shaderMap = map[string]string{
-	"panel_fragment":    panelFragmentSource,
-	"physical_vertex":   physicalVertexSource,
-	"basic_vertex":      basicVertexSource,
-	"standard_vertex":   standardVertexSource,
-	"point_vertex":      pointVertexSource,
-	"standard_fragment": standardFragmentSource,
-	"point_fragment":    pointFragmentSource,
-	"physical_fragment": physicalFragmentSource,
-	"basic_fragment":    basicFragmentSource,
-	"panel_vertex":      panelVertexSource,
-}
-
-// Maps program name with ProgramInfo struct with shaders names
-var programMap = map[string]ProgramInfo{
-	"basic":    {"basic_vertex", "basic_fragment", ""},
-	"panel":    {"panel_vertex", "panel_fragment", ""},
-	"physical": {"physical_vertex", "physical_fragment", ""},
-	"point":    {"point_vertex", "point_fragment", ""},
-	"standard": {"standard_vertex", "standard_fragment", ""},
+func init() {
+	AddInclude("lights", lightsSource)
+	AddInclude("pbr", pbrSource)
+	AddInclude("bones", bonesSource)
+	AddInclude("morph", morphSource)
+	AddShader("basic_vertex", basicVertexSource)
+	AddShader("basic_fragment", basicFragmentSource)
+	AddProgram("basic", "basic_vertex", "basic_fragment", "")
+	AddShader("standard_vertex", standardVertexSource)
+	AddShader("standard_fragment", standardFragmentSource)
+	AddProgram("standard", "standard_vertex", "standard_fragment", "")
+	AddShader("physical_vertex", physicalVertexSource)
+	AddShader("physical_fragment", physicalFragmentSource)
+	AddProgram("physical", "physical_vertex", "physical_fragment", "")
+	AddShader("panel_vertex", panelVertexSource)
+	AddShader("panel_fragment", panelFragmentSource)
+	AddProgram("panel", "panel_vertex", "panel_fragment", "")
+	AddShader("point_vertex", pointVertexSource)
+	AddShader("point_fragment", pointFragmentSource)
+	AddProgram("point", "point_vertex", "point_fragment", "")
 }

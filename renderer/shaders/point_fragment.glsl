@@ -1,5 +1,12 @@
 precision highp float;
 
+// Input variables
+in vec3 Color;
+flat in mat2 Rotation;
+
+// Output variables
+out vec4 FragColor;
+
 // Material parameters uniform array
 uniform vec3 uMaterial[6];
 #define uMatAmbientColor     uMaterial[0]
@@ -31,13 +38,6 @@ vec4 Blend(vec4 texMixed, vec4 texColor) {
     return texMixed;
 }
 #endif
-
-// Inputs from vertex shader
-in vec3 Color;
-flat in mat2 Rotation;
-
-// Output
-out vec4 FragColor;
 
 void main() {
     // Compute final texture color
