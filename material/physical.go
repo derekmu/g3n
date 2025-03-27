@@ -49,8 +49,8 @@ func (m *Physical) InitPhysical() {
 }
 
 // SetBaseColorFactor sets this material's base color.
-func (m *Physical) SetBaseColorFactor(c math32.Color4) {
-	m.udata.baseColorFactor = c
+func (m *Physical) SetBaseColorFactor(c math32.Color) {
+	m.udata.baseColorFactor = c.Color4()
 }
 
 // SetMetallicFactor sets this material's metallic factor.
