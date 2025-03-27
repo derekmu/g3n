@@ -155,7 +155,7 @@ vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
     return color;
 }
 
-vec4 pbr(vec4 baseColor, vec4 emissiveColor, float roughnessFactor, float metallicFactor) {
+vec4 pbr(vec4 baseColor, vec3 emissiveColor, float roughnessFactor, float metallicFactor) {
     float perceptualRoughness = roughnessFactor;
     float metallic = metallicFactor;
 

@@ -12,7 +12,7 @@ out vec4 FragColor;
 // Material parameters
 uniform vec4 uMaterial[3];
 #define uBaseColor          uMaterial[0]
-#define uEmissiveColor      uMaterial[1]
+#define uEmissiveColor      uMaterial[1].rgb
 #define uMetallicFactor     uMaterial[2].x
 #define uRoughnessFactor    uMaterial[2].y
 
