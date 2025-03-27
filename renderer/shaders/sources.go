@@ -8,6 +8,9 @@ var lightsSource string
 //go:embed pbr.glsl
 var pbrSource string
 
+//go:embed phong.glsl
+var phongSource string
+
 //go:embed bones.glsl
 var bonesSource string
 
@@ -47,6 +50,7 @@ var pointFragmentSource string
 func init() {
 	AddInclude("lights", lightsSource)
 	AddInclude("pbr", pbrSource)
+	AddInclude("phong", phongSource)
 	AddInclude("bones", bonesSource)
 	AddInclude("morph", morphSource)
 	AddShader("basic_vertex", basicVertexSource)

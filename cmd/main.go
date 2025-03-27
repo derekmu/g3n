@@ -20,7 +20,7 @@ var up = math32.Vector3{Y: 1}
 func main() {
 	log.SetFlags(log.Lshortfile | log.Ldate | log.Lmicroseconds)
 
-	ap := app.NewApplication(1280, 720, "Demo")
+	ap := app.NewApplication(720, 720, "Demo")
 	scene := core.NewNode()
 
 	geom := geometry.NewPlane(10, 10)
@@ -35,7 +35,7 @@ func main() {
 	meshGreen.SetPositionY(-10.1)
 	scene.Add(meshGreen)
 
-	mat := material.NewStandard(math32.Color{R: 1})
+	mat := material.NewBlinnPhong(math32.Color{R: 1})
 	mat.SetTransparent(true)
 	mat.SetOpacity(0.5)
 	meshRed := graphic.NewMesh(geom, mat)
@@ -54,12 +54,11 @@ func main() {
 	scene.Add(meshBlue)
 
 	cam := camera.New(1)
-	cam.SetPosition(0, 10, 0)
 	cam.LookAt(meshGreen.Position(), up)
 	scene.Add(cam)
 
 	dlight := light.NewDirectional(math32.Color{R: 1, G: 1, B: 1}, 1.0)
-	dlight.SetPositionVec(cam.Position())
+	dlight.SetPosition(0, 10, 0)
 	dlight.LookAt(meshGreen.Position(), up)
 	scene.Add(dlight)
 
@@ -81,7 +80,7 @@ func main() {
 		meshBlue.RotateZ(float32(dt) / float32(time.Second) / 7 * math32.Pi)
 
 		st += dt
-		v := math32.Vector3{X: 10, Y: 20}
+		v := math32.Vector3{X: 5, Y: 5}
 		v.ApplyQuaternion(math32.QuaternionFromAxisAngle(up, float32(st)/float32(time.Second)/23*math32.Pi))
 		cam.SetPositionVec(v)
 		cam.LookAt(meshGreen.Position(), up)

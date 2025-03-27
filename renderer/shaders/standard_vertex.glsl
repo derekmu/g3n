@@ -7,6 +7,7 @@ layout (location = 3) in vec2 VertexTexcoord;
 // Output variables
 out vec4 Position;
 out vec3 Normal;
+out vec3 CamDir;
 out vec2 FragTexcoord;
 
 // Model uniforms
@@ -34,6 +35,7 @@ void main() {
 
     Position = uModelViewMatrix * finalWorld * vec4(vPosition, 1.0);
     Normal = normalize(uNormalMatrix * finalNormal * VertexNormal);
+    CamDir = normalize(-Position.xyz);
     vec2 texcoord = VertexTexcoord;
     #if MAT_TEXTURES > 0
     if (uMatTexFlipY(0)) {

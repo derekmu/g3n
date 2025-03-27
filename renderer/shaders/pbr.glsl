@@ -155,9 +155,9 @@ vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
     return color;
 }
 
-vec4 pbr(vec4 pBaseColor, vec4 pEmissiveColor, float pRoughnessFactor, float pMetallicFactor) {
-    float perceptualRoughness = pRoughnessFactor;
-    float metallic = pMetallicFactor;
+vec4 pbr(vec4 baseColor, vec4 emissiveColor, float roughnessFactor, float metallicFactor) {
+    float perceptualRoughness = roughnessFactor;
+    float metallic = metallicFactor;
 
     #ifdef HAS_METALROUGHNESSMAP
     // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
@@ -175,16 +175,14 @@ vec4 pbr(vec4 pBaseColor, vec4 pEmissiveColor, float pRoughnessFactor, float pMe
 
     // The albedo may be defined from a base texture or a flat color
     #ifdef HAS_BASECOLORMAP
-    vec4 baseColor = SRGBtoLINEAR(texture(uBaseColorSampler, FragTexcoord)) * pBaseColor;
-    #else
-    vec4 baseColor = pBaseColor;
+    baseColor = SRGBtoLINEAR(texture(uBaseColorSampler, FragTexcoord)) * baseColor;
     #endif
 
     vec3 f0 = vec3(0.04);
     vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);
     diffuseColor *= 1.0 - metallic;
 
-    vec3 specularColor = mix(f0, baseColor.rgb, pMetallicFactor);
+    vec3 specularColor = mix(f0, baseColor.rgb, metallicFactor);
 
     float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);
 
@@ -263,11 +261,9 @@ vec4 pbr(vec4 pBaseColor, vec4 pEmissiveColor, float pRoughnessFactor, float pMe
     #endif
 
     #ifdef HAS_EMISSIVEMAP
-    vec3 emissive = SRGBtoLINEAR(texture(uEmissiveSampler, FragTexcoord)).rgb * vec3(pEmissiveColor);
-    #else
-    vec3 emissive = vec3(pEmissiveColor);
+    emissiveColor = SRGBtoLINEAR(texture(uEmissiveSampler, FragTexcoord)).rgb * emissiveColor.rgb;
     #endif
-    color += emissive;
+    color += emissiveColor.rgb;
 
     // Alternative colors for testing:
     // Base Color
@@ -275,7 +271,7 @@ vec4 pbr(vec4 pBaseColor, vec4 pEmissiveColor, float pRoughnessFactor, float pMe
     // Normal
     //    FragColor = vec4(getNormal(), 1.0);
     // Emissive Color
-    //    FragColor = vec4(emissive, 1.0);
+    //    FragColor = vec4(emissiveColor, 1.0);
     // F
     //    color = F;
     // G
