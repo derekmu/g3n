@@ -7,12 +7,11 @@ package text
 import (
 	"bufio"
 	"fmt"
+	"github.com/derekmu/g3n/math32"
 	"image"
 	"image/png"
 	"os"
 	"unicode/utf8"
-
-	"github.com/derekmu/g3n/math32"
 )
 
 // CharInfo contains the information to locate a character in an Atlas
@@ -95,7 +94,7 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 	height := (nlines * a.Height) + a.Descent
 
 	// Draw atlas image
-	canvas := NewCanvas(maxWidth, height, math32.Color4{1, 1, 1, 1})
+	canvas := NewCanvas(maxWidth, height, math32.Color3{R: 1, G: 1, B: 1})
 	canvas.DrawText(0, 0, lines, font)
 	a.Image = canvas.RGBA
 

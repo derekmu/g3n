@@ -10,56 +10,38 @@ import (
 	"github.com/derekmu/g3n/math32"
 )
 
-// Directional represents a directional, positionless light
+// Directional represents a directional light.
 type Directional struct {
-	core.Node              // Embedded node
-	color     math32.Color // Light color
-	intensity float32      // Light intensity
-	uni       gls.Uniform  // Uniform location cache
-	udata     struct {     // Combined uniform data in 2 vec3:
-		color    math32.Color   // Light color
-		position math32.Vector3 // Light position
+	core.Node
+	uni   gls.Uniform
+	udata struct {
+		color    math32.Color3
+		position math32.Vector3
 	}
 }
 
-// NewDirectional creates and returns a pointer of a new directional light
-// the specified color and intensity.
-func NewDirectional(color math32.Color, intensity float32) *Directional {
+// NewDirectional returns a new directional light.
+func NewDirectional(color math32.Color) *Directional {
 	ld := new(Directional)
 	ld.InitNode(ld)
 
-	ld.color = color
-	ld.intensity = intensity
 	ld.uni.Init("uDirLight")
 	ld.SetColor(color)
 	return ld
 }
 
-// SetColor sets the color of this light
+// SetColor sets the color of this light.
 func (ld *Directional) SetColor(color math32.Color) {
-	ld.color = color
-	ld.udata.color = ld.color.MultiplyScalar(ld.intensity)
+	ld.udata.color = color.Color3()
 }
 
-// Color returns the current color of this light
+// Color returns the color of this light.
 func (ld *Directional) Color() math32.Color {
-	return ld.color
-}
-
-// SetIntensity sets the intensity of this light
-func (ld *Directional) SetIntensity(intensity float32) {
-	ld.intensity = intensity
-	ld.udata.color = ld.color.MultiplyScalar(ld.intensity)
-}
-
-// Intensity returns the current intensity of this light
-func (ld *Directional) Intensity() float32 {
-	return ld.intensity
+	return ld.udata.color
 }
 
 // RenderSetup is called by the engine before rendering the scene
 func (ld *Directional) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo, idx int) {
-	// Calculates light position in camera coordinates and updates uniform
 	pos := ld.WorldPosition()
 	pos4 := math32.Vector4{X: pos.X, Y: pos.Y, Z: pos.Z}
 	pos4.ApplyMatrix4(&rinfo.ViewMatrix)
@@ -67,7 +49,6 @@ func (ld *Directional) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo, idx int)
 	ld.udata.position.Y = pos4.Y
 	ld.udata.position.Z = pos4.Z
 
-	// Transfer uniform data
 	const vec3count = 2
 	location := ld.uni.LocationIdx(gs, vec3count*int32(idx))
 	gs.Uniform3fv(location, vec3count, &ld.udata.color.R)

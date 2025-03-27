@@ -7,6 +7,7 @@ import (
 	"github.com/derekmu/g3n/geometry"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/graphic"
+	"github.com/derekmu/g3n/gui"
 	"github.com/derekmu/g3n/light"
 	"github.com/derekmu/g3n/material"
 	"github.com/derekmu/g3n/math32"
@@ -35,7 +36,7 @@ func main() {
 	meshGreen.SetPositionY(-10.1)
 	scene.Add(meshGreen)
 
-	mat := material.NewBlinnPhong(math32.Color{R: 1})
+	mat := material.NewBlinnPhong(math32.Color3{R: 1})
 	mat.SetTransparent(true)
 	mat.SetOpacity(0.5)
 	meshRed := graphic.NewMesh(geom, mat)
@@ -44,7 +45,7 @@ func main() {
 	meshRed.SetPositionY(-10.0)
 	scene.Add(meshRed)
 
-	mat = material.NewStandard(math32.Color{B: 1})
+	mat = material.NewStandard(math32.Color3{B: 1})
 	mat.SetTransparent(true)
 	mat.SetOpacity(0.5)
 	meshBlue := graphic.NewMesh(geom, mat)
@@ -57,10 +58,19 @@ func main() {
 	cam.LookAt(meshGreen.Position(), up)
 	scene.Add(cam)
 
-	dlight := light.NewDirectional(math32.Color{R: 1, G: 1, B: 1}, 1.0)
+	dlight := light.NewDirectional(math32.Color3{R: 1, G: 1, B: 1})
 	dlight.SetPosition(0, 10, 0)
 	dlight.LookAt(meshGreen.Position(), up)
 	scene.Add(dlight)
+
+	panel := gui.NewPanel(0, 0)
+	panel.SetPaddings(gui.RectBounds{Top: 5, Right: 10, Bottom: 5, Left: 10})
+	panel.SetColor(math32.Color3{R: 0.5, G: 0.5, B: 0.5})
+	scene.Add(panel)
+
+	label := panel.AddLabel("This is a demo", true, gui.AlignCenterCenter)
+	label.SetFontSize(40)
+	label.SetColor(math32.Color4{G: 1, A: 0.5})
 
 	ap.Subscribe(func(ev core.WindowEvent) bool {
 		switch ev := ev.(type) {

@@ -48,8 +48,8 @@ func (a *ArrayF32) AppendVector4(v ...*Vector4) {
 	}
 }
 
-// AppendColor appends any number of Color to the array.
-func (a *ArrayF32) AppendColor(v ...*Color) {
+// AppendColor3 appends any number of Color3 to the array.
+func (a *ArrayF32) AppendColor3(v ...*Color3) {
 	for i := 0; i < len(v); i++ {
 		*a = append(*a, v[i].R, v[i].G, v[i].B)
 	}
@@ -111,14 +111,14 @@ func (a ArrayF32) GetMatrix4(pos int, m *Matrix4) {
 	m[15] = a[pos+15]
 }
 
-// GetColor stores in the specified Color values from the array starting at the specified pos.
-func (a ArrayF32) GetColor(pos int, v *Color) {
+// GetColor3 stores in the specified Color3 values from the array starting at the specified pos.
+func (a ArrayF32) GetColor3(pos int, v *Color3) {
 	v.R = a[pos]
 	v.G = a[pos+1]
 	v.B = a[pos+2]
 }
 
-// GetColor4 stores in the specified Color the values from the array starting at the specified pos.
+// GetColor4 stores in the specified Color3 the values from the array starting at the specified pos.
 func (a ArrayF32) GetColor4(pos int, v *Color4) {
 	v.R = a[pos]
 	v.G = a[pos+1]
@@ -162,8 +162,8 @@ func (a ArrayF32) SetQuaternion(pos int, v *Quaternion) {
 	v.W = a[pos+3]
 }
 
-// SetColor sets the values of the array at the specified pos from the RGB values of the specified Color.
-func (a ArrayF32) SetColor(pos int, v *Color) {
+// SetColor3 sets the values of the array at the specified pos from the RGB values of the specified Color3.
+func (a ArrayF32) SetColor3(pos int, v *Color3) {
 	a[pos] = v.R
 	a[pos+1] = v.G
 	a[pos+2] = v.B

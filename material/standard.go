@@ -12,22 +12,21 @@ import (
 // Standard is a material that supports the classic lighting model with ambient, diffuse, specular and emissive lights.
 // The lighting calculation is implemented in the vertex shader.
 type Standard struct {
-	Material             // Embedded material
-	uni      gls.Uniform // Uniform location cache
-	udata    struct {    // Combined uniform data in 6 vec3:
-		ambient    math32.Color // Ambient color reflectivity
-		diffuse    math32.Color // Diffuse color reflectivity
-		specular   math32.Color // Specular color reflectivity
-		emissive   math32.Color // Emissive color
-		shininess  float32      // Specular shininess factor
-		opacity    float32      // Opacity
-		psize      float32      // Point size
-		protationZ float32      // Point rotation around Z axis
+	Material
+	uni   gls.Uniform
+	udata struct {
+		ambient    math32.Color3
+		diffuse    math32.Color3
+		specular   math32.Color3
+		emissive   math32.Color3
+		shininess  float32
+		opacity    float32
+		psize      float32
+		protationZ float32
+		_          float32
+		_          float32
 	}
 }
-
-// Number of glsl shader vec3 elements used by uniform data.
-const standardVec3Count = 6
 
 // NewStandard creates and returns a pointer to a new standard material.
 func NewStandard(color math32.Color) *Standard {
@@ -50,11 +49,10 @@ func NewBlinnPhong(color math32.Color) *Standard {
 // InitStandard initializes the material setting the specified color.
 func (m *Standard) InitStandard(color math32.Color) {
 	m.InitMaterial()
-	// Creates uniforms and set initial values
 	m.uni.Init("uMaterial")
 	m.SetColor(color)
-	m.SetSpecularColor(math32.Color{0.5, 0.5, 0.5})
-	m.SetEmissiveColor(math32.Color{0, 0, 0})
+	m.SetSpecularColor(math32.Color3{R: 0.5, G: 0.5, B: 0.5})
+	m.SetEmissiveColor(math32.Color3{})
 	m.SetShininess(30.0)
 	m.SetOpacity(1.0)
 }
@@ -65,21 +63,19 @@ func (m *Standard) AmbientColor() math32.Color {
 }
 
 // SetAmbientColor sets the material ambient color reflectivity.
-// The default is the same as the diffuse color.
 func (m *Standard) SetAmbientColor(color math32.Color) {
-	m.udata.ambient = color
+	m.udata.ambient = color.Color3()
 }
 
 // SetColor sets the material diffuse color and also the material ambient color reflectivity.
 func (m *Standard) SetColor(color math32.Color) {
-	m.udata.diffuse = color
-	m.udata.ambient = color
+	m.udata.diffuse = color.Color3()
+	m.udata.ambient = color.Color3()
 }
 
 // SetEmissiveColor sets the material emissive color.
-// The default is {0,0,0}.
 func (m *Standard) SetEmissiveColor(color math32.Color) {
-	m.udata.emissive = color
+	m.udata.emissive = color.Color3()
 }
 
 // EmissiveColor returns the material current emissive color.
@@ -88,19 +84,16 @@ func (m *Standard) EmissiveColor() math32.Color {
 }
 
 // SetSpecularColor sets the material specular color reflectivity.
-// The default is {0.5, 0.5, 0.5}.
 func (m *Standard) SetSpecularColor(color math32.Color) {
-	m.udata.specular = color
+	m.udata.specular = color.Color3()
 }
 
 // SetShininess sets the specular highlight factor.
-// The default is 30.
 func (m *Standard) SetShininess(shininess float32) {
 	m.udata.shininess = shininess
 }
 
 // SetOpacity sets the material opacity (alpha).
-// The default is 1.0.
 func (m *Standard) SetOpacity(opacity float32) {
 	m.udata.opacity = opacity
 }
@@ -109,5 +102,5 @@ func (m *Standard) SetOpacity(opacity float32) {
 func (m *Standard) RenderSetup(gs *gls.GLS) {
 	m.Material.RenderSetup(gs)
 	location := m.uni.Location(gs)
-	gs.Uniform3fv(location, standardVec3Count, &m.udata.ambient.R)
+	gs.Uniform3fv(location, 6, &m.udata.ambient.R)
 }

@@ -10,48 +10,34 @@ import (
 	"github.com/derekmu/g3n/math32"
 )
 
-// Ambient represents an ambient light
+// Ambient represents an ambient light.
 type Ambient struct {
-	core.Node              // Embedded node
-	color     math32.Color // Light color
-	intensity float32      // Light intensity
-	uni       gls.Uniform  // Uniform location cache
+	core.Node
+	color math32.Color3
+	uni   gls.Uniform
 }
 
-// NewAmbient returns a pointer to a new ambient color with the specified
-// color and intensity
-func NewAmbient(color math32.Color, intensity float32) *Ambient {
+// NewAmbient returns a pointer to a new ambient color with the specified color.
+func NewAmbient(color math32.Color) *Ambient {
 	la := new(Ambient)
 	la.InitNode(la)
-	la.color = color
-	la.intensity = intensity
+	la.color = color.Color3()
 	la.uni.Init("uAmbientLightColor")
 	return la
 }
 
-// SetColor sets the color of this light
+// SetColor sets the color of this light.
 func (la *Ambient) SetColor(color math32.Color) {
-	la.color = color
+	la.color = color.Color3()
 }
 
-// Color returns the current color of this light
+// Color returns the current color of this light.
 func (la *Ambient) Color() math32.Color {
 	return la.color
 }
 
-// SetIntensity sets the intensity of this light
-func (la *Ambient) SetIntensity(intensity float32) {
-	la.intensity = intensity
-}
-
-// Intensity returns the current intensity of this light
-func (la *Ambient) Intensity() float32 {
-	return la.intensity
-}
-
-// RenderSetup is called by the engine before rendering the scene
+// RenderSetup is called by the engine before rendering the scene.
 func (la *Ambient) RenderSetup(gs *gls.GLS, _ *core.RenderInfo, idx int) {
-	color := la.color.MultiplyScalar(la.intensity)
 	location := la.uni.LocationIdx(gs, int32(idx))
-	gs.Uniform3f(location, color.R, color.G, color.B)
+	gs.Uniform3f(location, la.color.R, la.color.G, la.color.B)
 }

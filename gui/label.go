@@ -20,7 +20,7 @@ type Label struct {
 	text           string
 	rgba           image.RGBA
 	canvas         *text.Canvas
-	color          math32.Color4
+	color          math32.Color
 	fontAttributes text.FontAttributes
 }
 
@@ -41,7 +41,7 @@ func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.InitPanel(l, 0, 0)
 	l.SetResizeToTexture(true)
 	l.font = fnt
-	l.color = math32.Color4{R: 1, G: 1, B: 1, A: 1}
+	l.color = math32.Color3{R: 1, G: 1, B: 1}
 	l.fontAttributes = text.FontAttributes{
 		PointSize: 14,
 		DPI:       72,
@@ -64,7 +64,7 @@ func (l *Label) Text() string {
 }
 
 // SetColor sets the text color.
-func (l *Label) SetColor(color math32.Color4) {
+func (l *Label) SetColor(color math32.Color) {
 	if l.color != color {
 		l.color = color
 		l.drawText()
@@ -72,7 +72,7 @@ func (l *Label) SetColor(color math32.Color4) {
 }
 
 // Color returns the text color.
-func (l *Label) Color() math32.Color4 {
+func (l *Label) Color() math32.Color {
 	return l.color
 }
 
@@ -118,7 +118,7 @@ func (l *Label) FontDPI() int32 {
 // SetTextColor updates both the text and color and redraws the label.
 //
 // This reduces redraws compared to changing the text and color separately.
-func (l *Label) SetTextColor(txt string, color math32.Color4) {
+func (l *Label) SetTextColor(txt string, color math32.Color) {
 	if txt != l.text || l.color != color {
 		l.text = txt
 		l.color = color
@@ -131,8 +131,8 @@ func (l *Label) drawText() {
 	// Set font properties
 	l.font.SetAttributes(l.fontAttributes)
 	l.font.SetColor(l.color)
-	// set the background
-	bgColor := l.color
+	// Background being the same color with zero alpha reduces blending artifacts at the edges of glyphs
+	bgColor := l.color.Color4()
 	bgColor.A = 0
 
 	// Create an image with the text
@@ -147,7 +147,6 @@ func (l *Label) drawText() {
 		l.canvas.RGBA.Pix = l.rgba.Pix[:4*width*height]
 		l.canvas.RGBA.Stride = 4 * width
 		l.canvas.RGBA.Rect = image.Rect(0, 0, width, height)
-		// Update the color
 		l.canvas.BgColor = bgColor
 	}
 	l.canvas.DrawText(0, 0, l.text, l.font)

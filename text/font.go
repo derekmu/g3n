@@ -10,7 +10,6 @@ import (
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
 	"image"
-	"image/color"
 	"log"
 )
 
@@ -52,7 +51,7 @@ func NewFontFromData(fontData []byte) (*Font, error) {
 		DPI:       72,
 		Hinting:   font.HintingFull,
 	}
-	f.SetColor(math32.Color4{A: 1})
+	f.SetColor(math32.Color3{})
 	f.faceCache = make(map[FontAttributes]font.Face)
 	return f, nil
 }
@@ -78,8 +77,8 @@ func (f *Font) SetAttributes(attributes FontAttributes) {
 }
 
 // SetColor sets the text color.
-func (f *Font) SetColor(c color.Color) {
-	f.color.C = c
+func (f *Font) SetColor(c math32.Color) {
+	f.color.C = c.NRGBA()
 }
 
 // Metrics returns the font metrics.

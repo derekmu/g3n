@@ -12,14 +12,14 @@ import (
 
 // Physical is a physically based rendered material which uses the metallic-roughness model.
 type Physical struct {
-	Material                                // Embedded material
-	baseColorTex         *texture.Texture2D // Optional base color texture
-	metallicRoughnessTex *texture.Texture2D // Optional metallic-roughness
-	normalTex            *texture.Texture2D // Optional normal texture
-	occlusionTex         *texture.Texture2D // Optional occlusion texture
-	emissiveTex          *texture.Texture2D // Optional emissive texture
-	uni                  gls.Uniform        // Uniform location cache
-	udata                struct {           // Combined uniform data
+	Material
+	baseColorTex         *texture.Texture2D
+	metallicRoughnessTex *texture.Texture2D
+	normalTex            *texture.Texture2D
+	occlusionTex         *texture.Texture2D
+	emissiveTex          *texture.Texture2D
+	uni                  gls.Uniform
+	udata                struct {
 		baseColorFactor math32.Color4
 		emissiveFactor  math32.Color4
 		metallicFactor  float32
@@ -28,9 +28,6 @@ type Physical struct {
 		_               float32
 	}
 }
-
-// Number of glsl shader vec4 elements used by uniform data.
-const physicalVec4Count = 3
 
 // NewPhysical creates a new Physical material.
 func NewPhysical() *Physical {
@@ -43,41 +40,35 @@ func NewPhysical() *Physical {
 // InitPhysical initializes the material.
 func (m *Physical) InitPhysical() {
 	m.InitMaterial()
-	// Creates uniform and set default values
+
 	m.uni.Init("uMaterial")
-	m.udata.baseColorFactor = math32.Color4{1, 1, 1, 1}
-	m.udata.emissiveFactor = math32.Color4{0, 0, 0, 1}
+	m.udata.baseColorFactor = math32.Color4{R: 1, G: 1, B: 1, A: 1}
+	m.udata.emissiveFactor = math32.Color4{A: 1}
 	m.udata.metallicFactor = 1
 	m.udata.roughnessFactor = 1
 }
 
 // SetBaseColorFactor sets this material's base color.
-// Its default value is {1,1,1,1}.
 func (m *Physical) SetBaseColorFactor(c math32.Color4) {
 	m.udata.baseColorFactor = c
 }
 
 // SetMetallicFactor sets this material's metallic factor.
-// Its default value is 1.
 func (m *Physical) SetMetallicFactor(v float32) {
 	m.udata.metallicFactor = v
 }
 
 // SetRoughnessFactor sets this material's roughness factor.
-// Its default value is 1.
 func (m *Physical) SetRoughnessFactor(v float32) {
 	m.udata.roughnessFactor = v
 }
 
-// SetEmissiveFactor sets this material's emissive.
-// Its default is {1, 1, 1}.
+// SetEmissiveFactor sets this material's emissive color.
 func (m *Physical) SetEmissiveFactor(c math32.Color) {
-	m.udata.emissiveFactor.R = c.R
-	m.udata.emissiveFactor.G = c.G
-	m.udata.emissiveFactor.B = c.B
+	m.udata.emissiveFactor = c.Color4()
 }
 
-// SetBaseColorMap sets this material's optional texture base color.
+// SetBaseColorMap sets this material's texture base color.
 func (m *Physical) SetBaseColorMap(tex *texture.Texture2D) {
 	m.baseColorTex = tex
 	if m.baseColorTex != nil {
@@ -90,7 +81,7 @@ func (m *Physical) SetBaseColorMap(tex *texture.Texture2D) {
 	}
 }
 
-// SetMetallicRoughnessMap sets this material's optional metallic-roughness texture.
+// SetMetallicRoughnessMap sets this material's metallic-roughness texture.
 func (m *Physical) SetMetallicRoughnessMap(tex *texture.Texture2D) {
 	m.metallicRoughnessTex = tex
 	if m.metallicRoughnessTex != nil {
@@ -103,7 +94,7 @@ func (m *Physical) SetMetallicRoughnessMap(tex *texture.Texture2D) {
 	}
 }
 
-// SetNormalMap sets this material's optional normal texture.
+// SetNormalMap sets this material's normal texture.
 func (m *Physical) SetNormalMap(tex *texture.Texture2D) {
 	m.normalTex = tex
 	if m.normalTex != nil {
@@ -116,7 +107,7 @@ func (m *Physical) SetNormalMap(tex *texture.Texture2D) {
 	}
 }
 
-// SetOcclusionMap sets this material's optional occlusion texture.
+// SetOcclusionMap sets this material's occlusion texture.
 func (m *Physical) SetOcclusionMap(tex *texture.Texture2D) {
 	m.occlusionTex = tex
 	if m.occlusionTex != nil {
@@ -129,7 +120,7 @@ func (m *Physical) SetOcclusionMap(tex *texture.Texture2D) {
 	}
 }
 
-// SetEmissiveMap sets this material's optional emissive texture.
+// SetEmissiveMap sets this material's emissive texture.
 func (m *Physical) SetEmissiveMap(tex *texture.Texture2D) {
 	m.emissiveTex = tex
 	if m.emissiveTex != nil {
@@ -146,5 +137,5 @@ func (m *Physical) SetEmissiveMap(tex *texture.Texture2D) {
 func (m *Physical) RenderSetup(gl *gls.GLS) {
 	m.Material.RenderSetup(gl)
 	location := m.uni.Location(gl)
-	gl.Uniform4fv(location, physicalVec4Count, &m.udata.baseColorFactor.R)
+	gl.Uniform4fv(location, 3, &m.udata.baseColorFactor.R)
 }
