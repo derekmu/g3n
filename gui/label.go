@@ -126,21 +126,26 @@ func (l *Label) SetTextColor(txt string, color math32.Color) {
 
 // drawText redraws the label texture.
 func (l *Label) drawText() {
-	// Update the canvas
+	// Update font and measure text
+	l.font.SetAttributes(l.fontAttributes)
+	l.font.SetColor(l.color)
 	width, height := l.font.MeasureText(l.text)
+
+	// Update the canvas
 	if l.canvas == nil {
 		l.canvas = text.NewCanvas(width, height)
 	} else {
 		l.canvas.Resize(width, height)
 	}
+
 	// Fill with text color with alpha zero to reduce blending artifacts
 	bgColor := l.color.ToColor4()
 	bgColor.A = 0
 	l.canvas.Fill(bgColor.ToRGBA())
+
 	// Draw the text
-	l.font.SetAttributes(l.fontAttributes)
-	l.font.SetColor(l.color)
 	l.canvas.DrawText(0, 0, l.text, l.font)
+
 	// Update texture
 	tex := l.texture
 	if tex == nil {
