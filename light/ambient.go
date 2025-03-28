@@ -21,14 +21,14 @@ type Ambient struct {
 func NewAmbient(color math32.Color) *Ambient {
 	la := new(Ambient)
 	la.InitNode(la)
-	la.color = color.Color3()
+	la.color = color.ToColor3()
 	la.uni.Init("uAmbientLightColor")
 	return la
 }
 
 // SetColor sets the color of this light.
 func (la *Ambient) SetColor(color math32.Color) {
-	la.color = color.Color3()
+	la.color = color.ToColor3()
 }
 
 // Color returns the current color of this light.

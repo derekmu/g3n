@@ -94,9 +94,10 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 	height := (nlines * a.Height) + a.Descent
 
 	// Draw atlas image
-	canvas := NewCanvas(maxWidth, height, math32.Color3{R: 1, G: 1, B: 1})
+	canvas := NewCanvas(maxWidth, height)
+	canvas.Fill(math32.Color3{R: 1, G: 1, B: 1}.ToRGBA())
 	canvas.DrawText(0, 0, lines, font)
-	a.Image = canvas.RGBA
+	a.Image = &canvas.RGBA
 
 	// Calculate normalized char positions in the image
 	fWidth := float32(maxWidth)
@@ -115,7 +116,7 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 
 // SavePNG saves the current atlas image as a PNG image file
 func (a *Atlas) SavePNG(filename string) error {
-	// Save that RGBA image to disk.
+	// Save that ToRGBA image to disk.
 	outFile, err := os.Create(filename)
 	if err != nil {
 		return err

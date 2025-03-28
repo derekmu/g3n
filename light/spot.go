@@ -42,7 +42,7 @@ func NewSpot(color math32.Color) *Spot {
 
 // SetColor sets the color of this light.
 func (l *Spot) SetColor(color math32.Color) {
-	l.udata.color = color.Color3()
+	l.udata.color = color.ToColor3()
 }
 
 // Color returns the color of this light.

@@ -10,7 +10,6 @@ import (
 	"github.com/derekmu/g3n/text"
 	"github.com/derekmu/g3n/texture"
 	"golang.org/x/image/font"
-	"image"
 )
 
 // Label is a text only UI element.
@@ -18,7 +17,6 @@ type Label struct {
 	Panel
 	font           *text.Font
 	text           string
-	rgba           image.RGBA
 	canvas         *text.Canvas
 	color          math32.Color
 	fontAttributes text.FontAttributes
@@ -128,36 +126,29 @@ func (l *Label) SetTextColor(txt string, color math32.Color) {
 
 // drawText redraws the label texture.
 func (l *Label) drawText() {
-	// Set font properties
+	// Update the canvas
+	width, height := l.font.MeasureText(l.text)
+	if l.canvas == nil {
+		l.canvas = text.NewCanvas(width, height)
+	} else {
+		l.canvas.Resize(width, height)
+	}
+	// Fill with text color with alpha zero to reduce blending artifacts
+	bgColor := l.color.ToColor4()
+	bgColor.A = 0
+	l.canvas.Fill(bgColor.ToRGBA())
+	// Draw the text
 	l.font.SetAttributes(l.fontAttributes)
 	l.font.SetColor(l.color)
-	// Background being the same color with zero alpha reduces blending artifacts at the edges of glyphs
-	bgColor := l.color.Color4()
-	bgColor.A = 0
-
-	// Create an image with the text
-	width, height := l.font.MeasureText(l.text)
-	if l.canvas == nil || l.rgba.Rect.Dx() < width || l.rgba.Rect.Dy() < height {
-		// Allocate a new canvas if the existing one can't hold the text
-		l.canvas = text.NewCanvas(width, height, bgColor)
-		// Keep a copy of the RGBA
-		l.rgba = *l.canvas.RGBA
-	} else {
-		// Reuse part of the already allocated image
-		l.canvas.RGBA.Pix = l.rgba.Pix[:4*width*height]
-		l.canvas.RGBA.Stride = 4 * width
-		l.canvas.RGBA.Rect = image.Rect(0, 0, width, height)
-		l.canvas.BgColor = bgColor
-	}
 	l.canvas.DrawText(0, 0, l.text, l.font)
-
+	// Update texture
 	tex := l.texture
 	if tex == nil {
-		tex = texture.NewTexture2DFromRGBA(l.canvas.RGBA)
+		tex = texture.NewTexture2DFromRGBA(&l.canvas.RGBA)
 		tex.SetMagFilter(gls.NEAREST)
 		tex.SetMinFilter(gls.NEAREST)
 	} else {
-		tex.SetFromRGBA(l.canvas.RGBA)
+		tex.SetFromRGBA(&l.canvas.RGBA)
 	}
 	l.SetTexture(tex)
 }

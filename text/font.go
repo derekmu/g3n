@@ -78,7 +78,7 @@ func (f *Font) SetAttributes(attributes FontAttributes) {
 
 // SetColor sets the text color.
 func (f *Font) SetColor(c math32.Color) {
-	f.color.C = c.NRGBA()
+	f.color.C = c.ToNRGBA()
 }
 
 // Metrics returns the font metrics.

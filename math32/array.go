@@ -169,7 +169,7 @@ func (a ArrayF32) SetColor3(pos int, v *Color3) {
 	a[pos+2] = v.B
 }
 
-// SetColor4 sets the values of the array at the specified pos from the RGBA values of specified Color4.
+// SetColor4 sets the values of the array at the specified pos from the ToRGBA values of specified Color4.
 func (a ArrayF32) SetColor4(pos int, v *Color4) {
 	a[pos] = v.R
 	a[pos+1] = v.G

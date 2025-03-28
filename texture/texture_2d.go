@@ -41,7 +41,7 @@ type Texture2D struct {
 	}
 }
 
-// NewTexture2DFromRGBA creates a new texture from a pointer to an RGBA image object.
+// NewTexture2DFromRGBA creates a new texture from a pointer to an ToRGBA image object.
 func NewTexture2DFromRGBA(rgba *image.RGBA) *Texture2D {
 	t := new(Texture2D)
 	t.InitTexture2D()

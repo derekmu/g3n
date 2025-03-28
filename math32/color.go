@@ -7,13 +7,11 @@ package math32
 import "image/color"
 
 type Color interface {
-	Color3() Color3
-	Color4() Color4
-	NRGBA() color.NRGBA
-	RGBA() color.RGBA
+	ToColor3() Color3
+	ToColor4() Color4
+	ToNRGBA() color.NRGBA
+	ToRGBA() color.RGBA
 }
-
-var _ Color = Color3{}
 
 // Color3 describes an RGB color.
 type Color3 struct {
@@ -22,11 +20,13 @@ type Color3 struct {
 	B float32
 }
 
-func (c Color3) Color3() Color3 {
+var _ Color = Color3{}
+
+func (c Color3) ToColor3() Color3 {
 	return c
 }
 
-func (c Color3) Color4() Color4 {
+func (c Color3) ToColor4() Color4 {
 	return Color4{
 		R: c.R,
 		G: c.G,
@@ -35,7 +35,7 @@ func (c Color3) Color4() Color4 {
 	}
 }
 
-func (c Color3) NRGBA() color.NRGBA {
+func (c Color3) ToNRGBA() color.NRGBA {
 	return color.NRGBA{
 		R: uint8(c.R * 0xff),
 		G: uint8(c.G * 0xff),
@@ -44,7 +44,7 @@ func (c Color3) NRGBA() color.NRGBA {
 	}
 }
 
-func (c Color3) RGBA() color.RGBA {
+func (c Color3) ToRGBA() color.RGBA {
 	return color.RGBA{
 		R: uint8(c.R * 0xff),
 		G: uint8(c.G * 0xff),
@@ -62,8 +62,6 @@ func (c Color3) MultiplyScalar(v float32) Color3 {
 	}
 }
 
-var _ Color = Color4{}
-
 // Color4 describes an RGBA color.
 type Color4 struct {
 	R float32
@@ -72,7 +70,9 @@ type Color4 struct {
 	A float32
 }
 
-func (c Color4) Color3() Color3 {
+var _ Color = Color4{}
+
+func (c Color4) ToColor3() Color3 {
 	return Color3{
 		R: c.R,
 		G: c.G,
@@ -80,11 +80,11 @@ func (c Color4) Color3() Color3 {
 	}
 }
 
-func (c Color4) Color4() Color4 {
+func (c Color4) ToColor4() Color4 {
 	return c
 }
 
-func (c Color4) NRGBA() color.NRGBA {
+func (c Color4) ToNRGBA() color.NRGBA {
 	return color.NRGBA{
 		R: uint8(c.R * 0xff),
 		G: uint8(c.G * 0xff),
@@ -93,7 +93,7 @@ func (c Color4) NRGBA() color.NRGBA {
 	}
 }
 
-func (c Color4) RGBA() color.RGBA {
+func (c Color4) ToRGBA() color.RGBA {
 	return color.RGBA{
 		R: uint8(c.R * 0xff),
 		G: uint8(c.G * 0xff),

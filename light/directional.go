@@ -32,7 +32,7 @@ func NewDirectional(color math32.Color) *Directional {
 
 // SetColor sets the color of this light.
 func (ld *Directional) SetColor(color math32.Color) {
-	ld.udata.color = color.Color3()
+	ld.udata.color = color.ToColor3()
 }
 
 // Color returns the color of this light.

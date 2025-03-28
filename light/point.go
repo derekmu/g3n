@@ -37,7 +37,7 @@ func NewPoint(color math32.Color) *Point {
 
 // SetColor sets the color of this light.
 func (lp *Point) SetColor(color math32.Color) {
-	lp.udata.color = color.Color3()
+	lp.udata.color = color.ToColor3()
 }
 
 // Color returns the color of this light.

@@ -24,14 +24,14 @@ func NewPoint(color math32.Color) *Point {
 // InitPoint initializes the material setting the specified color.
 func (m *Point) InitPoint(color math32.Color) {
 	m.InitStandard(color)
-	m.udata.emissive = color.Color3()
+	m.udata.emissive = color.ToColor3()
 	m.udata.psize = 1.0
 	m.udata.protationZ = 0
 }
 
 // SetEmissiveColor sets the material's emissive color.
 func (m *Point) SetEmissiveColor(color math32.Color) {
-	m.udata.emissive = color.Color3()
+	m.udata.emissive = color.ToColor3()
 }
 
 // SetSize sets the point size.

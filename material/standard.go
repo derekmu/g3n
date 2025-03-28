@@ -64,18 +64,18 @@ func (m *Standard) AmbientColor() math32.Color {
 
 // SetAmbientColor sets the material ambient color reflectivity.
 func (m *Standard) SetAmbientColor(color math32.Color) {
-	m.udata.ambient = color.Color3()
+	m.udata.ambient = color.ToColor3()
 }
 
 // SetColor sets the material diffuse color and also the material ambient color reflectivity.
 func (m *Standard) SetColor(color math32.Color) {
-	m.udata.diffuse = color.Color3()
-	m.udata.ambient = color.Color3()
+	m.udata.diffuse = color.ToColor3()
+	m.udata.ambient = color.ToColor3()
 }
 
 // SetEmissiveColor sets the material emissive color.
 func (m *Standard) SetEmissiveColor(color math32.Color) {
-	m.udata.emissive = color.Color3()
+	m.udata.emissive = color.ToColor3()
 }
 
 // EmissiveColor returns the material current emissive color.
@@ -85,7 +85,7 @@ func (m *Standard) EmissiveColor() math32.Color {
 
 // SetSpecularColor sets the material specular color reflectivity.
 func (m *Standard) SetSpecularColor(color math32.Color) {
-	m.udata.specular = color.Color3()
+	m.udata.specular = color.ToColor3()
 }
 
 // SetShininess sets the specular highlight factor.

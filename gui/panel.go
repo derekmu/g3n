@@ -291,7 +291,7 @@ func (p *Panel) Color() math32.Color {
 
 // SetColor sets the panel's color.
 func (p *Panel) SetColor(color math32.Color) *Panel {
-	p.udata.color = color.Color4()
+	p.udata.color = color.ToColor4()
 	p.SetChanged(true)
 	return p
 }
