@@ -24,7 +24,7 @@ uniform sampler2D uMatTexture[MAT_TEXTURES];
 uniform vec2 uMatTexInfo[3 * MAT_TEXTURES];
 #define uMatTexOffset(a)     uMatTexInfo[(3 * a)]
 #define uMatTexRepeat(a)     uMatTexInfo[(3 * a) + 1]
-#define uMatTexVisible(a)    bool(uMatTexInfo[(3 * a) + 2].y)
+#define uMatTexVisible(a)    bool(uMatTexInfo[(3 * a) + 2].x)
 // Alpha compositing (see here: https://ciechanow.ski/alpha-compositing/)
 vec4 Blend(vec4 texMixed, vec4 texColor) {
     texMixed.rgb *= texMixed.a;
