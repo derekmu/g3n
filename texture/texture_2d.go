@@ -36,8 +36,8 @@ type Texture2D struct {
 		offsetY float32
 		repeatX float32
 		repeatY float32
-		flipY   float32
 		visible float32
+		_       float32
 	}
 }
 
@@ -62,7 +62,6 @@ func (t *Texture2D) InitTexture2D() {
 	t.uniInfo.Init("uMatTexInfo")
 	t.SetOffset(0, 0)
 	t.SetRepeat(1, 1)
-	t.SetFlipY(true)
 	t.SetVisible(true)
 }
 
@@ -175,15 +174,6 @@ func (t *Texture2D) SetOffset(x, y float32) {
 // Offset returns the current X and Y offset factors
 func (t *Texture2D) Offset() (float32, float32) {
 	return t.udata.offsetX, t.udata.offsetY
-}
-
-// SetFlipY set the state for flipping the Y coordinate
-func (t *Texture2D) SetFlipY(state bool) {
-	if state {
-		t.udata.flipY = 1
-	} else {
-		t.udata.flipY = 0
-	}
 }
 
 // Width returns the texture width in pixels

@@ -30,10 +30,10 @@ func NewSprite(width, height float32, imat material.IMaterial) *Sprite {
 	// Builds array with vertex positions and texture coordinates
 	positions := math32.NewArrayF32(0, 12)
 	positions.Append(
-		-w, -h, 0, 0, 0,
-		w, -h, 0, 1, 0,
-		w, h, 0, 1, 1,
-		-w, h, 0, 0, 1,
+		-w, -h, 0, 0, 1,
+		w, -h, 0, 1, 1,
+		w, h, 0, 1, 0,
+		-w, h, 0, 0, 0,
 	)
 	// Builds array of indices
 	indices := math32.NewArrayU32(0, 6)

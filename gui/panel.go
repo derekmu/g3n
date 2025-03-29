@@ -22,10 +22,10 @@ func init() {
 	// Builds array with vertex positions and texture coordinates
 	positions := math32.NewArrayF32(0, 20)
 	positions.Append(
-		0, 0, 0, 0, 1,
-		0, -1, 0, 0, 0,
-		1, -1, 0, 1, 0,
-		1, 0, 0, 1, 1,
+		0, 0, 0, 0, 0,
+		0, -1, 0, 0, 1,
+		1, -1, 0, 1, 1,
+		1, 0, 0, 1, 0,
 	)
 	// Builds array of indices
 	indices := math32.NewArrayU32(0, 6)
