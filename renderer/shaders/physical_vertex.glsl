@@ -9,6 +9,7 @@ out vec3 Position;
 out vec3 Normal;
 out vec3 CamDir;
 out vec2 FragTexcoord;
+out vec3 VPosition;
 
 // Model uniforms
 uniform mat4 uMatrices[3];
@@ -27,9 +28,10 @@ void main() {
     mat3 finalNormal = mat3(1.0);
     bones(finalWorld, finalNormal);
 
+    VPosition = VertexPosition;
     Position = vec3(uModelViewMatrix * finalWorld * vec4(vPosition, 1.0));
     Normal = normalize(uNormalMatrix * finalNormal * VertexNormal);
-    CamDir = normalize(-Position.xyz);
+    CamDir = normalize(-Position);
     FragTexcoord = VertexTexcoord;
     gl_Position = uModelViewProjectionMatrix * finalWorld * vec4(vPosition, 1.0);
 }

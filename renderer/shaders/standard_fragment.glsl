@@ -1,10 +1,11 @@
 precision highp float;
 
 // Input variables
-in vec4 Position;
+in vec3 Position;
 in vec3 Normal;
 in vec3 CamDir;
 in vec2 FragTexcoord;
+in vec3 VPosition;
 
 // Output variables
 out vec4 FragColor;

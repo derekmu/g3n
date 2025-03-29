@@ -23,9 +23,6 @@ var basicVertexSource string
 //go:embed basic_fragment.glsl
 var basicFragmentSource string
 
-//go:embed standard_vertex.glsl
-var standardVertexSource string
-
 //go:embed standard_fragment.glsl
 var standardFragmentSource string
 
@@ -48,23 +45,28 @@ var pointVertexSource string
 var pointFragmentSource string
 
 func init() {
+	// includes
 	AddInclude("lights", lightsSource)
 	AddInclude("pbr", pbrSource)
 	AddInclude("phong", phongSource)
 	AddInclude("bones", bonesSource)
 	AddInclude("morph", morphSource)
+	// basic
 	AddShader("basic_vertex", basicVertexSource)
 	AddShader("basic_fragment", basicFragmentSource)
 	AddProgram("basic", "basic_vertex", "basic_fragment", "")
-	AddShader("standard_vertex", standardVertexSource)
-	AddShader("standard_fragment", standardFragmentSource)
-	AddProgram("standard", "standard_vertex", "standard_fragment", "")
+	// physical
 	AddShader("physical_vertex", physicalVertexSource)
 	AddShader("physical_fragment", physicalFragmentSource)
 	AddProgram("physical", "physical_vertex", "physical_fragment", "")
+	// standard (uses physical_vertex shader)
+	AddShader("standard_fragment", standardFragmentSource)
+	AddProgram("standard", "physical_vertex", "standard_fragment", "")
+	// panel
 	AddShader("panel_vertex", panelVertexSource)
 	AddShader("panel_fragment", panelFragmentSource)
 	AddProgram("panel", "panel_vertex", "panel_fragment", "")
+	// point
 	AddShader("point_vertex", pointVertexSource)
 	AddShader("point_fragment", pointFragmentSource)
 	AddProgram("point", "point_vertex", "point_fragment", "")

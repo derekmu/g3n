@@ -4,8 +4,8 @@ void phong(vec3 matAmbient, vec3 matDiffuse, float matShininess, vec3 matSpecula
     const float EPS = 0.00001;
 
     vec3 normal = normalize(Normal);
-    vec3 fdx = dFdx(Position.xyz);
-    vec3 fdy = dFdy(Position.xyz);
+    vec3 fdx = dFdx(Position);
+    vec3 fdy = dFdy(Position);
     vec3 faceNormal = normalize(cross(fdx, fdy));
     if (dot(normal, faceNormal) < 0.0) {
         normal = -normal;
@@ -44,7 +44,7 @@ void phong(vec3 matAmbient, vec3 matDiffuse, float matShininess, vec3 matSpecula
     #if POINT_LIGHTS > 0
     noLights = false;
     for (int i = 0; i < POINT_LIGHTS; ++i) {
-        vec3 lightDirection = uPointLightPosition(i) - vec3(Position);
+        vec3 lightDirection = uPointLightPosition(i) - Position;
         float lightDistance = length(lightDirection);
         lightDirection = lightDirection / lightDistance;
         float dotNormal = dot(lightDirection, normal);
@@ -65,7 +65,7 @@ void phong(vec3 matAmbient, vec3 matDiffuse, float matShininess, vec3 matSpecula
     #if SPOT_LIGHTS > 0
     noLights = false;
     for (int i = 0; i < SPOT_LIGHTS; ++i) {
-        vec3 lightDirection = uSpotLightPosition(i) - vec3(Position);
+        vec3 lightDirection = uSpotLightPosition(i) - Position;
         float lightDistance = length(lightDirection);
         lightDirection = lightDirection / lightDistance;
         float angleDot = dot(-lightDirection, uSpotLightDirection(i));
