@@ -12,6 +12,9 @@ import (
 	"github.com/derekmu/g3n/material"
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/renderer"
+	"github.com/derekmu/g3n/texture"
+	"image"
+	"image/color"
 	"log"
 	"time"
 )
@@ -26,15 +29,39 @@ func main() {
 
 	geom := geometry.NewPlane(10, 10)
 
-	greenMat := material.NewPhysical()
-	greenMat.SetBaseColorFactor(math32.Color4{G: 0.5, A: 1})
-	greenMat.SetMetallicFactor(0.5)
-	greenMat.SetRoughnessFactor(0.5)
-	meshGreen := graphic.NewMesh(geom, greenMat)
-	meshGreen.SetName("GREEN")
-	meshGreen.RotateOnAxis(math32.Vector3{X: 1}, -math32.Pi/2)
-	meshGreen.SetPositionY(-10.1)
-	scene.Add(meshGreen)
+	physicalMat := material.NewPhysical()
+	physicalMat.SetMetallicFactor(0.5)
+	physicalMat.SetRoughnessFactor(0.5)
+	colorMap := image.NewRGBA(image.Rect(0, 0, 255, 255))
+	normalMap := image.NewRGBA(image.Rect(0, 0, 255, 255))
+	for y := 0; y < 255; y++ {
+		for x := 0; x < 255; x++ {
+			colorMap.Set(x, y, color.RGBA{
+				R: uint8(x),
+				G: uint8(y),
+				B: uint8(255 - x),
+				A: 255,
+			})
+			v := math32.Vector3{
+				X: math32.Sin(float32(x+y/3)/255*math32.Pi*13) / 5,
+				Y: math32.Cos(float32(y+x/7)/255*math32.Pi*7) / 5,
+				Z: 1,
+			}
+			v.Normalize()
+			normalMap.Set(x, y, color.RGBA{
+				R: uint8(v.X*127.5 + 127.5),
+				G: uint8(v.Y*127.5 + 127.5),
+				B: uint8(v.Z*127.5 + 127.5),
+			})
+		}
+	}
+	physicalMat.SetBaseColorMap(texture.NewTexture2DFromRGBA(colorMap))
+	physicalMat.SetNormalMap(texture.NewTexture2DFromRGBA(normalMap))
+	meshPhysical := graphic.NewMesh(geom, physicalMat)
+	meshPhysical.SetName("PHYSICAL")
+	meshPhysical.RotateOnAxis(math32.Vector3{X: 1}, -math32.Pi/2)
+	meshPhysical.SetPositionY(-10.1)
+	scene.Add(meshPhysical)
 
 	mat := material.NewBlinnPhong(math32.Color3{R: 1})
 	mat.SetTransparent(true)
@@ -55,14 +82,13 @@ func main() {
 	scene.Add(meshBlue)
 
 	cam := camera.New(1)
-	cam.LookAt(meshGreen.Position(), up)
+	cam.LookAt(meshPhysical.Position(), up)
 	scene.Add(cam)
 
 	dlight := light.NewDirectional(math32.Color3{R: 1, G: 1, B: 1})
-	dlight.SetPosition(0, 10, 0)
-	dlight.LookAt(meshGreen.Position(), up)
 	scene.Add(dlight)
 
+	// test font rendering
 	panel := gui.NewPanel(0, 0)
 	panel.SetPaddings(gui.RectBounds{Top: 5, Right: 10, Bottom: 5, Left: 10})
 	panel.SetColor(math32.Color3{R: 0.5, G: 0.5, B: 0.5})
@@ -91,9 +117,14 @@ func main() {
 
 		st += dt
 		v := math32.Vector3{X: 5, Y: 5}
-		v.ApplyQuaternion(math32.QuaternionFromAxisAngle(up, float32(st)/float32(time.Second)/23*math32.Pi))
+		v.ApplyQuaternion(math32.QuaternionFromAxisAngle(up, float32(st)/float32(time.Second)/17*math32.Pi))
 		cam.SetPositionVec(v)
-		cam.LookAt(meshGreen.Position(), up)
+		cam.LookAt(meshPhysical.Position(), up)
+
+		v = math32.Vector3{X: 5, Y: 5}
+		v.ApplyQuaternion(math32.QuaternionFromAxisAngle(up, float32(st)/float32(time.Second)/5*math32.Pi))
+		dlight.SetPositionVec(v)
+		dlight.LookAt(meshPhysical.Position(), up)
 
 		ap.Gls().ClearColor(0.1, 0.1, 0.1, 1.0)
 		ap.Gls().Clear(gls.DEPTH_BUFFER_BIT | gls.STENCIL_BUFFER_BIT | gls.COLOR_BUFFER_BIT)

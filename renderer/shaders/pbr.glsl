@@ -49,6 +49,7 @@ struct PBRInfo {
     float alphaRoughness;// roughness mapped to a more linear change in the roughness (proposed by [2])
     vec3 diffuseColor;// color contribution from diffuse lighting
     vec3 specularColor;// color contribution from specular lighting
+    vec3 normal;
 };
 
 const float M_PI = 3.141592653589793;
@@ -62,50 +63,47 @@ vec4 SRGBtoLINEAR(vec4 srgbIn) {
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 getNormal() {
+vec3 getNormal(vec3 normal) {
+    #ifdef HAS_NORMALMAP
     // Retrieve the tangent space matrix
     vec3 pos_dx = dFdx(Position);
     vec3 pos_dy = dFdy(Position);
     vec3 tex_dx = dFdx(vec3(FragTexcoord, 0.0));
     vec3 tex_dy = dFdy(vec3(FragTexcoord, 0.0));
     vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
-    vec3 ng = normalize(Normal);
+    vec3 ng = normalize(normal);
     t = normalize(t - ng * dot(ng, t));
     vec3 b = normalize(cross(ng, t));
     mat3 tbn = mat3(t, b, ng);
-
-    #ifdef HAS_NORMALMAP
     vec3 n = texture(uNormalSampler, FragTexcoord).rgb;
-    n = normalize(tbn * ((2.0 * n - 1.0) * vec3(1.0, 1.0, 1.0)));
+    n = normalize(tbn * (2.0 * n - 1.0));
     #else
-    // The tbn matrix is linearly interpolated, so we need to re-normalize
-    vec3 n = normalize(tbn[2].xyz);
+    vec3 n = normalize(normal);
     #endif
-
     return n;
 }
 
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
-vec3 diffuse(PBRInfo pbrInputs) {
-    return pbrInputs.diffuseColor / M_PI;
+vec3 diffuse(PBRInfo pbrInfo) {
+    return pbrInfo.diffuseColor / M_PI;
 }
 
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
-vec3 specularReflection(PBRInfo pbrInputs, PBRLightInfo pbrLight) {
-    return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrLight.VdotH, 0.0, 1.0), 5.0);
+vec3 specularReflection(PBRInfo pbrInfo, PBRLightInfo pbrLight) {
+    return pbrInfo.reflectance0 + (pbrInfo.reflectance90 - pbrInfo.reflectance0) * pow(clamp(1.0 - pbrLight.VdotH, 0.0, 1.0), 5.0);
 }
 
 // This calculates the specular geometric attenuation (aka G()),
 // where rougher material will reflect less light back to the viewer.
 // This implementation is based on [1] Equation 4, and we adopt their modifications to
 // alphaRoughness as input as originally proposed in [2].
-float geometricOcclusion(PBRInfo pbrInputs, PBRLightInfo pbrLight) {
+float geometricOcclusion(PBRInfo pbrInfo, PBRLightInfo pbrLight) {
     float NdotL = pbrLight.NdotL;
     float NdotV = pbrLight.NdotV;
-    float r = pbrInputs.alphaRoughness;
+    float r = pbrInfo.alphaRoughness;
     float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));
     float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));
     return attenuationL * attenuationV;
@@ -114,14 +112,14 @@ float geometricOcclusion(PBRInfo pbrInputs, PBRLightInfo pbrLight) {
 // The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())
 // Implementation from "Average Irregularity Representation of a Roughened Surface for Ray Reflection" by T. S. Trowbridge, and K. P. Reitz
 // Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.
-float microfacetDistribution(PBRInfo pbrInputs, PBRLightInfo pbrLight) {
-    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;
+float microfacetDistribution(PBRInfo pbrInfo, PBRLightInfo pbrLight) {
+    float roughnessSq = pbrInfo.alphaRoughness * pbrInfo.alphaRoughness;
     float f = (pbrLight.NdotH * roughnessSq - pbrLight.NdotH) * pbrLight.NdotH + 1.0;
     return roughnessSq / (M_PI * f * f);
 }
 
-vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
-    vec3 n = getNormal();// normal at surface point
+vec3 pbrModel(PBRInfo pbrInfo, vec3 lightColor, vec3 lightDir) {
+    vec3 n = getNormal(pbrInfo.normal);// normal at surface point
     vec3 v = normalize(CamDir);// Vector from surface point to camera
     vec3 l = normalize(lightDir);// Vector from surface point to light
     vec3 h = normalize(l + v);// Half vector between both l and v
@@ -142,12 +140,12 @@ vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
     );
 
     // Calculate the shading terms for the microfacet specular shading model
-    vec3 F = specularReflection(pbrInputs, pbrLight);
-    float G = geometricOcclusion(pbrInputs, pbrLight);
-    float D = microfacetDistribution(pbrInputs, pbrLight);
+    vec3 F = specularReflection(pbrInfo, pbrLight);
+    float G = geometricOcclusion(pbrInfo, pbrLight);
+    float D = microfacetDistribution(pbrInfo, pbrLight);
 
     // Calculation of analytical lighting contribution
-    vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);
+    vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInfo);
     vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
     // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)
     vec3 color = NdotL * lightColor * (diffuseContrib + specContrib);
@@ -155,7 +153,7 @@ vec3 pbrModel(PBRInfo pbrInputs, vec3 lightColor, vec3 lightDir) {
     return color;
 }
 
-vec4 pbr(vec4 baseColor, vec3 emissiveColor, float roughnessFactor, float metallicFactor) {
+vec4 pbr(vec4 baseColor, vec3 emissiveColor, float roughnessFactor, float metallicFactor, vec3 normal) {
     float perceptualRoughness = roughnessFactor;
     float metallic = metallicFactor;
 
@@ -192,21 +190,22 @@ vec4 pbr(vec4 baseColor, vec3 emissiveColor, float roughnessFactor, float metall
     vec3 specularEnvironmentR0 = specularColor.rgb;
     vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;
 
-    PBRInfo pbrInputs = PBRInfo(
+    PBRInfo pbrInfo = PBRInfo(
     perceptualRoughness,
     metallic,
     specularEnvironmentR0,
     specularEnvironmentR90,
     alphaRoughness,
     diffuseColor,
-    specularColor
+    specularColor,
+    normal
     );
 
     vec3 color = vec3(0.0);
 
     #if AMB_LIGHTS > 0
     for (int i = 0; i < AMB_LIGHTS; i++) {
-        color += uAmbientLightColor[i] * pbrInputs.diffuseColor;
+        color += uAmbientLightColor[i] * pbrInfo.diffuseColor;
     }
     #endif
 
@@ -214,7 +213,7 @@ vec4 pbr(vec4 baseColor, vec3 emissiveColor, float roughnessFactor, float metall
     for (int i = 0; i < DIR_LIGHTS; i++) {
         // Direction of the current light
         vec3 lightDirection = normalize(uDirLightPosition(i));
-        color += pbrModel(pbrInputs, uDirLightColor(i), lightDirection);
+        color += pbrModel(pbrInfo, uDirLightColor(i), lightDirection);
     }
     #endif
 
@@ -228,7 +227,7 @@ vec4 pbr(vec4 baseColor, vec3 emissiveColor, float roughnessFactor, float metall
         float attenuation = 1.0 / (1.0 + uPointLightLinearDecay(i) * lightDistance +
         uPointLightQuadraticDecay(i) * lightDistance * lightDistance);
         vec3 attenuatedColor = uPointLightColor(i) * attenuation;
-        color += pbrModel(pbrInputs, attenuatedColor, lightDirection);
+        color += pbrModel(pbrInfo, attenuatedColor, lightDirection);
     }
     #endif
 
@@ -250,7 +249,7 @@ vec4 pbr(vec4 baseColor, vec3 emissiveColor, float roughnessFactor, float metall
         if (angle < cutoff) {
             float spotFactor = pow(dot(-lightDirection, uSpotLightDirection(i)), uSpotLightAngularDecay(i));
             vec3 attenuatedColor = uSpotLightColor(i) * attenuation * spotFactor;
-            color += pbrModel(pbrInputs, attenuatedColor, lightDirection);
+            color += pbrModel(pbrInfo, attenuatedColor, lightDirection);
         }
     }
     #endif
