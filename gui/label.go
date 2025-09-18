@@ -5,6 +5,7 @@
 package gui
 
 import (
+	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/text"
@@ -20,21 +21,22 @@ type Label struct {
 	canvas         *text.Canvas
 	color          math32.Color
 	fontAttributes text.FontAttributes
+	redraw         bool
 }
 
-// NewLabel creates a Label with the specified text using the default font.
+// NewLabel creates a Label using the default font.
 func NewLabel(txt string) *Label {
 	return NewLabelWithFont(txt, StyleDefault().Font)
 }
 
-// NewLabelWithFont creates a Label with the specified text using the specified font.
+// NewLabelWithFont creates a Label.
 func NewLabelWithFont(txt string, fnt *text.Font) *Label {
 	l := new(Label)
 	l.InitLabel(txt, fnt)
 	return l
 }
 
-// InitLabel initializes this Label.
+// InitLabel initializes the Label.
 func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.InitPanel(l, 0, 0)
 	l.SetResizeToTexture(true)
@@ -50,10 +52,8 @@ func (l *Label) InitLabel(txt string, fnt *text.Font) {
 
 // SetText sets and redraws the label text.
 func (l *Label) SetText(txt string) {
-	if txt != l.text {
-		l.text = txt
-		l.drawText()
-	}
+	l.redraw = txt != l.text
+	l.text = txt
 }
 
 // Text returns the label text.
@@ -63,10 +63,8 @@ func (l *Label) Text() string {
 
 // SetColor sets the text color.
 func (l *Label) SetColor(color math32.Color) {
-	if l.color != color {
-		l.color = color
-		l.drawText()
-	}
+	l.redraw = l.color != color
+	l.color = color
 }
 
 // Color returns the text color.
@@ -76,10 +74,8 @@ func (l *Label) Color() math32.Color {
 
 // SetFont sets the font.
 func (l *Label) SetFont(f *text.Font) {
-	if l.font != f {
-		l.font = f
-		l.drawText()
-	}
+	l.redraw = l.font != f
+	l.font = f
 }
 
 // Font returns the font.
@@ -89,10 +85,8 @@ func (l *Label) Font() *text.Font {
 
 // SetFontSize sets the point size of the font.
 func (l *Label) SetFontSize(size int32) {
-	if l.fontAttributes.PointSize != size {
-		l.fontAttributes.PointSize = size
-		l.drawText()
-	}
+	l.redraw = l.fontAttributes.PointSize != size
+	l.fontAttributes.PointSize = size
 }
 
 // FontSize returns the point size of the font.
@@ -100,28 +94,12 @@ func (l *Label) FontSize() int32 {
 	return l.fontAttributes.PointSize
 }
 
-// SetFontDPI sets the resolution of the font in dots per inch (DPI).
-func (l *Label) SetFontDPI(dpi int32) {
-	if l.fontAttributes.DPI != dpi {
-		l.fontAttributes.DPI = dpi
+func (l *Label) RenderSetup(gl *gls.GLS, ri *core.RenderInfo) {
+	if l.redraw {
 		l.drawText()
+		l.redraw = false
 	}
-}
-
-// FontDPI returns the resolution of the font in dots per inch (DPI).
-func (l *Label) FontDPI() int32 {
-	return l.fontAttributes.DPI
-}
-
-// SetTextColor updates both the text and color and redraws the label.
-//
-// This reduces redraws compared to changing the text and color separately.
-func (l *Label) SetTextColor(txt string, color math32.Color) {
-	if txt != l.text || l.color != color {
-		l.text = txt
-		l.color = color
-		l.drawText()
-	}
+	l.Panel.RenderSetup(gl, ri)
 }
 
 // drawText redraws the label texture.

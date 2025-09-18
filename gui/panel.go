@@ -104,7 +104,7 @@ func (p *Panel) InitPanel(ipan IPanel, width, height float32) {
 
 	// Initialize graphic
 	p.InitGraphic(ipan, panelQuadGeometry, gls.TRIANGLES)
-	p.AddMaterial(p, p.material, 0, 0)
+	p.AddMaterial(ipan, p.material, 0, 0)
 
 	// Initialize uniforms location caches
 	p.uniMatrix.Init("uModelMatrix")
