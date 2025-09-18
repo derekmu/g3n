@@ -51,7 +51,7 @@ func (l *Label) InitLabel(txt string, fnt *text.Font) {
 
 // SetText sets and redraws the label text.
 func (l *Label) SetText(txt string) {
-	l.redraw = txt != l.text
+	l.redraw = l.redraw || txt != l.text
 	l.text = txt
 }
 
@@ -62,7 +62,7 @@ func (l *Label) Text() string {
 
 // SetColor sets the text color.
 func (l *Label) SetColor(color math32.Color) {
-	l.redraw = l.color != color
+	l.redraw = l.redraw || l.color != color
 	l.color = color
 }
 
@@ -73,7 +73,7 @@ func (l *Label) Color() math32.Color {
 
 // SetFont sets the font.
 func (l *Label) SetFont(f *text.Font) {
-	l.redraw = l.font != f
+	l.redraw = l.redraw || l.font != f
 	l.font = f
 }
 
@@ -84,7 +84,7 @@ func (l *Label) Font() *text.Font {
 
 // SetFontSize sets the point size of the font.
 func (l *Label) SetFontSize(size int32) {
-	l.redraw = l.fontAttributes.PointSize != size
+	l.redraw = l.redraw || l.fontAttributes.PointSize != size
 	l.fontAttributes.PointSize = size
 }
 
