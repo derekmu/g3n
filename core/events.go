@@ -203,8 +203,8 @@ func (e CharEvent) GuiEventType() GuiEventType {
 }
 
 type CursorEvent struct {
-	X float32
-	Y float32
+	X float64
+	Y float64
 }
 
 func (e CursorEvent) WindowEventType() WindowEventType {
@@ -228,15 +228,15 @@ func (e GuiCursorLeaveEvent) GuiEventType() GuiEventType {
 }
 
 type MouseEvent interface {
-	GetX() float32
-	GetY() float32
+	GetX() float64
+	GetY() float64
 	GetButton() MouseButton
 	GetMods() ModifierKey
 }
 
 type MouseUpEvent struct {
-	X      float32
-	Y      float32
+	X      float64
+	Y      float64
 	Button MouseButton
 	Mods   ModifierKey
 }
@@ -249,11 +249,11 @@ func (e MouseUpEvent) GuiEventType() GuiEventType {
 	return GuiMouseUp
 }
 
-func (e MouseUpEvent) GetX() float32 {
+func (e MouseUpEvent) GetX() float64 {
 	return e.X
 }
 
-func (e MouseUpEvent) GetY() float32 {
+func (e MouseUpEvent) GetY() float64 {
 	return e.Y
 }
 
@@ -266,8 +266,8 @@ func (e MouseUpEvent) GetMods() ModifierKey {
 }
 
 type MouseDownEvent struct {
-	X      float32
-	Y      float32
+	X      float64
+	Y      float64
 	Button MouseButton
 	Mods   ModifierKey
 }
@@ -280,11 +280,11 @@ func (e MouseDownEvent) GuiEventType() GuiEventType {
 	return GuiMouseDown
 }
 
-func (e MouseDownEvent) GetX() float32 {
+func (e MouseDownEvent) GetX() float64 {
 	return e.X
 }
 
-func (e MouseDownEvent) GetY() float32 {
+func (e MouseDownEvent) GetY() float64 {
 	return e.Y
 }
 
@@ -297,8 +297,8 @@ func (e MouseDownEvent) GetMods() ModifierKey {
 }
 
 type ScrollEvent struct {
-	X float32
-	Y float32
+	X float64
+	Y float64
 }
 
 func (e ScrollEvent) WindowEventType() WindowEventType {
@@ -310,8 +310,8 @@ func (e ScrollEvent) GuiEventType() GuiEventType {
 }
 
 type GuiClickEvent struct {
-	X      float32
-	Y      float32
+	X      float64
+	Y      float64
 	Button MouseButton
 	Mods   ModifierKey
 }
@@ -320,11 +320,11 @@ func (e GuiClickEvent) GuiEventType() GuiEventType {
 	return GuiClick
 }
 
-func (e GuiClickEvent) GetX() float32 {
+func (e GuiClickEvent) GetX() float64 {
 	return e.X
 }
 
-func (e GuiClickEvent) GetY() float32 {
+func (e GuiClickEvent) GetY() float64 {
 	return e.Y
 }
 

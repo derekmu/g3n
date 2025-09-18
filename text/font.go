@@ -102,12 +102,12 @@ func (f *Font) updateFace() {
 }
 
 // MeasureText returns the minimum width and height in pixels necessary for an image to contain the specified text.
-func (f *Font) MeasureText(text string) (int, int) {
+func (f *Font) MeasureText(text string) (width, height int) {
 	f.updateFace()
 	d := font.Drawer{Face: f.face, Dot: fixed.P(0, 0)}
-	width := d.MeasureString(text).Ceil()
+	width = d.MeasureString(text).Ceil()
 	metrics := f.face.Metrics()
-	height := (metrics.Ascent + metrics.Descent).Ceil()
+	height = (metrics.Ascent + metrics.Descent).Ceil()
 	return width, height
 }
 

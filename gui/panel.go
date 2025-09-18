@@ -49,12 +49,12 @@ type IPanel interface {
 	SetPositionZ(z float32)
 	ZLayerDelta() int
 	Enabled() bool
-	ContainsMouse(x, y float32) bool
+	ContainsMouse(x, y float64) bool
 
-	Width() float32
-	Height() float32
-	ContentWidth() float32
-	ContentHeight() float32
+	Width() int
+	Height() int
+	ContentWidth() int
+	ContentHeight() int
 
 	getContentArea() Rect
 	getClipArea() Rect
@@ -67,11 +67,10 @@ var _ IPanel = &Panel{}
 type Panel struct {
 	graphic.Graphic
 	core.Dispatcher[core.GuiEvent]
-	material        *material.Material
-	texture         *texture.Texture2D
-	zLayerDelta     int
-	enabled         bool
-	resizeToTexture bool
+	material    *material.Material
+	texture     *texture.Texture2D
+	zLayerDelta int
+	enabled     bool
 
 	paddings    RectBounds
 	panelArea   Rect
@@ -81,21 +80,21 @@ type Panel struct {
 	uniMatrix gls.Uniform
 	uniPanel  gls.Uniform
 	udata     struct {
-		bounds       Rect
+		bounds       RectF
 		color        math32.Color4
 		textureValid [4]float32
 	}
 }
 
 // NewPanel a new panel with the specified dimensions.
-func NewPanel(width, height float32) *Panel {
+func NewPanel(width, height int) *Panel {
 	p := new(Panel)
 	p.InitPanel(p, width, height)
 	return p
 }
 
 // InitPanel initializes this panel and is normally used by other types which embed a panel.
-func (p *Panel) InitPanel(ipan IPanel, width, height float32) {
+func (p *Panel) InitPanel(ipan IPanel, width, height int) {
 	// Initialize material
 	p.material = material.NewMaterial()
 	p.material.SetUseLights(material.UseLightNone)
@@ -112,7 +111,6 @@ func (p *Panel) InitPanel(ipan IPanel, width, height float32) {
 
 	// Set defaults
 	p.enabled = true
-	p.resizeToTexture = false
 	p.resize(width, height)
 }
 
@@ -144,13 +142,6 @@ func (p *Panel) Material() *material.Material {
 
 // SetTexture changes the panel's texture.
 func (p *Panel) SetTexture(tex *texture.Texture2D) {
-	if p.resizeToTexture {
-		if tex != nil {
-			p.SetContentSize(float32(tex.Width()), float32(tex.Height()))
-		} else {
-			p.SetContentSize(0, 0)
-		}
-	}
 	if tex != p.texture {
 		if p.texture != nil {
 			p.Material().RemoveTexture(p.texture)
@@ -183,18 +174,8 @@ func (p *Panel) SetEnabled(state bool) {
 	p.Dispatch(core.GuiEnableEvent{Enabled: state})
 }
 
-// SetResizeToTexture sets whether this panel resizes automatically to match its texture size.
-func (p *Panel) SetResizeToTexture(resize bool) {
-	p.resizeToTexture = resize
-}
-
-// GetResizeToTexture returns whether this panel resizes automatically to match its texture size.
-func (p *Panel) GetResizeToTexture() bool {
-	return p.resizeToTexture
-}
-
-func (p *Panel) ContainsMouse(x, y float32) bool {
-	return p.clipArea.Contains(x, y)
+func (p *Panel) ContainsMouse(x, y float64) bool {
+	return p.clipArea.Contains(int(x), int(y))
 }
 
 // Paddings is the panel's padding sizes.
@@ -209,22 +190,22 @@ func (p *Panel) SetPaddings(src RectBounds) {
 }
 
 // Width is the panel's width.
-func (p *Panel) Width() float32 {
+func (p *Panel) Width() int {
 	return p.panelArea.Width
 }
 
 // Height is the panel's height.
-func (p *Panel) Height() float32 {
+func (p *Panel) Height() int {
 	return p.panelArea.Height
 }
 
 // MinWidth returns the minimum width of this panel (assuming content width was 0).
-func (p *Panel) MinWidth() float32 {
+func (p *Panel) MinWidth() int {
 	return p.paddings.Left + p.paddings.Right
 }
 
 // MinHeight returns the minimum height of this panel (assuming content height was 0).
-func (p *Panel) MinHeight() float32 {
+func (p *Panel) MinHeight() int {
 	return p.paddings.Top + p.paddings.Bottom
 }
 
@@ -235,7 +216,7 @@ func (p *Panel) SetPosition(x, y float32) {
 }
 
 // SetSize sets this panel external width and height.
-func (p *Panel) SetSize(width, height float32) {
+func (p *Panel) SetSize(width, height int) {
 	if width < 0 {
 		log.Printf("Invalid panel width %v", width)
 		width = 0
@@ -248,39 +229,39 @@ func (p *Panel) SetSize(width, height float32) {
 }
 
 // SetWidth sets this panel external width.
-func (p *Panel) SetWidth(width float32) {
+func (p *Panel) SetWidth(width int) {
 	p.SetSize(width, p.panelArea.Height)
 }
 
 // SetHeight sets this panel external height.
-func (p *Panel) SetHeight(height float32) {
+func (p *Panel) SetHeight(height int) {
 	p.SetSize(p.panelArea.Width, height)
 }
 
 // ContentWidth is the panel's content width.
-func (p *Panel) ContentWidth() float32 {
+func (p *Panel) ContentWidth() int {
 	return p.contentArea.Width
 }
 
 // ContentHeight is the panel's content height.
-func (p *Panel) ContentHeight() float32 {
+func (p *Panel) ContentHeight() int {
 	return p.contentArea.Height
 }
 
 // SetContentSize sets the panel's content size.
-func (p *Panel) SetContentSize(width, height float32) {
+func (p *Panel) SetContentSize(width, height int) {
 	eWidth := width + p.paddings.Left + p.paddings.Right
 	eHeight := height + p.paddings.Top + p.paddings.Bottom
 	p.resize(eWidth, eHeight)
 }
 
 // SetContentWidth sets the panel's content width.
-func (p *Panel) SetContentWidth(width float32) {
+func (p *Panel) SetContentWidth(width int) {
 	p.SetContentSize(width, p.contentArea.Height)
 }
 
 // SetContentHeight sets the panel's content height.
-func (p *Panel) SetContentHeight(height float32) {
+func (p *Panel) SetContentHeight(height int) {
 	p.SetContentSize(p.contentArea.Width, height)
 }
 
@@ -315,7 +296,7 @@ func (p *Panel) UpdateMatrixWorld() {
 }
 
 // ContentCoords converts the specified absolute coordinates to the panel's relative content coordinates.
-func (p *Panel) ContentCoords(wx, wy float32) (float32, float32) {
+func (p *Panel) ContentCoords(wx, wy int) (int, int) {
 	cx := wx - p.panelArea.X - p.paddings.Left
 	cy := wy - p.panelArea.Y - p.paddings.Top
 	return cx, cy
@@ -341,8 +322,8 @@ func (p *Panel) RenderSetup(gl *gls.GLS, _ *core.RenderInfo) {
 	// Convert pixel coordinates to standard OpenGL clip coordinates and scale the quad for the viewport
 	var mm math32.Matrix4
 	mm.Set(
-		fX*p.panelArea.Width, 0, 0, fX*p.panelArea.X-1,
-		0, fY*p.panelArea.Height, 0, 1-fY*p.panelArea.Y,
+		fX*float32(p.panelArea.Width), 0, 0, fX*float32(p.panelArea.X)-1,
+		0, fY*float32(p.panelArea.Height), 0, 1-fY*float32(p.panelArea.Y),
 		0, 0, 1, p.Position().Z,
 		0, 0, 0, 1,
 	)
@@ -369,29 +350,29 @@ func (p *Panel) getClipArea() Rect {
 func (p *Panel) updateBounds(parent IPanel) {
 	if parent == nil {
 		// If this panel has no parent, its position is its position
-		p.panelArea.X = p.Position().X
-		p.panelArea.Y = p.Position().Y
+		p.panelArea.X = int(p.Position().X)
+		p.panelArea.Y = int(p.Position().Y)
 		p.contentArea.X = p.panelArea.X + p.paddings.Left
 		p.contentArea.Y = p.panelArea.Y + p.paddings.Top
 		// No clipping necessary
 		p.clipArea = p.panelArea
 		// Set default bounds to be entire panel texture
-		p.udata.bounds = Rect{Width: 1, Height: 1}
+		p.udata.bounds = RectF{Width: 1, Height: 1}
 	} else {
 		// Coordinates are relative to the parent's content
 		parentContentArea := parent.getContentArea()
-		p.panelArea.X = parentContentArea.X + p.Position().X
-		p.panelArea.Y = parentContentArea.Y + p.Position().Y
+		p.panelArea.X = parentContentArea.X + int(p.Position().X)
+		p.panelArea.Y = parentContentArea.Y + int(p.Position().Y)
 		p.contentArea.X = p.panelArea.X + p.paddings.Left
 		p.contentArea.Y = p.panelArea.Y + p.paddings.Top
 		// Clip the panel area by the parent's content clipped by the parent's clip area
 		p.clipArea = p.panelArea.Clip(parentContentArea.Clip(parent.getClipArea()))
 		// Update bounds in texture coordinates
-		p.udata.bounds = Rect{
-			X:      (p.clipArea.X - p.panelArea.X) / p.panelArea.Width,
-			Y:      (p.clipArea.Y - p.panelArea.Y) / p.panelArea.Height,
-			Width:  (p.clipArea.X + p.clipArea.Width - p.panelArea.X) / p.panelArea.Width,
-			Height: (p.clipArea.Y + p.clipArea.Height - p.panelArea.Y) / p.panelArea.Height,
+		p.udata.bounds = RectF{
+			X:      float32(p.clipArea.X-p.panelArea.X) / float32(p.panelArea.Width),
+			Y:      float32(p.clipArea.Y-p.panelArea.Y) / float32(p.panelArea.Height),
+			Width:  float32(p.clipArea.X+p.clipArea.Width-p.panelArea.X) / float32(p.panelArea.Width),
+			Height: float32(p.clipArea.Y+p.clipArea.Height-p.panelArea.Y) / float32(p.panelArea.Height),
 		}
 	}
 }
@@ -400,9 +381,7 @@ func (p *Panel) updateBounds(parent IPanel) {
 // It recalculates the size and positions of the internal areas.
 // The padding sizes are kept and the content area size is adjusted.
 // If the panel is decreased, its minimum size is determined by the paddings.
-func (p *Panel) resize(width, height float32) {
-	width = math32.Round(width)
-	height = math32.Round(height)
+func (p *Panel) resize(width, height int) {
 	contentWidth := max(0, width-p.paddings.Left-p.paddings.Right)
 	contentHeight := max(0, height-p.paddings.Top-p.paddings.Bottom)
 	panelWidth := p.paddings.Left + contentWidth + p.paddings.Right
@@ -447,7 +426,7 @@ func (p *Panel) AddLabel(text string, expand bool, align Align) *Label {
 			// Position the label as desired
 			if align != AlignNone {
 				lx, ly := align.CalculatePosition(width, height, labelWidth, labelHeight)
-				label.SetPosition(lx, ly)
+				label.SetPosition(float32(lx), float32(ly))
 			}
 		default:
 			return false

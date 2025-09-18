@@ -26,7 +26,7 @@ const (
 // insideWidth and insideHeight usually consist of a Panel's Size.
 //
 // AlignNone returns (0, 0).
-func (a Align) CalculatePosition(outsideWidth, outsideHeight, insideWidth, insideHeight float32) (x float32, y float32) {
+func (a Align) CalculatePosition(outsideWidth, outsideHeight, insideWidth, insideHeight int) (x int, y int) {
 	switch a {
 	case AlignLeftTop:
 		x, y = 0, 0

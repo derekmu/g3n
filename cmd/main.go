@@ -13,6 +13,7 @@ import (
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/renderer"
 	"github.com/derekmu/g3n/texture"
+	"github.com/derekmu/g3n/util/stats"
 	"image"
 	"image/color"
 	"log"
@@ -97,6 +98,12 @@ func main() {
 	label := panel.AddLabel("This is a demo", true, gui.AlignCenterCenter)
 	label.SetFontSize(40)
 	label.SetColor(math32.Color4{G: 1, A: 0.5})
+	label.FitSizeToText()
+
+	stat := stats.NewStats(ap.Gls())
+	statTable := stats.NewStatsTable()
+	statTable.SetPosition(0, float32(panel.Height()))
+	scene.Add(statTable)
 
 	ap.Subscribe(func(ev core.WindowEvent) bool {
 		switch ev := ev.(type) {
@@ -125,6 +132,10 @@ func main() {
 		v.ApplyQuaternion(math32.QuaternionFromAxisAngle(up, float32(st)/float32(time.Second)/5*math32.Pi))
 		dlight.SetPositionVec(v)
 		dlight.LookAt(meshPhysical.Position(), up)
+
+		if stat.Update(time.Second) {
+			statTable.Update(stat)
+		}
 
 		ap.Gls().ClearColor(0.1, 0.1, 0.1, 1.0)
 		ap.Gls().Clear(gls.DEPTH_BUFFER_BIT | gls.STENCIL_BUFFER_BIT | gls.COLOR_BUFFER_BIT)

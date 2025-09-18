@@ -39,7 +39,6 @@ func NewLabelWithFont(txt string, fnt *text.Font) *Label {
 // InitLabel initializes the Label.
 func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.InitPanel(l, 0, 0)
-	l.SetResizeToTexture(true)
 	l.font = fnt
 	l.color = math32.Color3{R: 1, G: 1, B: 1}
 	l.fontAttributes = text.FontAttributes{
@@ -94,22 +93,33 @@ func (l *Label) FontSize() int32 {
 	return l.fontAttributes.PointSize
 }
 
+// RenderSetup updates the texture before rendering.
 func (l *Label) RenderSetup(gl *gls.GLS, ri *core.RenderInfo) {
-	if l.redraw {
-		l.drawText()
-		l.redraw = false
-	}
+	l.DrawText()
 	l.Panel.RenderSetup(gl, ri)
 }
 
-// drawText redraws the label texture.
-func (l *Label) drawText() {
-	// Update font and measure text
+// MeasureText returns the width and height of the text.
+func (l *Label) MeasureText() (width, height int) {
 	l.font.SetAttributes(l.fontAttributes)
-	l.font.SetColor(l.color)
-	width, height := l.font.MeasureText(l.text)
+	return l.font.MeasureText(l.text)
+}
 
-	// Update the canvas
+// FitSizeToText updates the size of the label to match the text.
+func (l *Label) FitSizeToText() {
+	w, h := l.MeasureText()
+	l.SetSize(w, h)
+}
+
+// DrawText redraws the label texture if needed.
+func (l *Label) DrawText() {
+	// Don't do anything if nothing has changed
+	if !l.redraw {
+		return
+	}
+
+	// Update the canvas size
+	width, height := l.MeasureText()
 	if l.canvas == nil {
 		l.canvas = text.NewCanvas(width, height)
 	} else {
@@ -122,6 +132,7 @@ func (l *Label) drawText() {
 	l.canvas.Fill(bgColor.ToRGBA())
 
 	// Draw the text
+	l.font.SetColor(l.color)
 	l.canvas.DrawText(0, 0, l.text, l.font)
 
 	// Update texture
@@ -134,4 +145,6 @@ func (l *Label) drawText() {
 		tex.SetFromRGBA(&l.canvas.RGBA)
 	}
 	l.SetTexture(tex)
+
+	l.redraw = false
 }

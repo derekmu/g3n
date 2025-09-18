@@ -136,15 +136,15 @@ func newWindow(width, height int, title string) (*window, error) {
 		switch action {
 		case glfw.Press:
 			w.Dispatch(core.MouseDownEvent{
-				X:      float32(xpos),
-				Y:      float32(ypos),
+				X:      xpos,
+				Y:      ypos,
 				Button: core.MouseButton(button),
 				Mods:   core.ModifierKey(mods),
 			})
 		case glfw.Release:
 			w.Dispatch(core.MouseUpEvent{
-				X:      float32(xpos),
-				Y:      float32(ypos),
+				X:      xpos,
+				Y:      ypos,
 				Button: core.MouseButton(button),
 				Mods:   core.ModifierKey(mods),
 			})
@@ -152,14 +152,14 @@ func newWindow(width, height int, title string) (*window, error) {
 	})
 	w.SetScrollCallback(func(x *glfw.Window, xoff float64, yoff float64) {
 		w.Dispatch(core.ScrollEvent{
-			X: float32(xoff),
-			Y: float32(yoff),
+			X: xoff,
+			Y: yoff,
 		})
 	})
 	w.SetCursorPosCallback(func(x *glfw.Window, xpos float64, ypos float64) {
 		w.Dispatch(core.CursorEvent{
-			X: float32(xpos),
-			Y: float32(ypos),
+			X: xpos,
+			Y: ypos,
 		})
 	})
 	w.SetCursorEnterCallback(func(x *glfw.Window, entered bool) {

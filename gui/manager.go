@@ -102,7 +102,7 @@ func (gm *Manager) onScroll(ev core.ScrollEvent) {
 	}
 }
 
-func (gm *Manager) updateMouseTarget(x, y float32) {
+func (gm *Manager) updateMouseTarget(x, y float64) {
 	oldTarget := gm.mouseTarget
 	gm.mouseTarget = nil
 	// Find IPanel immediately under the cursor and store it in gm.target

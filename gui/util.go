@@ -7,18 +7,18 @@ package gui
 // RectBounds specifies the size of the boundaries of a rectangle.
 // It can represent the thickness of the borders, the margins, or the padding of a rectangle.
 type RectBounds struct {
-	Top    float32
-	Right  float32
-	Bottom float32
-	Left   float32
+	Top    int
+	Right  int
+	Bottom int
+	Left   int
 }
 
 // Rect represents a rectangle.
 type Rect struct {
-	X      float32
-	Y      float32
-	Width  float32
-	Height float32
+	X      int
+	Y      int
+	Width  int
+	Height int
 }
 
 func (r Rect) Clip(clip Rect) Rect {
@@ -32,7 +32,7 @@ func (r Rect) Clip(clip Rect) Rect {
 }
 
 // Contains returns whether this rect contains a point.
-func (r Rect) Contains(x, y float32) bool {
+func (r Rect) Contains(x, y int) bool {
 	return x >= r.X && y >= r.Y && x < (r.X+r.Width) && y < (r.Y+r.Height)
 }
 
@@ -40,4 +40,12 @@ func (r Rect) Contains(x, y float32) bool {
 func (r Rect) Intersects(r2 Rect) bool {
 	return r.X+r.Width > r2.X && r2.X+r2.Width > r.X &&
 		r.Y+r.Height > r2.Y && r2.Y+r2.Height > r.Y
+}
+
+// RectF represents a rectangle.
+type RectF struct {
+	X      float32
+	Y      float32
+	Width  float32
+	Height float32
 }
