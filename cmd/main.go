@@ -1,6 +1,11 @@
 package main
 
 import (
+	"image"
+	"image/color"
+	"log"
+	"time"
+
 	"github.com/derekmu/g3n/app"
 	"github.com/derekmu/g3n/camera"
 	"github.com/derekmu/g3n/core"
@@ -14,10 +19,6 @@ import (
 	"github.com/derekmu/g3n/renderer"
 	"github.com/derekmu/g3n/texture"
 	"github.com/derekmu/g3n/util/stats"
-	"image"
-	"image/color"
-	"log"
-	"time"
 )
 
 var up = math32.Vector3{Y: 1}
@@ -98,7 +99,7 @@ func main() {
 	label := panel.AddLabel("This is a demo", true, gui.AlignCenterCenter)
 	label.SetFontSize(40)
 	label.SetColor(math32.Color4{G: 1, A: 0.5})
-	label.FitSizeToText()
+	label.FitToText()
 
 	stat := stats.NewStats(ap.Gls())
 	statTable := stats.NewStatsTable()

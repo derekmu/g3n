@@ -105,8 +105,8 @@ func (l *Label) MeasureText() (width, height int) {
 	return l.font.MeasureText(l.text)
 }
 
-// FitSizeToText updates the size of the label to match the text.
-func (l *Label) FitSizeToText() {
+// FitToText updates the size of the label to match the text.
+func (l *Label) FitToText() {
 	w, h := l.MeasureText()
 	l.SetSize(w, h)
 }

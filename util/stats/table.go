@@ -2,6 +2,7 @@ package stats
 
 import (
 	"fmt"
+
 	"github.com/derekmu/g3n/gui"
 )
 
@@ -51,37 +52,37 @@ func (t *StatsTable) Update(s *Stats) {
 	y := 0
 
 	t.shadersLabel.SetText(fmt.Sprintf("Shaders: %d", s.Glstats.Shaders))
-	t.shadersLabel.FitSizeToText()
+	t.shadersLabel.FitToText()
 	t.shadersLabel.SetPosition(0, float32(y))
 	y += t.shadersLabel.Height()
 
 	t.vaosLabel.SetText(fmt.Sprintf("VAOs: %d", s.Glstats.Vaos))
-	t.vaosLabel.FitSizeToText()
+	t.vaosLabel.FitToText()
 	t.vaosLabel.SetPosition(0, float32(y))
 	y += t.vaosLabel.Height()
 
 	t.buffersLabel.SetText(fmt.Sprintf("Buffers: %d", s.Glstats.Buffers))
-	t.buffersLabel.FitSizeToText()
+	t.buffersLabel.FitToText()
 	t.buffersLabel.SetPosition(0, float32(y))
 	y += t.buffersLabel.Height()
 
 	t.texturesLabel.SetText(fmt.Sprintf("Textures: %d", s.Glstats.Textures))
-	t.texturesLabel.FitSizeToText()
+	t.texturesLabel.FitToText()
 	t.texturesLabel.SetPosition(0, float32(y))
 	y += t.texturesLabel.Height()
 
 	t.unisLabel.SetText(fmt.Sprintf("Uniforms/frame: %d", s.Unisets))
-	t.unisLabel.FitSizeToText()
+	t.unisLabel.FitToText()
 	t.unisLabel.SetPosition(0, float32(y))
 	y += t.unisLabel.Height()
 
 	t.drawsLabel.SetText(fmt.Sprintf("Draws/frame: %d", s.Drawcalls))
-	t.drawsLabel.FitSizeToText()
+	t.drawsLabel.FitToText()
 	t.drawsLabel.SetPosition(0, float32(y))
 	y += t.drawsLabel.Height()
 
 	t.cgosLabel.SetText(fmt.Sprintf("CGO calls/frame: %d", s.Cgocalls))
-	t.cgosLabel.FitSizeToText()
+	t.cgosLabel.FitToText()
 	t.cgosLabel.SetPosition(0, float32(y))
 	y += t.cgosLabel.Height()
 
