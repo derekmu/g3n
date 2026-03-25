@@ -3,8 +3,9 @@ package assets
 import (
 	"bytes"
 	_ "embed"
-	"github.com/derekmu/g3n/text"
 	"image"
+
+	"github.com/derekmu/g3n/text"
 )
 
 //go:embed fonts/FreeMono.ttf

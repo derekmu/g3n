@@ -7,11 +7,12 @@ package text
 import (
 	"bufio"
 	"fmt"
-	"github.com/derekmu/g3n/math32"
 	"image"
 	"image/png"
 	"os"
 	"unicode/utf8"
+
+	"github.com/derekmu/g3n/math32"
 )
 
 // CharInfo contains the information to locate a character in an Atlas

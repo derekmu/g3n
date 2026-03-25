@@ -6,6 +6,7 @@ package gui
 
 import (
 	"fmt"
+
 	"github.com/derekmu/g3n/core"
 )
 

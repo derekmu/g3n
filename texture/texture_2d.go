@@ -6,9 +6,10 @@
 package texture
 
 import (
+	"image"
+
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
-	"image"
 )
 
 // Texture2D represents a texture.

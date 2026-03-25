@@ -26,7 +26,7 @@ in vec3 MorphPosition7;
 #endif
 #endif
 
-void morph(inout vec3 vPosition){
+void morph(inout vec3 vPosition) {
     #ifdef MORPHTARGETS
     #if MORPHTARGETS > 0
     vPosition += MorphPosition0 * uMorphWeights[0];

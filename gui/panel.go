@@ -5,6 +5,8 @@
 package gui
 
 import (
+	"log"
+
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/geometry"
 	"github.com/derekmu/g3n/gls"
@@ -12,7 +14,6 @@ import (
 	"github.com/derekmu/g3n/material"
 	"github.com/derekmu/g3n/math32"
 	"github.com/derekmu/g3n/texture"
-	"log"
 )
 
 // Quad geometry shared by all Panels.

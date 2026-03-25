@@ -5,12 +5,13 @@
 package text
 
 import (
+	"image"
+	"log"
+
 	"github.com/derekmu/g3n/math32"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
-	"image"
-	"log"
 )
 
 // Font represents a font face.

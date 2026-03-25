@@ -6,11 +6,12 @@
 package geometry
 
 import (
+	"math"
+	"strconv"
+
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/math32"
-	"math"
-	"strconv"
 )
 
 // IGeometry is the interface for all geometries.

@@ -5,11 +5,12 @@
 package app
 
 import (
-	"github.com/derekmu/g3n/gui"
 	"image"
 	_ "image/png"
 	"os"
 	"runtime"
+
+	"github.com/derekmu/g3n/gui"
 
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"

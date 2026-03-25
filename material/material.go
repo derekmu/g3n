@@ -7,10 +7,11 @@
 package material
 
 import (
+	"slices"
+
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/texture"
-	"slices"
 )
 
 // Side represents the material's visible side(s).

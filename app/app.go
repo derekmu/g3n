@@ -7,12 +7,13 @@ package app
 
 import (
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/derekmu/g3n/audio/al"
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gui"
 	"github.com/derekmu/g3n/renderer"
-	"log"
-	"time"
 )
 
 // Application is the main overall G3N container.

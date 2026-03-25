@@ -5,8 +5,9 @@
 package gls
 
 import (
-	"github.com/derekmu/g3n/math32"
 	"log"
+
+	"github.com/derekmu/g3n/math32"
 )
 
 // VBO abstracts an OpenGL Vertex Buffer Object.

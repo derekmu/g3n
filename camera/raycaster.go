@@ -5,12 +5,13 @@
 package camera
 
 import (
+	"sort"
+
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/graphic"
 	"github.com/derekmu/g3n/material"
 	"github.com/derekmu/g3n/math32"
-	"sort"
 )
 
 // Raycaster represents an empty object that can cast rays and check for ray intersections.

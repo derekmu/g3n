@@ -5,12 +5,13 @@
 package graphic
 
 import (
+	"log"
+
 	"github.com/derekmu/g3n/core"
 	"github.com/derekmu/g3n/geometry"
 	"github.com/derekmu/g3n/gls"
 	"github.com/derekmu/g3n/material"
 	"github.com/derekmu/g3n/math32"
-	"log"
 )
 
 // Mesh is a Graphic with uniforms for the model, view, projection, and normal matrices.
