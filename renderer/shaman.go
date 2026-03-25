@@ -6,6 +6,7 @@ package renderer
 
 import (
 	"fmt"
+	"maps"
 	"strconv"
 
 	"github.com/derekmu/g3n/gls"
@@ -48,12 +49,8 @@ func (sm *Shaman) Init(gs *gls.GLS) {
 
 // AddShaders adds registered shaders and programs to the Shaman.
 func (sm *Shaman) AddShaders() {
-	for name, source := range shaders.Shaders() {
-		sm.shaderSource[name] = source
-	}
-	for name, programInfo := range shaders.Programs() {
-		sm.programInfo[name] = programInfo
-	}
+	maps.Insert(sm.shaderSource, shaders.Shaders())
+	maps.Insert(sm.programInfo, shaders.Programs())
 }
 
 // SetProgram sets the shader program to satisfy the specs.

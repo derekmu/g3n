@@ -81,12 +81,12 @@ func NewRibbon(paths [][]math32.Vector3, close bool) *Geometry {
 	indices := math32.NewArrayU32(0, 0)
 
 	i := 0
-	for p := 0; p < len(paths); p++ {
+	for p := range paths {
 		path := paths[p]
 		l := len(path)
 		ls = append(ls, l)
 		is = append(is, i)
-		for j := 0; j < l; j++ {
+		for j := range l {
 			positions.AppendVector3(&path[j])
 		}
 		i += l
@@ -187,7 +187,7 @@ func NewTube(path []math32.Vector3, radius float32, radialSegments int, close bo
 	step := pi2 / float64(radialSegments)
 
 	var radialPaths [][]math32.Vector3
-	for i := 0; i < l; i++ {
+	for i := range l {
 		var radialPath []math32.Vector3
 		var ang float32
 		for ang = 0.0; ang < float32(pi2); ang += float32(step) {

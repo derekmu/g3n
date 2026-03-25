@@ -10,6 +10,7 @@ import (
 	"image"
 	"image/png"
 	"os"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/derekmu/g3n/math32"
@@ -52,7 +53,7 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 	col := 0
 	encoded := make([]byte, 4)
 	line := []byte{}
-	lines := ""
+	var lines strings.Builder
 	maxWidth := 0
 	lastX := 0
 	lastY := a.Descent
@@ -78,7 +79,7 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 		col++
 		if col >= cols || code == last {
 			nlines++
-			lines += string(line) + "\n"
+			lines.WriteString(string(line) + "\n")
 			line = []byte{}
 			// Checks max width
 			if width > maxWidth {
@@ -97,7 +98,7 @@ func NewAtlas(font *Font, first, last rune) *Atlas {
 	// Draw atlas image
 	canvas := NewCanvas(maxWidth, height)
 	canvas.Fill(math32.Color3{R: 1, G: 1, B: 1}.ToRGBA())
-	canvas.DrawText(0, 0, lines, font)
+	canvas.DrawText(0, 0, lines.String(), font)
 	a.Image = &canvas.RGBA
 
 	// Calculate normalized char positions in the image

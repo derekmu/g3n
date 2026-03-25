@@ -50,7 +50,7 @@ func (f *Frustum) Set(p0, p1, p2, p3, p4, p5 *Plane) *Frustum {
 
 // Copy modifies the receiver frustum to match the provided frustum
 func (f *Frustum) Copy(frustum *Frustum) *Frustum {
-	for i := 0; i < 6; i++ {
+	for i := range 6 {
 		f.planes[i] = frustum.planes[i]
 	}
 	return f
@@ -98,7 +98,7 @@ func (f *Frustum) IntersectsSphere(sphere *Sphere) bool {
 	planes := f.planes
 	negRadius := -sphere.Radius
 
-	for i := 0; i < 6; i++ {
+	for i := range 6 {
 		distance := planes[i].DistanceToPoint(&sphere.Center)
 
 		if distance < negRadius {
@@ -113,7 +113,7 @@ func (f *Frustum) IntersectsBox(box *Box3) bool {
 	var p1 Vector3
 	var p2 Vector3
 
-	for i := 0; i < 6; i++ {
+	for i := range 6 {
 		plane := &f.planes[i]
 		if plane.normal.X > 0 {
 			p1.X = box.Min.X
@@ -161,7 +161,7 @@ func (f *Frustum) IntersectsBox(box *Box3) bool {
 
 // ContainsPoint determines whether the frustum contains the specified point
 func (f *Frustum) ContainsPoint(point *Vector3) bool {
-	for i := 0; i < 6; i++ {
+	for i := range 6 {
 		if f.planes[i].DistanceToPoint(point) < 0 {
 			return false
 		}

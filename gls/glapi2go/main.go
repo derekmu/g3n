@@ -219,14 +219,14 @@ func parseParams(gparams string, f *GLFunc) error {
 // getArgName remove qualifiers and array brackets from the argument
 // returning only the argument name. Ex: *const*indices -> indices
 func getArgName(arg string) string {
-	if strings.HasPrefix(arg, "*const*") {
-		return strings.TrimPrefix(arg, "*const*")
+	if after, ok := strings.CutPrefix(arg, "*const*"); ok {
+		return after
 	}
-	if strings.HasPrefix(arg, "**") {
-		return strings.TrimPrefix(arg, "**")
+	if after, ok := strings.CutPrefix(arg, "**"); ok {
+		return after
 	}
-	if strings.HasPrefix(arg, "*") {
-		return strings.TrimPrefix(arg, "*")
+	if after, ok := strings.CutPrefix(arg, "*"); ok {
+		return after
 	}
 	// Checks for array index: [?]
 	aidx := strings.Index(arg, "[")
@@ -238,8 +238,8 @@ func getArgName(arg string) string {
 
 // glfname2go converts the name of an OpenGL C function to Go
 func glfname2go(glfname string) string {
-	if strings.HasPrefix(glfname, "gl") {
-		return strings.TrimPrefix(glfname, "gl")
+	if after, ok := strings.CutPrefix(glfname, "gl"); ok {
+		return after
 	}
 	return glfname
 }
@@ -252,11 +252,11 @@ func gldef2go(gldef string) string {
 // glval2go converts a C OpenGL value to a Go value
 func glval2go(glval string) string {
 	val := glval
-	if strings.HasSuffix(val, "u") {
-		val = strings.TrimSuffix(val, "u")
+	if before, ok := strings.CutSuffix(val, "u"); ok {
+		val = before
 	}
-	if strings.HasSuffix(val, "ull") {
-		val = strings.TrimSuffix(val, "ull")
+	if before, ok := strings.CutSuffix(val, "ull"); ok {
+		val = before
 	}
 	return val
 }
@@ -270,21 +270,21 @@ func gltypearg2go(gltype, glarg string) (goarg string, gotype string) {
 	// Replace parameter names using Go keywords
 	gokeys := []string{"type", "func"}
 	for _, k := range gokeys {
-		if strings.HasSuffix(glarg, k) {
-			glarg = strings.TrimSuffix(glarg, k) + "p" + k
+		if before, ok := strings.CutSuffix(glarg, k); ok {
+			glarg = before + "p" + k
 			break
 		}
 	}
 
 	if gltype == "void" {
 		gotype = "unsafe.Pointer"
-		if strings.HasPrefix(glarg, "**") {
-			goarg = strings.TrimPrefix(glarg, "**")
+		if after, ok := strings.CutPrefix(glarg, "**"); ok {
+			goarg = after
 			gotype = "*" + gotype
 			return goarg, gotype
 		}
-		if strings.HasPrefix(glarg, "*") {
-			goarg = strings.TrimPrefix(glarg, "*")
+		if after, ok := strings.CutPrefix(glarg, "*"); ok {
+			goarg = after
 			return goarg, gotype
 		}
 		return "???", "???"

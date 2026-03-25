@@ -15,7 +15,7 @@ type Box3 struct {
 // Returns pointer to this updated bounding box.
 func (b *Box3) SetFromPoints(points []Vector3) *Box3 {
 	b.MakeEmpty()
-	for i := 0; i < len(points); i++ {
+	for i := range points {
 		b.ExpandByPoint(&points[i])
 	}
 	return b

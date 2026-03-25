@@ -71,8 +71,8 @@ func NewSegmentedBox(width, height, length float32, widthSegments, heightSegment
 		segmentHeight := height / float32(gridY)
 
 		// Generate the plane vertices, normals, and uv coordinates
-		for iy := 0; iy < gridY1; iy++ {
-			for ix := 0; ix < gridX1; ix++ {
+		for iy := range gridY1 {
+			for ix := range gridX1 {
 				var vector math32.Vector3
 				vector.SetByName(u, (float32(ix)*segmentWidth-wHalf)*float32(udir))
 				vector.SetByName(v, (float32(iy)*segmentHeight-hHalf)*float32(vdir))

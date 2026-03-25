@@ -81,7 +81,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 	uvs := math32.NewArrayF32(2*npos/3, 2*npos/3)
 	indices := math32.NewArrayU32(0, 0)
 
-	for x := 0; x < radialSegments; x++ {
+	for x := range radialSegments {
 		if radiusTop != 0 {
 			positions.GetVector3(3*vertices[0][x], &na)
 			positions.GetVector3(3*vertices[0][x+1], &nb)
@@ -93,7 +93,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 		na.SetY(float32(math.Sqrt(float64(na.X*na.X+na.Z*na.Z)) * tanTheta)).Normalize()
 		nb.SetY(float32(math.Sqrt(float64(nb.X*nb.X+nb.Z*nb.Z)) * tanTheta)).Normalize()
 
-		for y := 0; y < heightSegments; y++ {
+		for y := range heightSegments {
 			v1 := vertices[y][x]
 			v2 := vertices[y+1][x]
 			v3 := vertices[y+1][x+1]
@@ -138,7 +138,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 
 		// Appends top segments vertices and builds array of its indicesOrig
 		var uv1, uv2, uv3 math32.Vector2
-		for x := 0; x < radialSegments; x++ {
+		for x := range radialSegments {
 			uv1 = uvsOrig[0][x]
 			uv2 = uvsOrig[0][x+1]
 			uv3 = math32.Vector2{uv2.X, 0}
@@ -180,7 +180,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 		nextidx++
 
 		// Append faces indicesOrig
-		for x := 0; x < radialSegments; x++ {
+		for x := range radialSegments {
 			pos := 2 * x
 			i1 := indicesOrig[pos]
 			i2 := indicesOrig[pos+1]
@@ -200,7 +200,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 
 		// Appends top segments vertices and builds array of its indicesOrig
 		var uv1, uv2, uv3 math32.Vector2
-		for x := 0; x < radialSegments; x++ {
+		for x := range radialSegments {
 			uv1 = uvsOrig[heightSegments][x]
 			uv2 = uvsOrig[heightSegments][x+1]
 			uv3 = math32.Vector2{uv2.X, 1}
@@ -243,7 +243,7 @@ func NewTruncatedConeSector(radiusTop, radiusBottom, height float64, radialSegme
 		nextidx++
 
 		// Appends faces indicesOrig
-		for x := 0; x < radialSegments; x++ {
+		for x := range radialSegments {
 			pos := 2 * x
 			i1 := indicesOrig[pos]
 			i2 := indicesOrig[pos+3]

@@ -161,9 +161,9 @@ func NewCatmullRomSpline(points []Vector3, npoints int, closed bool) *Curve {
 	var t float32
 	if closed {
 		count := len(points)
-		for i := 0; i < count; i++ {
+		for i := range count {
 			t = 0.0
-			for n := 0; n < npoints; n++ {
+			for range npoints {
 				vect := equation(t, &points[i%count], &points[(i+1)%count], &points[(i+2)%count], &points[(i+3)%count])
 				catmull = append(catmull, vect)
 				t += step
@@ -178,7 +178,7 @@ func NewCatmullRomSpline(points []Vector3, npoints int, closed bool) *Curve {
 		var i int
 		for i = 0; i < len(total)-3; i++ {
 			t = 0
-			for n := 0; n < npoints; n++ {
+			for range npoints {
 				vect := equation(t, &total[i], &total[i+1], &total[i+2], &total[i+3])
 				catmull = append(catmull, vect)
 				t += step

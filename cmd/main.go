@@ -36,8 +36,8 @@ func main() {
 	physicalMat.SetRoughnessFactor(0.5)
 	colorMap := image.NewRGBA(image.Rect(0, 0, 255, 255))
 	normalMap := image.NewRGBA(image.Rect(0, 0, 255, 255))
-	for y := 0; y < 255; y++ {
-		for x := 0; x < 255; x++ {
+	for y := range 255 {
+		for x := range 255 {
 			colorMap.Set(x, y, color.RGBA{
 				R: uint8(x),
 				G: uint8(y),

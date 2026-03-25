@@ -39,7 +39,7 @@ func (b *Box2) Set(min, max *Vector2) *Box2 {
 // Returns pointer to this updated bounding box.
 func (b *Box2) SetFromPoints(points []*Vector2) *Box2 {
 	b.MakeEmpty()
-	for i := 0; i < len(points); i++ {
+	for i := range points {
 		b.ExpandByPoint(points[i])
 	}
 	return b

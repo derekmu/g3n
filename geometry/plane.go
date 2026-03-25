@@ -36,9 +36,9 @@ func NewSegmentedPlane(width, height float32, widthSegments, heightSegments int)
 	indices := math32.NewArrayU32(0, 16)
 
 	// Generate plane vertices, vertices normals and vertices texture mappings.
-	for iy := 0; iy < gridY1; iy++ {
+	for iy := range gridY1 {
 		y := float32(iy)*segmentHeight - heightHalf
-		for ix := 0; ix < gridX1; ix++ {
+		for ix := range gridX1 {
 			x := float32(ix)*segmentWidth - widthHalf
 			positions.Append(float32(x), float32(-y), 0)
 			normals.Append(0, 0, 1)
@@ -47,8 +47,8 @@ func NewSegmentedPlane(width, height float32, widthSegments, heightSegments int)
 	}
 
 	// Generate plane vertices indices for the faces
-	for iy := 0; iy < gridY; iy++ {
-		for ix := 0; ix < gridX; ix++ {
+	for iy := range gridY {
+		for ix := range gridX {
 			a := ix + gridX1*iy
 			b := ix + gridX1*(iy+1)
 			c := (ix + 1) + gridX1*(iy+1)

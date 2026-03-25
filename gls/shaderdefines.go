@@ -69,9 +69,7 @@ func NewShaderDefines() ShaderDefines {
 
 // Add adds to this ShaderDefines all the key-value pairs in the specified ShaderDefines.
 func (sd ShaderDefines) Add(other ShaderDefines) {
-	for k, v := range other {
-		sd[k] = v
-	}
+	maps.Copy(sd, other)
 }
 
 // Equals compares two ShaderDefines and return true if they contain the same key-value pairs.

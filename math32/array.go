@@ -29,35 +29,35 @@ func (a *ArrayF32) Append(v ...float32) {
 
 // AppendVector2 appends any number of Vector2 to the array.
 func (a *ArrayF32) AppendVector2(v ...*Vector2) {
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		*a = append(*a, v[i].X, v[i].Y)
 	}
 }
 
 // AppendVector3 appends any number of Vector3 to the array.
 func (a *ArrayF32) AppendVector3(v ...*Vector3) {
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		*a = append(*a, v[i].X, v[i].Y, v[i].Z)
 	}
 }
 
 // AppendVector4 appends any number of Vector4 to the array.
 func (a *ArrayF32) AppendVector4(v ...*Vector4) {
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		*a = append(*a, v[i].X, v[i].Y, v[i].Z, v[i].W)
 	}
 }
 
 // AppendColor3 appends any number of Color3 to the array.
 func (a *ArrayF32) AppendColor3(v ...*Color3) {
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		*a = append(*a, v[i].R, v[i].G, v[i].B)
 	}
 }
 
 // AppendColor4 appends any number of Color4 to the array.
 func (a *ArrayF32) AppendColor4(v ...*Color4) {
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		*a = append(*a, v[i].R, v[i].G, v[i].B, v[i].A)
 	}
 }
@@ -128,7 +128,7 @@ func (a ArrayF32) GetColor4(pos int, v *Color4) {
 
 // Set sets the values of the array starting at the specified pos from the specified values.
 func (a ArrayF32) Set(pos int, v ...float32) {
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		a[pos+i] = v[i]
 	}
 }

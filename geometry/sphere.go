@@ -53,8 +53,8 @@ func NewSphereSector(radius float64, widthSegments, heightSegments int, phiStart
 		vertices = append(vertices, verticesRow)
 	}
 
-	for y := 0; y < heightSegments; y++ {
-		for x := 0; x < widthSegments; x++ {
+	for y := range heightSegments {
+		for x := range widthSegments {
 			v1 := vertices[y][x+1]
 			v2 := vertices[y][x]
 			v3 := vertices[y+1][x]
