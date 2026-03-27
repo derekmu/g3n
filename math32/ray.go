@@ -242,7 +242,7 @@ func (ray *Ray) DistanceToPlane(plane *Plane) float32 {
 // IntersectPlane calculates the point which is the intersection of this ray with the specified plane.
 func (ray *Ray) IntersectPlane(plane *Plane) (Vector3, bool) {
 	t := ray.DistanceToPlane(plane)
-	if t == NaN() {
+	if IsNaN(t) {
 		return Vector3{}, false
 	}
 	return ray.At(t), true
