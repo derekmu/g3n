@@ -66,7 +66,7 @@ func (b *Box3) Center() (result Vector3) {
 // Size calculates the size of this bounding box.
 // This is the vector from its minimum point to its maximum point.
 func (b *Box3) Size() (result Vector3) {
-	result.SubVectors(&b.Min, &b.Max)
+	result.SubVectors(&b.Max, &b.Min)
 	return result
 }
 
@@ -96,33 +96,23 @@ func (b *Box3) ExpandByScalar(scalar float32) *Box3 {
 
 // ContainsPoint returns if this bounding box contains the specified point.
 func (b *Box3) ContainsPoint(point *Vector3) bool {
-	if point.X < b.Min.X || point.X > b.Max.X ||
-		point.Y < b.Min.Y || point.Y > b.Max.Y ||
-		point.Z < b.Min.Z || point.Z > b.Max.Z {
-		return false
-	}
-	return true
+	return point.X >= b.Min.X && point.X <= b.Max.X &&
+		point.Y >= b.Min.Y && point.Y <= b.Max.Y &&
+		point.Z >= b.Min.Z && point.Z <= b.Max.Z
 }
 
 // ContainsBox returns if this bounding box contains other box.
 func (b *Box3) ContainsBox(box *Box3) bool {
-	if (b.Min.X <= box.Min.X) && (box.Max.X <= b.Max.X) &&
-		(b.Min.Y <= box.Min.Y) && (box.Max.Y <= b.Max.Y) &&
-		(b.Min.Z <= box.Min.Z) && (box.Max.Z <= b.Max.Z) {
-		return true
-	}
-	return false
+	return b.Min.X <= box.Min.X && box.Max.X <= b.Max.X &&
+		b.Min.Y <= box.Min.Y && box.Max.Y <= b.Max.Y &&
+		b.Min.Z <= box.Min.Z && box.Max.Z <= b.Max.Z
 }
 
-// IsIntersectionBox returns if other box intersects this one.
-func (b *Box3) IsIntersectionBox(other *Box3) bool {
-	// using 6 splitting planes to rule out intersections.
-	if other.Max.X < b.Min.X || other.Min.X > b.Max.X ||
-		other.Max.Y < b.Min.Y || other.Min.Y > b.Max.Y ||
-		other.Max.Z < b.Min.Z || other.Min.Z > b.Max.Z {
-		return false
-	}
-	return true
+// IntersectsBox returns if other box intersects this one.
+func (b *Box3) IntersectsBox(other *Box3) bool {
+	return other.Max.X >= b.Min.X && other.Min.X <= b.Max.X &&
+		other.Max.Y >= b.Min.Y && other.Min.Y <= b.Max.Y &&
+		other.Max.Z >= b.Min.Z && other.Min.Z <= b.Max.Z
 }
 
 // ClampPoint calculates a new point which is the specified point clamped inside this box.
