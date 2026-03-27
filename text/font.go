@@ -102,8 +102,18 @@ func (f *Font) updateFace() {
 	}
 }
 
-// MeasureText returns the minimum width and height in pixels necessary for an image to contain the specified text.
-func (f *Font) MeasureText(text string) (width, height int) {
+// MeasureBytes returns the dimensions necessary for an image to contain the text.
+func (f *Font) MeasureBytes(text []byte) (width, height int) {
+	f.updateFace()
+	d := font.Drawer{Face: f.face, Dot: fixed.P(0, 0)}
+	width = d.MeasureBytes(text).Ceil()
+	metrics := f.face.Metrics()
+	height = (metrics.Ascent + metrics.Descent).Ceil()
+	return width, height
+}
+
+// MeasureString returns the dimensions necessary for an image to contain the text.
+func (f *Font) MeasureString(text string) (width, height int) {
 	f.updateFace()
 	d := font.Drawer{Face: f.face, Dot: fixed.P(0, 0)}
 	width = d.MeasureString(text).Ceil()
@@ -112,8 +122,17 @@ func (f *Font) MeasureText(text string) (width, height int) {
 	return width, height
 }
 
-// DrawText draws the specified text on the specified image at the specified coordinates.
-func (f *Font) DrawText(text string, x, y int, dst *image.RGBA) {
+// DrawBytes draws the text on the image.
+func (f *Font) DrawBytes(text []byte, x, y int, dst *image.RGBA) {
+	f.updateFace()
+	metrics := f.face.Metrics()
+	py := y + metrics.Ascent.Round()
+	d := font.Drawer{Dst: dst, Src: &f.color, Face: f.face, Dot: fixed.P(x, py)}
+	d.DrawBytes(text)
+}
+
+// DrawString draws the text on the image.
+func (f *Font) DrawString(text string, x, y int, dst *image.RGBA) {
 	f.updateFace()
 	metrics := f.face.Metrics()
 	py := y + metrics.Ascent.Round()
