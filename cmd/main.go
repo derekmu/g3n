@@ -93,12 +93,12 @@ func main() {
 	// test font rendering
 	panel := gui.NewPanel(0, 0)
 	panel.SetPaddings(gui.RectBounds{Top: 5, Right: 10, Bottom: 5, Left: 10})
-	panel.SetColor(math32.Color3{R: 0.5, G: 0.5, B: 0.5})
+	panel.SetPanelColor(math32.Color3{R: 0.5, G: 0.5, B: 0.5})
 	scene.Add(panel)
 
 	label := panel.AddLabel("This is a demo", true, gui.AlignCenterCenter)
 	label.SetFontSize(40)
-	label.SetColor(math32.Color4{G: 1, A: 0.5})
+	label.SetColor(math32.Color4{G: 1, A: 1.0})
 	label.FitToText()
 
 	stat := stats.NewStats(ap.Gls())

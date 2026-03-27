@@ -86,9 +86,8 @@ func (b *Button) GetButtonState() ButtonState {
 		return ButtonPressed
 	} else if b.mouseOver {
 		return ButtonOver
-	} else {
-		return ButtonNormal
 	}
+	return ButtonNormal
 }
 
 func (b *Button) onGuiEvent(event core.GuiEvent) bool {

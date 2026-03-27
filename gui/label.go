@@ -21,7 +21,7 @@ type Label struct {
 	canvas         *text.Canvas
 	color          math32.Color
 	fontAttributes text.FontAttributes
-	redraw         bool
+	update         bool
 }
 
 // NewLabel creates a Label using the default font.
@@ -49,20 +49,20 @@ func (l *Label) InitLabel(txt string, fnt *text.Font) {
 	l.SetText(txt)
 }
 
-// SetText sets and redraws the label text.
+// SetText sets the label's text.
 func (l *Label) SetText(txt string) {
-	l.redraw = l.redraw || txt != l.text
+	l.update = l.update || txt != l.text
 	l.text = txt
 }
 
-// Text returns the label text.
+// Text returns the label's text.
 func (l *Label) Text() string {
 	return l.text
 }
 
 // SetColor sets the text color.
 func (l *Label) SetColor(color math32.Color) {
-	l.redraw = l.redraw || l.color != color
+	l.update = l.update || l.color != color
 	l.color = color
 }
 
@@ -73,7 +73,7 @@ func (l *Label) Color() math32.Color {
 
 // SetFont sets the font.
 func (l *Label) SetFont(f *text.Font) {
-	l.redraw = l.redraw || l.font != f
+	l.update = l.update || l.font != f
 	l.font = f
 }
 
@@ -84,7 +84,7 @@ func (l *Label) Font() *text.Font {
 
 // SetFontSize sets the point size of the font.
 func (l *Label) SetFontSize(size int32) {
-	l.redraw = l.redraw || l.fontAttributes.PointSize != size
+	l.update = l.update || l.fontAttributes.PointSize != size
 	l.fontAttributes.PointSize = size
 }
 
@@ -95,31 +95,31 @@ func (l *Label) FontSize() int32 {
 
 // RenderSetup updates the texture before rendering.
 func (l *Label) RenderSetup(gl *gls.GLS, ri *core.RenderInfo) {
-	l.DrawText()
+	l.drawText()
 	l.Panel.RenderSetup(gl, ri)
 }
 
-// MeasureText returns the width and height of the text.
-func (l *Label) MeasureText() (width, height int) {
+// measureText returns the width and height of the text.
+func (l *Label) measureText() (width, height int) {
 	l.font.SetAttributes(l.fontAttributes)
-	return l.font.MeasureText(l.text)
+	return l.font.MeasureString(l.text)
 }
 
 // FitToText updates the size of the label to match the text.
 func (l *Label) FitToText() {
-	w, h := l.MeasureText()
-	l.SetSize(w, h)
+	w, h := l.measureText()
+	l.SetContentSize(w, h)
 }
 
-// DrawText redraws the label texture if needed.
-func (l *Label) DrawText() {
+// drawText redraws the label texture if needed.
+func (l *Label) drawText() {
 	// Don't do anything if nothing has changed
-	if !l.redraw {
+	if !l.update {
 		return
 	}
 
 	// Update the canvas size
-	width, height := l.MeasureText()
+	width, height := l.measureText()
 	if l.canvas == nil {
 		l.canvas = text.NewCanvas(width, height)
 	} else {
@@ -133,7 +133,7 @@ func (l *Label) DrawText() {
 
 	// Draw the text
 	l.font.SetColor(l.color)
-	l.canvas.DrawText(0, 0, l.text, l.font)
+	l.canvas.DrawString(0, 0, l.text, l.font)
 
 	// Update texture
 	tex := l.texture
@@ -146,5 +146,5 @@ func (l *Label) DrawText() {
 	}
 	l.SetTexture(tex)
 
-	l.redraw = false
+	l.update = false
 }

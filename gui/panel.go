@@ -266,13 +266,13 @@ func (p *Panel) SetContentHeight(height int) {
 	p.SetContentSize(p.contentArea.Width, height)
 }
 
-// Color is the color of the panel if there is no texture.
-func (p *Panel) Color() math32.Color {
+// PanelColor is the color of the panel if there is no texture.
+func (p *Panel) PanelColor() math32.Color {
 	return p.udata.color
 }
 
-// SetColor sets the panel's color.
-func (p *Panel) SetColor(color math32.Color) *Panel {
+// SetPanelColor sets the panel's color.
+func (p *Panel) SetPanelColor(color math32.Color) *Panel {
 	p.udata.color = color.ToColor4()
 	p.SetChanged(true)
 	return p

@@ -50,67 +50,67 @@ func InitManager(window IWindow) {
 }
 
 // SetScene sets the INode to watch for events.
-func (gm *Manager) SetScene(scene core.INode) {
-	gm.scene = scene
+func (m *Manager) SetScene(scene core.INode) {
+	m.scene = scene
 }
 
 // SetKeyFocus sets the key-focused IDispatcher, which will exclusively receive key and char events.
-func (gm *Manager) SetKeyFocus(disp core.IDispatcher[core.GuiEvent]) {
-	if gm.keyFocus == disp {
+func (m *Manager) SetKeyFocus(disp core.IDispatcher[core.GuiEvent]) {
+	if m.keyFocus == disp {
 		return
 	}
-	if gm.keyFocus != nil {
-		gm.keyFocus.Dispatch(core.GuiFocusLostEvent{})
+	if m.keyFocus != nil {
+		m.keyFocus.Dispatch(core.GuiFocusLostEvent{})
 	}
-	gm.keyFocus = disp
-	if gm.keyFocus != nil {
-		gm.keyFocus.Dispatch(core.GuiFocusEvent{})
+	m.keyFocus = disp
+	if m.keyFocus != nil {
+		m.keyFocus.Dispatch(core.GuiFocusEvent{})
 	}
 }
 
 // SetCursorFocus sets the cursor-focused IDispatcher, which will exclusively receive cursor events.
-func (gm *Manager) SetCursorFocus(disp core.IDispatcher[core.GuiEvent]) {
-	if gm.cursorFocus == disp {
+func (m *Manager) SetCursorFocus(disp core.IDispatcher[core.GuiEvent]) {
+	if m.cursorFocus == disp {
 		return
 	}
-	gm.cursorFocus = disp
+	m.cursorFocus = disp
 }
 
 // onKeyEvent is called when char or key events are received.
-func (gm *Manager) onKeyEvent(ev core.GuiEvent) {
-	if gm.keyFocus != nil {
-		gm.keyFocus.Dispatch(ev)
+func (m *Manager) onKeyEvent(ev core.GuiEvent) {
+	if m.keyFocus != nil {
+		m.keyFocus.Dispatch(ev)
 	} else {
-		gm.Dispatch(ev)
+		m.Dispatch(ev)
 	}
 }
 
 // onMouse is called when mouse events are received.
-func (gm *Manager) onMouse(ev core.GuiEvent) {
-	if gm.scene != nil && gm.mouseTarget != nil {
-		sendAncestry(gm.mouseTarget, false, nil, ev)
+func (m *Manager) onMouse(ev core.GuiEvent) {
+	if m.scene != nil && m.mouseTarget != nil {
+		sendAncestry(m.mouseTarget, false, nil, ev)
 	} else {
-		gm.Dispatch(ev)
+		m.Dispatch(ev)
 	}
 }
 
 // onScroll is called when scroll events are received.
-func (gm *Manager) onScroll(ev core.ScrollEvent) {
-	if gm.scene != nil && gm.mouseTarget != nil {
-		sendAncestry(gm.mouseTarget, false, nil, ev)
+func (m *Manager) onScroll(ev core.ScrollEvent) {
+	if m.scene != nil && m.mouseTarget != nil {
+		sendAncestry(m.mouseTarget, false, nil, ev)
 	} else {
-		gm.Dispatch(ev)
+		m.Dispatch(ev)
 	}
 }
 
-func (gm *Manager) updateMouseTarget(x, y float64) {
-	oldTarget := gm.mouseTarget
-	gm.mouseTarget = nil
+func (m *Manager) updateMouseTarget(x, y float64) {
+	oldTarget := m.mouseTarget
+	m.mouseTarget = nil
 	// Find IPanel immediately under the cursor and store it in gm.target
-	gm.forEachIPanel(func(ipan IPanel) bool {
+	m.forEachIPanel(func(ipan IPanel) bool {
 		if ipan.ContainsMouse(x, y) {
-			if gm.mouseTarget == nil || ipan.Position().Z < gm.mouseTarget.Position().Z {
-				gm.mouseTarget = ipan
+			if m.mouseTarget == nil || ipan.Position().Z < m.mouseTarget.Position().Z {
+				m.mouseTarget = ipan
 			}
 			return true
 		} else {
@@ -118,36 +118,36 @@ func (gm *Manager) updateMouseTarget(x, y float64) {
 			return false
 		}
 	})
-	if gm.mouseTarget != oldTarget {
+	if m.mouseTarget != oldTarget {
 		// Only send events up to the lowest common ancestor of target and oldTarget
 		var commonAnc IPanel
-		if gm.mouseTarget != nil && oldTarget != nil {
-			commonAnc, _ = gm.mouseTarget.LowestCommonAncestor(oldTarget).(IPanel)
+		if m.mouseTarget != nil && oldTarget != nil {
+			commonAnc, _ = m.mouseTarget.LowestCommonAncestor(oldTarget).(IPanel)
 		}
-		if oldTarget != nil && !oldTarget.IsAncestorOf(gm.mouseTarget) {
+		if oldTarget != nil && !oldTarget.IsAncestorOf(m.mouseTarget) {
 			sendAncestry(oldTarget, true, commonAnc, core.GuiCursorLeaveEvent{})
 		}
-		if gm.mouseTarget != nil && !gm.mouseTarget.IsAncestorOf(oldTarget) {
-			sendAncestry(gm.mouseTarget, true, commonAnc, core.GuiCursorEnterEvent{})
+		if m.mouseTarget != nil && !m.mouseTarget.IsAncestorOf(oldTarget) {
+			sendAncestry(m.mouseTarget, true, commonAnc, core.GuiCursorEnterEvent{})
 		}
 	}
 }
 
 // onCursor is called when cursor events are received.
-func (gm *Manager) onCursor(ev core.CursorEvent) {
-	if gm.cursorFocus != nil {
-		gm.cursorFocus.Dispatch(ev)
+func (m *Manager) onCursor(ev core.CursorEvent) {
+	if m.cursorFocus != nil {
+		m.cursorFocus.Dispatch(ev)
 		return
 	}
-	if gm.scene == nil {
-		gm.Dispatch(ev)
+	if m.scene == nil {
+		m.Dispatch(ev)
 		return
 	}
-	gm.updateMouseTarget(ev.X, ev.Y)
-	if gm.mouseTarget != nil {
-		sendAncestry(gm.mouseTarget, false, nil, ev)
+	m.updateMouseTarget(ev.X, ev.Y)
+	if m.mouseTarget != nil {
+		sendAncestry(m.mouseTarget, false, nil, ev)
 	} else {
-		gm.Dispatch(ev)
+		m.Dispatch(ev)
 	}
 }
 
@@ -197,28 +197,28 @@ func traverseINode(inode core.INode, f func(ipan IPanel) bool) {
 }
 
 // forEachIPanel executes the specified function for each enabled and visible IPanel in the scene.
-func (gm *Manager) forEachIPanel(f func(ipan IPanel) bool) {
-	traverseINode(gm.scene, f)
+func (m *Manager) forEachIPanel(f func(ipan IPanel) bool) {
+	traverseINode(m.scene, f)
 }
 
-func (gm *Manager) onWindowEvent(event core.WindowEvent) bool {
+func (m *Manager) onWindowEvent(event core.WindowEvent) bool {
 	switch ev := event.(type) {
 	case core.KeyUpEvent:
-		gm.onKeyEvent(ev)
+		m.onKeyEvent(ev)
 	case core.KeyDownEvent:
-		gm.onKeyEvent(ev)
+		m.onKeyEvent(ev)
 	case core.KeyRepeatEvent:
-		gm.onKeyEvent(ev)
+		m.onKeyEvent(ev)
 	case core.CharEvent:
-		gm.onKeyEvent(ev)
+		m.onKeyEvent(ev)
 	case core.CursorEvent:
-		gm.onCursor(ev)
+		m.onCursor(ev)
 	case core.MouseUpEvent:
-		gm.onMouse(ev)
+		m.onMouse(ev)
 	case core.MouseDownEvent:
-		gm.onMouse(ev)
+		m.onMouse(ev)
 	case core.ScrollEvent:
-		gm.onScroll(ev)
+		m.onScroll(ev)
 	default:
 		return false
 	}
