@@ -101,10 +101,21 @@ func main() {
 	label.SetColor(math32.Color4{G: 1, A: 1.0})
 	label.FitToText()
 
+	textField := gui.NewTextField("")
+	textField.SetFontSize(40)
+	textField.SetPanelColor(math32.Color3{R: 0.5, G: 0.5, B: 0.5})
+	textField.SetColor(math32.Color4{B: 1, A: 1})
+	textField.FitToText()
+	textField.SetSize(textField.Height()*5, textField.Height())
+	textField.SetPosition(float32(panel.Width()), 0)
+	scene.Add(textField)
+
 	stat := stats.NewStats(ap.Gls())
 	statTable := stats.NewStatsTable()
 	statTable.SetPosition(0, float32(panel.Height()))
 	scene.Add(statTable)
+
+	gui.GetManager().SetScene(scene)
 
 	ap.Subscribe(func(ev core.WindowEvent) bool {
 		switch ev := ev.(type) {
