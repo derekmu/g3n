@@ -24,7 +24,7 @@ func GetManager() *Manager {
 type IWindow interface {
 	core.IDispatcher[core.WindowEvent]
 	GetScale() (x float64, y float64)
-	SetCursor(cursor core.Cursor)
+	SetCursorIcon(cursor core.CursorIcon) error
 }
 
 // Manager routes events to the appropriate GUI components or outside the GUI if not applicable.
@@ -35,7 +35,7 @@ type Manager struct {
 	scene       core.INode
 	mouseTarget IPanel
 	keyFocus    core.IDispatcher[core.GuiEvent]
-	cursorFocus core.IDispatcher[core.GuiEvent]
+	mouseFocus  core.IDispatcher[core.GuiEvent]
 }
 
 // InitManager creates the Manager singleton or panics if it's already been called.
@@ -68,39 +68,12 @@ func (m *Manager) SetKeyFocus(disp core.IDispatcher[core.GuiEvent]) {
 	}
 }
 
-// SetCursorFocus sets the cursor-focused IDispatcher, which will exclusively receive cursor events.
-func (m *Manager) SetCursorFocus(disp core.IDispatcher[core.GuiEvent]) {
-	if m.cursorFocus == disp {
+// SetMouseFocus sets the mouse-focused IDispatcher, which will exclusively receive mouse events.
+func (m *Manager) SetMouseFocus(disp core.IDispatcher[core.GuiEvent]) {
+	if m.mouseFocus == disp {
 		return
 	}
-	m.cursorFocus = disp
-}
-
-// onKeyEvent is called when char or key events are received.
-func (m *Manager) onKeyEvent(ev core.GuiEvent) {
-	if m.keyFocus != nil {
-		m.keyFocus.Dispatch(ev)
-	} else {
-		m.Dispatch(ev)
-	}
-}
-
-// onMouse is called when mouse events are received.
-func (m *Manager) onMouse(ev core.GuiEvent) {
-	if m.scene != nil && m.mouseTarget != nil {
-		sendAncestry(m.mouseTarget, false, nil, ev)
-	} else {
-		m.Dispatch(ev)
-	}
-}
-
-// onScroll is called when scroll events are received.
-func (m *Manager) onScroll(ev core.ScrollEvent) {
-	if m.scene != nil && m.mouseTarget != nil {
-		sendAncestry(m.mouseTarget, false, nil, ev)
-	} else {
-		m.Dispatch(ev)
-	}
+	m.mouseFocus = disp
 }
 
 func (m *Manager) updateMouseTarget(x, y float64) {
@@ -125,29 +98,11 @@ func (m *Manager) updateMouseTarget(x, y float64) {
 			commonAnc, _ = m.mouseTarget.LowestCommonAncestor(oldTarget).(IPanel)
 		}
 		if oldTarget != nil && !oldTarget.IsAncestorOf(m.mouseTarget) {
-			sendAncestry(oldTarget, true, commonAnc, core.GuiCursorLeaveEvent{})
+			sendAncestry(oldTarget, true, commonAnc, core.GuiMouseLeaveEvent{})
 		}
 		if m.mouseTarget != nil && !m.mouseTarget.IsAncestorOf(oldTarget) {
-			sendAncestry(m.mouseTarget, true, commonAnc, core.GuiCursorEnterEvent{})
+			sendAncestry(m.mouseTarget, true, commonAnc, core.GuiMouseEnterEvent{})
 		}
-	}
-}
-
-// onCursor is called when cursor events are received.
-func (m *Manager) onCursor(ev core.CursorEvent) {
-	if m.cursorFocus != nil {
-		m.cursorFocus.Dispatch(ev)
-		return
-	}
-	if m.scene == nil {
-		m.Dispatch(ev)
-		return
-	}
-	m.updateMouseTarget(ev.X, ev.Y)
-	if m.mouseTarget != nil {
-		sendAncestry(m.mouseTarget, false, nil, ev)
-	} else {
-		m.Dispatch(ev)
 	}
 }
 
@@ -211,16 +166,61 @@ func (m *Manager) onWindowEvent(event core.WindowEvent) bool {
 		m.onKeyEvent(ev)
 	case core.CharEvent:
 		m.onKeyEvent(ev)
-	case core.CursorEvent:
-		m.onCursor(ev)
+	case core.MouseEvent:
+		m.onMouseMoveEvent(ev)
 	case core.MouseUpEvent:
-		m.onMouse(ev)
+		m.onMouseButtonEvent(ev)
 	case core.MouseDownEvent:
-		m.onMouse(ev)
+		m.onMouseButtonEvent(ev)
 	case core.ScrollEvent:
 		m.onScroll(ev)
 	default:
 		return false
 	}
 	return true
+}
+
+// onKeyEvent is called when char or key events are received.
+func (m *Manager) onKeyEvent(ev core.GuiEvent) {
+	if m.keyFocus != nil {
+		m.keyFocus.Dispatch(ev)
+	} else {
+		m.Dispatch(ev)
+	}
+}
+
+// onMouseButtonEvent is called when mouse button events are received.
+func (m *Manager) onMouseButtonEvent(ev core.GuiEvent) {
+	if m.scene != nil && m.mouseTarget != nil {
+		sendAncestry(m.mouseTarget, false, nil, ev)
+	} else {
+		m.Dispatch(ev)
+	}
+}
+
+// onMouseMoveEvent is called when mouse move events are received.
+func (m *Manager) onMouseMoveEvent(ev core.MouseEvent) {
+	if m.mouseFocus != nil {
+		m.mouseFocus.Dispatch(ev)
+		return
+	}
+	if m.scene == nil {
+		m.Dispatch(ev)
+		return
+	}
+	m.updateMouseTarget(ev.X, ev.Y)
+	if m.mouseTarget != nil {
+		sendAncestry(m.mouseTarget, false, nil, ev)
+	} else {
+		m.Dispatch(ev)
+	}
+}
+
+// onScroll is called when scroll events are received.
+func (m *Manager) onScroll(ev core.ScrollEvent) {
+	if m.scene != nil && m.mouseTarget != nil {
+		sendAncestry(m.mouseTarget, false, nil, ev)
+	} else {
+		m.Dispatch(ev)
+	}
 }

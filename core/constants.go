@@ -220,18 +220,17 @@ func (s MouseState) Unset(b MouseButton) MouseState {
 	return s &^ b.GetMouseState()
 }
 
-// Cursor is an enum of mouse cursors supported by G3N.
-// Mouse cursor is the image where the mouse is.
-type Cursor int
+// CursorIcon is an enum of mouse cursors supported by G3N.
+type CursorIcon int
 
 const (
-	ArrowCursor = Cursor(iota)
-	IBeamCursor
-	CrosshairCursor
-	HandCursor
-	HResizeCursor
-	VResizeCursor
-	DiagResizeTrblCursor
-	DiagResizeTlbrCursor
-	CursorLast = DiagResizeTlbrCursor
+	CursorArrow = CursorIcon(iota)
+	CursorIBeam
+	CursorCrosshair
+	CursorHand
+	CursorHorizontalResize
+	CursorVerticalResize
+	CursorTRBLResize
+	CursorTLBRResize
+	CursorLast = CursorTLBRResize
 )

@@ -5,6 +5,7 @@
 package app
 
 import (
+	"fmt"
 	"image"
 	_ "image/png"
 	"os"
@@ -33,8 +34,8 @@ type window struct {
 	scaleX     float64
 	scaleY     float64
 
-	cursors       map[core.Cursor]*glfw.Cursor
-	lastCursorKey core.Cursor
+	cursorIcons    map[core.CursorIcon]*glfw.Cursor
+	lastCursorIcon core.CursorIcon
 }
 
 // newWindow creates a new window.
@@ -87,16 +88,8 @@ func newWindow(width, height int, title string) (*window, error) {
 	w.scaleY = float64(fbh) / float64(height)
 
 	// Create map for cursors
-	w.cursors = make(map[core.Cursor]*glfw.Cursor)
-	w.lastCursorKey = core.CursorLast
-
-	// Preallocate GLFW standard cursors
-	w.cursors[core.ArrowCursor] = glfw.CreateStandardCursor(glfw.ArrowCursor)
-	w.cursors[core.IBeamCursor] = glfw.CreateStandardCursor(glfw.IBeamCursor)
-	w.cursors[core.CrosshairCursor] = glfw.CreateStandardCursor(glfw.CrosshairCursor)
-	w.cursors[core.HandCursor] = glfw.CreateStandardCursor(glfw.HandCursor)
-	w.cursors[core.HResizeCursor] = glfw.CreateStandardCursor(glfw.HResizeCursor)
-	w.cursors[core.VResizeCursor] = glfw.CreateStandardCursor(glfw.VResizeCursor)
+	w.cursorIcons = make(map[core.CursorIcon]*glfw.Cursor)
+	w.lastCursorIcon = core.CursorLast
 
 	// Preallocate extra G3N standard cursors (diagonal resize cursors)
 	trblImage, _, err := assets.NewCursorTrblImage()
@@ -107,8 +100,16 @@ func newWindow(width, height int, title string) (*window, error) {
 	if err != nil {
 		return nil, err
 	}
-	w.cursors[core.DiagResizeTrblCursor] = glfw.CreateCursor(trblImage, 8, 8)
-	w.cursors[core.DiagResizeTlbrCursor] = glfw.CreateCursor(tlbrImage, 8, 8)
+
+	// Preallocate GLFW standard cursors
+	w.cursorIcons[core.CursorArrow] = glfw.CreateStandardCursor(glfw.ArrowCursor)
+	w.cursorIcons[core.CursorIBeam] = glfw.CreateStandardCursor(glfw.IBeamCursor)
+	w.cursorIcons[core.CursorCrosshair] = glfw.CreateStandardCursor(glfw.CrosshairCursor)
+	w.cursorIcons[core.CursorHand] = glfw.CreateStandardCursor(glfw.HandCursor)
+	w.cursorIcons[core.CursorHorizontalResize] = glfw.CreateStandardCursor(glfw.HResizeCursor)
+	w.cursorIcons[core.CursorVerticalResize] = glfw.CreateStandardCursor(glfw.VResizeCursor)
+	w.cursorIcons[core.CursorTRBLResize] = glfw.CreateCursor(trblImage, 8, 8)
+	w.cursorIcons[core.CursorTLBRResize] = glfw.CreateCursor(tlbrImage, 8, 8)
 
 	w.SetKeyCallback(func(x *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 		switch action {
@@ -158,13 +159,13 @@ func newWindow(width, height int, title string) (*window, error) {
 		})
 	})
 	w.SetCursorPosCallback(func(x *glfw.Window, xpos float64, ypos float64) {
-		w.Dispatch(core.CursorEvent{
+		w.Dispatch(core.MouseEvent{
 			X: xpos,
 			Y: ypos,
 		})
 	})
 	w.SetCursorEnterCallback(func(x *glfw.Window, entered bool) {
-		w.Dispatch(core.WindowCursorEnterEvent{
+		w.Dispatch(core.WindowMouseEnterEvent{
 			Entered: entered,
 		})
 	})
@@ -255,17 +256,18 @@ func (w *window) SetSwapInterval(interval int) {
 	glfw.SwapInterval(interval)
 }
 
-// SetCursor sets the window's cursor.
-func (w *window) SetCursor(cursor core.Cursor) {
-	cur, ok := w.cursors[cursor]
+// SetCursorIcon sets the window's cursor icon.
+func (w *window) SetCursorIcon(cursor core.CursorIcon) error {
+	cur, ok := w.cursorIcons[cursor]
 	if !ok {
-		panic("Invalid cursor")
+		return fmt.Errorf("invalid cursor icon")
 	}
 	w.Window.SetCursor(cur)
+	return nil
 }
 
 // CreateCursor creates a new custom cursor and returns an int handle.
-func (w *window) CreateCursor(imgFile string, xhot, yhot int) (core.Cursor, error) {
+func (w *window) CreateCursor(imgFile string, xhot, yhot int) (core.CursorIcon, error) {
 	file, err := os.Open(imgFile)
 	if err != nil {
 		return 0, err
@@ -279,8 +281,8 @@ func (w *window) CreateCursor(imgFile string, xhot, yhot int) (core.Cursor, erro
 		return 0, err
 	}
 
-	w.lastCursorKey += 1
-	w.cursors[w.lastCursorKey] = glfw.CreateCursor(img, xhot, yhot)
+	w.lastCursorIcon += 1
+	w.cursorIcons[w.lastCursorIcon] = glfw.CreateCursor(img, xhot, yhot)
 
-	return w.lastCursorKey, nil
+	return w.lastCursorIcon, nil
 }

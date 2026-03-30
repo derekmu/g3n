@@ -17,9 +17,8 @@ const (
 	WindowKeyRepeat
 	WindowChar
 
-	WindowCursor
-	WindowCursorEnter
-
+	WindowMouse
+	WindowMouseEnter
 	WindowMouseUp
 	WindowMouseDown
 	WindowScroll
@@ -61,12 +60,12 @@ func (e WindowSizeEvent) WindowEventType() WindowEventType {
 	return WindowSize
 }
 
-type WindowCursorEnterEvent struct {
+type WindowMouseEnterEvent struct {
 	Entered bool
 }
 
-func (e WindowCursorEnterEvent) WindowEventType() WindowEventType {
-	return WindowCursorEnter
+func (e WindowMouseEnterEvent) WindowEventType() WindowEventType {
+	return WindowMouseEnter
 }
 
 type GuiEventType int32
@@ -82,9 +81,9 @@ const (
 	GuiKeyRepeat
 	GuiChar
 
-	GuiCursor
-	GuiCursorEnter
-	GuiCursorLeave
+	GuiMouse
+	GuiMouseEnter
+	GuiMouseLeave
 
 	GuiMouseDown
 	GuiMouseUp
@@ -122,11 +121,6 @@ func (e GuiFocusLostEvent) GuiEventType() GuiEventType {
 	return GuiFocusLost
 }
 
-type KeyEvent interface {
-	GetKey() Key
-	GetMods() ModifierKey
-}
-
 type KeyUpEvent struct {
 	Key  Key
 	Mods ModifierKey
@@ -138,14 +132,6 @@ func (e KeyUpEvent) WindowEventType() WindowEventType {
 
 func (e KeyUpEvent) GuiEventType() GuiEventType {
 	return GuiKeyUp
-}
-
-func (e KeyUpEvent) GetKey() Key {
-	return e.Key
-}
-
-func (e KeyUpEvent) GetMods() ModifierKey {
-	return e.Mods
 }
 
 type KeyDownEvent struct {
@@ -161,14 +147,6 @@ func (e KeyDownEvent) GuiEventType() GuiEventType {
 	return GuiKeyDown
 }
 
-func (e KeyDownEvent) GetKey() Key {
-	return e.Key
-}
-
-func (e KeyDownEvent) GetMods() ModifierKey {
-	return e.Mods
-}
-
 type KeyRepeatEvent struct {
 	Key  Key
 	Mods ModifierKey
@@ -180,14 +158,6 @@ func (e KeyRepeatEvent) WindowEventType() WindowEventType {
 
 func (e KeyRepeatEvent) GuiEventType() GuiEventType {
 	return GuiKeyRepeat
-}
-
-func (e KeyRepeatEvent) GetKey() Key {
-	return e.Key
-}
-
-func (e KeyRepeatEvent) GetMods() ModifierKey {
-	return e.Mods
 }
 
 type CharEvent struct {
@@ -202,36 +172,29 @@ func (e CharEvent) GuiEventType() GuiEventType {
 	return GuiChar
 }
 
-type CursorEvent struct {
+type MouseEvent struct {
 	X float64
 	Y float64
 }
 
-func (e CursorEvent) WindowEventType() WindowEventType {
-	return WindowCursor
+func (e MouseEvent) WindowEventType() WindowEventType {
+	return WindowMouse
 }
 
-func (e CursorEvent) GuiEventType() GuiEventType {
-	return GuiCursor
+func (e MouseEvent) GuiEventType() GuiEventType {
+	return GuiMouse
 }
 
-type GuiCursorEnterEvent struct{}
+type GuiMouseEnterEvent struct{}
 
-func (e GuiCursorEnterEvent) GuiEventType() GuiEventType {
-	return GuiCursorEnter
+func (e GuiMouseEnterEvent) GuiEventType() GuiEventType {
+	return GuiMouseEnter
 }
 
-type GuiCursorLeaveEvent struct{}
+type GuiMouseLeaveEvent struct{}
 
-func (e GuiCursorLeaveEvent) GuiEventType() GuiEventType {
-	return GuiCursorLeave
-}
-
-type MouseEvent interface {
-	GetX() float64
-	GetY() float64
-	GetButton() MouseButton
-	GetMods() ModifierKey
+func (e GuiMouseLeaveEvent) GuiEventType() GuiEventType {
+	return GuiMouseLeave
 }
 
 type MouseUpEvent struct {
@@ -249,22 +212,6 @@ func (e MouseUpEvent) GuiEventType() GuiEventType {
 	return GuiMouseUp
 }
 
-func (e MouseUpEvent) GetX() float64 {
-	return e.X
-}
-
-func (e MouseUpEvent) GetY() float64 {
-	return e.Y
-}
-
-func (e MouseUpEvent) GetButton() MouseButton {
-	return e.Button
-}
-
-func (e MouseUpEvent) GetMods() ModifierKey {
-	return e.Mods
-}
-
 type MouseDownEvent struct {
 	X      float64
 	Y      float64
@@ -278,22 +225,6 @@ func (e MouseDownEvent) WindowEventType() WindowEventType {
 
 func (e MouseDownEvent) GuiEventType() GuiEventType {
 	return GuiMouseDown
-}
-
-func (e MouseDownEvent) GetX() float64 {
-	return e.X
-}
-
-func (e MouseDownEvent) GetY() float64 {
-	return e.Y
-}
-
-func (e MouseDownEvent) GetButton() MouseButton {
-	return e.Button
-}
-
-func (e MouseDownEvent) GetMods() ModifierKey {
-	return e.Mods
 }
 
 type ScrollEvent struct {
@@ -318,20 +249,4 @@ type GuiClickEvent struct {
 
 func (e GuiClickEvent) GuiEventType() GuiEventType {
 	return GuiClick
-}
-
-func (e GuiClickEvent) GetX() float64 {
-	return e.X
-}
-
-func (e GuiClickEvent) GetY() float64 {
-	return e.Y
-}
-
-func (e GuiClickEvent) GetButton() MouseButton {
-	return e.Button
-}
-
-func (e GuiClickEvent) GetMods() ModifierKey {
-	return e.Mods
 }

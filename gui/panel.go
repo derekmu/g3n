@@ -170,9 +170,11 @@ func (p *Panel) Enabled() bool {
 }
 
 // SetEnabled sets the panel's enabled state.
-func (p *Panel) SetEnabled(state bool) {
-	p.enabled = state
-	p.Dispatch(core.GuiEnableEvent{Enabled: state})
+func (p *Panel) SetEnabled(enabled bool) {
+	if enabled != p.enabled {
+		p.enabled = enabled
+		p.Dispatch(core.GuiEnableEvent{Enabled: enabled})
+	}
 }
 
 func (p *Panel) ContainsMouse(x, y float64) bool {
