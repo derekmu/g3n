@@ -104,38 +104,59 @@ func (f *Font) updateFace() {
 
 // MeasureBytes returns the dimensions necessary for an image to contain the text.
 func (f *Font) MeasureBytes(text []byte) (width, height int) {
-	f.updateFace()
-	d := font.Drawer{Face: f.face, Dot: fixed.P(0, 0)}
+	d := font.Drawer(f.Drawer(0, 0, nil))
 	width = d.MeasureBytes(text).Ceil()
-	metrics := f.face.Metrics()
+	metrics := f.Metrics()
 	height = (metrics.Ascent + metrics.Descent).Ceil()
 	return width, height
 }
 
 // MeasureString returns the dimensions necessary for an image to contain the text.
 func (f *Font) MeasureString(text string) (width, height int) {
-	f.updateFace()
-	d := font.Drawer{Face: f.face, Dot: fixed.P(0, 0)}
+	d := font.Drawer(f.Drawer(0, 0, nil))
 	width = d.MeasureString(text).Ceil()
-	metrics := f.face.Metrics()
+	metrics := f.Metrics()
+	height = (metrics.Ascent + metrics.Descent).Ceil()
+	return width, height
+}
+
+// MeasureRunes returns the dimensions necessary for an image to contain the text.
+func (f *Font) MeasureRunes(text []rune, widths []fixed.Int26_6) (width, height int) {
+	d := f.Drawer(0, 0, nil)
+	width = d.MeasureRunes(text, widths).Ceil()
+	metrics := f.Metrics()
 	height = (metrics.Ascent + metrics.Descent).Ceil()
 	return width, height
 }
 
 // DrawBytes draws the text on the image.
 func (f *Font) DrawBytes(text []byte, x, y int, dst *image.RGBA) {
-	f.updateFace()
-	metrics := f.face.Metrics()
-	py := y + metrics.Ascent.Round()
-	d := font.Drawer{Dst: dst, Src: &f.color, Face: f.face, Dot: fixed.P(x, py)}
+	d := font.Drawer(f.Drawer(x, y, dst))
 	d.DrawBytes(text)
 }
 
 // DrawString draws the text on the image.
 func (f *Font) DrawString(text string, x, y int, dst *image.RGBA) {
-	f.updateFace()
-	metrics := f.face.Metrics()
-	py := y + metrics.Ascent.Round()
-	d := font.Drawer{Dst: dst, Src: &f.color, Face: f.face, Dot: fixed.P(x, py)}
+	d := font.Drawer(f.Drawer(x, y, dst))
 	d.DrawString(text)
+}
+
+// DrawRunes draws the text on the image.
+func (f *Font) DrawRunes(text []rune, x, y int, dst *image.RGBA) {
+	d := f.Drawer(x, y, dst)
+	d.DrawRunes(text)
+}
+
+// Drawer returns a Drawer with this Font's settings.
+func (f *Font) Drawer(x, y int, dst *image.RGBA) Drawer {
+	metrics := f.Metrics()
+	return Drawer{
+		Dst:  dst,
+		Src:  &f.color,
+		Face: f.face,
+		Dot: fixed.Point26_6{
+			X: fixed.I(x),
+			Y: fixed.I(y) + metrics.Ascent,
+		},
+	}
 }

@@ -59,6 +59,12 @@ func (c *Canvas) DrawString(x, y int, text string, f *Font) *Canvas {
 	return c
 }
 
+// DrawRunes draws text on the image.
+func (c *Canvas) DrawRunes(x, y int, text []rune, f *Font) *Canvas {
+	f.DrawRunes(text, x, y, &c.RGBA)
+	return c
+}
+
 // DrawRectangle draws a rectangle on the image.
 func (c *Canvas) DrawRectangle(bounds image.Rectangle, co color.Color) *Canvas {
 	draw.Draw(
